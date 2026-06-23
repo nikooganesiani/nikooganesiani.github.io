@@ -2,50 +2,57 @@ name: Deploy with Secrets
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pages: write
-      id-token: write
     
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Replace secrets in all HTML files
+      - uses: actions/checkout@v4
+      
+      - name: Replace secrets in smartscale/index.html
         run: |
-          echo "🔧 Заменяем метки во всех HTML файлах..."
+          echo "🔧 Начинаем замену меток..."
           
-          # Находим все HTML файлы и заменяем в них метки
-          find . -name "*.html" -type f | while read -r file; do
-            echo "📄 Обрабатываем: $file"
-            
-            # Заменяем метки
-            sed -i "s|___BOT_TOKEN___|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" "$file"
-            sed -i "s|___CHAT_ID___|${{ secrets.TELEGRAM_CHAT_ID }}|g" "$file"
-            sed -i "s|___SHEETS_URL___|${{ secrets.GOOGLE_SHEETS_URL }}|g" "$file"
-            
-            # Проверяем, заменилось ли
-            if grep -q "___BOT_TOKEN___" "$file"; then
-              echo "❌ В $file метка BOT_TOKEN не заменилась!"
-            else
-              echo "✅ $file - OK"
-            fi
-          done
-
+          # Проверяем, что файл существует
+          if [ ! -f "smartscale/index.html" ]; then
+            echo "❌ Файл smartscale/index.html не найден!"
+            exit 1
+          fi
+          
+          echo "📄 Файл найден. Заменяем метки..."
+          
+          # Заменяем метки
+          sed -i 's|___BOT_TOKEN___|${{ secrets.TELEGRAM_BOT_TOKEN }}|g' smartscale/index.html
+          sed -i 's|___CHAT_ID___|${{ secrets.TELEGRAM_CHAT_ID }}|g' smartscale/index.html
+          sed -i 's|___SHEETS_URL___|${{ secrets.GOOGLE_SHEETS_URL }}|g' smartscale/index.html
+          
+          # Проверяем результат
+          echo "📄 Проверка замены:"
+          if grep -q "___BOT_TOKEN___" smartscale/index.html; then
+            echo "❌ Ошибка: метка BOT_TOKEN осталась!"
+            exit 1
+          else
+            echo "✅ Метка BOT_TOKEN заменена"
+          fi
+          
+          if grep -q "___CHAT_ID___" smartscale/index.html; then
+            echo "❌ Ошибка: метка CHAT_ID осталась!"
+            exit 1
+          else
+            echo "✅ Метка CHAT_ID заменена"
+          fi
+          
+          echo "✅ Все метки успешно заменены!"
+      
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
           force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy with secrets'
+          commit_message: "Deploy with secrets"
