@@ -564,7 +564,7 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
         submitBtn.disabled = true;
         
         try {
-            // ПРОСТО! Путь начинается с / и работает везде
+            // Отправка на Vercel (он сам отправит и в Telegram, и в Google Sheets)
             const response = await fetch('/api/submit', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
