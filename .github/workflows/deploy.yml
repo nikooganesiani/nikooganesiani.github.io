@@ -1,27 +1,20 @@
-name: Replace secrets
+name: Deploy
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  replace:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          token: ${{ secrets.GH_TOKEN }}
-      
-      - name: Replace GH_PAT in HTML
-        run: |
-          sed -i "s|___GH_PAT___|${{ secrets.GH_PAT }}|g" smartscale/index.html
-      
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add smartscale/index.html
-          git diff --staged --quiet || git commit -m "Replace GH_PAT"
-          git push
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./smartscale
+          force_orphan: true
