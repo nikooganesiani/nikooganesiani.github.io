@@ -550,12 +550,9 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 
 <script>
     // ========== НАСТРОЙКИ ==========
-    // --- Google Sheets (опционально) ---
-    const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwi-q_l6UgL5_IrxUp8ERixoXuM0Ycs28Aomoj4QPg0dCJViuzkdkoYdpskGw6udUE/exec'; // Оставьте пустым если не нужно
-    
-    // --- Telegram ---
-    const TELEGRAM_BOT_TOKEN = '8764592843:AAGDqa4v4x_ri9MGlrvvABmOAbaymQJh9Co'; // 👈 ВАШ ТОКЕН
-    const TELEGRAM_CHAT_ID = '1084741050'; // 👈 ВАШ CHAT ID
+    const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+    const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+    const GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL;
     // =================================
 
     // Отправка в Telegram
