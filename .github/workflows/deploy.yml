@@ -1,11 +1,11 @@
-name: Replace secrets
+name: Replace secrets and deploy
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  replace:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -18,10 +18,9 @@ jobs:
         run: |
           sed -i "s|___GH_TOKEN___|${{ secrets.GH_TOKEN }}|g" smartscale/index.html
       
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add smartscale/index.html
-          git diff --staged --quiet || git commit -m "Replace GH_TOKEN"
-          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/nikooganesiani/nikooganesiani.github.io.git HEAD:main
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./smartscale
+          force_orphan: true
