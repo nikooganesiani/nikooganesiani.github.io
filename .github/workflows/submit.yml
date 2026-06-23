@@ -1,0 +1,22 @@
+name: Отправить заказ
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Имя'
+        required: true
+      phone:
+        description: 'Телефон'
+        required: true
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Отправить в Telegram
+        run: |
+          curl -s -X POST \
+            https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
+            -d text="🆕 НОВЫЙ ЗАКАЗ!%0A%0A👤 Имя: ${{ github.event.inputs.name }}%0A📞 Телефон: ${{ github.event.inputs.phone }}%0A📦 Товар: SmartBalance Pro%0A💰 Цена: 44 ₾"
