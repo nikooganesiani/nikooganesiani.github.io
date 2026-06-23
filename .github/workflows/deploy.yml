@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy with Secrets
 
 on:
   push:
@@ -8,14 +8,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Replace secrets in HTML
         run: |
+          # Заменяем метки на реальные значения из Secrets
           sed -i "s|___BOT_TOKEN___|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" index.html
           sed -i "s|___CHAT_ID___|${{ secrets.TELEGRAM_CHAT_ID }}|g" index.html
           sed -i "s|___SHEETS_URL___|${{ secrets.GOOGLE_SHEETS_URL }}|g" index.html
-      
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
