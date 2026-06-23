@@ -549,130 +549,49 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 </style>
 
 <script>
-    // ========== НАСТРОЙКИ ==========
-const TELEGRAM_BOT_TOKEN = '___BOT_TOKEN___';
-const TELEGRAM_CHAT_ID = '___CHAT_ID___';
-const GOOGLE_SHEETS_URL = '___SHEETS_URL___';
-    // =================================
-
-    // Отправка в Telegram
-    async function sendToTelegram(orderData) {
-        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '1234567890:ABCdefGHIjklmNOPqrstUVwxyz') {
-            console.warn('⚠️ Telegram токен не настроен');
-            return false;
-        }
-        
-        const message = `
-🆕 **Новый заказ**
-
-👤 **Имя:** ${orderData.name}
-📞 **Телефон:** ${orderData.phone}
-📦 **Товар:** ${orderData.product}
-💰 **Цена:** ${orderData.price}
-📅 **Время:** ${orderData.timestamp}
-📍 **Источник:** ${orderData.source}
-        `.trim();
-        
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: message,
-                    parse_mode: 'Markdown'
-                })
-            });
-            
-            const result = await response.json();
-            if (result.ok) {
-                console.log('✅ Отправлено в Telegram');
-                return true;
-            } else {
-                console.error('❌ Ошибка Telegram:', result);
-                return false;
-            }
-        } catch (error) {
-            console.error('❌ Ошибка отправки в Telegram:', error);
-            return false;
-        }
-    }
-
-    // Отправка в Google Sheets (если настроен URL)
-    async function sendToGoogleSheets(orderData) {
-        if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL === 'ВАШ_URL_ОТ_GOOGLE_SCRIPT') {
-            console.log('ℹ️ Google Sheets не настроен');
-            return false;
-        }
-        
-        try {
-            await fetch(GOOGLE_SHEETS_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-            console.log('✅ Отправлено в Google Sheets');
-            return true;
-        } catch (error) {
-            console.error('❌ Ошибка Google Sheets:', error);
-            return false;
-        }
-    }
-
-    // Основная обработка заказа
     async function processOrder(event, nameId, phoneId) {
         event.preventDefault();
         
         const name = document.getElementById(nameId).value.trim();
         const phone = document.getElementById(phoneId).value.trim();
         
-        // Валидация
         if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return false; }
         if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return false; }
         
-        // Данные заказа
-                const now = new Date();
-        const timestamp = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-        const orderData = {
-            name: name,
-            phone: phone,
-            product: "SmartBalance Pro",
-            price: "44",
-            quantity: 1,
-            timestamp: timestamp,
-            source: nameId === 'nameTop' ? 'Верхняя форма' : 'Нижняя форма'
-        };
-        
-        // Блокируем кнопку
         const submitBtn = event.target.querySelector('.btn');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = "⏳ იგზავნება...";
         submitBtn.disabled = true;
         
-        // Отправляем везде
-        await Promise.all([
-            sendToTelegram(orderData),
-            sendToGoogleSheets(orderData)
-        ]);
+        try {
+            // ПРОСТО! Путь начинается с / и работает везде
+            const response = await fetch('/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, phone })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
+                document.getElementById(nameId).value = "";
+                document.getElementById(phoneId).value = "";
+            } else {
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
         
-        // Сообщение клиенту
-        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
-        
-        // Очищаем форму
-        document.getElementById(nameId).value = "";
-        document.getElementById(phoneId).value = "";
-        
-        // Разблокируем кнопку
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
     
     // Подключаем обработчики
-    document.getElementById('orderFormTop')?.addEventListener('submit', (e) => processOrder(e, 'nameTop', 'phoneTop'));
-    document.getElementById('orderFormBottom')?.addEventListener('submit', (e) => processOrder(e, 'nameBottom', 'phoneBottom'));
-    
-    console.log('✅ Бот готов к приему заказов');
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('orderFormTop')?.addEventListener('submit', (e) => processOrder(e, 'nameTop', 'phoneTop'));
+        document.getElementById('orderFormBottom')?.addEventListener('submit', (e) => processOrder(e, 'nameBottom', 'phoneBottom'));
+    });
 </script>
