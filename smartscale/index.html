@@ -9,7 +9,7 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
     <div class="card" id="order-top">
         <img src="img/4.webp" alt="ENKA Electronics service" class="single-img" fetchpriority="high" loading="eager">
         <div class="img-caption">ჭკვიანი სასწორი – ინოვაციური დიზაინი</div>
-        <form class="order-form" id="orderFormTop" style="margin-top: 16px;">
+        <form class="order-form" id="orderFormTop" style="margin-top: 16px;" onsubmit="fbq('track', 'Purchase'); return true;">
     <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameTop">
     <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneTop">
     <button type="submit" class="btn">👉 შეკვეთა</button>
@@ -177,7 +177,7 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 <div class="card" id="order-bottom">
     <h3 style="font-size: 1.6rem; margin-bottom: 6px; text-align: center;">🎯 შეუკვეთეთ 44 ლარად</h3>
     <p style="text-align: center; margin-bottom: 18px;">მხოლოდ 9 ცალი შეზღუდული რაოდენობით | 8 პროფილი ოჯახისთვის</p>
-    <form class="order-form" id="orderFormBottom" style="margin-top: 16px;">
+    <form class="order-form" id="orderFormBottom" style="margin-top: 16px;" onsubmit="fbq('track', 'Purchase'); return true;">
         <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
         <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneBottom">
         <button type="submit" class="btn">👉 შეკვეთა</button>
@@ -651,11 +651,6 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
         const originalText = submitBtn.textContent;
         submitBtn.textContent = "⏳ იგზავნება...";
         submitBtn.disabled = true;
-
-        // Отправка в Facebook Pixel
-        if (typeof fbq === 'function') {
-        fbq('track', 'Purchase');
-    }
         
         // Отправляем везде
         await Promise.all([
