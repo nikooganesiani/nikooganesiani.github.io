@@ -1,0 +1,889 @@
+---
+layout: default
+title: "ENKA Electronics – ხარისხიანი ტექნიკა"
+---
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    /* КАСТОМНАЯ ПОЛОСА ПРОКРУТКИ */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-radius: 10px;
+        transition: all 0.2s;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        cursor: pointer;
+    }
+    
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #2563eb #f1f5f9;
+    }
+    
+    html {
+        overflow-y: scroll;
+    }
+
+    body {
+        background: #f8fafc;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+        flex: 1;
+    }
+    
+    .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0rem 1.5rem;
+    }
+
+    /* КАТЕГОРИИ */
+    .categories-bar {
+        max-width: 1280px;
+        margin: 0.4rem auto 0;
+        margin-bottom: 0.4rem;
+        padding: 0 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .categories {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+    .category-btn {
+        background: #f1f5f9;
+        border: none;
+        padding: 0.3rem 0.2rem;
+        border-radius: 0.5rem;
+        font-size: 0.80rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #1e293b;
+    }
+    .category-btn:hover, .category-btn.active {
+        background: #2563eb;
+        color: white;
+    }
+
+    /* ФИЛЬТРЫ И СОРТИРОВКА */
+    .filters-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.4rem;
+        background: white;
+        padding: 1rem;
+        border-radius: 1rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .filters {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #f1f5f9;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+    }
+    .filter-group label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #475569;
+    }
+    .filter-group input {
+        border: none;
+        background: transparent;
+        padding: 0.3rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        outline: none;
+        width: 70px;
+    }
+    .reset-filters {
+        background: #fee2e2;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        font-size: 0.8rem;
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: none;
+    }
+    .reset-filters.show {
+        display: inline-block;
+    }
+    .reset-filters:hover {
+        background: #fecaca;
+    }
+
+    /* КАТАЛОГ */
+    .catalog {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    /* КАРТОЧКА ТОВАРА */
+    .product-card {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 30px -10px rgba(0,0,0,0.15);
+    }
+    .product-image {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        background: #ffffff;
+        padding: 1rem;
+        transition: transform 0.3s;
+    }
+    .product-card:hover .product-image {
+        transform: scale(1.03);
+    }
+    .product-info {
+        padding: 1.2rem;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .product-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+    .btn-order {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.2s;
+        margin-top: auto;
+        width: 100%;
+    }
+
+    /* СКЕЛЕТОН */
+    .skeleton-card {
+        background: white;
+        border-radius: 1.5rem;
+        overflow: hidden;
+    }
+    .skeleton-img {
+        height: 220px;
+        background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.2s infinite;
+    }
+    .skeleton-text {
+        padding: 1.2rem;
+    }
+    .skeleton-title, .skeleton-price, .skeleton-btn {
+        background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.2s infinite;
+        border-radius: 0.5rem;
+        margin-bottom: 0.8rem;
+    }
+    .skeleton-title { width: 80%; height: 24px; }
+    .skeleton-price { width: 50%; height: 32px; }
+    .skeleton-btn { width: 100%; height: 48px; border-radius: 2rem; }
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* МОДАЛЬНОЕ ОКНО ЗАКАЗА */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+    }
+    .modal.active {
+        display: flex;
+    }
+    .modal-content {
+        background: white;
+        max-width: 450px;
+        width: 90%;
+        border-radius: 1.5rem;
+        padding: 1.8rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    .modal-product {
+        background: #f1f5f9;
+        padding: 1rem;
+        border-radius: 1rem;
+        margin: 1rem 0;
+        text-align: center;
+    }
+    .modal-product img {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .input-field {
+        width: 100%;
+        padding: 0.9rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+    .input-field:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+    .btn-submit {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 0.9rem;
+        width: 100%;
+        border-radius: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-submit:hover {
+        background: #1d4ed8;
+    }
+    .close-modal {
+        background: #e2e8f0;
+        color: #1e293b;
+        border: none;
+        padding: 0.7rem;
+        width: 100%;
+        border-radius: 1rem;
+        cursor: pointer;
+        margin-top: 1rem;
+        font-weight: 500;
+    }
+    .free-delivery {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        color: #64748b;
+        text-align: center;
+    }
+
+    /* КНОПКА НАВЕРХ */
+    .scroll-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: white;
+        border: 1px solid #e2e8f0;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 200;
+    }
+    .scroll-top.show {
+        display: flex;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #64748b;
+        grid-column: 1/-1;
+    }
+
+    /* ОПИСАНИЕ ТОВАРА */
+    .product-description {
+        font-size: 0.75rem;
+        color: #64748b;
+        line-height: 1.3;
+        flex: 1;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* ЦЕНА И БЕЙДЖИ */
+    .price-and-badges {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 8px 0;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+    }
+    
+    .price-and-badges .product-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2563eb;
+    }
+    
+    .shipping-badges {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+    
+    .free-shipping-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        color: #2d6a4f;
+        background: #dcfce7;
+        white-space: nowrap;
+    }
+    
+    .cash-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        color: #1e40af;
+        background: #dbeafe;
+        white-space: nowrap;
+    }
+
+    .warranty-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        color: #b45309;
+        background: #ffedd5;
+        white-space: nowrap;
+    }
+    
+    /* КАСТОМНЫЙ ВЫПАДАЮЩИЙ СПИСОК */
+    .custom-select {
+        position: relative;
+        min-width: 180px;
+    }
+    
+    .select-trigger {
+        background: #f1f5f9;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: #1e293b;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .select-trigger:hover {
+        background: #e2e8f0;
+    }
+    
+    .select-arrow {
+        font-size: 0.7rem;
+        transition: transform 0.2s;
+        color: #64748b;
+    }
+    
+    .custom-select.open .select-arrow {
+        transform: rotate(180deg);
+    }
+    
+    .select-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        margin-top: 0.5rem;
+        overflow: hidden;
+        z-index: 100;
+        display: none;
+    }
+    
+    .custom-select.open .select-options {
+        display: block;
+    }
+    
+    .select-option {
+        padding: 0.7rem 1rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #1e293b;
+    }
+    
+    .select-option:hover {
+        background: #f1f5f9;
+    }
+    
+    .select-option.selected {
+        background: #2563eb;
+        color: white;
+    }
+    
+    @media (max-width: 640px) {
+        .filters-bar { flex-direction: column; align-items: stretch; }
+        .filters { justify-content: center; }
+        .categories-bar { flex-direction: column; align-items: stretch; }
+        .categories { justify-content: center; }
+    }
+</style>
+
+<div class="categories-bar">
+    <div class="categories" id="categoriesContainer">
+        <button class="category-btn active" data-category="all">🛒 ყველაფერი</button>
+        <button class="category-btn" data-category="smarthome">💡 ჭკვიანი სახლი</button>
+        <button class="category-btn" data-category="kitchen">🧑‍🍳 სამზარეულო</button>
+        <button class="category-btn" data-category="homecare">🧹 სახლის მოვლა</button>
+        <button class="category-btn" data-category="selfcare">🥰 თავის მოვლა</button>        
+        <button class="category-btn" data-category="building">🛠️ სამშენებლო ტექნიკა</button>  
+    </div>
+</div>
+
+<main>
+    <div class="container">
+        <div class="filters-bar">
+            <div class="filters">
+                <div class="filter-group">
+                    <label>ფასი:</label>
+                    <input type="number" id="minPrice" placeholder="დან">
+                    <span>—</span>
+                    <input type="number" id="maxPrice" placeholder="მდე">
+                </div>
+                <button class="reset-filters" id="resetFilters">გასუფთავება</button>
+            </div>
+            <div class="custom-select" id="customSortSelect">
+                <div class="select-trigger" id="selectTrigger">
+                    <span id="selectedValue">სახელი (ა-ჰ)</span>
+                    <span class="select-arrow">▼</span>
+                </div>
+                <div class="select-options" id="selectOptions">
+                    <div class="select-option" data-value="name-asc">სახელი (ა-ჰ)</div>
+                    <div class="select-option" data-value="name-desc">სახელი (ჰ-ა)</div>
+                    <div class="select-option" data-value="price-asc">ფასი (იაფიდან ძვირამდე)</div>
+                    <div class="select-option" data-value="price-desc">ფასი (ძვირიდან იაფამდე)</div>
+                </div>
+            </div>
+            <select id="sortSelect" style="display: none;">
+                <option value="name-asc">სახელი (ა-ჰ)</option>
+                <option value="name-desc">სახელი (ჰ-ა)</option>
+                <option value="price-asc">ფასი (იაფიდან ძვირამდე)</option>
+                <option value="price-desc">ფასი (ძვირიდან იაფამდე)</option>
+            </select>
+        </div>
+
+        <div class="catalog" id="catalogContainer">
+            <!-- 6 скелетонов -->
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
+        </div>
+    </div>
+</main>
+
+<!-- Модальное окно заказа -->
+<div class="modal" id="orderModal">
+    <div class="modal-content">
+        <h3>📦 შეკვეთა</h3>
+        <div id="modalProductInfo" class="modal-product"></div>
+        <form id="orderForm">
+            <input type="text" id="customerName" class="input-field" placeholder="👤 თქვენი სახელი" required>
+            <input type="tel" id="customerPhone" class="input-field" placeholder="📞 ტელეფონის ნომერი" required>
+            <button type="submit" class="btn-submit">👉 გაფორმება</button>
+            <div class="free-delivery">დავაზუსტებთ თქვენს მისამართს და მიტანის დროს.</div>
+        </form>
+        <button class="close-modal" id="closeModal">დახურვა</button>
+    </div>
+</div>
+
+<div class="scroll-top" id="scrollTop">⬆️</div>
+
+<script>
+    // ============================================
+    // 📌 НАСТРОЙКИ
+    // ============================================
+    const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+    const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+    const GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL;
+    // ============================================
+    
+    let allProducts = [];
+    let currentProduct = null;
+    let currentCategory = 'all';
+    
+    // DOM элементы
+    const container = document.getElementById('catalogContainer');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const sortSelect = document.getElementById('sortSelect');
+    const resetBtn = document.getElementById('resetFilters');
+    const orderModal = document.getElementById('orderModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const scrollTopBtn = document.getElementById('scrollTop');
+    const orderForm = document.getElementById('orderForm');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    
+    // Открыть модалку с товаром
+    function openOrderModal(product) {
+        currentProduct = product;
+        const modalProductDiv = document.getElementById('modalProductInfo');
+        modalProductDiv.innerHTML = `
+            <img src="${product.image}" onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
+            <div style="font-weight:600; margin-top:0.5rem;">${product.name}</div>
+            <div style="font-size:1.2rem; font-weight:700; color:#2563eb; margin-top:0.3rem;">${product.price}</div>
+        `;
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        orderModal.classList.add('active');
+    }
+    
+    // Отправка в Telegram
+    async function sendToTelegram(orderData) {
+        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'МОЙ_ТОКЕН_ТУТ') {
+            console.warn('⚠️ Telegram токен не настроен');
+            return false;
+        }
+        
+        const message = `
+🆕 **Новый заказ**
+
+👤 **Имя:** ${orderData.name}
+📞 **Телефон:** ${orderData.phone}
+📦 **Товар:** ${orderData.product}
+💰 **Цена:** ${orderData.price}
+📅 **Время:** ${orderData.timestamp}
+📍 **Источник:** ${orderData.source}
+        `.trim();
+        
+        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+            const result = await response.json();
+            return result.ok;
+        } catch (error) {
+            console.error('❌ Telegram error:', error);
+            return false;
+        }
+    }
+    
+    async function sendToGoogleSheets(orderData) {
+        if (!GOOGLE_SHEETS_URL) return false;
+        try {
+            await fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            return true;
+        } catch (error) {
+            console.error('❌ Google Sheets error:', error);
+            return false;
+        }
+    }
+    
+    async function processOrder(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        
+        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
+        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
+        
+        const now = new Date();
+        const timestamp = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+        
+        const orderData = {
+            name: name,
+            phone: phone,
+            product: currentProduct.name,
+            price: currentProduct.price.replace(/[^0-9]/g, ''),
+            quantity: 1,
+            timestamp: timestamp,
+            source: 'Главная страница'
+        };
+        
+        const submitBtn = document.querySelector('#orderForm .btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+        
+        await Promise.all([
+            sendToTelegram(orderData),
+            sendToGoogleSheets(orderData)
+        ]);
+        
+        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
+        
+        orderModal.classList.remove('active');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+    
+    // Рендер товаров с категориями
+    function renderProducts() {
+        let filtered = [...allProducts];
+        
+        // Категория
+        if (currentCategory !== 'all') {
+            filtered = filtered.filter(p => 
+                p.categories && p.categories.includes(currentCategory)
+            );
+        }
+        
+        // Цена
+        const minPrice = parseInt(minPriceInput.value);
+        if (!isNaN(minPrice)) filtered = filtered.filter(p => p.priceValue >= minPrice);
+        const maxPrice = parseInt(maxPriceInput.value);
+        if (!isNaN(maxPrice)) filtered = filtered.filter(p => p.priceValue <= maxPrice);
+        
+        // Сортировка
+        const sortBy = sortSelect.value;
+        if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+        if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
+        if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
+        if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
+        
+        // Показываем кнопку сброса
+        const hasMin = minPriceInput.value !== '';
+        const hasMax = maxPriceInput.value !== '';
+        const hasSort = sortSelect.value !== 'name-asc';
+        
+        if (hasMin || hasMax || hasSort) {
+            resetBtn.classList.add('show');
+        } else {
+            resetBtn.classList.remove('show');
+        }
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="empty-state">😕 პროდუქტი ვერ მოიძებნა</div>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(product => `
+            <div class="product-card">
+                <a href="/${product.id}" style="text-decoration: none; color: inherit; display: block;">
+                    <img class="product-image" src="${product.image}" alt="${product.name}" 
+                         onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
+                </a>
+                <div class="product-info">
+                    <a href="/${product.id}" style="text-decoration: none; color: inherit;">
+                        <div class="product-name">${product.name}</div>
+                    </a>
+                    <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
+                    <div class="price-and-badges">
+                        <div class="product-price">${product.price}</div>
+                        <div class="shipping-badges">
+                            <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
+                            <span class="cash-badge">💵 გადახდა მიღებისას</span>
+                            <span class="warranty-badge">🛡️ ${product.warranty || '12 месяцев'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-order" onclick='openOrderModal(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
+                        შეკვეთა
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Загрузка каталога
+    async function loadCatalog() {
+        try {
+            const res = await fetch('catalog.json');
+            if (!res.ok) throw new Error();
+            const data = await res.json();
+            allProducts = data.products.map(p => ({
+                ...p,
+                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+            }));
+            renderProducts();
+        } catch(e) {
+            container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+        }
+    }
+    
+    // Сброс всех фильтров
+    function resetAllFilters() {
+        minPriceInput.value = '';
+        maxPriceInput.value = '';
+        sortSelect.value = 'name-asc';
+        currentCategory = 'all';
+        
+        categoryBtns.forEach(btn => {
+            if (btn.dataset.category === 'all') {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        if (selectedValueSpan) {
+            selectedValueSpan.textContent = 'სახელი (ა-ჰ)';
+        }
+        
+        document.querySelectorAll('.select-option').forEach(opt => {
+            if (opt.dataset.value === 'name-asc') {
+                opt.classList.add('selected');
+            } else {
+                opt.classList.remove('selected');
+            }
+        });
+        
+        renderProducts();
+    }
+    
+    // События
+    minPriceInput.addEventListener('input', renderProducts);
+    maxPriceInput.addEventListener('input', renderProducts);
+    sortSelect.addEventListener('change', renderProducts);
+    resetBtn.addEventListener('click', resetAllFilters);
+    
+    // Категории
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = btn.dataset.category;
+            renderProducts();
+        });
+    });
+    
+    // Модалка заказа
+    closeModalBtn.addEventListener('click', () => orderModal.classList.remove('active'));
+    window.addEventListener('click', (e) => { 
+        if (e.target === orderModal) orderModal.classList.remove('active');
+    });
+    orderForm.addEventListener('submit', processOrder);
+    
+    // Кнопка наверх
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) scrollTopBtn.classList.add('show');
+        else scrollTopBtn.classList.remove('show');
+    });
+    scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    loadCatalog();
+    
+    // Кастомный селект
+    const customSelect = document.getElementById('customSortSelect');
+    const selectTrigger = document.getElementById('selectTrigger');
+    const selectOptions = document.getElementById('selectOptions');
+    const selectedValueSpan = document.getElementById('selectedValue');
+    const hiddenSelect = document.getElementById('sortSelect');
+    
+    selectTrigger.addEventListener('click', () => {
+        customSelect.classList.toggle('open');
+    });
+    
+    document.querySelectorAll('.select-option').forEach(option => {
+        option.addEventListener('click', () => {
+            const value = option.dataset.value;
+            const text = option.textContent;
+            
+            selectedValueSpan.textContent = text;
+            hiddenSelect.value = value;
+            
+            document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            
+            customSelect.classList.remove('open');
+            
+            const event = new Event('change');
+            hiddenSelect.dispatchEvent(event);
+        });
+    });
+    
+    document.addEventListener('click', (e) => {
+        if (!customSelect.contains(e.target)) {
+            customSelect.classList.remove('open');
+        }
+    });
+</script>
