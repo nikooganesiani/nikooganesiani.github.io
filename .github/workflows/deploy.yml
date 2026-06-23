@@ -3,6 +3,7 @@ name: Deploy with Secrets
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -18,39 +19,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if secrets exist
+      - name: Replace secrets in all HTML files
         run: |
-          if [ -z "${{ secrets.TELEGRAM_BOT_TOKEN }}" ]; then
-            echo "❌ TELEGRAM_BOT_TOKEN не найден!"
-            exit 1
-          fi
-          echo "✅ TELEGRAM_BOT_TOKEN найден"
+          echo "🔧 Заменяем метки во всех HTML файлах..."
           
-          if [ -z "${{ secrets.TELEGRAM_CHAT_ID }}" ]; then
-            echo "❌ TELEGRAM_CHAT_ID не найден!"
-            exit 1
-          fi
-          echo "✅ TELEGRAM_CHAT_ID найден"
-
-      - name: Replace secrets in HTML
-        run: |
-          echo "🔧 Заменяем метки в index.html..."
-          
-          # Заменяем
-          sed -i "s|___BOT_TOKEN___|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" index.html
-          sed -i "s|___CHAT_ID___|${{ secrets.TELEGRAM_CHAT_ID }}|g" index.html
-          sed -i "s|___SHEETS_URL___|${{ secrets.GOOGLE_SHEETS_URL }}|g" index.html
-          
-          # Проверяем
-          if grep -q "___BOT_TOKEN___" index.html; then
-            echo "❌ Ошибка: метка BOT_TOKEN не заменилась!"
-            exit 1
-          fi
-          if grep -q "___CHAT_ID___" index.html; then
-            echo "❌ Ошибка: метка CHAT_ID не заменилась!"
-            exit 1
-          fi
-          echo "✅ Все метки успешно заменены!"
+          # Находим все HTML файлы и заменяем в них метки
+          find . -name "*.html" -type f | while read -r file; do
+            echo "📄 Обрабатываем: $file"
+            
+            # Заменяем метки
+            sed -i "s|___BOT_TOKEN___|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" "$file"
+            sed -i "s|___CHAT_ID___|${{ secrets.TELEGRAM_CHAT_ID }}|g" "$file"
+            sed -i "s|___SHEETS_URL___|${{ secrets.GOOGLE_SHEETS_URL }}|g" "$file"
+            
+            # Проверяем, заменилось ли
+            if grep -q "___BOT_TOKEN___" "$file"; then
+              echo "❌ В $file метка BOT_TOKEN не заменилась!"
+            else
+              echo "✅ $file - OK"
+            fi
+          done
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -60,3 +48,4 @@ jobs:
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy with secrets'
