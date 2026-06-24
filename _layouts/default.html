@@ -387,42 +387,47 @@
     // 📌 ГЛОБАЛЬНЫЙ КАТАЛОГ (из catalog.json)
     // ============================================
     
-    // Очищаем перед загрузкой
     window.allProducts = [];
     
     async function loadGlobalCatalog() {
         try {
-            console.log('📥 Загружаем catalog.json...');
             const res = await fetch('/catalog.json');
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
             
-            // ===== ЗАПОЛНЯЕМ ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ =====
             window.allProducts = data.products.map(p => ({
                 ...p,
                 priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
             }));
             
             console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
-            console.log('📦 window.allProducts:', window.allProducts);
             
-            // Триггерим событие
+            // 1. Триггерим событие для всех страниц
             document.dispatchEvent(new CustomEvent('catalogLoaded', { 
                 detail: window.allProducts 
             }));
             
-            // Вызываем рендер, если есть
+            // 2. Если есть глобальная функция рендера — вызываем
             if (typeof window.renderProducts === 'function') {
-                console.log('🔄 Вызываем window.renderProducts()');
                 window.renderProducts();
+            }
+            
+            // 3. Если есть контейнер на странице — рендерим через DOM-событие
+            const container = document.getElementById('catalogContainer');
+            if (container && typeof renderProducts === 'function') {
+                renderProducts();
             }
             
         } catch (e) {
             console.error('❌ Ошибка загрузки каталога:', e);
+            const container = document.getElementById('catalogContainer');
+            if (container) {
+                container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+            }
         }
     }
     
-    // Загружаем сразу
+    // Загружаем сразу после DOM
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', loadGlobalCatalog);
     } else {
