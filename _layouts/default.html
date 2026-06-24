@@ -221,7 +221,11 @@
                     document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
                 }).catch(e => console.error(e));
             };
-            document.onclick = e => { if (!s.contains(e.target) && !r.contains(e.target)) r.classList.remove(''); };
+            document.onclick = e => { 
+    if (!s.contains(e.target) && !r.contains(e.target)) {
+        r.classList.remove('show');
+    }
+};
         })();
 
         // ========== КРЕСТИК ДЛЯ ОЧИСТКИ ПОИСКА ==========
