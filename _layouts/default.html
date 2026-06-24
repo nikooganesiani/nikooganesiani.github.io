@@ -159,120 +159,122 @@
     </div>
 
     <!-- ===== СКРИПТЫ (общие для всех страниц) ===== -->
-    <script>
-        // ========== АНИМАЦИЯ ПЛЕЙСХОЛДЕРА ==========
-        const s = document.getElementById('searchInput');
-        const ic = document.querySelector('.search-icon');
-        const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
-        let wi = 0, ci = 0, del = 0, to = null, act = 1;
-        const tp = () => {
-            if (!s || !act) return;
-            let cw = w[wi];
-            if (del) {
-                ci--;
-                s.placeholder = cw.substring(0, ci);
-                if (ci === 0) { del = 0; wi = (wi + 1) % w.length; to = setTimeout(tp, 500); }
-                else to = setTimeout(tp, 50);
-            } else {
-                ci++;
-                s.placeholder = cw.substring(0, ci);
-                if (ci === cw.length) { del = 1; to = setTimeout(tp, 2000); }
-                else to = setTimeout(tp, 100);
-            }
-        };
-        tp();
-        s.oninput = function() {
-            if (this.value.length) {
-                if (act) { act = 0; clearTimeout(to); s.placeholder = ''; }
-                ic.classList.add('rotated');
-            } else {
-                ic.classList.remove('rotated');
-                if (!act) {
-                    if (s.placeholder === '') { del = 0; ci = 0; }
-                    act = 1;
-                    tp();
-                }
-            }
-        };
-
-        // ========== МОДАЛКА КОНСУЛЬТАЦИИ ==========
-        const consultModal = document.getElementById('consultModal');
-        const closeConsultBtn = document.getElementById('closeConsultModal');
-        const consultBtn = document.getElementById('consultBtnHeader');
-        consultBtn.onclick = () => consultModal.classList.add('active');
-        closeConsultBtn.onclick = () => consultModal.classList.remove('active');
-
-// ========== ПОИСК ПО КАТАЛОГУ ==========
-(function() {
-    let s = document.getElementById('searchInput');
-    let ic = document.querySelector('.search-icon');
-    let r = document.createElement('div');
-    if (!s) return;
-    r.className = 'search-results';
-    s.parentNode.appendChild(r);
-    
+<script>
+    // ========== АНИМАЦИЯ ПЛЕЙСХОЛДЕРА ==========
+    const s = document.getElementById('searchInput');
+    const ic = document.querySelector('.search-icon');
+    const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
+    let wi = 0, ci = 0, del = 0, to = null, act = 1;
+    const tp = () => {
+        if (!s || !act) return;
+        let cw = w[wi];
+        if (del) {
+            ci--;
+            s.placeholder = cw.substring(0, ci);
+            if (ci === 0) { del = 0; wi = (wi + 1) % w.length; to = setTimeout(tp, 500); }
+            else to = setTimeout(tp, 50);
+        } else {
+            ci++;
+            s.placeholder = cw.substring(0, ci);
+            if (ci === cw.length) { del = 1; to = setTimeout(tp, 2000); }
+            else to = setTimeout(tp, 100);
+        }
+    };
+    tp();
     s.oninput = function() {
-        let q = this.value.trim();
-        if (q.length > 0) { 
-            ic && ic.classList.add('rotated'); 
-        } else { 
-            ic && ic.classList.remove('rotated'); 
-        }
-        if (!q) { 
-            r.innerHTML = ''; 
-            r.classList.remove('show'); 
-            return; 
-        }
-        fetch('/catalog.json').then(res => res.json()).then(d => {
-            let f = d.products.filter(p => 
-                p.name.toLowerCase().includes(q.toLowerCase()) || 
-                (p.description && p.description.toLowerCase().includes(q.toLowerCase()))
-            );
-            r.innerHTML = f.length ? 
-                f.map(p => `<div class="search-result-item" data-id="${p.id}"><img src="${p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div><div>${p.name}</div><div style="font-weight:700;color:#2563eb">${p.price}</div></div></div>`).join('') : 
-                '<div class="search-result-item">😕 ვერაფერი მოიძებნა</div>';
-            r.classList.add('show');
-            document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
-        }).catch(e => console.error(e));
-    };
-    
-    document.onclick = function(e) { 
-        if (!s.contains(e.target) && !r.contains(e.target)) {
-            r.classList.remove('show');
+        if (this.value.length) {
+            if (act) { act = 0; clearTimeout(to); s.placeholder = ''; }
+            ic.classList.add('rotated');
+        } else {
+            ic.classList.remove('rotated');
+            if (!act) {
+                if (s.placeholder === '') { del = 0; ci = 0; }
+                act = 1;
+                tp();
+            }
         }
     };
-})();
 
-        // ========== КРЕСТИК ДЛЯ ОЧИСТКИ ПОИСКА ==========
-        (function() {
-            let inp = document.getElementById('searchInput');
-            let clr = document.querySelector('.search-clear');
-            if (!inp || !clr) return;
-            inp.addEventListener('input', function() {
-                if (this.value.length > 0) { clr.classList.add('show'); } else { clr.classList.remove('show'); }
-            });
-            clr.onclick = function() {
-                inp.value = '';
-                inp.focus();
-                clr.classList.remove('show');
-                inp.dispatchEvent(new Event('input'));
-            };
-        })();
+    // ========== МОДАЛКА КОНСУЛЬТАЦИИ ==========
+    const consultModal = document.getElementById('consultModal');
+    const closeConsultBtn = document.getElementById('closeConsultModal');
+    const consultBtn = document.getElementById('consultBtnHeader');
+    if (consultBtn) {
+        consultBtn.onclick = () => consultModal.classList.add('active');
+    }
+    if (closeConsultBtn) {
+        closeConsultBtn.onclick = () => consultModal.classList.remove('active');
+    }
 
-        // ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
-        const trackingBtn = document.getElementById('trackingBtnHeader');
-if (trackingBtn) {
-    trackingBtn.addEventListener('click', ...);
-}
-        const trackingModal = document.getElementById('trackingModal');
-        const closeTrackingBtn = document.getElementById('closeTrackingModal');
-        const trackingOrderId = document.getElementById('trackingOrderId');
-        const trackingCheckBtn = document.getElementById('trackingCheckBtn');
-        const trackingResult = document.getElementById('trackingResult');
-        const trackingLoading = document.getElementById('trackingLoading');
+    // ========== ПОИСК ПО КАТАЛОГУ ==========
+    (function() {
+        let s = document.getElementById('searchInput');
+        let ic = document.querySelector('.search-icon');
+        let r = document.createElement('div');
+        if (!s) return;
+        r.className = 'search-results';
+        s.parentNode.appendChild(r);
+        
+        s.oninput = function() {
+            let q = this.value.trim();
+            if (q.length > 0) { 
+                ic && ic.classList.add('rotated'); 
+            } else { 
+                ic && ic.classList.remove('rotated'); 
+            }
+            if (!q) { 
+                r.innerHTML = ''; 
+                r.classList.remove('show'); 
+                return; 
+            }
+            fetch('/catalog.json').then(res => res.json()).then(d => {
+                let f = d.products.filter(p => 
+                    p.name.toLowerCase().includes(q.toLowerCase()) || 
+                    (p.description && p.description.toLowerCase().includes(q.toLowerCase()))
+                );
+                r.innerHTML = f.length ? 
+                    f.map(p => `<div class="search-result-item" data-id="${p.id}"><img src="${p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div><div>${p.name}</div><div style="font-weight:700;color:#2563eb">${p.price}</div></div></div>`).join('') : 
+                    '<div class="search-result-item">😕 ვერაფერი მოიძებნა</div>';
+                r.classList.add('show');
+                document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
+            }).catch(e => console.error(e));
+        };
+        
+        document.onclick = function(e) { 
+            if (!s.contains(e.target) && !r.contains(e.target)) {
+                r.classList.remove('show');
+            }
+        };
+    })();
 
-        const WORKER_URL = 'https://easyway-tracker.niko-oganesiani.workers.dev';
+    // ========== КРЕСТИК ДЛЯ ОЧИСТКИ ПОИСКА ==========
+    (function() {
+        let inp = document.getElementById('searchInput');
+        let clr = document.querySelector('.search-clear');
+        if (!inp || !clr) return;
+        inp.addEventListener('input', function() {
+            if (this.value.length > 0) { clr.classList.add('show'); } else { clr.classList.remove('show'); }
+        });
+        clr.onclick = function() {
+            inp.value = '';
+            inp.focus();
+            clr.classList.remove('show');
+            inp.dispatchEvent(new Event('input'));
+        };
+    })();
 
+    // ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
+    const trackingBtn = document.getElementById('trackingBtnHeader');
+    const trackingModal = document.getElementById('trackingModal');
+    const closeTrackingBtn = document.getElementById('closeTrackingModal');
+    const trackingOrderId = document.getElementById('trackingOrderId');
+    const trackingCheckBtn = document.getElementById('trackingCheckBtn');
+    const trackingResult = document.getElementById('trackingResult');
+    const trackingLoading = document.getElementById('trackingLoading');
+
+    const WORKER_URL_TRACKING = 'https://easyway-tracker.niko-oganesiani.workers.dev';
+
+    if (trackingBtn && trackingModal && closeTrackingBtn) {
         trackingBtn.addEventListener('click', () => {
             trackingModal.classList.add('active');
             trackingOrderId.value = '';
@@ -299,7 +301,7 @@ if (trackingBtn) {
             trackingCheckBtn.disabled = true;
             trackingCheckBtn.textContent = '⏳ იტვირთება...';
             try {
-                const response = await fetch(WORKER_URL, {
+                const response = await fetch(WORKER_URL_TRACKING, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ order_id: orderId })
@@ -395,12 +397,13 @@ if (trackingBtn) {
         trackingOrderId.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') trackingCheckBtn.click();
         });
-            // Глобальная настройка для всех страниц
+    }
+
+    // ========== ГЛОБАЛЬНАЯ НАСТРОЙКА WORKER_URL ==========
     if (typeof window.WORKER_URL === 'undefined') {
         window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
     }
     console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
-    });
-    </script>
+</script>
 </body>
 </html>
