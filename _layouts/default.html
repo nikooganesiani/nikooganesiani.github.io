@@ -378,6 +378,44 @@
         window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
     }
     console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
+
+            // ============================================
+    // 📌 ГЛОБАЛЬНЫЙ КАТАЛОГ (из catalog.json)
+    // ============================================
+    
+    let allProducts = [];
+    
+    // Загружаем каталог один раз для всех страниц
+    async function loadGlobalCatalog() {
+        try {
+            const res = await fetch('/catalog.json');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+            allProducts = data.products.map(p => ({
+                ...p,
+                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+            }));
+            console.log('✅ Каталог загружен, товаров:', allProducts.length);
+            
+            // Если на странице есть функция renderProducts — вызываем её
+            if (typeof window.renderProducts === 'function') {
+                window.renderProducts();
+            }
+            
+            // Триггерим событие для других скриптов
+            document.dispatchEvent(new CustomEvent('catalogLoaded', { detail: allProducts }));
+            
+        } catch (e) {
+            console.error('❌ Ошибка загрузки каталога:', e);
+        }
+    }
+    
+    // Делаем глобально доступным
+    window.allProducts = allProducts;
+    window.loadGlobalCatalog = loadGlobalCatalog;
+    
+    // Загружаем сразу
+    document.addEventListener('DOMContentLoaded', loadGlobalCatalog);
     </script>
 
 </body>
