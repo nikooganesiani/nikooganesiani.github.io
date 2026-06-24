@@ -576,7 +576,10 @@ title: "მთავარი"
 <div class="scroll-top" id="scrollTop">⬆️</div>
 
 <script>
-    let allProducts = [];
+    // ============================================
+    // 📌 ГЛАВНАЯ СТРАНИЦА — каталог и заказы
+    // ============================================
+
     let currentProduct = null;
     let currentCategory = 'all';
     
@@ -592,74 +595,11 @@ title: "მთავარი"
     const orderForm = document.getElementById('orderForm');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
-    // Открыть модалку с товаром
-    function openOrderModal(product) {
-        currentProduct = product;
-        const modalProductDiv = document.getElementById('modalProductInfo');
-        modalProductDiv.innerHTML = `
-            <img src="${product.image}" onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
-            <div style="font-weight:600; margin-top:0.5rem;">${product.name}</div>
-            <div style="font-size:1.2rem; font-weight:700; color:#2563eb; margin-top:0.3rem;">${product.price}</div>
-        `;
-        document.getElementById('customerName').value = '';
-        document.getElementById('customerPhone').value = '';
-        orderModal.classList.add('active');
-    }
-    
-    // Обработка заказа
-    async function processOrder(event) {
-        event.preventDefault();
-        
-        const name = document.getElementById('customerName').value.trim();
-        const phone = document.getElementById('customerPhone').value.trim();
-        
-        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
-        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
-        
-        const now = new Date();
-        const timestamp = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-        
-        const orderData = {
-            name: name,
-            phone: phone,
-            product: currentProduct.name,
-            price: currentProduct.price,
-            source: 'Главная страница',
-            timestamp: timestamp
-        };
-        
-        const submitBtn = document.querySelector('#orderForm .btn-submit');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-        
-        try {
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-            
-            if (response.ok) {
-                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
-                orderModal.classList.remove('active');
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка сети:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-        
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-    
-    // Рендер товаров
+    // ===== РЕНДЕР ТОВАРОВ (использует глобальный allProducts) =====
     function renderProducts() {
-        let filtered = [...allProducts];
+        const products = window.allProducts || [];
+        
+        let filtered = [...products];
         
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => 
@@ -720,23 +660,72 @@ title: "მთავარი"
         `).join('');
     }
     
-    // Загрузка каталога
-    async function loadCatalog() {
-        try {
-            const res = await fetch('catalog.json');
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            allProducts = data.products.map(p => ({
-                ...p,
-                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
-            }));
-            renderProducts();
-        } catch(e) {
-            container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
-        }
+    // ===== ОТКРЫТИЕ МОДАЛКИ =====
+    function openOrderModal(product) {
+        currentProduct = product;
+        const modalProductDiv = document.getElementById('modalProductInfo');
+        modalProductDiv.innerHTML = `
+            <img src="${product.image}" onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
+            <div style="font-weight:600; margin-top:0.5rem;">${product.name}</div>
+            <div style="font-size:1.2rem; font-weight:700; color:#2563eb; margin-top:0.3rem;">${product.price}</div>
+        `;
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        orderModal.classList.add('active');
     }
     
-    // Сброс фильтров
+    // ===== ОТПРАВКА ЗАКАЗА =====
+    async function processOrder(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        
+        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
+        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
+        
+        const now = new Date();
+        const timestamp = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+        
+        const orderData = {
+            name: name,
+            phone: phone,
+            product: currentProduct.name,
+            price: currentProduct.price,
+            source: 'Главная страница',
+            timestamp: timestamp
+        };
+        
+        const submitBtn = document.querySelector('#orderForm .btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            
+            if (response.ok) {
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
+                orderModal.classList.remove('active');
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+        
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+    
+    // ===== СБРОС ФИЛЬТРОВ =====
     function resetAllFilters() {
         minPriceInput.value = '';
         maxPriceInput.value = '';
@@ -767,7 +756,7 @@ title: "მთავარი"
         renderProducts();
     }
     
-    // События
+    // ===== СОБЫТИЯ =====
     minPriceInput.addEventListener('input', renderProducts);
     maxPriceInput.addEventListener('input', renderProducts);
     sortSelect.addEventListener('change', renderProducts);
@@ -794,9 +783,18 @@ title: "მთავარი"
     });
     scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-    loadCatalog();
+    // ===== ЗАГРУЗКА КАТАЛОГА =====
+    // Ждём загрузки каталога из default.html
+    document.addEventListener('catalogLoaded', function(e) {
+        renderProducts();
+    });
     
-    // Кастомный селект
+    // Если каталог уже загружен — рендерим сразу
+    if (window.allProducts && window.allProducts.length > 0) {
+        renderProducts();
+    }
+    
+    // ===== КАСТОМНЫЙ СЕЛЕКТ =====
     const customSelect = document.getElementById('customSortSelect');
     const selectTrigger = document.getElementById('selectTrigger');
     const selectOptions = document.getElementById('selectOptions');
