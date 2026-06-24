@@ -16,7 +16,7 @@ title: "ჭკვიანი სასწორი"
     <!-- Скрытые поля с данными о товаре -->
     <input type="hidden" name="product" value="SmartBalance Pro">
     <input type="hidden" name="price" value="44">
-    <input type="hidden" name="product_id" value="12345">
+    <input type="hidden" name="product_id" value="SmartBalance Pro">
     
     <button type="submit" class="btn">👉 შეკვეთა</button>
 </form>
@@ -559,95 +559,101 @@ title: "ჭკვიანი სასწორი"
 </style>
 
 <script>
-    // ================================================================
-    //  УНИВЕРСАЛЬНАЯ ФОРМА ДЛЯ ЛЮБЫХ ТОВАРОВ
-    //  Отправляет данные в Cloudflare Worker → Telegram
-    //  Токен хранится в Cloudflare, в коде его нет
-    // ================================================================
+// ================================================================
+//  УНИВЕРСАЛЬНАЯ ФОРМА ДЛЯ ЛЮБЫХ ТОВАРОВ
+//  Отправляет данные в Cloudflare Worker → Telegram
+//  Токен хранится в Cloudflare, в коде его нет
+// ================================================================
 
-    async function processOrder(event, nameId, phoneId) {
-        event.preventDefault();
+async function processOrder(event, nameId, phoneId) {
+    event.preventDefault();
 
-        const name = document.getElementById(nameId).value.trim();
-        const phone = document.getElementById(phoneId).value.trim();
+    const name = document.getElementById(nameId).value.trim();
+    const phone = document.getElementById(phoneId).value.trim();
 
-        if (!name) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-            return false;
-        }
-        if (!phone) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.");
-            return false;
-        }
-
-        // Берём форму и собираем все данные (включая скрытые поля)
-        const form = event.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        // Добавляем имя и телефон (на случай, если они не в formData)
-        data.name = name;
-        data.phone = phone;
-
-        // Блокируем кнопку
-        const submitBtn = event.target.querySelector('.btn');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-
-        try {
-            // ===== ИСПОЛЬЗУЕМ ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ =====
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                alert(
-                    `✨ მადლობა, ${name}! ` +
-                    `თქვენი შეკვეთა მიღებულია. ` +
-                    `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`
-                );
-                // Очищаем поля
-                document.getElementById(nameId).value = "";
-                document.getElementById(phoneId).value = "";
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка сети:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-
-        // Разблокируем кнопку
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+    if (!name) {
+        alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+        return false;
+    }
+    if (!phone) {
+        alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.");
+        return false;
     }
 
-    // Подключаем обработчики ко всем формам на странице
-    document.addEventListener('DOMContentLoaded', function() {
-        const formTop = document.getElementById('orderFormTop');
-        const formBottom = document.getElementById('orderFormBottom');
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    data.name = name;
+    data.phone = phone;
 
-        if (formTop) {
-            formTop.addEventListener('submit', function(e) {
-                processOrder(e, 'nameTop', 'phoneTop');
+    // 🔥 БЕРЁМ ДАННЫЕ О ТОВАРЕ ИЗ ФОРМЫ
+    const productId = data.product_id;
+    const productName = data.product;
+    const productPrice = parseFloat(data.price);
+
+    const submitBtn = event.target.querySelector('.btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = "⏳ იგზავნება...";
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(window.WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            // ✅ ОТПРАВЛЯЕМ PURCHASE С ДАННЫМИ ИЗ ФОРМЫ
+            fbq('track', 'Purchase', {
+                content_ids: [productId],
+                currency: 'GEL',
+                value: productPrice,
+                content_name: productName
             });
-        } else {
-            console.warn('⚠️ Форма #orderFormTop не найдена');
-        }
 
-        if (formBottom) {
-            formBottom.addEventListener('submit', function(e) {
-                processOrder(e, 'nameBottom', 'phoneBottom');
-            });
+            alert(
+                `✨ მადლობა, ${name}! ` +
+                `თქვენი შეკვეთა მიღებულია. ` +
+                `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`
+            );
+            document.getElementById(nameId).value = "";
+            document.getElementById(phoneId).value = "";
         } else {
-            console.warn('⚠️ Форма #orderFormBottom не найдена');
+            const errorText = await response.text();
+            console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+            alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
         }
+    } catch (error) {
+        console.error('❌ Ошибка сети:', error);
+        alert('❌ Ошибка сети. Проверьте подключение.');
+    }
 
-        console.log('✅ Бот готов к приёму заказов');
-    });
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+}
+
+// Подключаем обработчики ко всем формам на странице
+document.addEventListener('DOMContentLoaded', function() {
+    const formTop = document.getElementById('orderFormTop');
+    const formBottom = document.getElementById('orderFormBottom');
+
+    if (formTop) {
+        formTop.addEventListener('submit', function(e) {
+            processOrder(e, 'nameTop', 'phoneTop');
+        });
+    } else {
+        console.warn('⚠️ Форма #orderFormTop не найдена');
+    }
+
+    if (formBottom) {
+        formBottom.addEventListener('submit', function(e) {
+            processOrder(e, 'nameBottom', 'phoneBottom');
+        });
+    } else {
+        console.warn('⚠️ Форма #orderFormBottom не найдена');
+    }
+
+    console.log('✅ Бот готов к приёму заказов');
+});
 </script>
