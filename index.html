@@ -579,8 +579,7 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
     // ============================================
     // 📌 URL Cloudflare Worker (токены там!)
     // ============================================
-    if (typeof WORKER_URL === 'undefined') {
-    const WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+    fetch(window.WORKER_URL, { ... })
     
     let allProducts = [];
     let currentProduct = null;
