@@ -549,40 +549,29 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 </style>
 
 <script>
-    // ============================================================
-    //  ОТПРАВКА ЗАКАЗА ЧЕРЕЗ GITHUB ACTIONS (repository_dispatch)
-    //  Токен подставляется через deploy.yml, в коде его НЕТ.
-    // ============================================================
-
     async function processOrder(event, nameId, phoneId) {
         event.preventDefault();
-
+        
         const name = document.getElementById(nameId).value.trim();
         const phone = document.getElementById(phoneId).value.trim();
-
-        if (!name) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-            return false;
-        }
-        if (!phone) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.");
-            return false;
-        }
-
+        
+        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return false; }
+        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return false; }
+        
         const submitBtn = event.target.querySelector('.btn');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = "⏳ იგზავნება...";
         submitBtn.disabled = true;
-
+        
         try {
+            // Отправка в GitHub Actions БЕЗ токена!
             const response = await fetch(
                 'https://api.github.com/repos/nikooganesiani/nikooganesiani.github.io/dispatches',
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Authorization': 'token ___GH_TOKEN___'
+                        'Accept': 'application/vnd.github.v3+json'
                     },
                     body: JSON.stringify({
                         event_type: 'new-order',
@@ -593,49 +582,27 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
                     })
                 }
             );
-
+            
             if (response.ok) {
-                alert(
-                    `✨ მადლობა, ${name}! ` +
-                    `თქვენი შეკვეთა მიღებულია. ` +
-                    `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`
-                );
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
                 document.getElementById(nameId).value = "";
                 document.getElementById(phoneId).value = "";
             } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от GitHub:', response.status, errorText);
+                const errorData = await response.json();
+                console.error('❌ Ошибка:', errorData);
                 alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
             }
         } catch (error) {
             console.error('❌ Ошибка сети:', error);
             alert('❌ Ошибка сети. Проверьте подключение.');
         }
-
+        
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
-
+    
     document.addEventListener('DOMContentLoaded', function() {
-        const formTop = document.getElementById('orderFormTop');
-        const formBottom = document.getElementById('orderFormBottom');
-
-        if (formTop) {
-            formTop.addEventListener('submit', function(e) {
-                processOrder(e, 'nameTop', 'phoneTop');
-            });
-        } else {
-            console.warn('⚠️ Форма #orderFormTop не найдена');
-        }
-
-        if (formBottom) {
-            formBottom.addEventListener('submit', function(e) {
-                processOrder(e, 'nameBottom', 'phoneBottom');
-            });
-        } else {
-            console.warn('⚠️ Форма #orderFormBottom не найдена');
-        }
-
-        console.log('✅ Бот готов к приёму заказов');
+        document.getElementById('orderFormTop')?.addEventListener('submit', (e) => processOrder(e, 'nameTop', 'phoneTop'));
+        document.getElementById('orderFormBottom')?.addEventListener('submit', (e) => processOrder(e, 'nameBottom', 'phoneBottom'));
     });
 </script>
