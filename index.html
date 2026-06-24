@@ -783,16 +783,31 @@ title: "მთავარი"
     });
     scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-    // ===== ЗАГРУЗКА КАТАЛОГА =====
-    // Ждём загрузки каталога из default.html
-    document.addEventListener('catalogLoaded', function(e) {
-        renderProducts();
-    });
+// ===== ЗАГРУЗКА КАТАЛОГА =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📥 Загружаем catalog.json...');
     
-    // Если каталог уже загружен — рендерим сразу
-    if (window.allProducts && window.allProducts.length > 0) {
-        renderProducts();
-    }
+    fetch('/catalog.json')
+        .then(res => {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .then(data => {
+            window.allProducts = data.products.map(p => ({
+                ...p,
+                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+            }));
+            console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
+            
+            // Рендерим товары
+            renderProducts();
+        })
+        .catch(e => {
+            console.error('❌ Ошибка загрузки каталога:', e);
+            container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+        });
+});
+
     
     // ===== КАСТОМНЫЙ СЕЛЕКТ =====
     const customSelect = document.getElementById('customSortSelect');
