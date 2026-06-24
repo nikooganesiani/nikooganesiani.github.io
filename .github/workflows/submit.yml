@@ -14,16 +14,18 @@ jobs:
             https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
             -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
             -d text="🆕 НОВЫЙ ЗАКАЗ!%0A%0A👤 Имя: ${{ github.event.client_payload.name }}%0A📞 Телефон: ${{ github.event.client_payload.phone }}%0A📦 Товар: SmartBalance Pro%0A💰 Цена: 44 ₾"
-      
-      - name: Отправить в Google Sheets
+
+      - name: Отправить в Google Sheets (если настроен)
         run: |
-          curl -s -X POST \
-            "${{ secrets.GOOGLE_SHEETS_URL }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "name": "${{ github.event.client_payload.name }}",
-              "phone": "${{ github.event.client_payload.phone }}",
-              "product": "SmartBalance Pro",
-              "price": "44",
-              "timestamp": "$(date '+%d.%m.%Y %H:%M:%S')"
-            }'
+          if [ -n "${{ secrets.GOOGLE_SHEETS_URL }}" ]; then
+            curl -s -X POST \
+              "${{ secrets.GOOGLE_SHEETS_URL }}" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "name": "${{ github.event.client_payload.name }}",
+                "phone": "${{ github.event.client_payload.phone }}",
+                "product": "SmartBalance Pro",
+                "price": "44",
+                "timestamp": "$(date '+%d.%m.%Y %H:%M:%S')"
+              }'
+          fi
