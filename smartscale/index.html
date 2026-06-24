@@ -15,7 +15,7 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
     
     <!-- Скрытые поля с данными о товаре -->
     <input type="hidden" name="product" value="SmartBalance Pro">
-    <input type="hidden" name="price" value="44 ₾">
+    <input type="hidden" name="price" value="44">
     <input type="hidden" name="product_id" value="12345">
     
     <button type="submit" class="btn">👉 შეკვეთა</button>
@@ -182,12 +182,17 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 <div class="card" id="order-bottom">
     <h3 style="font-size: 1.6rem; margin-bottom: 6px; text-align: center;">🎯 შეუკვეთეთ 44 ლარად</h3>
     <p style="text-align: center; margin-bottom: 18px;">მხოლოდ 9 ცალი შეზღუდული რაოდენობით | 8 პროფილი ოჯახისთვის</p>
-    <form class="order-form" id="orderFormBottom" style="margin-top: 16px;">
-        <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
-        <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneBottom">
-        <button type="submit" class="btn">👉 შეკვეთა</button>
-        <div class="text-center" style="margin-top: 12px; font-size:0.75rem;">✅ უფასო მიტანა | გადახდა მიღებისას</div>
-    </form>
+        <form class="order-form" id="orderFormBottom">
+    <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
+    <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneBottom">
+    
+    <!-- Скрытые поля с данными о товаре -->
+    <input type="hidden" name="product" value="SmartBalance Pro">
+    <input type="hidden" name="price" value="44">
+    <input type="hidden" name="product_id" value="12345">
+    
+    <button type="submit" class="btn">👉 შეკვეთა</button>
+</form>
 </div>
 
 </div>
