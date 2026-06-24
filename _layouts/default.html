@@ -202,31 +202,46 @@
         consultBtn.onclick = () => consultModal.classList.add('active');
         closeConsultBtn.onclick = () => consultModal.classList.remove('active');
 
-        // ========== ПОИСК ПО КАТАЛОГУ ==========
-        (function() {
-            let s = document.getElementById('searchInput'),
-                ic = document.querySelector('.search-icon'),
-                r = document.createElement('div');
-            if (!s) return;
-            r.className = 'search-results';
-            s.parentNode.appendChild(r);
-            s.oninput = function() {
-                let q = this.value.trim();
-                if (q.length > 0) { ic && ic.classList.add('rotated'); } else { ic && ic.classList.remove('rotated'); }
-                if (!q) { r.innerHTML = ''; r.classList.remove('show'); return; }
-                fetch('/catalog.json').then(res => res.json()).then(d => {
-                    let f = d.products.filter(p => p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())));
-                    r.innerHTML = f.length ? f.map(p => `<div class="search-result-item" data-id="${p.id}"><img src="${p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div><div>${p.name}</div><div style="font-weight:700;color:#2563eb">${p.price}</div></div></div>`).join('') : '<div class="search-result-item">😕 ვერაფერი მოიძებნა</div>';
-                    r.classList.add('show');
-                    document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
-                }).catch(e => console.error(e));
-            };
-            document.onclick = e => { 
-    if (!s.contains(e.target) && !r.contains(e.target)) {
-        r.classList.remove('show');
-    }
-};
-        })();
+// ========== ПОИСК ПО КАТАЛОГУ ==========
+(function() {
+    let s = document.getElementById('searchInput');
+    let ic = document.querySelector('.search-icon');
+    let r = document.createElement('div');
+    if (!s) return;
+    r.className = 'search-results';
+    s.parentNode.appendChild(r);
+    
+    s.oninput = function() {
+        let q = this.value.trim();
+        if (q.length > 0) { 
+            ic && ic.classList.add('rotated'); 
+        } else { 
+            ic && ic.classList.remove('rotated'); 
+        }
+        if (!q) { 
+            r.innerHTML = ''; 
+            r.classList.remove('show'); 
+            return; 
+        }
+        fetch('/catalog.json').then(res => res.json()).then(d => {
+            let f = d.products.filter(p => 
+                p.name.toLowerCase().includes(q.toLowerCase()) || 
+                (p.description && p.description.toLowerCase().includes(q.toLowerCase()))
+            );
+            r.innerHTML = f.length ? 
+                f.map(p => `<div class="search-result-item" data-id="${p.id}"><img src="${p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div><div>${p.name}</div><div style="font-weight:700;color:#2563eb">${p.price}</div></div></div>`).join('') : 
+                '<div class="search-result-item">😕 ვერაფერი მოიძებნა</div>';
+            r.classList.add('show');
+            document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
+        }).catch(e => console.error(e));
+    };
+    
+    document.onclick = function(e) { 
+        if (!s.contains(e.target) && !r.contains(e.target)) {
+            r.classList.remove('show');
+        }
+    };
+})();
 
         // ========== КРЕСТИК ДЛЯ ОЧИСТКИ ПОИСКА ==========
         (function() {
@@ -246,6 +261,9 @@
 
         // ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
         const trackingBtn = document.getElementById('trackingBtnHeader');
+if (trackingBtn) {
+    trackingBtn.addEventListener('click', ...);
+}
         const trackingModal = document.getElementById('trackingModal');
         const closeTrackingBtn = document.getElementById('closeTrackingModal');
         const trackingOrderId = document.getElementById('trackingOrderId');
