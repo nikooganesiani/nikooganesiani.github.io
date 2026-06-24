@@ -1,191 +1,173 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>კონფიდენციალურობის პოლიტიკა</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" href="/favicon.ico">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+---
+layout: default
+title: "კონფიდენციალურობის პოლიტიკა"
+---
 
-    body {
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: linear-gradient(145deg, #f3f6fc 0%, #eef2f8 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-
+<style>
+    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
+    
     .privacy-card {
-      max-width: 880px;
-      width: 100%;
-      background: white;
-      border-radius: 32px;
-      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+        max-width: 880px;
+        width: 100%;
+        margin: 0 auto;  /* ← центрируем по горизонтали */
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .privacy-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.15);
     }
 
     .card-header {
-      background: white;
-      padding: 32px 36px 16px 36px;
-      border-bottom: 1px solid #e9edf2;
+        background: white;
+        padding: 32px 36px 16px 36px;
+        border-bottom: 1px solid #e9edf2;
     }
 
     .card-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      margin-bottom: 8px;
+        font-size: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        margin-bottom: 8px;
     }
 
     .update-date {
-      color: #7e8c9e;
-      font-size: 0.85rem;
-      margin-top: 8px;
+        color: #7e8c9e;
+        font-size: 0.85rem;
+        margin-top: 8px;
     }
 
     .card-content {
-      padding: 28px 36px 36px 36px;
+        padding: 28px 36px 36px 36px;
     }
 
     .card-content h2 {
-      font-size: 1.4rem;
-      font-weight: 600;
-      margin: 1.8em 0 0.5em 0;
-      color: #1e2f3c;
-      letter-spacing: -0.01em;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 1.8em 0 0.5em 0;
+        color: #1e2f3c;
+        letter-spacing: -0.01em;
     }
 
     .card-content h2:first-of-type {
-      margin-top: 0;
+        margin-top: 0;
     }
 
     .card-content p {
-      line-height: 1.55;
-      color: #2c3f4f;
-      margin-bottom: 1.1em;
-      font-size: 1rem;
+        line-height: 1.55;
+        color: #2c3f4f;
+        margin-bottom: 1.1em;
+        font-size: 1rem;
     }
 
     .card-content ul {
-      margin: 0.75em 0 1.2em 1.8em;
-      color: #2c3f4f;
-      line-height: 1.5;
+        margin: 0.75em 0 1.2em 1.8em;
+        color: #2c3f4f;
+        line-height: 1.5;
     }
 
     .card-content li {
-      margin: 0.4em 0;
+        margin: 0.4em 0;
     }
 
     .info-note {
-      background: #f0f4f9;
-      border-left: 4px solid #3b82f6;
-      padding: 16px 22px;
-      border-radius: 18px;
-      margin: 28px 0 20px 0;
-      font-size: 0.95rem;
+        background: #f0f4f9;
+        border-left: 4px solid #3b82f6;
+        padding: 16px 22px;
+        border-radius: 18px;
+        margin: 28px 0 20px 0;
+        font-size: 0.95rem;
     }
 
     .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #f0f4f9;
-      padding: 10px 24px;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 500;
-      color: #1f3a4b;
-      transition: all 0.2s;
-      margin-top: 28px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f0f4f9;
+        padding: 10px 24px;
+        border-radius: 60px;
+        text-decoration: none;
+        font-weight: 500;
+        color: #1f3a4b;
+        transition: all 0.2s;
+        margin-top: 28px;
     }
 
     .back-link:hover {
-      background: #e4eaf1;
-      transform: translateX(-4px);
-      gap: 12px;
+        background: #e4eaf1;
+        transform: translateX(-4px);
+        gap: 12px;
     }
 
     .card-footer {
-      background: #fafcff;
-      padding: 20px 36px 32px 36px;
-      border-top: 1px solid #eef2f8;
-      font-size: 0.8rem;
-      color: #8a99aa;
-      text-align: center;
+        background: #fafcff;
+        padding: 20px 36px 32px 36px;
+        border-top: 1px solid #eef2f8;
+        font-size: 0.8rem;
+        color: #8a99aa;
+        text-align: center;
     }
 
     @media (max-width: 600px) {
-      body {
-        padding: 20px 16px;
-      }
-      .card-header {
-        padding: 24px 24px 12px 24px;
-      }
-      .card-header h1 {
-        font-size: 1.6rem;
-      }
-      .card-content {
-        padding: 20px 24px 28px 24px;
-      }
-      .card-footer {
-        padding: 18px 24px 24px 24px;
-      }
-      .back-link {
-        padding: 8px 20px;
-      }
+        .privacy-card {
+            margin: 0;
+            border-radius: 20px;
+        }
+        .card-header {
+            padding: 24px 24px 12px 24px;
+        }
+        .card-header h1 {
+            font-size: 1.6rem;
+        }
+        .card-content {
+            padding: 20px 24px 28px 24px;
+        }
+        .card-footer {
+            padding: 18px 24px 24px 24px;
+        }
+        .back-link {
+            padding: 8px 20px;
+        }
     }
-  </style>
-</head>
-<body>
-  <div class="privacy-card">
+</style>
+
+<div class="privacy-card">
     <div class="card-header">
-      <h1>კონფიდენციალურობის პოლიტიკა</h1>
+        <h1>კონფიდენციალურობის პოლიტიკა</h1>
     </div>
 
     <div class="card-content">
-      <h2>1. მონაცემები</h2>
-      <p>თქვენ მიერ ნებაყოფლობით მოწოდებული ინფორმაცია (მაგალითად, სახელი და ტელეფონი) გამოიყენება მხოლოდ თქვენს მოთხოვნაზე პასუხისა და მომსახურების გაწევისთვის.</p>
+        <h2>1. მონაცემები</h2>
+        <p>თქვენ მიერ ნებაყოფლობით მოწოდებული ინფორმაცია (მაგალითად, სახელი და ტელეფონი) გამოიყენება მხოლოდ თქვენს მოთხოვნაზე პასუხისა და მომსახურების გაწევისთვის.</p>
 
-      <h2>2. გამოყენება</h2>
-      <p>მონაცემები გამოიყენება მხოლოდ კონტაქტისთვის, შეკვეთების დამუშავებისა და მომსახურების გაუმჯობესებისთვის. ისინი არ გამოიყენება სხვა მიზნებისთვის.</p>
+        <h2>2. გამოყენება</h2>
+        <p>მონაცემები გამოიყენება მხოლოდ კონტაქტისთვის, შეკვეთების დამუშავებისა და მომსახურების გაუმჯობესებისთვის. ისინი არ გამოიყენება სხვა მიზნებისთვის.</p>
 
-      <h2>3. ქუქიები და ანალიტიკა</h2>
-      <p>საიტმა შეიძლება გამოიყენოს ქუქიები და ანალიტიკური/სარეკლამო ხელსაწყოები (მაგ. Meta Pixel) რეკლამის ეფექტურობის გასაუმჯობესებლად.</p>
+        <h2>3. ქუქიები და ანალიტიკა</h2>
+        <p>საიტმა შეიძლება გამოიყენოს ქუქიები და ანალიტიკური/სარეკლამო ხელსაწყოები (მაგ. Meta Pixel) რეკლამის ეფექტურობის გასაუმჯობესებლად.</p>
 
-      <h2>4. მესამე პირები</h2>
-      <p>ჩვენ არ ვყიდით და არ გადავცემთ თქვენს მონაცემებს მესამე პირებზე, გარდა აუცილებელი სერვისების შესრულებისა ან კანონით მოთხოვნილი შემთხვევებისა.</p>
+        <h2>4. მესამე პირები</h2>
+        <p>ჩვენ არ ვყიდით და არ გადავცემთ თქვენს მონაცემებს მესამე პირებზე, გარდა აუცილებელი სერვისების შესრულებისა ან კანონით მოთხოვნილი შემთხვევებისა.</p>
 
-      <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+        <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+    </div>
+</div>
 
 <script>
-  document.getElementById('backButton').addEventListener('click', function(e) {
-    e.preventDefault();
-    if (document.referrer && document.referrer.includes(location.host)) {
-      history.back();
-    } else {
-      window.location.href = '/';
-    }
-  });
+    document.getElementById('backButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (document.referrer && document.referrer.includes(location.host)) {
+            history.back();
+        } else {
+            window.location.href = '/';
+        }
+    });
 </script>
-    </div>
-  </div>
-</body>
-</html>
