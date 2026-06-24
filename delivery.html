@@ -1,230 +1,235 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="alternate icon" href="/favicon.ico">
-  <title>გადახდა და მიწოდება</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+---
+layout: default
+title: "გადახდა და მიწოდება"
+---
 
-    body {
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: linear-gradient(145deg, #f3f6fc 0%, #eef2f8 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-
+<style>
+    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
+    
     .delivery-card {
-      max-width: 680px;
-      width: 100%;
-      background: white;
-      border-radius: 32px;
-      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      transition: transform 0.2s ease;
+        max-width: 680px;
+        width: 100%;
+        margin: 0 auto;  /* ← центрируем по горизонтали */
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.2s ease;
     }
 
     .delivery-card:hover {
-      transform: translateY(-3px);
+        transform: translateY(-3px);
     }
 
     .card-header {
-      background: white;
-      padding: 32px 36px 16px 36px;
-      border-bottom: 1px solid #e9edf2;
+        background: white;
+        padding: 32px 36px 16px 36px;
+        border-bottom: 1px solid #e9edf2;
     }
 
     .card-header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
+        font-size: 2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
     }
 
     .card-content {
-      padding: 28px 36px 36px 36px;
+        padding: 28px 36px 36px 36px;
     }
 
     /* Бесплатная доставка */
     .free-delivery {
-      background: linear-gradient(135deg, #1a4a2a, #0f3a1f);
-      color: white;
-      text-align: center;
-      padding: 24px;
-      border-radius: 28px;
-      margin: 0 0 32px 0;
+        background: linear-gradient(135deg, #1a4a2a, #0f3a1f);
+        color: white;
+        text-align: center;
+        padding: 24px;
+        border-radius: 28px;
+        margin: 0 0 32px 0;
     }
 
     .free-delivery h2 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
+        font-size: 1.8rem;
+        margin-bottom: 8px;
     }
 
     .free-delivery p {
-      opacity: 0.9;
-      font-size: 1rem;
+        opacity: 0.9;
+        font-size: 1rem;
     }
 
     /* Шаги */
     .steps {
-      margin: 20px 0;
+        margin: 20px 0;
     }
 
     .step {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 14px 0;
-      border-bottom: 1px solid #eef2f8;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 14px 0;
+        border-bottom: 1px solid #eef2f8;
     }
 
     .step:last-child {
-      border-bottom: none;
+        border-bottom: none;
     }
 
     .step-number {
-      width: 36px;
-      height: 36px;
-      background: #1a2a3a;
-      color: white;
-      border-radius: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background: #1a2a3a;
+        color: white;
+        border-radius: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        flex-shrink: 0;
     }
 
     .step-text {
-      flex: 1;
-      color: #2c3f4f;
-      line-height: 1.45;
+        flex: 1;
+        color: #2c3f4f;
+        line-height: 1.45;
     }
 
     /* Оплата */
     .payment-methods {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      margin: 28px 0 16px 0;
-      flex-wrap: wrap;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin: 28px 0 16px 0;
+        flex-wrap: wrap;
     }
 
     .payment-badge {
-      background: #f0f4f9;
-      padding: 10px 28px;
-      border-radius: 60px;
-      font-weight: 500;
-      color: #1a2a3a;
+        background: #f0f4f9;
+        padding: 10px 28px;
+        border-radius: 60px;
+        font-weight: 500;
+        color: #1a2a3a;
     }
 
     .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #f0f4f9;
-      padding: 10px 24px;
-      border-radius: 60px;
-      text-decoration: none;
-      font-weight: 500;
-      color: #1f3a4b;
-      transition: all 0.2s;
-      margin-top: 32px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f0f4f9;
+        padding: 10px 24px;
+        border-radius: 60px;
+        text-decoration: none;
+        font-weight: 500;
+        color: #1f3a4b;
+        transition: all 0.2s;
+        margin-top: 32px;
     }
 
     .back-link:hover {
-      background: #e4eaf1;
-      transform: translateX(-4px);
+        background: #e4eaf1;
+        transform: translateX(-4px);
     }
 
     .card-footer {
-      background: #fafcff;
-      padding: 20px 36px 28px 36px;
-      border-top: 1px solid #eef2f8;
-      font-size: 0.8rem;
-      color: #8a99aa;
-      text-align: center;
+        background: #fafcff;
+        padding: 20px 36px 28px 36px;
+        border-top: 1px solid #eef2f8;
+        font-size: 0.8rem;
+        color: #8a99aa;
+        text-align: center;
     }
 
     @media (max-width: 600px) {
-      body { padding: 20px 16px; }
-      .card-header { padding: 24px 24px 12px 24px; }
-      .card-header h1 { font-size: 1.6rem; }
-      .card-content { padding: 20px 24px 28px 24px; }
-      .free-delivery h2 { font-size: 1.4rem; }
-      .free-delivery { padding: 18px; }
-      .step-number { width: 32px; height: 32px; font-size: 0.9rem; }
+        .delivery-card {
+            margin: 0;
+            border-radius: 20px;
+        }
+        .card-header {
+            padding: 24px 24px 12px 24px;
+        }
+        .card-header h1 {
+            font-size: 1.6rem;
+        }
+        .card-content {
+            padding: 20px 24px 28px 24px;
+        }
+        .free-delivery h2 {
+            font-size: 1.4rem;
+        }
+        .free-delivery {
+            padding: 18px;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+        }
+        .payment-methods {
+            gap: 12px;
+        }
+        .payment-badge {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
     }
-  </style>
-</head>
-<body>
-  <div class="delivery-card">
+</style>
+
+<div class="delivery-card">
     <div class="card-header">
-      <h1>გადახდა და მიწოდება</h1>
+        <h1>გადახდა და მიწოდება</h1>
     </div>
 
     <div class="card-content">
-      <!-- Бесплатная доставка -->
-      <div class="free-delivery">
-        <h2>🚚 უფასო მიწოდება</h2>
-        <p>მთელ საქართველოში</p>
-      </div>
+        <!-- Бесплатная доставка -->
+        <div class="free-delivery">
+            <h2>🚚 უფასო მიწოდება</h2>
+            <p>მთელ საქართველოში</p>
+        </div>
 
-      <!-- Как оформить заказ -->
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-text">დატოვეთ სახელი და ტელეფონი ფორმაში</div>
+        <!-- Как оформить заказ -->
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">შეავსეთ სახელი და ტელეფონი შეკვეთის ფორმაში</div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">დაგირეკავთ, შევთანხმდებით მისამართსა და მიტანის დროზე</div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">EasyWay-ს კურიერი მოგიტანთ პროდუქტს მითითებულ მისამართზე</div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">კურიერთან შეხვედრისას გადახდა შეგიძლიათ ნაღდი ანგარიშსწორებით ან ბარათით. ბარათით გადახდა ხდება კურიერის ტერმინალზე</div>
+            </div>
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-text">✅ გადახდის შემდეგ კურიერი გადმოგცემთ პროდუქტს</div>
+            </div>
         </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-text">ჩვენ დაგირეკავთ და შევთანხმდებით მისამართზე</div>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-text">კურიერი ჩამოგიტანთ პროდუქტს მითითებულ მისამართზე</div>
-        </div>
-        <div class="step">
-          <div class="step-number">4</div>
-          <div class="step-text">გადაიხადეთ ნაღდი ანგარიშსწორებით ან ბარათით (ადგილზე)</div>
-        </div>
-        <div class="step">
-          <div class="step-number">5</div>
-          <div class="step-text">✅ მიიღეთ პროდუქტი</div>
-        </div>
-      </div>
 
-      <!-- Способы оплаты -->
-      <div class="payment-methods">
-        <span class="payment-badge">💵 ნაღდი</span>
-        <span class="payment-badge">💳 ბარათი</span>
-      </div>
+        <!-- Способы оплаты -->
+        <div class="payment-methods">
+            <span class="payment-badge">💵 ნაღდი</span>
+            <span class="payment-badge">💳 ბარათი</span>
+        </div>
 
-      <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+        <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+    </div>
+</div>
 
 <script>
-  document.getElementById('backButton').addEventListener('click', function(e) {
-    e.preventDefault();
-    if (document.referrer && document.referrer.includes(location.host)) {
-      history.back();
-    } else {
-      window.location.href = '/';
-    }
-  });
+    document.getElementById('backButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (document.referrer && document.referrer.includes(location.host)) {
+            history.back();
+        } else {
+            window.location.href = '/';
+        }
+    });
 </script>
-    </div>
-  </div>
-</body>
-</html>
