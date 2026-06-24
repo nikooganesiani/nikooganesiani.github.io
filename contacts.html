@@ -10,19 +10,18 @@ title: "კონტაქტები"
     box-sizing: border-box;
   }
 
+  /* Убираем flex у body, чтобы не смещать хедер и футер */
   body {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     background: linear-gradient(145deg, #f3f6fc 0%, #eef2f8 100%);
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 40px 20px;
   }
 
   .contacts-card {
     max-width: 680px;
     width: 100%;
+    margin: 0 auto;  /* ← центрируем только саму карточку */
     background: white;
     border-radius: 32px;
     box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
