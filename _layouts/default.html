@@ -383,44 +383,50 @@
     }
     console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
 
-            // ============================================
+    // ============================================
     // 📌 ГЛОБАЛЬНЫЙ КАТАЛОГ (из catalog.json)
     // ============================================
     
-    let allProducts = [];
+    // Очищаем перед загрузкой
+    window.allProducts = [];
     
-    // Загружаем каталог один раз для всех страниц
     async function loadGlobalCatalog() {
         try {
+            console.log('📥 Загружаем catalog.json...');
             const res = await fetch('/catalog.json');
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const data = await res.json();
-            allProducts = data.products.map(p => ({
+            
+            // ===== ЗАПОЛНЯЕМ ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ =====
+            window.allProducts = data.products.map(p => ({
                 ...p,
                 priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
             }));
-            console.log('✅ Каталог загружен, товаров:', allProducts.length);
             
-            // Если на странице есть функция renderProducts — вызываем её
+            console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
+            console.log('📦 window.allProducts:', window.allProducts);
+            
+            // Триггерим событие
+            document.dispatchEvent(new CustomEvent('catalogLoaded', { 
+                detail: window.allProducts 
+            }));
+            
+            // Вызываем рендер, если есть
             if (typeof window.renderProducts === 'function') {
+                console.log('🔄 Вызываем window.renderProducts()');
                 window.renderProducts();
             }
-            
-            // Триггерим событие для других скриптов
-            document.dispatchEvent(new CustomEvent('catalogLoaded', { detail: allProducts }));
             
         } catch (e) {
             console.error('❌ Ошибка загрузки каталога:', e);
         }
     }
     
-    // Делаем глобально доступным
-    window.allProducts = allProducts;
-    window.loadGlobalCatalog = loadGlobalCatalog;
-    
     // Загружаем сразу
-    document.addEventListener('DOMContentLoaded', loadGlobalCatalog);
-    </script>
-
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadGlobalCatalog);
+    } else {
+        loadGlobalCatalog();
+    }
 </body>
 </html>
