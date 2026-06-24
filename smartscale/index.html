@@ -596,15 +596,12 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
         submitBtn.disabled = true;
 
         try {
-            // Отправляем всё в Cloudflare Worker
-            const response = await fetch(
-                'https://telegram-form-handler.niko-oganesiani.workers.dev', // ← СЮДА ВСТАВЬТЕ URL ВАШЕГО WORKER
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                }
-            );
+            // ===== ИСПОЛЬЗУЕМ ГЛОБАЛЬНУЮ ПЕРЕМЕННУЮ =====
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
             if (response.ok) {
                 alert(
