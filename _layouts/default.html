@@ -387,51 +387,48 @@
     // 📌 ГЛОБАЛЬНЫЙ КАТАЛОГ (из catalog.json)
     // ============================================
     
-    window.allProducts = [];
-    
-    async function loadGlobalCatalog() {
-        try {
-            const res = await fetch('/catalog.json');
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            
-            window.allProducts = data.products.map(p => ({
-                ...p,
-                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
-            }));
-            
-            console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
-            
-            // 1. Триггерим событие для всех страниц
-            document.dispatchEvent(new CustomEvent('catalogLoaded', { 
-                detail: window.allProducts 
-            }));
-            
-            // 2. Если есть глобальная функция рендера — вызываем
-            if (typeof window.renderProducts === 'function') {
-                window.renderProducts();
-            }
-            
-            // 3. Если есть контейнер на странице — рендерим через DOM-событие
-            const container = document.getElementById('catalogContainer');
-            if (container && typeof renderProducts === 'function') {
-                renderProducts();
-            }
-            
-        } catch (e) {
-            console.error('❌ Ошибка загрузки каталога:', e);
-            const container = document.getElementById('catalogContainer');
-            if (container) {
-                container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+    document.addEventListener('DOMContentLoaded', function() {
+        window.allProducts = [];
+        
+        async function loadGlobalCatalog() {
+            try {
+                const res = await fetch('/catalog.json');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                
+                window.allProducts = data.products.map(p => ({
+                    ...p,
+                    priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+                }));
+                
+                console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
+                
+                // Триггерим событие
+                document.dispatchEvent(new CustomEvent('catalogLoaded', { 
+                    detail: window.allProducts 
+                }));
+                
+                // Если есть глобальная функция рендера — вызываем
+                if (typeof window.renderProducts === 'function') {
+                    window.renderProducts();
+                }
+                
+                // Если есть контейнер — рендерим
+                const container = document.getElementById('catalogContainer');
+                if (container && typeof renderProducts === 'function') {
+                    renderProducts();
+                }
+                
+            } catch (e) {
+                console.error('❌ Ошибка загрузки каталога:', e);
+                const container = document.getElementById('catalogContainer');
+                if (container) {
+                    container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+                }
             }
         }
-    }
-    
-    // Загружаем сразу после DOM
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadGlobalCatalog);
-    } else {
+        
         loadGlobalCatalog();
-    }
+    });
 </body>
 </html>
