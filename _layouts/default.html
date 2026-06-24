@@ -373,6 +373,11 @@
         trackingOrderId.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') trackingCheckBtn.click();
         });
+            // Глобальная настройка для всех страниц
+    if (typeof window.WORKER_URL === 'undefined') {
+        window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+    }
+    console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
     </script>
 
 </body>
