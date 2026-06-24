@@ -577,12 +577,9 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
 
 <script>
     // ============================================
-    // 📌 НАСТРОЙКИ - заполните своими данными
+    // 📌 URL Cloudflare Worker (токены там!)
     // ============================================
-    const TELEGRAM_BOT_TOKEN = ''; // Вставьте сюда ваш токен
-    const TELEGRAM_CHAT_ID = ''; // Вставьте сюда ваш Chat ID
-    const GOOGLE_SHEETS_URL = ''; // URL для отправки в Google Sheets (опционально)
-    // ============================================
+    const WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
     
     let allProducts = [];
     let currentProduct = null;
@@ -614,60 +611,7 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
         orderModal.classList.add('active');
     }
     
-    // Отправка в Telegram
-    async function sendToTelegram(orderData) {
-        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-            console.warn('⚠️ Telegram не настроен. Укажите TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID');
-            return false;
-        }
-        
-        const message = `
-🆕 **Новый заказ**
-
-👤 **Имя:** ${orderData.name}
-📞 **Телефон:** ${orderData.phone}
-📦 **Товар:** ${orderData.product}
-💰 **Цена:** ${orderData.price}
-📅 **Время:** ${orderData.timestamp}
-📍 **Источник:** ${orderData.source}
-        `.trim();
-        
-        const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-        
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: TELEGRAM_CHAT_ID,
-                    text: message,
-                    parse_mode: 'Markdown'
-                })
-            });
-            const result = await response.json();
-            return result.ok;
-        } catch (error) {
-            console.error('❌ Telegram error:', error);
-            return false;
-        }
-    }
-    
-    async function sendToGoogleSheets(orderData) {
-        if (!GOOGLE_SHEETS_URL) return false;
-        try {
-            await fetch(GOOGLE_SHEETS_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-            return true;
-        } catch (error) {
-            console.error('❌ Google Sheets error:', error);
-            return false;
-        }
-    }
-    
+    // Обработка заказа
     async function processOrder(event) {
         event.preventDefault();
         
@@ -684,10 +628,9 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
             name: name,
             phone: phone,
             product: currentProduct.name,
-            price: currentProduct.price.replace(/[^0-9]/g, ''),
-            quantity: 1,
-            timestamp: timestamp,
-            source: 'Главная страница'
+            price: currentProduct.price,
+            source: 'Главная страница',
+            timestamp: timestamp
         };
         
         const submitBtn = document.querySelector('#orderForm .btn-submit');
@@ -695,43 +638,51 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
         submitBtn.textContent = "⏳ იგზავნება...";
         submitBtn.disabled = true;
         
-        await Promise.all([
-            sendToTelegram(orderData),
-            sendToGoogleSheets(orderData)
-        ]);
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            
+            if (response.ok) {
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
+                orderModal.classList.remove('active');
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
         
-        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
-        
-        orderModal.classList.remove('active');
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
     
-    // Рендер товаров с категориями
+    // Рендер товаров
     function renderProducts() {
         let filtered = [...allProducts];
         
-        // Категория
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => 
                 p.categories && p.categories.includes(currentCategory)
             );
         }
         
-        // Цена
         const minPrice = parseInt(minPriceInput.value);
         if (!isNaN(minPrice)) filtered = filtered.filter(p => p.priceValue >= minPrice);
         const maxPrice = parseInt(maxPriceInput.value);
         if (!isNaN(maxPrice)) filtered = filtered.filter(p => p.priceValue <= maxPrice);
         
-        // Сортировка
         const sortBy = sortSelect.value;
         if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
         if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
         if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
         
-        // Показываем кнопку сброса
         const hasMin = minPriceInput.value !== '';
         const hasMax = maxPriceInput.value !== '';
         const hasSort = sortSelect.value !== 'name-asc';
@@ -790,7 +741,7 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
         }
     }
     
-    // Сброс всех фильтров
+    // Сброс фильтров
     function resetAllFilters() {
         minPriceInput.value = '';
         maxPriceInput.value = '';
@@ -827,7 +778,6 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
     sortSelect.addEventListener('change', renderProducts);
     resetBtn.addEventListener('click', resetAllFilters);
     
-    // Категории
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             categoryBtns.forEach(b => b.classList.remove('active'));
@@ -837,14 +787,12 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
         });
     });
     
-    // Модалка заказа
     closeModalBtn.addEventListener('click', () => orderModal.classList.remove('active'));
     window.addEventListener('click', (e) => { 
         if (e.target === orderModal) orderModal.classList.remove('active');
     });
     orderForm.addEventListener('submit', processOrder);
     
-    // Кнопка наверх
     window.addEventListener('scroll', () => {
         if (window.scrollY > 300) scrollTopBtn.classList.add('show');
         else scrollTopBtn.classList.remove('show');
@@ -860,7 +808,6 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
     const selectedValueSpan = document.getElementById('selectedValue');
     const hiddenSelect = document.getElementById('sortSelect');
     
-    // Проверяем, что все элементы существуют
     if (selectTrigger && customSelect && selectOptions) {
         selectTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
