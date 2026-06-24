@@ -9,12 +9,17 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
     <div class="card" id="order-top">
         <img src="img/4.webp" alt="ENKA Electronics service" class="single-img" fetchpriority="high" loading="eager">
         <div class="img-caption">ჭკვიანი სასწორი – ინოვაციური დიზაინი</div>
-        <form class="order-form" id="orderFormTop" style="margin-top: 16px;">
+        <form class="order-form" id="orderFormTop">
     <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameTop">
     <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneTop">
+    
+    <!-- Скрытые поля с данными о товаре -->
+    <input type="hidden" name="product" value="SmartBalance Pro">
+    <input type="hidden" name="price" value="44 ₾">
+    <input type="hidden" name="product_id" value="12345">
+    
     <button type="submit" class="btn">👉 შეკვეთა</button>
-    <div class="text-center" style="margin-top: 12px; font-size:0.75rem;">✅ უფასო მიტანა | გადახდა მიღებისას</div>
-    </form>
+</form>
     </div>
 
     <!-- Hero -->
@@ -549,60 +554,98 @@ title: "ENKA Electronics – ჭკვიანი სასწორი"
 </style>
 
 <script>
+    // ================================================================
+    //  УНИВЕРСАЛЬНАЯ ФОРМА ДЛЯ ЛЮБЫХ ТОВАРОВ
+    //  Отправляет данные в Cloudflare Worker → Telegram
+    //  Токен хранится в Cloudflare, в коде его нет
+    // ================================================================
+
     async function processOrder(event, nameId, phoneId) {
         event.preventDefault();
-        
+
         const name = document.getElementById(nameId).value.trim();
         const phone = document.getElementById(phoneId).value.trim();
-        
-        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return false; }
-        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return false; }
-        
+
+        if (!name) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+            return false;
+        }
+        if (!phone) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.");
+            return false;
+        }
+
+        // Берём форму и собираем все данные (включая скрытые поля)
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Добавляем имя и телефон (на случай, если они не в formData)
+        data.name = name;
+        data.phone = phone;
+
+        // Блокируем кнопку
         const submitBtn = event.target.querySelector('.btn');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = "⏳ იგზავნება...";
         submitBtn.disabled = true;
-        
+
         try {
-const response = await fetch(
-    'https://api.github.com/repos/nikooganesiani/nikooganesiani.github.io/dispatches',
-    {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/vnd.github.v3+json',
-            'Authorization': 'token ___GH_TOKEN___'
-        },
-        body: JSON.stringify({
-            event_type: 'new-order',
-            client_payload: {
-                name: name,
-                phone: phone
-            }
-        })
-    }
-);
-            
+            // Отправляем всё в Cloudflare Worker
+            const response = await fetch(
+                'https://telegram-form-handler.niko-oganesiani.workers.dev', // ← СЮДА ВСТАВЬТЕ URL ВАШЕГО WORKER
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }
+            );
+
             if (response.ok) {
-                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
+                alert(
+                    `✨ მადლობა, ${name}! ` +
+                    `თქვენი შეკვეთა მიღებულია. ` +
+                    `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`
+                );
+                // Очищаем поля
                 document.getElementById(nameId).value = "";
                 document.getElementById(phoneId).value = "";
             } else {
-                const errorData = await response.json();
-                console.error('❌ Ошибка:', errorData);
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
                 alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
             }
         } catch (error) {
             console.error('❌ Ошибка сети:', error);
             alert('❌ Ошибка сети. Проверьте подключение.');
         }
-        
+
+        // Разблокируем кнопку
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
     }
-    
+
+    // Подключаем обработчики ко всем формам на странице
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('orderFormTop')?.addEventListener('submit', (e) => processOrder(e, 'nameTop', 'phoneTop'));
-        document.getElementById('orderFormBottom')?.addEventListener('submit', (e) => processOrder(e, 'nameBottom', 'phoneBottom'));
+        const formTop = document.getElementById('orderFormTop');
+        const formBottom = document.getElementById('orderFormBottom');
+
+        if (formTop) {
+            formTop.addEventListener('submit', function(e) {
+                processOrder(e, 'nameTop', 'phoneTop');
+            });
+        } else {
+            console.warn('⚠️ Форма #orderFormTop не найдена');
+        }
+
+        if (formBottom) {
+            formBottom.addEventListener('submit', function(e) {
+                processOrder(e, 'nameBottom', 'phoneBottom');
+            });
+        } else {
+            console.warn('⚠️ Форма #orderFormBottom не найдена');
+        }
+
+        console.log('✅ Бот готов к приёму заказов');
     });
 </script>
