@@ -577,11 +577,11 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
 
 <script>
     // ============================================
-    // 📌 НАСТРОЙКИ
+    // 📌 НАСТРОЙКИ - заполните своими данными
     // ============================================
-    const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-    const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-    const GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL;
+    const TELEGRAM_BOT_TOKEN = ''; // Вставьте сюда ваш токен
+    const TELEGRAM_CHAT_ID = ''; // Вставьте сюда ваш Chat ID
+    const GOOGLE_SHEETS_URL = ''; // URL для отправки в Google Sheets (опционально)
     // ============================================
     
     let allProducts = [];
@@ -616,8 +616,8 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
     
     // Отправка в Telegram
     async function sendToTelegram(orderData) {
-        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'МОЙ_ТОКЕН_ТУТ') {
-            console.warn('⚠️ Telegram токен не настроен');
+        if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+            console.warn('⚠️ Telegram не настроен. Укажите TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID');
             return false;
         }
         
@@ -805,6 +805,7 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
             }
         });
         
+        const selectedValueSpan = document.getElementById('selectedValue');
         if (selectedValueSpan) {
             selectedValueSpan.textContent = 'სახელი (ა-ჰ)';
         }
@@ -859,31 +860,41 @@ title: "ENKA Electronics – ხარისხიანი ტექნიკ�
     const selectedValueSpan = document.getElementById('selectedValue');
     const hiddenSelect = document.getElementById('sortSelect');
     
-    selectTrigger.addEventListener('click', () => {
-        customSelect.classList.toggle('open');
-    });
-    
-    document.querySelectorAll('.select-option').forEach(option => {
-        option.addEventListener('click', () => {
-            const value = option.dataset.value;
-            const text = option.textContent;
-            
-            selectedValueSpan.textContent = text;
-            hiddenSelect.value = value;
-            
-            document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
-            option.classList.add('selected');
-            
-            customSelect.classList.remove('open');
-            
-            const event = new Event('change');
-            hiddenSelect.dispatchEvent(event);
+    // Проверяем, что все элементы существуют
+    if (selectTrigger && customSelect && selectOptions) {
+        selectTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            customSelect.classList.toggle('open');
         });
-    });
-    
-    document.addEventListener('click', (e) => {
-        if (!customSelect.contains(e.target)) {
-            customSelect.classList.remove('open');
-        }
-    });
+        
+        document.querySelectorAll('.select-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.dataset.value;
+                const text = option.textContent;
+                
+                if (selectedValueSpan) {
+                    selectedValueSpan.textContent = text;
+                }
+                if (hiddenSelect) {
+                    hiddenSelect.value = value;
+                }
+                
+                document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                customSelect.classList.remove('open');
+                
+                const event = new Event('change');
+                if (hiddenSelect) {
+                    hiddenSelect.dispatchEvent(event);
+                }
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!customSelect.contains(e.target)) {
+                customSelect.classList.remove('open');
+            }
+        });
+    }
 </script>
