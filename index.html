@@ -684,9 +684,9 @@ title: "მთავარი"
         if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
         if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
         
-    const orderData = {
-            currentProduct.name, currentProduct.price,
-            name, phone
+        const orderData = {
+            name: name, phone: phone,
+            product: currentProduct.name, price: currentProduct.price
         };
         
         const submitBtn = document.querySelector('#orderForm .btn-submit');
