@@ -684,16 +684,20 @@ title: "მთავარი"
         if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
         if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
         
-        const now = new Date();
-        const timestamp = `${now.getDate().toString().padStart(2,'0')}.${(now.getMonth()+1).toString().padStart(2,'0')}.${now.getFullYear()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-        
+const timestamp = new Intl.DateTimeFormat('ru-RU', {
+    timeZone: 'Asia/Tbilisi',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+}).format(new Date()).replace(',', '');
+       
         const orderData = {
-            name: name,
-            phone: phone,
-            product: currentProduct.name,
-            price: currentProduct.price,
-            source: 'Главная страница',
-            timestamp: timestamp
+            currentProduct.name, currentProduct.price,
+            name, phone,
         };
         
         const submitBtn = document.querySelector('#orderForm .btn-submit');
