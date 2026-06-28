@@ -685,8 +685,10 @@ title: "მთავარი"
         if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
         
         const orderData = {
-            name: name, phone: phone,
-            product: currentProduct.name, price: currentProduct.price
+            name: name,
+            phone: phone,
+            product: currentProduct.name,
+            price: currentProduct.price
         };
         
         const submitBtn = document.querySelector('#orderForm .btn-submit');
