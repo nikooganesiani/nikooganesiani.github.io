@@ -5,19 +5,18 @@ title: "ჭკვიანი სასწორი"
 
 <main>
 <div class="container">
-    <!-- Верхняя форма заказа -->
-    <div class="card" id="order-top">
-        <img src="img/4.webp" alt="ENKA Electronics service" class="single-img" fetchpriority="high" loading="eager">
-        <div class="img-caption">ჭკვიანი სასწორი – ინოვაციური დიზაინი</div>
-        <form class="order-form" id="orderFormTop">
+<!-- Верхняя форма -->
+<form class="order-form" id="orderFormTop">
     <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameTop">
-    <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneTop">
     
-    <!-- Скрытые поля с данными о товаре -->
+    <div class="phone-wrapper">
+        <span class="phone-prefix">+995</span>
+        <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneTop" inputmode="numeric" maxlength="12" autocomplete="tel">
+    </div>
+    
     <input type="hidden" name="product" value="Smartscale">
     <input type="hidden" name="price" value="39">
     <input type="hidden" name="product_id" value="Smartscale">
-    
     <button type="submit" class="btn">👉 შეკვეთა</button>
 </form>
     </div>
@@ -177,16 +176,17 @@ title: "ჭკვიანი სასწორი"
     </div>
 
 <!-- Нижняя форма -->
-<div class="card" id="order-bottom">
-    <form class="order-form" id="orderFormBottom">
+<form class="order-form" id="orderFormBottom">
     <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
-    <input type="tel" class="input-field" placeholder="ტელეფონის ნომერი" required id="phoneBottom">
     
-    <!-- Скрытые поля с данными о товаре -->
+    <div class="phone-wrapper">
+        <span class="phone-prefix">+995</span>
+        <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneBottom" inputmode="numeric" maxlength="12" autocomplete="tel">
+    </div>
+    
     <input type="hidden" name="product" value="Smartscale">
     <input type="hidden" name="price" value="39">
     <input type="hidden" name="product_id" value="Smartscale">
-    
     <button type="submit" class="btn">👉 შეკვეთა</button>
 </form>
 </div>
@@ -552,6 +552,68 @@ title: "ჭკვიანი სასწორი"
                 gap: 12px;
             }
         }
+    /* Контейнер для телефона */
+.phone-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 44px;
+    border: 1px solid #e2e8f0;
+    transition: 0.2s;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.phone-wrapper:focus-within {
+    border-color: #00a3e0;
+    box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.2);
+}
+
+/* Префикс +995 */
+.phone-prefix {
+    padding: 14px 0 14px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    background: #f7fafc;
+    border-right: 1px solid #e2e8f0;
+    user-select: none;
+    white-space: nowrap;
+    min-width: 50px;
+}
+
+/* Поле ввода телефона */
+.phone-input {
+    border: none !important;
+    padding: 14px 18px !important;
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    flex: 1;
+    min-width: 0;
+}
+
+.phone-input:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+/* Убираем рамку у инпута внутри враппера */
+.phone-wrapper .input-field {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Стили для валидации */
+.phone-wrapper.invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+.phone-wrapper.valid {
+    border-color: #51cf66;
+    box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.1);
+}
 </style>
 
 <script>
@@ -565,24 +627,40 @@ async function processOrder(event, nameId, phoneId) {
     event.preventDefault();
 
     const name = document.getElementById(nameId).value.trim();
-    const phone = document.getElementById(phoneId).value.trim();
+    const phoneInput = document.getElementById(phoneId);
+    let phone = phoneInput.value.trim();
+
+    // Убираем все пробелы и лишние символы
+    phone = phone.replace(/\s/g, '');
 
     if (!name) {
         alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
         return false;
     }
-    if (!phone) {
-        alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი.");
+
+    // Проверка: номер должен быть 9 цифр (после +995)
+    if (!phone || phone.length < 9 || phone.length > 12 || !/^\d+$/.test(phone)) {
+        alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)");
+        phoneInput.focus();
         return false;
     }
+
+    // Проверка: не начинается ли с 0 (грузинские номера не начинаются с 0)
+    if (phone.startsWith('0')) {
+        alert("⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით");
+        phoneInput.focus();
+        return false;
+    }
+
+    // Добавляем +995 к номеру для отправки
+    const fullPhone = '+995' + phone;
 
     const form = event.target;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     data.name = name;
-    data.phone = phone;
+    data.phone = fullPhone; // Отправляем полный номер
 
-    // 🔥 БЕРЁМ ДАННЫЕ О ТОВАРЕ ИЗ ФОРМЫ
     const productId = data.product_id;
     const productName = data.product;
     const productPrice = parseFloat(data.price);
@@ -600,7 +678,6 @@ async function processOrder(event, nameId, phoneId) {
         });
 
         if (response.ok) {
-            // ✅ ОТПРАВЛЯЕМ PURCHASE С ДАННЫМИ ИЗ ФОРМЫ
             fbq('track', 'Purchase', {
                 content_ids: [productId],
                 currency: 'GEL',
@@ -611,10 +688,16 @@ async function processOrder(event, nameId, phoneId) {
             alert(
                 `✨ მადლობა, ${name}! ` +
                 `თქვენი შეკვეთა მიღებულია. ` +
-                `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`
+                `ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${fullPhone}-ზე.`
             );
             document.getElementById(nameId).value = "";
             document.getElementById(phoneId).value = "";
+            
+            // Убираем классы валидации
+            const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('valid', 'invalid');
+            }
         } else {
             const errorText = await response.text();
             console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
@@ -629,25 +712,69 @@ async function processOrder(event, nameId, phoneId) {
     submitBtn.disabled = false;
 }
 
-// Подключаем обработчики ко всем формам на странице
+// Добавляем обработку ввода для форматирования
+function formatPhoneInput(input) {
+    // Удаляем все не-цифры
+    let value = input.value.replace(/\D/g, '');
+    
+    // Ограничиваем длину 9 цифрами
+    if (value.length > 9) {
+        value = value.slice(0, 9);
+    }
+    
+    // Форматируем с пробелами: 555 55 55 55
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i === 3 || i === 5 || i === 7) {
+            formatted += ' ';
+        }
+        formatted += value[i];
+    }
+    
+    input.value = formatted;
+    
+    // Визуальная обратная связь
+    const wrapper = input.closest('.phone-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('valid', 'invalid');
+        if (value.length === 9) {
+            wrapper.classList.add('valid');
+        } else if (value.length > 0) {
+            wrapper.classList.add('invalid');
+        }
+    }
+}
+
+// Подключаем обработчики
 document.addEventListener('DOMContentLoaded', function() {
     const formTop = document.getElementById('orderFormTop');
     const formBottom = document.getElementById('orderFormBottom');
+    const phoneTop = document.getElementById('phoneTop');
+    const phoneBottom = document.getElementById('phoneBottom');
+
+    // Обработчики ввода для форматирования
+    if (phoneTop) {
+        phoneTop.addEventListener('input', function() {
+            formatPhoneInput(this);
+        });
+    }
+
+    if (phoneBottom) {
+        phoneBottom.addEventListener('input', function() {
+            formatPhoneInput(this);
+        });
+    }
 
     if (formTop) {
         formTop.addEventListener('submit', function(e) {
             processOrder(e, 'nameTop', 'phoneTop');
         });
-    } else {
-        console.warn('⚠️ Форма #orderFormTop не найдена');
     }
 
     if (formBottom) {
         formBottom.addEventListener('submit', function(e) {
             processOrder(e, 'nameBottom', 'phoneBottom');
         });
-    } else {
-        console.warn('⚠️ Форма #orderFormBottom не найдена');
     }
 
     console.log('✅ Бот готов к приёму заказов');
