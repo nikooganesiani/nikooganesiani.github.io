@@ -5,20 +5,23 @@ title: "ჭკვიანი სასწორი"
 
 <main>
 <div class="container">
-<!-- Верхняя форма -->
-<form class="order-form" id="orderFormTop">
-    <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameTop">
-    
-    <div class="phone-wrapper">
-        <span class="phone-prefix">+995</span>
-        <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneTop" inputmode="numeric" maxlength="12" autocomplete="tel">
-    </div>
-    
-    <input type="hidden" name="product" value="Smartscale">
-    <input type="hidden" name="price" value="39">
-    <input type="hidden" name="product_id" value="Smartscale">
-    <button type="submit" class="btn">👉 შეკვეთა</button>
-</form>
+    <!-- Верхняя форма заказа -->
+    <div class="card" id="order-top">
+        <img src="img/4.webp" alt="ENKA Electronics service" class="single-img" fetchpriority="high" loading="eager">
+        <div class="img-caption">ჭკვიანი სასწორი – ინოვაციური დიზაინი</div>
+        <form class="order-form" id="orderFormTop">
+            <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameTop">
+            
+            <div class="phone-wrapper">
+                <span class="phone-prefix">+995</span>
+                <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneTop" inputmode="numeric" maxlength="12" autocomplete="tel">
+            </div>
+            
+            <input type="hidden" name="product" value="Smartscale">
+            <input type="hidden" name="price" value="39">
+            <input type="hidden" name="product_id" value="Smartscale">
+            <button type="submit" class="btn">👉 შეკვეთა</button>
+        </form>
     </div>
 
     <!-- Hero -->
@@ -176,19 +179,20 @@ title: "ჭკვიანი სასწორი"
     </div>
 
 <!-- Нижняя форма -->
-<form class="order-form" id="orderFormBottom">
-    <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
-    
-    <div class="phone-wrapper">
-        <span class="phone-prefix">+995</span>
-        <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneBottom" inputmode="numeric" maxlength="12" autocomplete="tel">
-    </div>
-    
-    <input type="hidden" name="product" value="Smartscale">
-    <input type="hidden" name="price" value="39">
-    <input type="hidden" name="product_id" value="Smartscale">
-    <button type="submit" class="btn">👉 შეკვეთა</button>
-</form>
+    <div class="card" id="order-bottom">
+        <form class="order-form" id="orderFormBottom">
+            <input type="text" class="input-field" placeholder="თქვენი სახელი" required id="nameBottom">
+            
+            <div class="phone-wrapper">
+                <span class="phone-prefix">+995</span>
+                <input type="tel" class="input-field phone-input" placeholder="555 55 55 55" required id="phoneBottom" inputmode="numeric" maxlength="12" autocomplete="tel">
+            </div>
+            
+            <input type="hidden" name="product" value="Smartscale">
+            <input type="hidden" name="price" value="39">
+            <input type="hidden" name="product_id" value="Smartscale">
+            <button type="submit" class="btn">👉 შეკვეთა</button>
+        </form>
 </div>
 
 </div>
