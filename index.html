@@ -501,6 +501,68 @@ title: "მთავარი"
         .categories-bar { flex-direction: column; align-items: stretch; }
         .categories { justify-content: center; }
     }
+   /* Контейнер для телефона */
+.phone-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 1rem;
+    border: 2px solid #e2e8f0;
+    transition: 0.2s;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.phone-wrapper:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* Префикс +995 */
+.phone-prefix {
+    padding: 0.9rem 0 0.9rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    background: #f1f5f9;
+    border-right: 2px solid #e2e8f0;
+    user-select: none;
+    white-space: nowrap;
+    min-width: 50px;
+}
+
+/* Поле ввода телефона */
+.phone-input {
+    border: none !important;
+    padding: 0.9rem 1rem !important;
+    margin-bottom: 0 !important;
+    border-radius: 0 !important;
+    flex: 1;
+    min-width: 0;
+}
+
+.phone-input:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+/* Убираем рамку у инпута внутри враппера */
+.phone-wrapper .input-field {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Стили для валидации */
+.phone-wrapper.invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+.phone-wrapper.valid {
+    border-color: #51cf66;
+    box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.1);
+}
 </style>
 
 <div class="categories-bar">
@@ -565,7 +627,10 @@ title: "მთავარი"
         <div id="modalProductInfo" class="modal-product"></div>
         <form id="orderForm">
             <input type="text" id="customerName" class="input-field" placeholder="👤 თქვენი სახელი" required>
-            <input type="tel" id="customerPhone" class="input-field" placeholder="📞 ტელეფონის ნომერი" required>
+            <div class="phone-wrapper">
+              <span class="phone-prefix">+995</span>
+              <input type="tel" id="customerPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" maxlength="12" autocomplete="tel">
+           </div>
             <button type="submit" class="btn-submit">👉 გაფორმება</button>
             <div class="free-delivery">დავაზუსტებთ თქვენს მისამართს და მიტანის დროს.</div>
         </form>
@@ -595,7 +660,118 @@ title: "მთავარი"
     const orderForm = document.getElementById('orderForm');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
-    // ===== РЕНДЕР ТОВАРОВ (использует глобальный allProducts) =====
+    // ============================================
+    // 🆕 ФУНКЦИЯ ФОРМАТИРОВАНИЯ ТЕЛЕФОНА (НОВАЯ)
+    // ============================================
+    function formatPhoneInput(input) {
+        // Удаляем все не-цифры
+        let value = input.value.replace(/\D/g, '');
+        
+        // Ограничиваем длину 9 цифрами
+        if (value.length > 9) {
+            value = value.slice(0, 9);
+        }
+        
+        // Форматируем с пробелами: 555 55 55 55
+        let formatted = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i === 3 || i === 5 || i === 7) {
+                formatted += ' ';
+            }
+            formatted += value[i];
+        }
+        
+        input.value = formatted;
+        
+        // Визуальная обратная связь
+        const wrapper = input.closest('.phone-wrapper');
+        if (wrapper) {
+            wrapper.classList.remove('valid', 'invalid');
+            if (value.length === 9) {
+                wrapper.classList.add('valid');
+            } else if (value.length > 0) {
+                wrapper.classList.add('invalid');
+            }
+        }
+    }
+    
+    // ============================================
+    // 🆕 ОБНОВЛЕННАЯ ФУНКЦИЯ ОТПРАВКИ ЗАКАЗА
+    // ============================================
+    async function processOrder(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('customerName').value.trim();
+        const phoneInput = document.getElementById('customerPhone');
+        let phone = phoneInput.value.trim();
+        
+        // Убираем все пробелы
+        phone = phone.replace(/\s/g, '');
+        
+        if (!name) { 
+            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); 
+            return; 
+        }
+        
+        // Проверка: номер должен быть 9 цифр
+        if (!phone || phone.length < 9 || phone.length > 12 || !/^\d+$/.test(phone)) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)");
+            phoneInput.focus();
+            return;
+        }
+        
+        // Проверка: не начинается ли с 0
+        if (phone.startsWith('0')) {
+            alert("⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით");
+            phoneInput.focus();
+            return;
+        }
+        
+        // Добавляем +995 для отправки
+        const fullPhone = '+995' + phone;
+        
+        const orderData = {
+            name: name,
+            phone: fullPhone,
+            product: currentProduct.name,
+            price: currentProduct.price
+        };
+        
+        const submitBtn = document.querySelector('#orderForm .btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            
+            if (response.ok) {
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${fullPhone}-ზე.`);
+                orderModal.classList.remove('active');
+                document.getElementById('customerPhone').value = '';
+                const wrapper = document.getElementById('customerPhone').closest('.phone-wrapper');
+                if (wrapper) {
+                    wrapper.classList.remove('valid', 'invalid');
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+        
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+    
+    // ===== РЕНДЕР ТОВАРОВ =====
     function renderProducts() {
         const products = window.allProducts || [];
         
@@ -674,52 +850,6 @@ title: "მთავარი"
         orderModal.classList.add('active');
     }
     
-    // ===== ОТПРАВКА ЗАКАЗА =====
-    async function processOrder(event) {
-        event.preventDefault();
-        
-        const name = document.getElementById('customerName').value.trim();
-        const phone = document.getElementById('customerPhone').value.trim();
-        
-        if (!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); return; }
-        if (!phone) { alert("⚠️ გთხოვთ, შეიყვანოთ ტელეფონის ნომერი."); return; }
-        
-        const orderData = {
-            name: name,
-            phone: phone,
-            product: currentProduct.name,
-            price: currentProduct.price
-        };
-        
-        const submitBtn = document.querySelector('#orderForm .btn-submit');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-        
-        try {
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-            
-            if (response.ok) {
-                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია. ჩვენი მენეჯერი მალე დაგიკავშირდებათ ${phone}-ზე.`);
-                orderModal.classList.remove('active');
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка сети:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-        
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-    
     // ===== СБРОС ФИЛЬТРОВ =====
     function resetAllFilters() {
         minPriceInput.value = '';
@@ -778,31 +908,37 @@ title: "მთავარი"
     });
     scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-// ===== ЗАГРУЗКА КАТАЛОГА =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📥 Загружаем catalog.json...');
-    
-    fetch('/catalog.json')
-        .then(res => {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        })
-        .then(data => {
-            window.allProducts = data.products.map(p => ({
-                ...p,
-                priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
-            }));
-            console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
-            
-            // Рендерим товары
-            renderProducts();
-        })
-        .catch(e => {
-            console.error('❌ Ошибка загрузки каталога:', e);
-            container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
-        });
-});
-
+    // ===== ЗАГРУЗКА КАТАЛОГА =====
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('📥 Загружаем catalog.json...');
+        
+        // 🆕 ДОБАВЛЯЕМ ОБРАБОТЧИК ДЛЯ ПОЛЯ ТЕЛЕФОНА
+        const phoneInput = document.getElementById('customerPhone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+        }
+        
+        fetch('/catalog.json')
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                window.allProducts = data.products.map(p => ({
+                    ...p,
+                    priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+                }));
+                console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
+                
+                renderProducts();
+            })
+            .catch(e => {
+                console.error('❌ Ошибка загрузки каталога:', e);
+                container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+            });
+    });
     
     // ===== КАСТОМНЫЙ СЕЛЕКТ =====
     const customSelect = document.getElementById('customSortSelect');
