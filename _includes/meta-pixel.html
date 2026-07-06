@@ -1,39 +1,18 @@
-<!-- Meta Pixel с отложенной загрузкой (обход блокировки Chrome) -->
+<!-- Meta Pixel Code -->
 <script>
-let pixelLoaded = false;
-
-function loadFbPixel() {
-    if (pixelLoaded) return;
-    pixelLoaded = true;
-    
-    console.log('🔄 Загружаем Meta Pixel...');
-    
-    // Загружаем скрипт
-    var script = document.createElement('script');
-    script.src = 'https://connect.facebook.net/en_US/fbevents.js';
-    script.async = true;
-    script.onload = function() {
-        window.fbq = window.fbq || function() {
-            (window.fbq.queue = window.fbq.queue || []).push(arguments);
-        };
-        fbq('init', '1499689204986172');  // ← ЗАМЕНИТЕ НА РЕАЛЬНЫЙ ID
-        fbq('track', 'PageView');
-        console.log('✅ Meta Pixel загружен!');
-    };
-    script.onerror = function() {
-        console.warn('⚠️ Не удалось загрузить Meta Pixel');
-    };
-    document.head.appendChild(script);
-}
-
-// Загружаем при первом взаимодействии
-document.addEventListener('click', loadFbPixel, { once: true });
-document.addEventListener('scroll', loadFbPixel, { once: true });
-document.addEventListener('touchstart', loadFbPixel, { once: true });
-
-// Если пользователь ничего не делает - загружаем через 3 секунды
-setTimeout(loadFbPixel, 3000);
-
-console.log('⏳ Meta Pixel будет загружен при взаимодействии или через 3 секунды');
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', 'false');
+fbq('init', '1499689204986172');
+fbq('track', 'PageView');
 </script>
-<!-- Конец Meta Pixel -->
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
