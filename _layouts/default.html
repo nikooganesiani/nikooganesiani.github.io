@@ -54,13 +54,11 @@
         .btn-submit:disabled{opacity: 0.6;cursor: not-allowed;}
         .spinner{border: 4px solid #f3f3f3;border-top: 4px solid #2563eb;border-radius: 50%;width: 40px;height: 40px;animation: spin 1s linear infinite;margin: 0 auto 1rem;}
         @keyframes spin{0% { transform: rotate(0deg); }100% { transform: rotate(360deg); }}
-.status-badge{display:inline-block;padding:10px 28px;border-radius:50px;font-weight:700;font-size:1rem;letter-spacing:0.3px;box-shadow:0 4px 15px rgba(0,0,0,0.08);transition:all 0.3s ease;backdrop-filter:blur(4px)}
-.status-badge-delivered{background:linear-gradient(135deg,#10b981,#059669);color:white;box-shadow:0 4px 20px rgba(16,185,129,0.35)}
-.status-badge-processing{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;box-shadow:0 4px 20px rgba(245,158,11,0.35)}
-.status-badge-shipping{background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;box-shadow:0 4px 20px rgba(59,130,246,0.35);animation:pulse-shipping 2s ease-in-out infinite}
-@keyframes pulse-shipping{0%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}50%{box-shadow:0 4px 30px rgba(59,130,246,0.55)}100%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}}
-.status-badge-unknown{background:linear-gradient(135deg,#9ca3af,#6b7280);color:white;box-shadow:0 4px 20px rgba(156,163,175,0.3)}
-@media(max-width:640px){.status-badge{padding:8px 20px;font-size:0.85rem;border-radius:40px}}
+        .status-badge{display: inline-block;padding: 6px 16px;border-radius: 20px;font-weight: 600;font-size: 0.95rem;}
+        .status-delivered{background: #d4edda; color: #155724; }
+        .status-processing{background: #fff3cd; color: #856404; }
+        .status-cancelled{background: #f8d7da; color: #721c24; }
+        .status-unknown{background: #e2e3e5; color: #383d41; }
         .error{color: #721c24;background: #f8d7da;padding: 15px;border-radius: 5px;margin: 10px 0;}
 
         /* Футер – стили тоже глобальные */
@@ -113,6 +111,20 @@
             .timeline-vertical{gap: 0.7rem;}
             .timeline-content-v{min-height: 2.4rem;}
         }
+
+        /* Стили для новой модалки подтверждения заказа */
+        .order-confirm-icon{font-size: 3rem;margin-bottom: 0.5rem;text-align:center;}
+        .order-confirm-title{font-size: 1.8rem;margin-bottom: 0.5rem;text-align:center;color:#16a34a;}
+        .order-confirm-details{background:#f0fdf4;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;}
+        .order-confirm-row{display:flex;justify-content:space-between;margin-bottom:0.5rem;}
+        .order-confirm-row:last-child{margin-bottom:0;}
+        .order-confirm-label{color:#64748b;}
+        .order-confirm-value{font-weight:600;}
+        .order-confirm-divider{border-top:1px dashed #bbf7d0;margin:0.8rem 0;padding-top:0.8rem;}
+        .order-confirm-price{font-weight:700;font-size:1.2rem;color:#16a34a;}
+        .order-confirm-message{text-align:center;color:#475569;font-size:0.95rem;margin-bottom:1rem;}
+        .order-confirm-btn{background:#16a34a;color:white;border:none;padding:0.9rem;width:100%;border-radius:1rem;cursor:pointer;font-weight:600;font-size:1.1rem;transition:all 0.2s;}
+        .order-confirm-btn:hover{background:#15803d;}
         
     </style>
 </head>
@@ -158,6 +170,38 @@
                 <p>⏳ იტვირთება...</p>
             </div>
             <button class="close-modal" id="closeTrackingModal">დახურვა</button>
+        </div>
+    </div>
+
+    <!-- ===== НОВАЯ МОДАЛКА ПОДТВЕРЖДЕНИЯ ЗАКАЗА ===== -->
+    <div class="modal" id="orderConfirmModal">
+        <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
+            <div class="order-confirm-icon">✅</div>
+            <h3 class="order-confirm-title">შეკვეთა მიღებულია!</h3>
+            
+            <div class="order-confirm-details">
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">👤 კლიენტი</span>
+                    <span class="order-confirm-value" id="confirmName">-</span>
+                </div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">📱 ტელეფონი</span>
+                    <span class="order-confirm-value" id="confirmPhone">-</span>
+                </div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">📦 პროდუქტი</span>
+                    <span class="order-confirm-value" id="confirmProduct">-</span>
+                </div>
+                <div class="order-confirm-divider"></div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">💰 თანხა</span>
+                    <span class="order-confirm-price" id="confirmPrice">-</span>
+                </div>
+            </div>
+
+            <p class="order-confirm-message">📞 ჩვენი მენეჯერი მალე დაგიკავშირდებათ</p>
+
+            <button class="order-confirm-btn" id="closeOrderConfirmModal">✅ კარგი, გასაგებია</button>
         </div>
     </div>
 
@@ -266,315 +310,381 @@
         };
     })();
 
-// ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
-const trackingBtn = document.getElementById('trackingBtnHeader');
-const trackingModal = document.getElementById('trackingModal');
-const closeTrackingBtn = document.getElementById('closeTrackingModal');
-const trackingOrderId = document.getElementById('trackingOrderId');
-const trackingCheckBtn = document.getElementById('trackingCheckBtn');
-const trackingResult = document.getElementById('trackingResult');
-const trackingLoading = document.getElementById('trackingLoading');
+    // ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
+    const trackingBtn = document.getElementById('trackingBtnHeader');
+    const trackingModal = document.getElementById('trackingModal');
+    const closeTrackingBtn = document.getElementById('closeTrackingModal');
+    const trackingOrderId = document.getElementById('trackingOrderId');
+    const trackingCheckBtn = document.getElementById('trackingCheckBtn');
+    const trackingResult = document.getElementById('trackingResult');
+    const trackingLoading = document.getElementById('trackingLoading');
 
-// URL вашего Worker (без указания компании доставки)
-const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
+    const WORKER_URL_TRACKING = 'https://easyway-tracker.niko-oganesiani.workers.dev';
 
-// Маппинг статусов (публичная информация)
-const statusMap = {
-    'ასაღები': 'შეკვეთა მზად არის ასაღებად',
-    'საწყობშია': 'შეკვეთა მივიდა საწყობში',
-    'გატანილია ჩასაბარებლად': 'კურიერი მიემართება მისამართზე',
-    'ჩაბარებულია': 'შეკვეთა ჩაბარებულია'
-};
-
-// Порядок статусов (убираем возврат и отмену)
-const statusOrder = [
-    'ასაღები',
-    'საწყობშია',
-    'გატანილია ჩასაბარებლად',
-    'ჩაბარებულია'
-];
-
-if (trackingBtn && trackingModal && closeTrackingBtn) {
-    trackingBtn.addEventListener('click', () => {
-        trackingModal.classList.add('active');
-        trackingOrderId.value = '';
-        trackingResult.style.display = 'none';
-        trackingLoading.style.display = 'none';
-        trackingResult.innerHTML = '';
-        trackingOrderId.focus();
-    });
-
-    closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
-    window.addEventListener('click', (e) => {
-        if (e.target === trackingModal) trackingModal.classList.remove('active');
-    });
-
-    trackingCheckBtn.addEventListener('click', async () => {
-        const orderId = trackingOrderId.value.trim();
-        if (!orderId) {
-            alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.');
-            return;
-        }
-
-        trackingLoading.style.display = 'block';
-        trackingResult.style.display = 'none';
-        trackingResult.innerHTML = '';
-        trackingCheckBtn.disabled = true;
-        trackingCheckBtn.textContent = '⏳ იტვირთება...';
-
-        try {
-            const response = await fetch(WORKER_URL_TRACKING, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_id: orderId })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
+    if (trackingBtn && trackingModal && closeTrackingBtn) {
+        trackingBtn.addEventListener('click', () => {
+            trackingModal.classList.add('active');
+            trackingOrderId.value = '';
+            trackingResult.style.display = 'none';
             trackingLoading.style.display = 'none';
-            trackingResult.style.display = 'block';
+            trackingResult.innerHTML = '';
+            trackingOrderId.focus();
+        });
 
-            if (data.error) {
-                trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
+        closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
+        window.addEventListener('click', (e) => {
+            if (e.target === trackingModal) trackingModal.classList.remove('active');
+        });
+
+        trackingCheckBtn.addEventListener('click', async () => {
+            const orderId = trackingOrderId.value.trim();
+            if (!orderId) {
+                alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.');
                 return;
             }
-
-            if (!data.data || data.data.length === 0) {
-                trackingResult.innerHTML = `<div class="error">❌ შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
-                return;
-            }
-
-            const order = data.data[0];
-            const currentStatus = order.statusName;
-
-            // === СОЗДАЕМ СОБЫТИЯ ===
-            const trackingEvents = [];
-
-            // 1. Статус создания с датой
-            const addDate = parseGeorgianDate(order.formatted_add_date);
-            if (addDate) {
-                trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
-            }
-
-            // 2. Если статус "საწყობშია" или выше - добавляем его
-            if (currentStatus === 'საწყობშია' || currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
-                }
-                if (!eventDate) {
-                    eventDate = new Date();
-                }
-                trackingEvents.push({
-                    status: 'საწყობშია',
-                    created_at: eventDate.toISOString()
+            trackingLoading.style.display = 'block';
+            trackingResult.style.display = 'none';
+            trackingResult.innerHTML = '';
+            trackingCheckBtn.disabled = true;
+            trackingCheckBtn.textContent = '⏳ იტვირთება...';
+            try {
+                const response = await fetch(WORKER_URL_TRACKING, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: orderId })
                 });
-            }
-
-            // 3. Если статус "გატანილია ჩასაბარებლად" или "ჩაბარებულია" - добавляем "გატანილია ჩასაბარებლად"
-            if (currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                trackingLoading.style.display = 'none';
+                trackingResult.style.display = 'block';
+                if (data.error) {
+                    trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
+                    return;
                 }
-                if (!eventDate) {
-                    eventDate = new Date();
+                let trackingData = [];
+                if (Array.isArray(data)) trackingData = data;
+                else if (data.tracking && Array.isArray(data.tracking)) trackingData = data.tracking;
+                else {
+                    trackingResult.innerHTML = `<div class="error">❌ არასწორი მონაცემები</div>`;
+                    return;
                 }
-                trackingEvents.push({
-                    status: 'გატანილია ჩასაბარებლად',
-                    created_at: eventDate.toISOString()
-                });
-            }
-
-            // 4. Добавляем текущий статус
-            if (currentStatus && !trackingEvents.some(ev => ev.status === currentStatus)) {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
+                if (trackingData.length === 0) {
+                    trackingResult.innerHTML = `<div class="error">❌ ინფორმაცია არ არის</div>`;
+                    return;
                 }
-                if (!eventDate) {
-                    eventDate = new Date();
-                }
-                trackingEvents.push({
-                    status: currentStatus,
-                    created_at: eventDate.toISOString()
-                });
-            }
-
-            // Сортируем по порядку статусов
-            trackingEvents.sort((a, b) => {
-                return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-            });
-
-            // Последний статус - самый продвинутый
-            const lastStatus = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].status : null;
-
-            // Карта дат
-            const statusDateMap = {};
-            trackingEvents.forEach(ev => {
-                statusDateMap[ev.status] = ev.created_at;
-            });
-
-            // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
-            let timelineHtml = '';
-            statusOrder.forEach((status) => {
-                const hasEvent = statusDateMap[status] !== undefined;
-                const isPast = hasEvent && status !== lastStatus;
-                const isCurrent = status === lastStatus;
-                const isFuture = !hasEvent;
-
-                let stepClass = 'future';
-                if (isPast) stepClass = 'past';
-                else if (isCurrent) stepClass = 'current';
-
-                const translated = statusMap[status] || status;
-                const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
-
-                let dateStr = '—';
-                if (hasEvent) {
-                    const date = new Date(statusDateMap[status]);
-                    if (status === 'ასაღები') {
+                const last = trackingData[trackingData.length - 1];
+                const statusOrder = ['new', 'taking', 'taken', 'in_store', 'taken_store', 'delivered'];
+                const statusMap = {
+                    'new': 'შეკვეთა მიღებულია, მიწოდებას ახორციელებს საკურიერო კომპანია «EasyWay»',
+                    'taking': 'EasyWay მიემართება ENKA Electronics-ის საწყობში',
+                    'taken': 'შეკვეთა გადაეცა EasyWay-ს და მიემართება ლოგისტიკურ ცენტრში',
+                    'in_store': 'შეკვეთა მივიდა EasyWay-ს ლოგისტიკურ ცენტრში',
+                    'taken_store': 'EasyWay-ის კურიერმა აიღო შეკვეთა ლოგისტიკური ცენტრიდან და მიემართება თქვენს მისამართზე',
+                    'delivered': 'შეკვეთა მიწოდებულია',
+                    'cancel': 'გაუქმებულია',
+                    'cancelled': 'გაუქმებულია'
+                };
+                const allStatuses = ['new', 'taking', 'taken', 'in_store', 'taken_store', 'delivered'];
+                const lastStatus = trackingData.length > 0 ? trackingData[trackingData.length - 1].status : null;
+                const statusDateMap = {};
+                trackingData.forEach(ev => { statusDateMap[ev.status] = ev.created_at; });
+                let timelineHtml = '';
+                allStatuses.forEach((status) => {
+                    const isPast = statusDateMap[status] !== undefined && status !== lastStatus;
+                    const isCurrent = status === lastStatus;
+                    const isFuture = !isPast && !isCurrent;
+                    let stepClass = 'future';
+                    if (isPast) stepClass = 'past';
+                    else if (isCurrent) stepClass = 'current';
+                    const translated = statusMap[status] || status;
+                    const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
+                    let dateStr = '';
+                    if (isPast || isCurrent) {
+                        const date = new Date(statusDateMap[status]);
                         dateStr = date.toLocaleString('ru-RU', {
                             day: '2-digit', month: '2-digit', year: 'numeric',
                             hour: '2-digit', minute: '2-digit'
                         });
                     } else {
-                        dateStr = date.toLocaleDateString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric'
-                        });
+                        dateStr = '—';
                     }
-                }
-
-                timelineHtml += `
-                    <div class="timeline-step-v ${stepClass}">
-                        <div class="timeline-dot-v"></div>
-                        <div class="timeline-content-v">
-                            <div class="timeline-date-v">${dateStr}</div>
-                            <div class="timeline-text-v">${textWithoutEmoji}</div>
+                    timelineHtml += `
+                        <div class="timeline-step-v ${stepClass}">
+                            <div class="timeline-dot-v"></div>
+                            <div class="timeline-content-v">
+                                <div class="timeline-date-v">${dateStr}</div>
+                                <div class="timeline-text-v">${textWithoutEmoji}</div>
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
-
-            // === ДИЗАЙНЕРСКИЙ СТАТУС-БЕЙДЖ ===
-            const statusBadge = getStatusBadge(currentStatus);
-
-            // === ФОРМИРУЕМ РЕЗУЛЬТАТ ===
-            const trackingCode = order.tracking_code || orderId;
-
-            const timelineContainer = `
-                <div style="background: white; padding: 1rem; border-radius: 1rem;">
-                    <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">
-                        📦 შეკვეთა #${trackingCode}
-                    </p>
-                    <div style="text-align: center; margin: 0.8rem 0 1.5rem 0;">
-                        ${statusBadge}
-                    </div>
-                    <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
+                    `;
+                });
+                const timelineContainer = `
                     <div class="timeline-vertical">
                         ${timelineHtml}
                     </div>
-                </div>
-            `;
-
-            trackingResult.innerHTML = timelineContainer;
-
-        } catch (error) {
-            trackingLoading.style.display = 'none';
-            trackingResult.style.display = 'block';
-            trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
-            console.error('Tracking error:', error);
-        } finally {
-            trackingCheckBtn.disabled = false;
-            trackingCheckBtn.textContent = 'შემოწმება';
-        }
-    });
-
-    trackingOrderId.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') trackingCheckBtn.click();
-    });
-}
-
-// Вспомогательные функции
-function parseGeorgianDate(dateStr) {
-    if (!dateStr) return null;
-    try {
-        const parts = dateStr.trim().split(' ');
-        const dateParts = parts[0].split('.');
-        if (dateParts.length === 3) {
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1;
-            const year = parseInt(dateParts[2]);
-            let hours = 0, minutes = 0;
-            if (parts.length > 1 && parts[1]) {
-                const timeParts = parts[1].split(':');
-                if (timeParts.length === 2) {
-                    hours = parseInt(timeParts[0]);
-                    minutes = parseInt(timeParts[1]);
-                }
+                `;
+                trackingResult.innerHTML = `
+                    <div style="background: white; padding: 1rem; border-radius: 1rem;">
+                        <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;text-align: center;">📦 შეკვეთა #${orderId}</p>
+                        <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
+                        ${timelineContainer}
+                    </div>
+                `;
+            } catch (error) {
+                trackingLoading.style.display = 'none';
+                trackingResult.style.display = 'block';
+                trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
+                console.error('Tracking error:', error);
+            } finally {
+                trackingCheckBtn.disabled = false;
+                trackingCheckBtn.textContent = 'შემოწმება';
             }
-            return new Date(year, month, day, hours, minutes);
-        }
-        return null;
-    } catch (e) {
-        return null;
-    }
-}
+        });
 
-// ДИЗАЙНЕРСКИЙ СТАТУС-БЕЙДЖ
-function getStatusBadge(statusName) {
-    if (!statusName) {
-        return `<span class="status-badge status-unknown">📦 უცნობი</span>`;
+        trackingOrderId.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') trackingCheckBtn.click();
+        });
     }
 
-    // Бейджи с градиентом и тенью
-    const badgeMap = {
-        'ჩაბარებულია': {
-            class: 'status-badge-delivered',
-            text: '✅ ჩაბარებულია'
-        },
-        'ასაღები': {
-            class: 'status-badge-processing',
-            text: '⏳ მზად არის ასაღებად'
-        },
-        'საწყობშია': {
-            class: 'status-badge-processing',
-            text: '⏳ საწყობშია'
-        },
-        'გატანილია ჩასაბარებლად': {
-            class: 'status-badge-shipping',
-            text: '🚚 მიემართება მისამართზე'
+    // ========== ГЛОБАЛЬНАЯ НАСТРОЙКА WORKER_URL ==========
+    if (typeof window.WORKER_URL === 'undefined') {
+        window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+    }
+    console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
+
+    // ========== НОВАЯ МОДАЛКА ПОДТВЕРЖДЕНИЯ ЗАКАЗА ==========
+    const orderConfirmModal = document.getElementById('orderConfirmModal');
+    const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
+
+    // Функция показа модалки с данными заказа
+    function showOrderConfirm(data) {
+        document.getElementById('confirmName').textContent = data.name || '-';
+        document.getElementById('confirmPhone').textContent = data.phone || '-';
+        document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
+        document.getElementById('confirmPrice').textContent = (data.price || 39) + ' ₾';
+        
+        orderConfirmModal.classList.add('active');
+    }
+
+    // Закрытие по кнопке
+    if (closeOrderConfirmBtn) {
+        closeOrderConfirmBtn.addEventListener('click', () => {
+            orderConfirmModal.classList.remove('active');
+        });
+    }
+
+    // Закрытие по клику вне модалки
+    window.addEventListener('click', (e) => {
+        if (e.target === orderConfirmModal) {
+            orderConfirmModal.classList.remove('active');
         }
+    });
+
+    // ========== МОДИФИЦИРУЕМ ФУНКЦИЮ processOrder ==========
+    // Сохраняем оригинальную функцию в переменную, если она уже определена
+    // Переопределяем функцию processOrder с добавлением модалки
+    window.processOrder = async function(event, nameId, phoneId) {
+        event.preventDefault();
+
+        const name = document.getElementById(nameId).value.trim();
+        const phoneInput = document.getElementById(phoneId);
+        let phone = phoneInput.value.trim();
+
+        // Убираем все пробелы и лишние символы
+        phone = phone.replace(/\s/g, '');
+
+        // Защита от +995 в начале (если вдруг)
+        if (phone.startsWith('+995')) {
+            phone = phone.substring(4);
+        }
+
+        if (!name) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+            return false;
+        }
+
+        // Проверка: ровно 9 цифр, не начинается с 0 или 995
+        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
+            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
+            
+            // Очищаем поле при ошибке
+            phoneInput.value = '';
+            
+            if (phone.startsWith('995')) {
+                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
+            } else if (phone.startsWith('0')) {
+                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
+            }
+            
+            alert(errorMsg);
+            phoneInput.focus();
+            return false;
+        }
+
+        // Добавляем +995 к номеру для отправки
+        const fullPhone = '+995' + phone;
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.name = name;
+        data.phone = fullPhone;
+
+        const productId = data.product_id;
+        const productName = data.product;
+        const productPrice = parseFloat(data.price);
+
+        const submitBtn = event.target.querySelector('.btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                // Отправляем пиксель Facebook
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'Purchase', {
+                        content_ids: [productId],
+                        currency: 'GEL',
+                        value: productPrice,
+                        content_name: productName
+                    });
+                }
+
+                // ✅ ПОКАЗЫВАЕМ НОВУЮ МОДАЛКУ ВМЕСТО ALERT
+                showOrderConfirm({
+                    name: name,
+                    phone: fullPhone,
+                    product: productName || 'Smartscale',
+                    price: productPrice || 39
+                });
+
+                // Очищаем поля
+                document.getElementById(nameId).value = "";
+                document.getElementById(phoneId).value = "";
+                
+                // Убираем классы валидации
+                const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+                if (wrapper) {
+                    wrapper.classList.remove('valid', 'invalid');
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     };
 
-    const badge = badgeMap[statusName] || {
-        class: 'status-badge-unknown',
-        text: '📦 ' + statusName
-    };
+    // ========== ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ ТЕЛЕФОНА ==========
+    function formatPhoneInput(input) {
+        // Получаем значение
+        let value = input.value;
+        
+        // Убираем все пробелы
+        value = value.replace(/\s/g, '');
+        
+        // Если есть +995 в начале - убираем
+        if (value.startsWith('+995')) {
+            value = value.substring(4);
+        }
+        
+        // Удаляем все не-цифры
+        value = value.replace(/\D/g, '');
+        
+        // Если пользователь начал вводить 995 - очищаем поле и показываем ошибку
+        if (value.startsWith('995')) {
+            const wrapper = input.closest('.phone-wrapper');
+            if (wrapper) {
+                wrapper.classList.add('invalid');
+                wrapper.classList.remove('valid');
+            }
+            input.value = '';
+            return;
+        }
+        
+        // Ограничиваем длину 9 цифрами
+        if (value.length > 9) {
+            value = value.slice(0, 9);
+        }
+        
+        // Форматируем с пробелами: 555 55 55 55
+        let formatted = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i === 3 || i === 5 || i === 7) {
+                formatted += ' ';
+            }
+            formatted += value[i];
+        }
+        
+        input.value = formatted;
+        
+        // Визуальная обратная связь
+        const wrapper = input.closest('.phone-wrapper');
+        if (wrapper) {
+            wrapper.classList.remove('valid', 'invalid');
+            if (value.length === 9) {
+                wrapper.classList.add('valid');
+            } else if (value.length > 0) {
+                wrapper.classList.add('invalid');
+            }
+        }
+    }
 
-    return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
-}
+    // ========== ПОДКЛЮЧАЕМ ОБРАБОТЧИКИ ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        const formTop = document.getElementById('orderFormTop');
+        const formBottom = document.getElementById('orderFormBottom');
+        const phoneTop = document.getElementById('phoneTop');
+        const phoneBottom = document.getElementById('phoneBottom');
 
-// ========== ГЛОБАЛЬНАЯ НАСТРОЙКА WORKER_URL ==========
-if (typeof window.WORKER_URL === 'undefined') {
-    window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
-}
-console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
+        // Обработчики ввода для форматирования
+        if (phoneTop) {
+            phoneTop.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+            // Добавляем обработчик change для автозаполнения
+            phoneTop.addEventListener('change', function() {
+                formatPhoneInput(this);
+            });
+        }
+
+        if (phoneBottom) {
+            phoneBottom.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+            // Добавляем обработчик change для автозаполнения
+            phoneBottom.addEventListener('change', function() {
+                formatPhoneInput(this);
+            });
+        }
+
+        if (formTop) {
+            formTop.addEventListener('submit', function(e) {
+                processOrder(e, 'nameTop', 'phoneTop');
+            });
+        }
+
+        if (formBottom) {
+            formBottom.addEventListener('submit', function(e) {
+                processOrder(e, 'nameBottom', 'phoneBottom');
+            });
+        }
+
+        console.log('✅ Бот готов к приёму заказов');
+    });
 </script>
 </body>
 </html>
