@@ -456,45 +456,38 @@
                     body: JSON.stringify(data)
                 });
                 
-                if (response.ok) {
-                    // ===== META PIXEL (для модалки на главной) =====
-                    try {
-                        if (typeof fbq !== 'undefined' && typeof fbq === 'function') {
-                            const priceValue = parseFloat(product.price) || 0;
-                            const idString = String(product.id || 'product');
-                            const nameString = String(product.name || 'Товар');
-                            
-                            fbq('track', 'Purchase', {
-                                content_ids: [idString],
-                                currency: 'GEL',
-                                value: priceValue,
-                                content_name: nameString
-                            });
-                            console.log('✅ Meta Pixel: Purchase tracked (modal)');
-                        }
-                    } catch (e) {
-                        console.warn('⚠️ Meta Pixel error (ignored):', e.message);
-                    }
-                    // ===== END META PIXEL =====
-                    
-                    // Закрываем форму
-                    orderFormModal.classList.remove('active');
-                    
-                    // Показываем подтверждение
-                    setTimeout(function() {
-                        if(typeof window.showOrderConfirm === 'function') {
-                            window.showOrderConfirm({
-                                name: name,
-                                phone: fullPhone,
-                                product: product.name || 'Товар',
-                                price: product.price || '0 ₾'
-                            });
-                        }
-                    }, 300);
-                    
-                } else {
-                    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-                }
+if (response.ok) {
+    // ===== META PIXEL =====
+    try {
+        if (typeof fbq !== 'undefined') {
+            fbq('track', 'Purchase', {
+                content_ids: [product.id || 'product'],
+                currency: 'GEL',
+                value: parseFloat(product.price) || 0,
+                content_name: product.name || 'Товар'
+            });
+        }
+    } catch(e) {}
+    // ===== END META PIXEL =====
+    
+    // Закрываем форму
+    orderFormModal.classList.remove('active');
+    
+    // Показываем подтверждение
+    setTimeout(function() {
+        if(typeof window.showOrderConfirm === 'function') {
+            window.showOrderConfirm({
+                name: name,
+                phone: fullPhone,
+                product: product.name || 'Товар',
+                price: product.price || '0 ₾'
+            });
+        }
+    }, 300);
+    
+} else {
+    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+}
             } catch(error) {
                 console.error('❌ Ошибка:', error);
                 alert('❌ Ошибка сети. Проверьте подключение.');
@@ -633,25 +626,20 @@
             });
 
 if (response.ok) {
-    // ===== META PIXEL =====
-    try {
-        if (typeof fbq !== 'undefined' && typeof fbq === 'function') {
-            const priceValue = parseFloat(productPrice) || 0;
-            const idString = String(productId || 'product');
-            const nameString = String(productName || 'Товар');
-            
-            fbq('track', 'Purchase', {
-                content_ids: [idString],
-                currency: 'GEL',
-                value: priceValue,
-                content_name: nameString
-            });
-            console.log('✅ Meta Pixel: Purchase tracked');
-        }
-    } catch (e) {
-        console.warn('⚠️ Meta Pixel error (ignored):', e.message);
+// ===== META PIXEL =====
+try {
+    if (typeof fbq !== 'undefined') {
+        fbq('track', 'Purchase', {
+            content_ids: [productId],
+            currency: 'GEL',
+            value: parseFloat(productPrice) || 0,
+            content_name: productName || 'Товар'
+        });
     }
-    // ===== END META PIXEL =====
+} catch(e) {
+    // Игнорируем ошибки пикселя
+}
+// ===== END META PIXEL =====
 
                 if (typeof window.showOrderConfirm === 'function') {
                     window.showOrderConfirm({
