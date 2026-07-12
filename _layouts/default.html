@@ -318,6 +318,18 @@ function parseGeorgianDate(dateStr) {
     }
 }
 
+function formatDate(date, showTime = true) {
+    if (!date) return '—';
+    const options = {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+    };
+    if (showTime) {
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+    }
+    return date.toLocaleString('ru-RU', options);
+}
+
 function getStatusBadge(statusName) {
     if (!statusName) return { class: 'status-unknown', text: 'უცნობი' };
     const badgeMap = {
@@ -383,7 +395,7 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
             const order = data.data[0];
             const currentStatus = order.statusName;
 
-            // === ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
+            // === СОЗДАЕМ ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
             const trackingEvents = [];
 
             // 1. Статус создания (из formatted_add_date)
@@ -392,20 +404,28 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
             }
 
-            // 2. Если статус "ჩაბარებულია" – добавляем дату доставки (из delivery_date)
-            //    Важно: delivery_date содержит только дату, без времени
-            if (currentStatus === 'ჩაბარებულია' && order.delivery_date) {
-                const deliveryDate = new Date(order.delivery_date);
-                // Устанавливаем время на 00:00, чтобы потом отобразить только дату
-                deliveryDate.setHours(0, 0, 0, 0);
-                trackingEvents.push({ status: 'ჩაბარებულია', created_at: deliveryDate.toISOString() });
-            } else if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
-                // 3. Для других статусов (не создание и не доставка)
-                const eventDate = order.delivery_date ? new Date(order.delivery_date) : new Date();
-                trackingEvents.push({ status: currentStatus, created_at: eventDate.toISOString() });
+            // 2. Если текущий статус не "ასაღები" – добавляем его с датой из delivery_date (если есть)
+            if (currentStatus && currentStatus !== 'ასაღები') {
+                let eventDate = null;
+                if (order.delivery_date) {
+                    // Используем дату из delivery_date (без времени)
+                    const parsed = new Date(order.delivery_date);
+                    if (!isNaN(parsed)) {
+                        // Устанавливаем время на 00:00, чтобы избежать 04:00
+                        parsed.setHours(0, 0, 0, 0);
+                        eventDate = parsed;
+                    }
+                }
+                if (!eventDate) {
+                    eventDate = new Date();
+                }
+                trackingEvents.push({
+                    status: currentStatus,
+                    created_at: eventDate.toISOString()
+                });
             }
 
-            // === ОПРЕДЕЛЯЕМ ПОСЛЕДНИЙ СТАТУС ПО ПОРЯДКУ (НЕ ПО ДАТЕ) ===
+            // === ОПРЕДЕЛЯЕМ ПОСЛЕДНИЙ СТАТУС ПО ПОРЯДКУ ===
             let lastStatus = null;
             for (let i = statusOrder.length - 1; i >= 0; i--) {
                 if (trackingEvents.some(ev => ev.status === statusOrder[i])) {
@@ -417,11 +437,13 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 lastStatus = currentStatus;
             }
 
+            // Строим карту дат
             const statusDateMap = {};
             trackingEvents.forEach(ev => {
                 statusDateMap[ev.status] = ev.created_at;
             });
 
+            // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
             let timelineHtml = '';
             statusOrder.forEach((status) => {
                 const hasEvent = statusDateMap[status] !== undefined;
@@ -439,16 +461,12 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 let dateStr = '—';
                 if (hasEvent) {
                     const date = new Date(statusDateMap[status]);
-                    // Если статус "ჩაბარებულია" и время 00:00, показываем только дату
-                    if (status === 'ჩაბარებულია' && date.getHours() === 0 && date.getMinutes() === 0) {
-                        dateStr = date.toLocaleDateString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric'
-                        });
+                    // Для статуса "ასაღები" показываем полную дату с временем
+                    if (status === 'ასაღები') {
+                        dateStr = formatDate(date, true);
                     } else {
-                        dateStr = date.toLocaleString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric',
-                            hour: '2-digit', minute: '2-digit'
-                        });
+                        // Для остальных статусов показываем только дату (без времени)
+                        dateStr = formatDate(date, false);
                     }
                 }
 
