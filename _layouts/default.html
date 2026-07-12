@@ -112,19 +112,236 @@
             .timeline-content-v{min-height: 2.4rem;}
         }
 
-        /* Стили для новой модалки подтверждения заказа */
-        .order-confirm-icon{font-size: 3rem;margin-bottom: 0.5rem;text-align:center;}
-        .order-confirm-title{font-size: 1.8rem;margin-bottom: 0.5rem;text-align:center;color:#16a34a;}
-        .order-confirm-details{background:#f0fdf4;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;}
-        .order-confirm-row{display:flex;justify-content:space-between;margin-bottom:0.5rem;}
-        .order-confirm-row:last-child{margin-bottom:0;}
-        .order-confirm-label{color:#64748b;}
-        .order-confirm-value{font-weight:600;}
-        .order-confirm-divider{border-top:1px dashed #bbf7d0;margin:0.8rem 0;padding-top:0.8rem;}
-        .order-confirm-price{font-weight:700;font-size:1.2rem;color:#16a34a;}
-        .order-confirm-message{text-align:center;color:#475569;font-size:0.95rem;margin-bottom:1rem;}
-        .order-confirm-btn{background:#16a34a;color:white;border:none;padding:0.9rem;width:100%;border-radius:1rem;cursor:pointer;font-weight:600;font-size:1.1rem;transition:all 0.2s;}
-        .order-confirm-btn:hover{background:#15803d;}
+/* ===== НОВАЯ АНИМАЦИЯ ДЛЯ МОДАЛКИ ПОДТВЕРЖДЕНИЯ ===== */
+.order-confirm-icon-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Круг с градиентом */
+.order-confirm-circle {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, #16a34a, #22c55e, #16a34a);
+    animation: rotateCircle 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Внутренний белый круг */
+.order-confirm-inner {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popInner 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.4s both;
+}
+
+/* Иконка галочки */
+.order-confirm-check {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.order-confirm-check::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 8px;
+    width: 12px;
+    height: 6px;
+    border-left: 4px solid #16a34a;
+    border-bottom: 4px solid #16a34a;
+    transform: rotate(-45deg) scale(0);
+    animation: drawCheck 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.8s forwards;
+}
+
+/* Круговые частицы */
+.order-confirm-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #16a34a;
+    opacity: 0;
+}
+
+.particle:nth-child(1) { 
+    top: -8px; left: 50%; 
+    animation: particle1 0.8s ease-out 0.3s forwards;
+}
+.particle:nth-child(2) { 
+    top: 20%; right: -10px; 
+    animation: particle2 0.8s ease-out 0.35s forwards;
+}
+.particle:nth-child(3) { 
+    bottom: -8px; left: 50%; 
+    animation: particle3 0.8s ease-out 0.4s forwards;
+}
+.particle:nth-child(4) { 
+    top: 20%; left: -10px; 
+    animation: particle4 0.8s ease-out 0.45s forwards;
+}
+.particle:nth-child(5) { 
+    top: -5px; right: 0px; 
+    animation: particle5 0.8s ease-out 0.5s forwards;
+}
+.particle:nth-child(6) { 
+    bottom: -5px; left: 0px; 
+    animation: particle6 0.8s ease-out 0.55s forwards;
+}
+
+/* Анимации */
+@keyframes rotateCircle {
+    0% { transform: rotate(0deg) scale(0.3); opacity: 0; }
+    50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
+    100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+
+@keyframes popInner {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+@keyframes drawCheck {
+    0% { transform: rotate(-45deg) scale(0); }
+    100% { transform: rotate(-45deg) scale(1); }
+}
+
+@keyframes particle1 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(0, -30px) scale(0); }
+}
+@keyframes particle2 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(20px, -20px) scale(0); }
+}
+@keyframes particle3 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(0, 30px) scale(0); }
+}
+@keyframes particle4 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-20px, -20px) scale(0); }
+}
+@keyframes particle5 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(15px, -25px) scale(0); }
+}
+@keyframes particle6 {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-15px, 25px) scale(0); }
+}
+
+.order-confirm-title {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    color: #16a34a;
+    animation: fadeUpText 0.6s ease 0.6s both;
+}
+
+@keyframes fadeUpText {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.order-confirm-details {
+    background: #f0fdf4;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    animation: fadeInDetails 0.6s ease 0.5s both;
+}
+
+@keyframes fadeInDetails {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.order-confirm-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #e5f4e8;
+}
+.order-confirm-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.order-confirm-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.order-confirm-value {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.order-confirm-divider {
+    border-top: 2px dashed #bbf7d0;
+    margin: 0.8rem 0;
+    padding-top: 0.8rem;
+}
+
+.order-confirm-price {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #16a34a;
+}
+
+.order-confirm-message {
+    text-align: center;
+    color: #475569;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    animation: fadeUpText 0.6s ease 0.7s both;
+}
+
+.order-confirm-btn {
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 0.9rem;
+    width: 100%;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeUpText 0.6s ease 0.8s both;
+}
+
+.order-confirm-btn:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+}
+
+.order-confirm-btn:active {
+    transform: scale(0.95);
+}
         
     </style>
 </head>
@@ -173,37 +390,53 @@
         </div>
     </div>
 
-    <!-- ===== НОВАЯ МОДАЛКА ПОДТВЕРЖДЕНИЯ ЗАКАЗА ===== -->
-    <div class="modal" id="orderConfirmModal">
-        <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
-            <div class="order-confirm-icon">✅</div>
-            <h3 class="order-confirm-title">შეკვეთა მიღებულია!</h3>
-            
-            <div class="order-confirm-details">
-                <div class="order-confirm-row">
-                    <span class="order-confirm-label">👤 კლიენტი</span>
-                    <span class="order-confirm-value" id="confirmName">-</span>
-                </div>
-                <div class="order-confirm-row">
-                    <span class="order-confirm-label">📱 ტელეფონი</span>
-                    <span class="order-confirm-value" id="confirmPhone">-</span>
-                </div>
-                <div class="order-confirm-row">
-                    <span class="order-confirm-label">📦 პროდუქტი</span>
-                    <span class="order-confirm-value" id="confirmProduct">-</span>
-                </div>
-                <div class="order-confirm-divider"></div>
-                <div class="order-confirm-row">
-                    <span class="order-confirm-label">💰 თანხა</span>
-                    <span class="order-confirm-price" id="confirmPrice">-</span>
-                </div>
+<!-- ===== НОВАЯ МОДАЛКА ПОДТВЕРЖДЕНИЯ ЗАКАЗА С АНИМАЦИЕЙ ===== -->
+<div class="modal" id="orderConfirmModal">
+    <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
+        
+        <!-- Анимированная иконка -->
+        <div class="order-confirm-icon-wrapper">
+            <div class="order-confirm-circle"></div>
+            <div class="order-confirm-inner">
+                <div class="order-confirm-check"></div>
             </div>
-
-            <p class="order-confirm-message">📞 ჩვენი მენეჯერი მალე დაგიკავშირდებათ</p>
-
-            <button class="order-confirm-btn" id="closeOrderConfirmModal">✅ კარგი, გასაგებია</button>
+            <div class="order-confirm-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
         </div>
+        
+        <h3 class="order-confirm-title">შეკვეთა მიღებულია!</h3>
+        
+        <div class="order-confirm-details">
+            <div class="order-confirm-row">
+                <span class="order-confirm-label">👤 კლიენტი</span>
+                <span class="order-confirm-value" id="confirmName">-</span>
+            </div>
+            <div class="order-confirm-row">
+                <span class="order-confirm-label">📱 ტელეფონი</span>
+                <span class="order-confirm-value" id="confirmPhone">-</span>
+            </div>
+            <div class="order-confirm-row">
+                <span class="order-confirm-label">📦 პროდუქტი</span>
+                <span class="order-confirm-value" id="confirmProduct">-</span>
+            </div>
+            <div class="order-confirm-divider"></div>
+            <div class="order-confirm-row">
+                <span class="order-confirm-label">💰 თანხა</span>
+                <span class="order-confirm-price" id="confirmPrice">-</span>
+            </div>
+        </div>
+
+        <p class="order-confirm-message">📞 ჩვენი მენეჯერი მალე დაგიკავშირდებათ</p>
+
+        <button class="order-confirm-btn" id="closeOrderConfirmModal">✅ კარგი, გასაგებია</button>
     </div>
+</div>
 
     <!-- ===== СКРИПТЫ (общие для всех страниц) ===== -->
 <script>
@@ -466,10 +699,77 @@
         orderConfirmModal.classList.add('active');
     }
 
-    // Закрытие по кнопке
+    // ========== СБРОС АНИМАЦИЙ ПРИ ОТКРЫТИИ МОДАЛКИ ==========
+    // Переопределяем функцию для сброса анимаций
+    window.showOrderConfirm = function(data) {
+        // Обновляем данные
+        document.getElementById('confirmName').textContent = data.name || '-';
+        document.getElementById('confirmPhone').textContent = data.phone || '-';
+        document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
+        document.getElementById('confirmPrice').textContent = (data.price || 39) + ' ₾';
+        
+        // СБРАСЫВАЕМ АНИМАЦИИ перед показом
+        const modal = document.getElementById('orderConfirmModal');
+        const circle = modal.querySelector('.order-confirm-circle');
+        const inner = modal.querySelector('.order-confirm-inner');
+        const check = modal.querySelector('.order-confirm-check');
+        const particles = modal.querySelectorAll('.particle');
+        const title = modal.querySelector('.order-confirm-title');
+        const details = modal.querySelector('.order-confirm-details');
+        const message = modal.querySelector('.order-confirm-message');
+        const btn = modal.querySelector('.order-confirm-btn');
+        
+        // Удаляем все анимации
+        [circle, inner, check, title, details, message, btn].forEach(el => {
+            if (el) {
+                el.style.animation = 'none';
+                // Форсируем reflow
+                void el.offsetWidth;
+                el.style.animation = '';
+            }
+        });
+        
+        // Сбрасываем частицы
+        particles.forEach(p => {
+            p.style.animation = 'none';
+            void p.offsetWidth;
+            p.style.animation = '';
+        });
+        
+        // Показываем модалку
+        orderConfirmModal.classList.add('active');
+    };
+
+    // Закрытие по кнопке с полным сбросом
     if (closeOrderConfirmBtn) {
         closeOrderConfirmBtn.addEventListener('click', () => {
             orderConfirmModal.classList.remove('active');
+            
+            // Сброс анимаций после закрытия
+            setTimeout(() => {
+                const circle = document.querySelector('.order-confirm-circle');
+                const inner = document.querySelector('.order-confirm-inner');
+                const check = document.querySelector('.order-confirm-check');
+                const particles = document.querySelectorAll('.particle');
+                const title = document.querySelector('.order-confirm-title');
+                const details = document.querySelector('.order-confirm-details');
+                const message = document.querySelector('.order-confirm-message');
+                const btn = document.querySelector('.order-confirm-btn');
+                
+                [circle, inner, check, title, details, message, btn].forEach(el => {
+                    if (el) {
+                        el.style.animation = 'none';
+                        void el.offsetWidth;
+                        el.style.animation = '';
+                    }
+                });
+                
+                particles.forEach(p => {
+                    p.style.animation = 'none';
+                    void p.offsetWidth;
+                    p.style.animation = '';
+                });
+            }, 300);
         });
     }
 
@@ -477,6 +777,32 @@
     window.addEventListener('click', (e) => {
         if (e.target === orderConfirmModal) {
             orderConfirmModal.classList.remove('active');
+            
+            // Сброс анимаций после закрытия
+            setTimeout(() => {
+                const circle = document.querySelector('.order-confirm-circle');
+                const inner = document.querySelector('.order-confirm-inner');
+                const check = document.querySelector('.order-confirm-check');
+                const particles = document.querySelectorAll('.particle');
+                const title = document.querySelector('.order-confirm-title');
+                const details = document.querySelector('.order-confirm-details');
+                const message = document.querySelector('.order-confirm-message');
+                const btn = document.querySelector('.order-confirm-btn');
+                
+                [circle, inner, check, title, details, message, btn].forEach(el => {
+                    if (el) {
+                        el.style.animation = 'none';
+                        void el.offsetWidth;
+                        el.style.animation = '';
+                    }
+                });
+                
+                particles.forEach(p => {
+                    p.style.animation = 'none';
+                    void p.offsetWidth;
+                    p.style.animation = '';
+                });
+            }, 300);
         }
     });
 
