@@ -804,6 +804,9 @@ title: "მთავარი"
     const productPriceInput = document.getElementById('orderProductPrice');
     const productIdInput = document.getElementById('orderProductId');
     
+    // Сохраняем оригинальное содержимое модалки при загрузке
+    let originalModalContent = '';
+    
     // ============================================
     // 🆕 ФУНКЦИЯ ОТКРЫТИЯ ФОРМЫ ЗАКАЗА
     // ============================================
@@ -826,24 +829,23 @@ title: "მთავარი"
             return;
         }
         
-        // Сохраняем оригинальное содержимое модалки для восстановления
-        if (!modal._originalContent) {
-            modal._originalContent = modal.querySelector('.modal-content').innerHTML;
+        // Сохраняем оригинальное содержимое модалки при первом вызове
+        if (!originalModalContent) {
+            originalModalContent = modal.querySelector('.modal-content').innerHTML;
         }
         
-        // Заменяем содержимое модалки на форму
+        // Заменяем содержимое модалки на форму с анимациями
         const modalContent = modal.querySelector('.modal-content');
         modalContent.innerHTML = `
-            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; text-align: center; color: #0f172a;">
-                📦 ${product.name}
-            </h3>
             <div style="text-align: center; margin-bottom: 1rem;">
-                <img src="${product.image}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 0.5rem;" 
+                <div style="font-size: 2.5rem; margin-bottom: 0.3rem;">📦</div>
+                <h3 style="font-size: 1.3rem; margin-bottom: 0.3rem; color: #0f172a;">${product.name}</h3>
+                <img src="${product.image}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 0.5rem; margin: 0.5rem 0;" 
                      onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
-                <div style="font-size: 1.3rem; font-weight: 700; color: #2563eb; margin-top: 0.3rem;">${product.price}</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">${product.price}</div>
             </div>
             <form id="quickOrderForm" class="order-form">
-                <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required>
+                <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required autocomplete="name">
                 <div class="phone-wrapper">
                     <span class="phone-prefix">+995</span>
                     <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
@@ -871,16 +873,8 @@ title: "მთავარი"
         const quickPhone = document.getElementById('quickPhone');
         const closeQuickBtn = document.getElementById('closeQuickOrderModal');
         
-        // Форматирование телефона (используем функцию из default.html)
-        if (quickPhone && typeof formatPhoneInput === 'function') {
-            quickPhone.addEventListener('input', function() {
-                formatPhoneInput(this);
-            });
-            quickPhone.addEventListener('change', function() {
-                formatPhoneInput(this);
-            });
-        } else if (quickPhone) {
-            // Своя простая валидация
+        // Форматирование телефона
+        if (quickPhone) {
             quickPhone.addEventListener('input', function() {
                 let val = this.value.replace(/\D/g, '');
                 if (val.length > 9) val = val.slice(0, 9);
@@ -893,7 +887,7 @@ title: "მთავარი"
             });
         }
         
-        // Отправка формы
+        // Отправка формы через основную функцию processOrder
         if (quickForm) {
             quickForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -913,19 +907,26 @@ title: "მთავარი"
                     return;
                 }
                 
-                // Заполняем основную форму и отправляем
+                // Заполняем основную форму
                 customerName.value = name;
                 customerPhone.value = phoneRaw;
                 productNameInput.value = product.name;
                 productPriceInput.value = product.priceValue || product.price;
                 productIdInput.value = product.id || 'product';
                 
-                // Отправляем через основную форму (обработчик в default.html)
-                const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
-                orderForm.dispatchEvent(submitEvent);
-                
-                // Закрываем модалку
+                // Закрываем модалку с формой
                 modal.classList.remove('active');
+                
+                // Отправляем через основную форму (используем processOrder из default.html)
+                if (typeof processOrder === 'function') {
+                    // Создаем событие и передаем ID полей
+                    const fakeEvent = new Event('submit', { cancelable: true, bubbles: true });
+                    // Используем глобальную функцию processOrder
+                    processOrder(fakeEvent, 'customerName', 'customerPhone', 'orderProductName', 'orderProductPrice', 'orderProductId');
+                } else {
+                    // Fallback: отправляем через fetch напрямую
+                    sendOrderDirect(name, phoneRaw, product);
+                }
             });
         }
         
@@ -933,7 +934,7 @@ title: "მთავარი"
         if (closeQuickBtn) {
             closeQuickBtn.addEventListener('click', function() {
                 modal.classList.remove('active');
-                restoreOrderConfirmModal();
+                restoreModalContent();
             });
         }
         
@@ -941,7 +942,7 @@ title: "მთავარი"
         const closeHandler = function(e) {
             if (e.target === modal) {
                 modal.classList.remove('active');
-                restoreOrderConfirmModal();
+                restoreModalContent();
                 document.removeEventListener('click', closeHandler);
             }
         };
@@ -951,19 +952,75 @@ title: "მთავარი"
     // ============================================
     // ФУНКЦИЯ ВОССТАНОВЛЕНИЯ МОДАЛКИ
     // ============================================
-    function restoreOrderConfirmModal() {
+    function restoreModalContent() {
         const modal = document.getElementById('orderConfirmModal');
-        if (!modal || !modal._originalContent) return;
+        if (!modal || !originalModalContent) return;
         
         const modalContent = modal.querySelector('.modal-content');
-        modalContent.innerHTML = modal._originalContent;
+        modalContent.innerHTML = originalModalContent;
         
         // Переподключаем кнопку закрытия
         const closeBtn = document.getElementById('closeOrderConfirmModal');
         if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
+            closeBtn.removeEventListener('click', closeBtn._listener);
+            closeBtn._listener = function() {
                 modal.classList.remove('active');
+            };
+            closeBtn.addEventListener('click', closeBtn._listener);
+        }
+    }
+    
+    // ============================================
+    // FALLBACK: ПРЯМАЯ ОТПРАВКА ЗАКАЗА
+    // ============================================
+    async function sendOrderDirect(name, phone, product) {
+        const fullPhone = '+995' + phone;
+        const data = {
+            name: name,
+            phone: fullPhone,
+            product: product.name,
+            price: product.priceValue || product.price,
+            product_id: product.id || 'product'
+        };
+        
+        const submitBtn = document.querySelector('#quickOrderForm .btn-submit');
+        const originalText = submitBtn ? submitBtn.textContent : 'Отправка...';
+        if (submitBtn) {
+            submitBtn.textContent = "⏳ იგზავნება...";
+            submitBtn.disabled = true;
+        }
+        
+        try {
+            const workerUrl = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+            const response = await fetch(workerUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             });
+            
+            if (response.ok) {
+                // Показываем анимированную модалку подтверждения
+                if (typeof showOrderConfirm === 'function') {
+                    showOrderConfirm({
+                        name: name,
+                        phone: fullPhone,
+                        product: product.name,
+                        price: product.priceValue || product.price
+                    });
+                } else {
+                    alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
+                }
+            } else {
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+        
+        if (submitBtn) {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
         }
     }
     
@@ -1090,6 +1147,12 @@ title: "მთავარი"
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
         console.log('📥 Загружаем catalog.json...');
+        
+        // Сохраняем оригинальное содержимое модалки
+        const modal = document.getElementById('orderConfirmModal');
+        if (modal) {
+            originalModalContent = modal.querySelector('.modal-content').innerHTML;
+        }
         
         fetch('/catalog.json')
             .then(res => {
