@@ -181,27 +181,27 @@
             
             <div class="order-confirm-details">
                 <div class="order-confirm-row">
-                    <span class="order-confirm-label">სახელი</span>
+                    <span class="order-confirm-label">👤 კლიენტი</span>
                     <span class="order-confirm-value" id="confirmName">-</span>
                 </div>
                 <div class="order-confirm-row">
-                    <span class="order-confirm-label">ტელეფონი</span>
+                    <span class="order-confirm-label">📱 ტელეფონი</span>
                     <span class="order-confirm-value" id="confirmPhone">-</span>
                 </div>
                 <div class="order-confirm-row">
-                    <span class="order-confirm-label">პროდუქტი</span>
+                    <span class="order-confirm-label">📦 პროდუქტი</span>
                     <span class="order-confirm-value" id="confirmProduct">-</span>
                 </div>
                 <div class="order-confirm-divider"></div>
                 <div class="order-confirm-row">
-                    <span class="order-confirm-label">თანხა</span>
+                    <span class="order-confirm-label">💰 თანხა</span>
                     <span class="order-confirm-price" id="confirmPrice">-</span>
                 </div>
             </div>
 
-            <p class="order-confirm-message">გთხოვთ, გადაამოწმეთ, რომ ტელეფონის ნომერი სწორად არის მითითებული.</p>
+            <p class="order-confirm-message">📞 ჩვენი მენეჯერი მალე დაგიკავშირდებათ</p>
 
-            <button class="order-confirm-btn" id="closeOrderConfirmModal">დახურვა</button>
+            <button class="order-confirm-btn" id="closeOrderConfirmModal">✅ კარგი, გასაგებია</button>
         </div>
     </div>
 
@@ -480,115 +480,8 @@
         }
     });
 
-    // ========== МОДИФИЦИРУЕМ ФУНКЦИЮ processOrder ==========
-    // Сохраняем оригинальную функцию в переменную, если она уже определена
-    // Переопределяем функцию processOrder с добавлением модалки
-    window.processOrder = async function(event, nameId, phoneId) {
-        event.preventDefault();
-
-        const name = document.getElementById(nameId).value.trim();
-        const phoneInput = document.getElementById(phoneId);
-        let phone = phoneInput.value.trim();
-
-        // Убираем все пробелы и лишние символы
-        phone = phone.replace(/\s/g, '');
-
-        // Защита от +995 в начале (если вдруг)
-        if (phone.startsWith('+995')) {
-            phone = phone.substring(4);
-        }
-
-        if (!name) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-            return false;
-        }
-
-        // Проверка: ровно 9 цифр, не начинается с 0 или 995
-        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
-            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
-            
-            // Очищаем поле при ошибке
-            phoneInput.value = '';
-            
-            if (phone.startsWith('995')) {
-                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
-            } else if (phone.startsWith('0')) {
-                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
-            }
-            
-            alert(errorMsg);
-            phoneInput.focus();
-            return false;
-        }
-
-        // Добавляем +995 к номеру для отправки
-        const fullPhone = '+995' + phone;
-
-        const form = event.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        data.name = name;
-        data.phone = fullPhone;
-
-        const productId = data.product_id;
-        const productName = data.product;
-        const productPrice = parseFloat(data.price);
-
-        const submitBtn = event.target.querySelector('.btn');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-
-        try {
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                // Отправляем пиксель Facebook
-                if (typeof fbq !== 'undefined') {
-                    fbq('track', 'Purchase', {
-                        content_ids: [productId],
-                        currency: 'GEL',
-                        value: productPrice,
-                        content_name: productName
-                    });
-                }
-
-                // ✅ ПОКАЗЫВАЕМ НОВУЮ МОДАЛКУ ВМЕСТО ALERT
-                showOrderConfirm({
-                    name: name,
-                    phone: fullPhone,
-                    product: productName || 'Smartscale',
-                    price: productPrice || 39
-                });
-
-                // Очищаем поля
-                document.getElementById(nameId).value = "";
-                document.getElementById(phoneId).value = "";
-                
-                // Убираем классы валидации
-                const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
-                if (wrapper) {
-                    wrapper.classList.remove('valid', 'invalid');
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-            }
-        } catch (error) {
-            console.error('❌ Ошибка сети:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    };
-
-    // ========== ФУНКЦИЯ ДЛЯ ФОРМАТИРОВАНИЯ ТЕЛЕФОНА ==========
+    // ========== УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ДЛЯ ВСЕХ СТРАНИЦ ==========
+    // Функция для форматирования телефона
     function formatPhoneInput(input) {
         // Получаем значение
         let value = input.value;
@@ -643,47 +536,185 @@
         }
     }
 
-    // ========== ПОДКЛЮЧАЕМ ОБРАБОТЧИКИ ==========
+    // Универсальная функция отправки заказа
+    async function processOrder(event, nameId, phoneId, productField, priceField, productIdField) {
+        event.preventDefault();
+
+        const name = document.getElementById(nameId).value.trim();
+        const phoneInput = document.getElementById(phoneId);
+        let phone = phoneInput.value.trim();
+
+        // Убираем все пробелы и лишние символы
+        phone = phone.replace(/\s/g, '');
+
+        // Защита от +995 в начале (если вдруг)
+        if (phone.startsWith('+995')) {
+            phone = phone.substring(4);
+        }
+
+        if (!name) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+            return false;
+        }
+
+        // Проверка: ровно 9 цифр, не начинается с 0 или 995
+        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
+            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
+            
+            // Очищаем поле при ошибке
+            phoneInput.value = '';
+            
+            if (phone.startsWith('995')) {
+                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
+            } else if (phone.startsWith('0')) {
+                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
+            }
+            
+            alert(errorMsg);
+            phoneInput.focus();
+            return false;
+        }
+
+        // Добавляем +995 к номеру для отправки
+        const fullPhone = '+995' + phone;
+
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.name = name;
+        data.phone = fullPhone;
+
+        // Получаем данные из полей или из data-атрибутов
+        const productName = data.product || (productField ? document.getElementById(productField)?.value : 'Товар');
+        const productPrice = parseFloat(data.price) || (priceField ? parseFloat(document.getElementById(priceField)?.value) : 0);
+        const productId = data.product_id || (productIdField ? document.getElementById(productIdField)?.value : 'product');
+
+        const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                // Отправляем пиксель Facebook
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'Purchase', {
+                        content_ids: [productId],
+                        currency: 'GEL',
+                        value: productPrice,
+                        content_name: productName
+                    });
+                }
+
+                // ✅ ПОКАЗЫВАЕМ МОДАЛКУ
+                showOrderConfirm({
+                    name: name,
+                    phone: fullPhone,
+                    product: productName || 'Товар',
+                    price: productPrice || 0
+                });
+
+                // Очищаем поля
+                document.getElementById(nameId).value = "";
+                document.getElementById(phoneId).value = "";
+                
+                // Убираем классы валидации
+                const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+                if (wrapper) {
+                    wrapper.classList.remove('valid', 'invalid');
+                }
+            } else {
+                const errorText = await response.text();
+                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+
+    // ========== АВТОМАТИЧЕСКОЕ ПОДКЛЮЧЕНИЕ ВСЕХ ФОРМ ==========
     document.addEventListener('DOMContentLoaded', function() {
+        // Находим все формы заказа на странице
+        const orderForms = document.querySelectorAll('.order-form, form[data-order-form]');
+        
+        orderForms.forEach(form => {
+            // Ищем поля ввода
+            const nameInput = form.querySelector('input[name="name"], input[placeholder*="სახელი"], input[placeholder*="Name"]');
+            const phoneInput = form.querySelector('input[name="phone"], input[placeholder*="ტელეფონი"], input[type="tel"]');
+            
+            // Ищем скрытые поля с данными товара
+            const productInput = form.querySelector('input[name="product"]');
+            const priceInput = form.querySelector('input[name="price"]');
+            const productIdInput = form.querySelector('input[name="product_id"]');
+            
+            // Если есть поля для имени и телефона - подключаем обработчик
+            if (nameInput && phoneInput) {
+                // Генерируем уникальные ID если их нет
+                if (!nameInput.id) {
+                    nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
+                }
+                if (!phoneInput.id) {
+                    phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
+                }
+                
+                // Добавляем форматирование телефона
+                phoneInput.addEventListener('input', function() {
+                    formatPhoneInput(this);
+                });
+                phoneInput.addEventListener('change', function() {
+                    formatPhoneInput(this);
+                });
+                
+                // Убеждаемся, что телефон внутри .phone-wrapper
+                if (!phoneInput.closest('.phone-wrapper')) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'phone-wrapper';
+                    const prefix = document.createElement('span');
+                    prefix.className = 'phone-prefix';
+                    prefix.textContent = '+995';
+                    phoneInput.parentNode.insertBefore(wrapper, phoneInput);
+                    wrapper.appendChild(prefix);
+                    wrapper.appendChild(phoneInput);
+                }
+                
+                // Подключаем обработчик отправки
+                form.addEventListener('submit', function(e) {
+                    const nameId = nameInput.id;
+                    const phoneId = phoneInput.id;
+                    const productField = productInput ? productInput.id : null;
+                    const priceField = priceInput ? priceInput.id : null;
+                    const productIdField = productIdInput ? productIdInput.id : null;
+                    
+                    processOrder(e, nameId, phoneId, productField, priceField, productIdField);
+                });
+            }
+        });
+        
+        // Также поддерживаем формы с конкретными ID (для обратной совместимости)
         const formTop = document.getElementById('orderFormTop');
         const formBottom = document.getElementById('orderFormBottom');
-        const phoneTop = document.getElementById('phoneTop');
-        const phoneBottom = document.getElementById('phoneBottom');
-
-        // Обработчики ввода для форматирования
-        if (phoneTop) {
-            phoneTop.addEventListener('input', function() {
-                formatPhoneInput(this);
-            });
-            // Добавляем обработчик change для автозаполнения
-            phoneTop.addEventListener('change', function() {
-                formatPhoneInput(this);
-            });
+        
+        if (formTop && !formTop._listenerAdded) {
+            formTop._listenerAdded = true;
+            // Убеждаемся, что обработчик не добавится дважды
         }
-
-        if (phoneBottom) {
-            phoneBottom.addEventListener('input', function() {
-                formatPhoneInput(this);
-            });
-            // Добавляем обработчик change для автозаполнения
-            phoneBottom.addEventListener('change', function() {
-                formatPhoneInput(this);
-            });
+        
+        if (formBottom && !formBottom._listenerAdded) {
+            formBottom._listenerAdded = true;
         }
-
-        if (formTop) {
-            formTop.addEventListener('submit', function(e) {
-                processOrder(e, 'nameTop', 'phoneTop');
-            });
-        }
-
-        if (formBottom) {
-            formBottom.addEventListener('submit', function(e) {
-                processOrder(e, 'nameBottom', 'phoneBottom');
-            });
-        }
-
-        console.log('✅ Бот готов к приёму заказов');
+        
+        console.log('✅ Универсальная система заказов готова! Найдено форм:', orderForms.length);
     });
 </script>
 </body>
