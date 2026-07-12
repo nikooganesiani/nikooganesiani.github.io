@@ -9,6 +9,30 @@ title: "მთავარი"
         padding: 0;
         box-sizing: border-box;
         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    /* Убираем синее выделение у кликабельных элементов */
+    button,
+    .btn-order,
+    .btn-submit,
+    .close-modal,
+    .category-btn,
+    .reset-filters,
+    .select-trigger,
+    .scroll-top,
+    a {
+        -webkit-tap-highlight-color: transparent !important;
+        outline: none !important;
+    }
+
+    /* Разрешаем выделение текста в инпутах */
+    input,
+    textarea {
+        -webkit-user-select: text !important;
+        user-select: text !important;
     }
 
     /* КАСТОМНАЯ ПОЛОСА ПРОКРУТКИ */
