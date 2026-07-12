@@ -275,7 +275,6 @@ const trackingLoading = document.getElementById('trackingLoading');
 
 const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
 
-// Маппинг статусов (грузинский → читаемый текст)
 const statusMap = {
     'ასაღები': 'შეკვეთა მზად არის ასაღებად',
     'საწყობშია': 'შეკვეთა მივიდა საწყობში',
@@ -285,7 +284,6 @@ const statusMap = {
     'გაუქმებულია': 'გაუქმებულია'
 };
 
-// Порядок статусов (от начала к концу)
 const statusOrder = [
     'ასაღები',
     'საწყობშია',
@@ -295,7 +293,6 @@ const statusOrder = [
     'გაუქმებულია'
 ];
 
-// Функция для парсинга даты из "DD.MM.YYYY HH:MI"
 function parseGeorgianDate(dateStr) {
     if (!dateStr) return null;
     try {
@@ -321,7 +318,6 @@ function parseGeorgianDate(dateStr) {
     }
 }
 
-// Бейдж статуса
 function getStatusBadge(statusName) {
     if (!statusName) return { class: 'status-unknown', text: 'უცნობი' };
     const badgeMap = {
@@ -387,49 +383,39 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
             const order = data.data[0];
             const currentStatus = order.statusName;
 
-            // === СОЗДАЕМ ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
+            // === ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
             const trackingEvents = [];
 
-            // 1. Статус создания (из formatted_add_date)
             const addDate = parseGeorgianDate(order.formatted_add_date);
             if (addDate) {
                 trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
             }
 
-            // 2. Если статус "ჩაბარებულია" – добавляем дату доставки (из delivery_date)
             if (currentStatus === 'ჩაბარებულია' && order.delivery_date) {
                 const deliveryDate = new Date(order.delivery_date);
                 trackingEvents.push({ status: 'ჩაბარებულია', created_at: deliveryDate.toISOString() });
-            }
-
-            // 3. Если статус другой (не создание и не доставка) – показываем его с текущей датой или датой доставки
-            if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
+            } else if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
                 const eventDate = order.delivery_date ? new Date(order.delivery_date) : new Date();
                 trackingEvents.push({ status: currentStatus, created_at: eventDate.toISOString() });
             }
 
-            // === ОПРЕДЕЛЯЕМ ПОСЛЕДНИЙ СТАТУС ПО ПОРЯДКУ (НЕ ПО ДАТЕ!) ===
+            // === ОПРЕДЕЛЯЕМ ПОСЛЕДНИЙ СТАТУС ПО ПОРЯДКУ (НЕ ПО ДАТЕ) ===
             let lastStatus = null;
-            // Проходим по statusOrder с конца (самый продвинутый)
             for (let i = statusOrder.length - 1; i >= 0; i--) {
                 if (trackingEvents.some(ev => ev.status === statusOrder[i])) {
                     lastStatus = statusOrder[i];
                     break;
                 }
             }
-
-            // Если событий нет – ставим текущий статус как последний
             if (!lastStatus && currentStatus) {
                 lastStatus = currentStatus;
             }
 
-            // Строим карту дат для отображения
             const statusDateMap = {};
             trackingEvents.forEach(ev => {
                 statusDateMap[ev.status] = ev.created_at;
             });
 
-            // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
             let timelineHtml = '';
             statusOrder.forEach((status) => {
                 const hasEvent = statusDateMap[status] !== undefined;
