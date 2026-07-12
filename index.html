@@ -796,7 +796,7 @@ title: "მთავარი"
     const scrollTopBtn = document.getElementById('scrollTop');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
-    // Получаем скрытую форму для отправки
+    // Получаем форму
     const orderForm = document.getElementById('mainOrderForm');
     const customerName = document.getElementById('customerName');
     const customerPhone = document.getElementById('customerPhone');
@@ -805,7 +805,7 @@ title: "მთავარი"
     const productIdInput = document.getElementById('orderProductId');
     
     // ============================================
-    // 🆕 ФУНКЦИЯ ОТКРЫТИЯ МОДАЛКИ (использует default.html)
+    // 🆕 ФУНКЦИЯ ОТКРЫТИЯ ФОРМЫ ЗАКАЗА
     // ============================================
     function openOrderModal(product) {
         currentProduct = product;
@@ -815,41 +815,157 @@ title: "მთავარი"
         productPriceInput.value = product.priceValue || product.price;
         productIdInput.value = product.id || 'product';
         
-        // Показываем модалку через универсальную систему
-        // Находим модалку из default.html
+        // Очищаем поля
+        customerName.value = '';
+        customerPhone.value = '';
+        
+        // Находим модалку подтверждения из default.html
         const modal = document.getElementById('orderConfirmModal');
-        if (modal) {
-            // Используем функцию из default.html для показа модалки с данными
-            if (typeof showOrderConfirm === 'function') {
-                // Показываем модалку с данными заказа
-                showOrderConfirm({
-                    name: customerName.value || 'Клиент',
-                    phone: customerPhone.value || '+995',
-                    product: product.name,
-                    price: product.priceValue || 39
-                });
-            } else {
-                // Если функция не доступна, используем старый метод
-                // Показываем модалку подтверждения через форму
-                const formEvent = new Event('submit', { cancelable: true });
-                // Заполняем имя и телефон тестовыми данными, если они пустые
-                if (!customerName.value) customerName.value = 'Клиент';
-                if (!customerPhone.value) customerPhone.value = '555123456';
-                
-                // Отправляем форму через универсальный обработчик
-                orderForm.dispatchEvent(formEvent);
-            }
-        } else {
-            // Fallback: если модалка не найдена, используем alert
-            alert(`✅ Заказ: ${product.name}\n💰 Цена: ${product.price}\n\n📞 Менеджер свяжется с вами!`);
+        if (!modal) {
+            alert(`Заказ: ${product.name}\nЦена: ${product.price}\n\nМенеджер свяжется с вами!`);
+            return;
         }
+        
+        // Сохраняем оригинальное содержимое модалки для восстановления
+        if (!modal._originalContent) {
+            modal._originalContent = modal.querySelector('.modal-content').innerHTML;
+        }
+        
+        // Заменяем содержимое модалки на форму
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.innerHTML = `
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem; text-align: center; color: #0f172a;">
+                📦 ${product.name}
+            </h3>
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <img src="${product.image}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 0.5rem;" 
+                     onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
+                <div style="font-size: 1.3rem; font-weight: 700; color: #2563eb; margin-top: 0.3rem;">${product.price}</div>
+            </div>
+            <form id="quickOrderForm" class="order-form">
+                <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required>
+                <div class="phone-wrapper">
+                    <span class="phone-prefix">+995</span>
+                    <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
+                </div>
+                <input type="hidden" name="product" value="${product.name}">
+                <input type="hidden" name="price" value="${product.priceValue || product.price}">
+                <input type="hidden" name="product_id" value="${product.id || 'product'}">
+                <button type="submit" class="btn-submit" style="background: #2563eb; color: white; border: none; padding: 0.9rem; width: 100%; border-radius: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    👉 შეკვეთა
+                </button>
+                <div style="margin-top: 0.8rem; font-size: 0.75rem; color: #64748b; text-align: center;">
+                    📞 მენეჯერი დაგიკავშირდებათ
+                </div>
+            </form>
+            <button class="close-modal" id="closeQuickOrderModal" style="background: #e2e8f0; border: none; padding: 0.7rem; width: 100%; border-radius: 1rem; cursor: pointer; margin-top: 1rem; font-weight: 500; transition: all 0.2s;">
+                დახურვა
+            </button>
+        `;
+        
+        modal.classList.add('active');
+        
+        // Подключаем обработчики
+        const quickForm = document.getElementById('quickOrderForm');
+        const quickName = document.getElementById('quickName');
+        const quickPhone = document.getElementById('quickPhone');
+        const closeQuickBtn = document.getElementById('closeQuickOrderModal');
+        
+        // Форматирование телефона (используем функцию из default.html)
+        if (quickPhone && typeof formatPhoneInput === 'function') {
+            quickPhone.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+            quickPhone.addEventListener('change', function() {
+                formatPhoneInput(this);
+            });
+        } else if (quickPhone) {
+            // Своя простая валидация
+            quickPhone.addEventListener('input', function() {
+                let val = this.value.replace(/\D/g, '');
+                if (val.length > 9) val = val.slice(0, 9);
+                let formatted = '';
+                for (let i = 0; i < val.length; i++) {
+                    if (i === 3 || i === 5 || i === 7) formatted += ' ';
+                    formatted += val[i];
+                }
+                this.value = formatted;
+            });
+        }
+        
+        // Отправка формы
+        if (quickForm) {
+            quickForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = quickName.value.trim();
+                const phoneRaw = quickPhone.value.replace(/\s/g, '');
+                
+                if (!name) {
+                    alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+                    quickName.focus();
+                    return;
+                }
+                
+                if (!phoneRaw || phoneRaw.length !== 9 || !/^\d+$/.test(phoneRaw)) {
+                    alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)");
+                    quickPhone.focus();
+                    return;
+                }
+                
+                // Заполняем основную форму и отправляем
+                customerName.value = name;
+                customerPhone.value = phoneRaw;
+                productNameInput.value = product.name;
+                productPriceInput.value = product.priceValue || product.price;
+                productIdInput.value = product.id || 'product';
+                
+                // Отправляем через основную форму (обработчик в default.html)
+                const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                orderForm.dispatchEvent(submitEvent);
+                
+                // Закрываем модалку
+                modal.classList.remove('active');
+            });
+        }
+        
+        // Закрытие по кнопке
+        if (closeQuickBtn) {
+            closeQuickBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+                restoreOrderConfirmModal();
+            });
+        }
+        
+        // Закрытие по клику вне модалки
+        const closeHandler = function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                restoreOrderConfirmModal();
+                document.removeEventListener('click', closeHandler);
+            }
+        };
+        setTimeout(() => document.addEventListener('click', closeHandler), 100);
     }
     
     // ============================================
-    // 🆕 ОБРАБОТЧИК ДЛЯ ФОРМЫ (использует универсальную систему)
+    // ФУНКЦИЯ ВОССТАНОВЛЕНИЯ МОДАЛКИ
     // ============================================
-    // Форма уже будет автоматически обработана скриптом из default.html
-    // Так как у формы есть класс .order-form
+    function restoreOrderConfirmModal() {
+        const modal = document.getElementById('orderConfirmModal');
+        if (!modal || !modal._originalContent) return;
+        
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.innerHTML = modal._originalContent;
+        
+        // Переподключаем кнопку закрытия
+        const closeBtn = document.getElementById('closeOrderConfirmModal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
+        }
+    }
     
     // ============================================
     // РЕНДЕР ТОВАРОВ
