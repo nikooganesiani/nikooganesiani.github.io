@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% if page.title %}{{ page.title }} – ENKA Electronics{% else %}ENKA Electronics{% endif %}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <style>
+<style>
         /* ===== ВСЕ ВАШИ СТАРЫЕ СТИЛИ ===== */
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
         ::-webkit-scrollbar{width:10px;height:10px}
@@ -53,6 +53,15 @@
         .spinner{border:4px solid #f3f3f3;border-top:4px solid #2563eb;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 1rem;}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         .error{color:#721c24;background:#f8d7da;padding:15px;border-radius:5px;margin:10px 0;}
+
+        /* ===== СТАТУС-БЕЙДЖИ ДЛЯ ТРЕКИНГА (ДОБАВЛЕНО) ===== */
+        .status-badge{display:inline-block;padding:10px 28px;border-radius:50px;font-weight:700;font-size:1rem;letter-spacing:0.3px;box-shadow:0 4px 15px rgba(0,0,0,0.08);transition:all 0.3s ease;backdrop-filter:blur(4px)}
+        .status-badge-delivered{background:linear-gradient(135deg,#10b981,#059669);color:white;box-shadow:0 4px 20px rgba(16,185,129,0.35)}
+        .status-badge-processing{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;box-shadow:0 4px 20px rgba(245,158,11,0.35)}
+        .status-badge-shipping{background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;box-shadow:0 4px 20px rgba(59,130,246,0.35);animation:pulse-shipping 2s ease-in-out infinite}
+        @keyframes pulse-shipping{0%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}50%{box-shadow:0 4px 30px rgba(59,130,246,0.55)}100%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}}
+        .status-badge-unknown{background:linear-gradient(135deg,#9ca3af,#6b7280);color:white;box-shadow:0 4px 20px rgba(156,163,175,0.3)}
+        @media(max-width:640px){.status-badge{padding:8px 20px;font-size:0.85rem;border-radius:40px}}
 
         footer{text-align:center;padding:2rem 1.5rem;margin-top:2rem;background:white;border-top:1px solid #e2edf2}
         .footer-content{max-width:1280px;margin:0 auto}
