@@ -592,12 +592,18 @@ if (quickForm) {
         const form = event.target;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+console.log('📦 Данные формы:', JSON.stringify(data, null, 2));
         data.name = name;
         data.phone = fullPhone;
 
         const productId = data.product_id;
         const productName = data.product;
         const productPrice = parseFloat(data.price);
+        console.log('💰 Цена:', productPrice, 'Тип:', typeof productPrice);
+
+if (isNaN(productPrice) || productPrice <= 0) {
+    console.warn('⚠️ Некорректная цена для Pixel, отправляем 0');
+}
 
         const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
         const originalText = submitBtn.textContent;
@@ -616,11 +622,10 @@ if (response.ok) {
     setTimeout(function() {
         try {
             if (typeof fbq !== 'undefined') {
-                fbq('track', 'Purchase', {
-                    content_ids: [productId],
-                    currency: 'GEL',
-                    value: productPrice,
-                    content_name: productName
+fbq('track', 'Purchase', {
+    content_ids: [productId],
+    currency: 'GEL',
+    value: productPrice
                 });
                 console.log('✅ Meta Pixel: Purchase sent');
             }
