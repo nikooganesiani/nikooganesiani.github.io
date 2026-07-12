@@ -562,7 +562,7 @@ title: "მთავარი"
     box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.1);
 }
 /* ============================================
-   🎬 АНИМАЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
+   🎬 АНИМАЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (ИСПРАВЛЕННЫЕ)
    ============================================ */
 
 /* ---- БАЗОВЫЕ АНИМАЦИИ ---- */
@@ -580,7 +580,7 @@ title: "მთავარი"
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-15px);
     }
     to {
         opacity: 1;
@@ -588,17 +588,34 @@ title: "მთავარი"
     }
 }
 
-@keyframes popIn {
-    0% {
+@keyframes fadeIn {
+    from {
         opacity: 0;
-        transform: scale(0.5);
+        transform: translateY(20px);
     }
-    70% {
-        transform: scale(1.1);
-    }
-    100% {
+    to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
@@ -619,37 +636,6 @@ title: "მთავარი"
     }
 }
 
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 @keyframes shimmer {
     0% {
         background-position: -200% 0;
@@ -659,63 +645,80 @@ title: "მთავარი"
     }
 }
 
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+/* ---- УЛУЧШЕННЫЕ КАТЕГОРИИ ---- */
+.categories-bar {
+    animation: slideDown 0.4s ease;
+    margin: 0.4rem auto 0;
+    margin-bottom: 0.4rem;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-@keyframes rippleEffect {
-    0% {
-        transform: scale(0);
-        opacity: 0.5;
-    }
-    100% {
-        transform: scale(4);
-        opacity: 0;
-    }
+.categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.3rem 0;
 }
 
-/* ---- КАТЕГОРИИ (fade + slide) ---- */
 .category-btn {
+    background: #f1f5f9;
+    border: 2px solid transparent;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #475569;
     position: relative;
-    overflow: hidden;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
+}
+
+.category-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #1e293b;
 }
 
 .category-btn.active {
-    transform: scale(0.95);
     background: #2563eb;
     color: white;
+    border-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .category-btn:active {
-    transform: scale(0.92);
+    transform: scale(0.95);
 }
 
-/* Ripple эффект для кнопок категорий */
-.category-btn::after {
+/* Индикатор активной категории (подчеркивание) */
+.category-btn.active::after {
     content: '';
     position: absolute;
-    top: 50%;
+    bottom: -4px;
     left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 2px;
+    animation: slideDown 0.3s ease;
 }
 
-.category-btn:active::after {
-    width: 300px;
-    height: 300px;
+/* Иконки в категориях */
+.category-btn .category-icon {
+    margin-right: 4px;
 }
 
-/* ---- ФИЛЬТРЫ (slide-down) ---- */
+/* ---- ФИЛЬТРЫ ---- */
 .filters-bar {
     animation: slideDown 0.4s ease;
 }
@@ -752,11 +755,11 @@ title: "მთავარი"
 .product-card:nth-child(12) { animation-delay: 0.6s; }
 
 .product-card:hover {
-    transform: translateY(-6px) scale(1.01);
+    transform: translateY(-6px);
     box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
 }
 
-/* ---- КНОПКИ (pulse + ripple) ---- */
+/* ---- КНОПКИ (улучшенные) ---- */
 .btn-order {
     position: relative;
     overflow: hidden;
@@ -767,42 +770,17 @@ title: "მთავარი"
     transform: scale(0.95);
 }
 
-/* Ripple эффект для кнопки заказа */
-.btn-order::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn-order:active::after {
-    width: 400px;
-    height: 400px;
-}
-
 .btn-order:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
-/* ---- БЕЙДЖИ (pop) ---- */
+/* ---- БЕЙДЖИ (БЕЗ АНИМАЦИИ) ---- */
 .free-shipping-badge,
 .cash-badge,
 .warranty-badge {
-    animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-    opacity: 0;
     transition: all 0.3s ease;
 }
-
-.free-shipping-badge { animation-delay: 0.1s; }
-.cash-badge { animation-delay: 0.2s; }
-.warranty-badge { animation-delay: 0.3s; }
 
 .free-shipping-badge:hover,
 .cash-badge:hover,
@@ -810,9 +788,9 @@ title: "მთავარი"
     transform: scale(1.05);
 }
 
-/* ---- КНОПКА НАВЕРХ (bounce) ---- */
+/* ---- КНОПКА НАВЕРХ ---- */
 .scroll-top {
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .scroll-top.show {
@@ -821,25 +799,20 @@ title: "მთავარი"
 }
 
 .scroll-top:hover {
-    transform: scale(1.1) rotate(-5deg);
+    transform: scale(1.1);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* ---- МОДАЛЬНОЕ ОКНО (scale + fade) ---- */
+/* ---- МОДАЛЬНОЕ ОКНО ---- */
 .modal.active {
     animation: modalFadeIn 0.3s ease;
 }
 
 .modal-content {
     animation: modalSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transition: all 0.3s ease;
 }
 
-.modal-content:hover {
-    transform: scale(1.01);
-}
-
-/* ---- СКЕЛЕТОНЫ (улучшенная анимация) ---- */
+/* ---- СКЕЛЕТОНЫ ---- */
 .skeleton-img,
 .skeleton-title,
 .skeleton-price,
@@ -850,12 +823,12 @@ title: "მთავარი"
     border-radius: 0.5rem;
 }
 
-/* ---- ПУСТОЕ СОСТОЯНИЕ (fadeIn) ---- */
+/* ---- ПУСТОЕ СОСТОЯНИЕ ---- */
 .empty-state {
     animation: fadeIn 0.6s ease;
 }
 
-/* ---- ИНПУТЫ (при фокусе) ---- */
+/* ---- ИНПУТЫ ---- */
 .input-field,
 .phone-input {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -902,39 +875,29 @@ title: "მთავარი"
 .select-option.selected {
     background: #2563eb;
     color: white;
-    transform: translateX(5px);
 }
 
-/* ---- RESET КНОПКА ---- */
+/* ---- RESET КНОПКА (ИСПРАВЛЕНА) ---- */
 .reset-filters {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reset-filters.show {
-    animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     display: inline-block;
+    animation: fadeIn 0.3s ease;
 }
 
 .reset-filters:hover {
-    transform: scale(1.05) rotate(-2deg);
+    transform: scale(1.05);
 }
 
-/* ---- ИЗОБРАЖЕНИЯ ТОВАРОВ ---- */
+/* ---- ИЗОБРАЖЕНИЯ ТОВАРОВ (БЕЗ ПОВОРОТА) ---- */
 .product-image {
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-card:hover .product-image {
-    transform: scale(1.08) rotate(1deg);
-}
-
-/* ---- ССЫЛКИ В КАРТОЧКАХ ---- */
-.product-card a {
-    transition: all 0.3s ease;
-}
-
-.product-card a:hover {
-    transform: translateX(3px);
+    transform: scale(1.05);
 }
 
 /* ---- НАЗВАНИЕ ТОВАРА ---- */
@@ -946,49 +909,21 @@ title: "მთავარი"
     color: #2563eb;
 }
 
-/* ---- ЦЕНА ---- */
+/* ---- ЦЕНА (БЕЗ УВЕЛИЧЕНИЯ) ---- */
 .product-price {
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .product-card:hover .product-price {
-    transform: scale(1.05);
     color: #1d4ed8;
 }
 
-/* ============================================
-   🎯 ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ
-   ============================================ */
-
-/* Микро-интеракции для элементов */
-.categories-bar {
-    animation: slideDown 0.5s ease;
-}
-
-/* Плавное появление контента при загрузке */
+/* ---- КОНТЕЙНЕР ---- */
 .container {
-    animation: fadeIn 0.8s ease;
+    animation: fadeIn 0.6s ease;
 }
 
-/* Эффект для фильтров при изменении */
-.filter-group input {
-    transition: all 0.3s ease;
-}
-
-.filter-group input:focus {
-    transform: scale(1.05);
-}
-
-/* Эффект для бейджей доставки */
-.shipping-badges {
-    transition: all 0.3s ease;
-}
-
-.product-card:hover .shipping-badges {
-    transform: translateX(-5px);
-}
-
-/* Кнопка закрытия модалки */
+/* ---- КНОПКА ЗАКРЫТИЯ МОДАЛКИ ---- */
 .close-modal {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -998,7 +933,7 @@ title: "მთავარი"
     transform: scale(1.02);
 }
 
-/* Кнопка отправки заказа */
+/* ---- КНОПКА ОТПРАВКИ ---- */
 .btn-submit {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -1014,23 +949,18 @@ title: "მთავარი"
     transform: scale(0.95);
 }
 
-/* Ripple для кнопки отправки */
-.btn-submit::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
+/* ---- ЭФФЕКТ ДЛЯ БЕЙДЖЕЙ ДОСТАВКИ ---- */
+.shipping-badges {
+    transition: all 0.3s ease;
 }
 
-.btn-submit:active::after {
-    width: 400px;
-    height: 400px;
+/* ---- МИКРО-ИНТЕРАКЦИИ ---- */
+.filter-group input {
+    transition: all 0.3s ease;
+}
+
+.filter-group input:focus {
+    transform: scale(1.05);
 }
 
 /* ============================================
@@ -1062,6 +992,12 @@ title: "მთავარი"
     .btn-order:hover {
         transform: none;
     }
+    
+    /* Улучшенные категории на мобильных */
+    .category-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
 }
 
 /* Для пользователей с предпочтением уменьшенного движения */
@@ -1077,6 +1013,10 @@ title: "მთავარი"
     .product-card {
         opacity: 1 !important;
         transform: none !important;
+    }
+    
+    .category-btn.active::after {
+        animation: none !important;
     }
 }
 </style>
