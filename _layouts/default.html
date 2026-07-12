@@ -612,44 +612,47 @@ if (quickForm) {
             });
 
 if (response.ok) {
-// ===== META PIXEL =====
-try {
-    if (typeof fbq !== 'undefined') {
-        fbq('track', 'Purchase', {
-            content_ids: [productId],
-            currency: 'GEL',
-            value: parseFloat(productPrice) || 0,
-            content_name: productName || 'Товар'
-        });
-    }
-} catch(e) {
-    // Игнорируем ошибки пикселя
-}
-// ===== END META PIXEL =====
-
-                if (typeof window.showOrderConfirm === 'function') {
-                    window.showOrderConfirm({
-                        name: name,
-                        phone: fullPhone,
-                        product: productName || 'Товар',
-                        price: productPrice || 0
-                    });
-                } else {
-                    alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
-                }
-
-                document.getElementById(nameId).value = "";
-                document.getElementById(phoneId).value = "";
-                
-                const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
-                if (wrapper) {
-                    wrapper.classList.remove('valid', 'invalid');
-                }
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+    // ===== META PIXEL (с задержкой) =====
+    setTimeout(function() {
+        try {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Purchase', {
+                    content_ids: [productId],
+                    currency: 'GEL',
+                    value: productPrice,
+                    content_name: productName
+                });
+                console.log('✅ Meta Pixel: Purchase sent');
             }
+        } catch(e) {
+            // Игнорируем
+        }
+    }, 500);
+    // ===== END META PIXEL =====
+
+    if (typeof window.showOrderConfirm === 'function') {
+        window.showOrderConfirm({
+            name: name,
+            phone: fullPhone,
+            product: productName || 'Товар',
+            price: productPrice || 0
+        });
+    } else {
+        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
+    }
+
+    document.getElementById(nameId).value = "";
+    document.getElementById(phoneId).value = "";
+    
+    const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('valid', 'invalid');
+    }
+} else {
+    const errorText = await response.text();
+    console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+}
         } catch (error) {
             console.error('❌ Ошибка сети:', error);
             alert('❌ Ошибка сети. Проверьте подключение.');
