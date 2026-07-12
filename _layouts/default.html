@@ -386,15 +386,21 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
             // === ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
             const trackingEvents = [];
 
+            // 1. Статус создания (из formatted_add_date)
             const addDate = parseGeorgianDate(order.formatted_add_date);
             if (addDate) {
                 trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
             }
 
+            // 2. Если статус "ჩაბარებულია" – добавляем дату доставки (из delivery_date)
+            //    Важно: delivery_date содержит только дату, без времени
             if (currentStatus === 'ჩაბარებულია' && order.delivery_date) {
                 const deliveryDate = new Date(order.delivery_date);
+                // Устанавливаем время на 00:00, чтобы потом отобразить только дату
+                deliveryDate.setHours(0, 0, 0, 0);
                 trackingEvents.push({ status: 'ჩაბარებულია', created_at: deliveryDate.toISOString() });
             } else if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
+                // 3. Для других статусов (не создание и не доставка)
                 const eventDate = order.delivery_date ? new Date(order.delivery_date) : new Date();
                 trackingEvents.push({ status: currentStatus, created_at: eventDate.toISOString() });
             }
@@ -433,10 +439,17 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 let dateStr = '—';
                 if (hasEvent) {
                     const date = new Date(statusDateMap[status]);
-                    dateStr = date.toLocaleString('ru-RU', {
-                        day: '2-digit', month: '2-digit', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                    });
+                    // Если статус "ჩაბარებულია" и время 00:00, показываем только дату
+                    if (status === 'ჩაბარებულია' && date.getHours() === 0 && date.getMinutes() === 0) {
+                        dateStr = date.toLocaleDateString('ru-RU', {
+                            day: '2-digit', month: '2-digit', year: 'numeric'
+                        });
+                    } else {
+                        dateStr = date.toLocaleString('ru-RU', {
+                            day: '2-digit', month: '2-digit', year: 'numeric',
+                            hour: '2-digit', minute: '2-digit'
+                        });
+                    }
                 }
 
                 timelineHtml += `
