@@ -466,7 +466,6 @@
                             
                             fbq('track', 'Purchase', {
                                 content_ids: [idString],
-                                content_type: 'product',
                                 currency: 'GEL',
                                 value: priceValue,
                                 content_name: nameString
@@ -633,27 +632,26 @@
                 body: JSON.stringify(data)
             });
 
-            if (response.ok) {
-                // ===== META PIXEL (универсальный обработчик) =====
-                try {
-                    if (typeof fbq !== 'undefined' && typeof fbq === 'function') {
-                        const priceValue = parseFloat(productPrice) || 0;
-                        const idString = String(productId || 'product');
-                        const nameString = String(productName || 'Товар');
-                        
-                        fbq('track', 'Purchase', {
-                            content_ids: [idString],
-                            content_type: 'product',
-                            currency: 'GEL',
-                            value: priceValue,
-                            content_name: nameString
-                        });
-                        console.log('✅ Meta Pixel: Purchase tracked (universal)');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Meta Pixel error (ignored):', e.message);
-                }
-                // ===== END META PIXEL =====
+if (response.ok) {
+    // ===== META PIXEL =====
+    try {
+        if (typeof fbq !== 'undefined' && typeof fbq === 'function') {
+            const priceValue = parseFloat(productPrice) || 0;
+            const idString = String(productId || 'product');
+            const nameString = String(productName || 'Товар');
+            
+            fbq('track', 'Purchase', {
+                content_ids: [idString],
+                currency: 'GEL',
+                value: priceValue,
+                content_name: nameString
+            });
+            console.log('✅ Meta Pixel: Purchase tracked');
+        }
+    } catch (e) {
+        console.warn('⚠️ Meta Pixel error (ignored):', e.message);
+    }
+    // ===== END META PIXEL =====
 
                 if (typeof window.showOrderConfirm === 'function') {
                     window.showOrderConfirm({
