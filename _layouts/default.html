@@ -488,11 +488,12 @@ if (quickForm) {
     const orderConfirmModal = document.getElementById('orderConfirmModal');
     const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
 
-    window.showOrderConfirm = function(data) {
-        document.getElementById('confirmName').textContent = data.name || '-';
-        document.getElementById('confirmPhone').textContent = data.phone || '-';
-        document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
-        document.getElementById('confirmPrice').textContent = (data.price || '0') + (data.price && data.price.includes('₾') ? '' : ' ₾');
+window.showOrderConfirm = function(data) {
+    document.getElementById('confirmName').textContent = data.name || '-';
+    document.getElementById('confirmPhone').textContent = data.phone || '-';
+    document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
+    let price = data.price || '0';
+    document.getElementById('confirmPrice').textContent = typeof price === 'number' ? price + ' ₾' : price;
         
         // Перезапускаем анимации
         const elements = document.querySelectorAll('.order-confirm-circle, .order-confirm-inner, .order-confirm-check, .order-confirm-title, .order-confirm-details, .order-confirm-message, .order-confirm-btn');
