@@ -657,7 +657,7 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
         } catch (error) {
             trackingLoading.style.display = 'none';
             trackingResult.style.display = 'block';
-            trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
+            trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა.</div>`;
             console.error('Tracking error:', error);
         } finally {
             trackingCheckBtn.disabled = false;
