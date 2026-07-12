@@ -285,7 +285,7 @@ const statusMap = {
     'გაუქმებულია': 'გაუქმებულია'
 };
 
-// Порядок статусов (от начала к концу)
+// Порядок статусов для таймлайна
 const statusOrder = [
     'ასაღები',
     'საწყობშია',
@@ -295,7 +295,181 @@ const statusOrder = [
     'გაუქმებულია'
 ];
 
-// Функция парсинга даты
+if (trackingBtn && trackingModal && closeTrackingBtn) {
+    trackingBtn.addEventListener('click', () => {
+        trackingModal.classList.add('active');
+        trackingOrderId.value = '';
+        trackingResult.style.display = 'none';
+        trackingLoading.style.display = 'none';
+        trackingResult.innerHTML = '';
+        trackingOrderId.focus();
+    });
+
+    closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
+    window.addEventListener('click', (e) => {
+        if (e.target === trackingModal) trackingModal.classList.remove('active');
+    });
+
+    trackingCheckBtn.addEventListener('click', async () => {
+        const orderId = trackingOrderId.value.trim();
+        if (!orderId) {
+            alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.');
+            return;
+        }
+
+        trackingLoading.style.display = 'block';
+        trackingResult.style.display = 'none';
+        trackingResult.innerHTML = '';
+        trackingCheckBtn.disabled = true;
+        trackingCheckBtn.textContent = '⏳ იტვირთება...';
+
+        try {
+            const response = await fetch(WORKER_URL_TRACKING, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            trackingLoading.style.display = 'none';
+            trackingResult.style.display = 'block';
+
+            if (data.error) {
+                trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
+                return;
+            }
+
+            if (!data.data || data.data.length === 0) {
+                trackingResult.innerHTML = `<div class="error">❌ შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
+                return;
+            }
+
+            const order = data.data[0];
+            const currentStatus = order.statusName;
+            
+            // === СОЗДАЕМ ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
+            const trackingEvents = [];
+            
+            // 1. Статус создания заказа (из formatted_add_date)
+            if (order.formatted_add_date) {
+                const addDate = parseGeorgianDate(order.formatted_add_date);
+                if (addDate) {
+                    trackingEvents.push({
+                        status: 'ასაღები',
+                        created_at: addDate.toISOString()
+                    });
+                }
+            }
+            
+            // 2. Если заказ доставлен - добавляем статус доставки (из delivery_date)
+            if (currentStatus === 'ჩაბარებულია' && order.delivery_date) {
+                const deliveryDate = new Date(order.delivery_date);
+                trackingEvents.push({
+                    status: 'ჩაბარებულია',
+                    created_at: deliveryDate.toISOString()
+                });
+            } else if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
+                // Для других статусов (не создание и не доставка)
+                const eventDate = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                trackingEvents.push({
+                    status: currentStatus,
+                    created_at: eventDate.toISOString()
+                });
+            }
+
+            // === ВАЖНО: Сортируем события по дате (от самой ранней к самой поздней) ===
+            trackingEvents.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            
+            // === ВАЖНО: Последний статус - это последний элемент в отсортированном массиве ===
+            const lastEvent = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1] : null;
+            const lastStatus = lastEvent ? lastEvent.status : null;
+            
+            // Строим карту дат
+            const statusDateMap = {};
+            trackingEvents.forEach(ev => {
+                statusDateMap[ev.status] = ev.created_at;
+            });
+
+            // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
+            let timelineHtml = '';
+            
+            statusOrder.forEach((status) => {
+                const hasEvent = statusDateMap[status] !== undefined;
+                // Прошлый статус: есть в событиях И НЕ является последним
+                const isPast = hasEvent && status !== lastStatus;
+                // Текущий статус: является последним
+                const isCurrent = status === lastStatus;
+                // Будущий статус: нет в событиях
+                const isFuture = !hasEvent;
+                
+                let stepClass = 'future';
+                if (isPast) stepClass = 'past';
+                else if (isCurrent) stepClass = 'current';
+                
+                const translated = statusMap[status] || status;
+                const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
+                
+                let dateStr = '—';
+                if (hasEvent) {
+                    const date = new Date(statusDateMap[status]);
+                    dateStr = date.toLocaleString('ru-RU', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                }
+                
+                timelineHtml += `
+                    <div class="timeline-step-v ${stepClass}">
+                        <div class="timeline-dot-v"></div>
+                        <div class="timeline-content-v">
+                            <div class="timeline-date-v">${dateStr}</div>
+                            <div class="timeline-text-v">${textWithoutEmoji}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // === ФОРМИРУЕМ РЕЗУЛЬТАТ ===
+            const statusBadge = getStatusBadge(currentStatus);
+            
+            const timelineContainer = `
+                <div style="background: white; padding: 1rem; border-radius: 1rem;">
+                    <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">
+                        📦 შეკვეთა #${order.tracking_code || orderId}
+                    </p>
+                    <div style="text-align: center; margin-bottom: 1.5rem;">
+                        <span class="${statusBadge.class}">${statusBadge.text}</span>
+                    </div>
+                    <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
+                    <div class="timeline-vertical">
+                        ${timelineHtml}
+                    </div>
+                </div>
+            `;
+            
+            trackingResult.innerHTML = timelineContainer;
+
+        } catch (error) {
+            trackingLoading.style.display = 'none';
+            trackingResult.style.display = 'block';
+            trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
+            console.error('Tracking error:', error);
+        } finally {
+            trackingCheckBtn.disabled = false;
+            trackingCheckBtn.textContent = 'შემოწმება';
+        }
+    });
+
+    trackingOrderId.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') trackingCheckBtn.click();
+    });
+}
+
+// Вспомогательные функции
 function parseGeorgianDate(dateStr) {
     if (!dateStr) return null;
     try {
@@ -321,7 +495,6 @@ function parseGeorgianDate(dateStr) {
     }
 }
 
-// Бейдж статуса
 function getStatusBadge(statusName) {
     if (!statusName) return { class: 'status-unknown', text: 'უცნობი' };
     
