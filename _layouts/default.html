@@ -569,6 +569,12 @@ function getStatusBadge(statusName) {
 
     return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
 }
+
+// ========== ГЛОБАЛЬНАЯ НАСТРОЙКА WORKER_URL ==========
+if (typeof window.WORKER_URL === 'undefined') {
+    window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+}
+console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
 </script>
 </body>
 </html>
