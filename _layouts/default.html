@@ -530,7 +530,170 @@
         if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
     });
 
-    console.log('✅ Система заказов готова!');
+// ===== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК ДЛЯ ВСЕХ ФОРМ НА САЙТЕ =====
+function formatPhoneInput(input) {
+    let value = input.value;
+    value = value.replace(/\s/g, '');
+    if (value.startsWith('+995')) {
+        value = value.substring(4);
+    }
+    value = value.replace(/\D/g, '');
+    if (value.startsWith('995')) {
+        const wrapper = input.closest('.phone-wrapper');
+        if (wrapper) {
+            wrapper.classList.add('invalid');
+            wrapper.classList.remove('valid');
+        }
+        input.value = '';
+        return;
+    }
+    if (value.length > 9) {
+        value = value.slice(0, 9);
+    }
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i === 3 || i === 5 || i === 7) formatted += ' ';
+        formatted += value[i];
+    }
+    input.value = formatted;
+    const wrapper = input.closest('.phone-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('valid', 'invalid');
+        if (value.length === 9) {
+            wrapper.classList.add('valid');
+        } else if (value.length > 0) {
+            wrapper.classList.add('invalid');
+        }
+    }
+}
+
+async function processOrder(event, nameId, phoneId) {
+    event.preventDefault();
+
+    const name = document.getElementById(nameId).value.trim();
+    const phoneInput = document.getElementById(phoneId);
+    let phone = phoneInput.value.trim();
+
+    phone = phone.replace(/\s/g, '');
+
+    if (phone.startsWith('+995')) {
+        phone = phone.substring(4);
+    }
+
+    if (!name) {
+        alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+        return false;
+    }
+
+    if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
+        let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
+        phoneInput.value = '';
+        if (phone.startsWith('995')) {
+            errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
+        } else if (phone.startsWith('0')) {
+            errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
+        }
+        alert(errorMsg);
+        phoneInput.focus();
+        return false;
+    }
+
+    const fullPhone = '+995' + phone;
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    data.name = name;
+    data.phone = fullPhone;
+
+    const productId = data.product_id;
+    const productName = data.product;
+    const productPrice = parseFloat(data.price);
+
+    const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = "⏳ იგზავნება...";
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(window.WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Purchase', {
+                    content_ids: [productId],
+                    currency: 'GEL',
+                    value: productPrice,
+                    content_name: productName
+                });
+            }
+
+            if (typeof window.showOrderConfirm === 'function') {
+                window.showOrderConfirm({
+                    name: name,
+                    phone: fullPhone,
+                    product: productName || 'Товар',
+                    price: productPrice || 0
+                });
+            } else {
+                alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
+            }
+
+            document.getElementById(nameId).value = "";
+            document.getElementById(phoneId).value = "";
+            
+            const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+            if (wrapper) {
+                wrapper.classList.remove('valid', 'invalid');
+            }
+        } else {
+            const errorText = await response.text();
+            console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+            alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+        }
+    } catch (error) {
+        console.error('❌ Ошибка сети:', error);
+        alert('❌ Ошибка сети. Проверьте подключение.');
+    }
+
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+}
+
+// Автоматическое подключение всех форм с классом .order-form
+document.addEventListener('DOMContentLoaded', function() {
+    const orderForms = document.querySelectorAll('.order-form');
+    
+    orderForms.forEach(form => {
+        const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
+        const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
+        
+        if (nameInput && phoneInput) {
+            if (!nameInput.id) {
+                nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
+            }
+            if (!phoneInput.id) {
+                phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            phoneInput.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+            phoneInput.addEventListener('change', function() {
+                formatPhoneInput(this);
+            });
+            
+            form.addEventListener('submit', function(e) {
+                processOrder(e, nameInput.id, phoneInput.id);
+            });
+        }
+    });
+    
+    console.log('✅ Универсальная система заказов готова!');
+});
     </script>
 </body>
 </html>
