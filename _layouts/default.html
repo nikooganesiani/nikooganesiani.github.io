@@ -275,7 +275,7 @@ const trackingLoading = document.getElementById('trackingLoading');
 
 const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
 
-// Маппинг статусов
+// Маппинг статусов (грузинский → читаемый текст)
 const statusMap = {
     'ასაღები': 'შეკვეთა მზად არის ასაღებად',
     'საწყობშია': 'შეკვეთა მივიდა საწყობში',
@@ -285,6 +285,7 @@ const statusMap = {
     'გაუქმებულია': 'გაუქმებულია'
 };
 
+// Порядок статусов (от начала к концу)
 const statusOrder = [
     'ასაღები',
     'საწყობშია',
@@ -320,9 +321,9 @@ function parseGeorgianDate(dateStr) {
     }
 }
 
+// Бейдж статуса
 function getStatusBadge(statusName) {
     if (!statusName) return { class: 'status-unknown', text: 'უცნობი' };
-    
     const badgeMap = {
         'ჩაბარებულია': { class: 'status-delivered', text: '✅ ჩაბარებულია' },
         'ასაღები': { class: 'status-processing', text: '⏳ მზად არის ასაღებად' },
@@ -331,7 +332,6 @@ function getStatusBadge(statusName) {
         'დაბრუნდა': { class: 'status-cancelled', text: '↩️ დაბრუნდა' },
         'გაუქმებულია': { class: 'status-cancelled', text: '❌ გაუქმებულია' }
     };
-    
     return badgeMap[statusName] || { class: 'status-unknown', text: '📦 ' + statusName };
 }
 
@@ -370,10 +370,7 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 body: JSON.stringify({ order_id: orderId })
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
             trackingLoading.style.display = 'none';
             trackingResult.style.display = 'block';
@@ -382,7 +379,6 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
                 return;
             }
-
             if (!data.data || data.data.length === 0) {
                 trackingResult.innerHTML = `<div class="error">❌ შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
                 return;
@@ -390,262 +386,44 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
 
             const order = data.data[0];
             const currentStatus = order.statusName;
-            
-            // ===== СОЗДАЕМ ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ =====
+
+            // === СОЗДАЕМ ТОЛЬКО РЕАЛЬНЫЕ СОБЫТИЯ ===
             const trackingEvents = [];
-            
-            // 1. Статус создания заказа (из formatted_add_date)
+
+            // 1. Статус создания (из formatted_add_date)
             const addDate = parseGeorgianDate(order.formatted_add_date);
             if (addDate) {
-                trackingEvents.push({
-                    status: 'ასაღები',
-                    created_at: addDate.toISOString()
-                });
+                trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
             }
-            
-            // 2. ТОЛЬКО если статус "ჩაბარებულია" - добавляем дату доставки
+
+            // 2. Если статус "ჩაბარებულია" – добавляем дату доставки (из delivery_date)
             if (currentStatus === 'ჩაბარებულია' && order.delivery_date) {
                 const deliveryDate = new Date(order.delivery_date);
-                trackingEvents.push({
-                    status: 'ჩაბარებულია',
-                    created_at: deliveryDate.toISOString()
-                });
+                trackingEvents.push({ status: 'ჩაბარებულია', created_at: deliveryDate.toISOString() });
             }
-            
-            // 3. Если статус НЕ "ასაღები" и НЕ "ჩაბარებულია" - показываем текущий статус
+
+            // 3. Если статус другой (не создание и не доставка) – показываем его с текущей датой или датой доставки
             if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
                 const eventDate = order.delivery_date ? new Date(order.delivery_date) : new Date();
-                trackingEvents.push({
-                    status: currentStatus,
-                    created_at: eventDate.toISOString()
-                });
+                trackingEvents.push({ status: currentStatus, created_at: eventDate.toISOString() });
             }
 
-            // Сортируем по дате (от ранней к поздней)
-            trackingEvents.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            
-            // Последний статус - последний элемент после сортировки
-            const lastEvent = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1] : null;
-            const lastStatus = lastEvent ? lastEvent.status : null;
-            
-            // Карта дат
-            const statusDateMap = {};
-            trackingEvents.forEach(ev => {
-                statusDateMap[ev.status] = ev.created_at;
-            });
-
-            // Генерируем таймлайн
-            let timelineHtml = '';
-            
-            statusOrder.forEach((status) => {
-                const hasEvent = statusDateMap[status] !== undefined;
-                const isPast = hasEvent && status !== lastStatus;
-                const isCurrent = status === lastStatus;
-                const isFuture = !hasEvent;
-                
-                let stepClass = 'future';
-                if (isPast) stepClass = 'past';
-                else if (isCurrent) stepClass = 'current';
-                
-                const translated = statusMap[status] || status;
-                const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
-                
-                let dateStr = '—';
-                if (hasEvent) {
-                    const date = new Date(statusDateMap[status]);
-                    dateStr = date.toLocaleString('ru-RU', {
-                        day: '2-digit', month: '2-digit', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-                }
-                
-                timelineHtml += `
-                    <div class="timeline-step-v ${stepClass}">
-                        <div class="timeline-dot-v"></div>
-                        <div class="timeline-content-v">
-                            <div class="timeline-date-v">${dateStr}</div>
-                            <div class="timeline-text-v">${textWithoutEmoji}</div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            const statusBadge = getStatusBadge(currentStatus);
-            const trackingCode = order.tracking_code || orderId;
-            
-            const timelineContainer = `
-                <div style="background: white; padding: 1rem; border-radius: 1rem;">
-                    <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">
-                        📦 შეკვეთა #${trackingCode}
-                    </p>
-                    <div style="text-align: center; margin-bottom: 1.5rem;">
-                        <span class="${statusBadge.class}">${statusBadge.text}</span>
-                    </div>
-                    <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
-                    <div class="timeline-vertical">
-                        ${timelineHtml}
-                    </div>
-                </div>
-            `;
-            
-            trackingResult.innerHTML = timelineContainer;
-
-        } catch (error) {
-            trackingLoading.style.display = 'none';
-            trackingResult.style.display = 'block';
-            trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
-            console.error('Tracking error:', error);
-        } finally {
-            trackingCheckBtn.disabled = false;
-            trackingCheckBtn.textContent = 'შემოწმება';
-        }
-    });
-
-    trackingOrderId.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') trackingCheckBtn.click();
-    });
-}
-
-// Вспомогательные функции
-function parseGeorgianDate(dateStr) {
-    if (!dateStr) return null;
-    try {
-        const parts = dateStr.trim().split(' ');
-        const dateParts = parts[0].split('.');
-        if (dateParts.length === 3) {
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1;
-            const year = parseInt(dateParts[2]);
-            let hours = 0, minutes = 0;
-            if (parts.length > 1 && parts[1]) {
-                const timeParts = parts[1].split(':');
-                if (timeParts.length === 2) {
-                    hours = parseInt(timeParts[0]);
-                    minutes = parseInt(timeParts[1]);
+            // === ОПРЕДЕЛЯЕМ ПОСЛЕДНИЙ СТАТУС ПО ПОРЯДКУ (НЕ ПО ДАТЕ!) ===
+            let lastStatus = null;
+            // Проходим по statusOrder с конца (самый продвинутый)
+            for (let i = statusOrder.length - 1; i >= 0; i--) {
+                if (trackingEvents.some(ev => ev.status === statusOrder[i])) {
+                    lastStatus = statusOrder[i];
+                    break;
                 }
             }
-            return new Date(year, month, day, hours, minutes);
-        }
-        return null;
-    } catch (e) {
-        return null;
-    }
-}
 
-function getStatusBadge(statusName) {
-    if (!statusName) return { class: 'status-unknown', text: 'უცნობი' };
-    
-    const badgeMap = {
-        'ჩაბარებულია': { class: 'status-delivered', text: '✅ ჩაბარებულია' },
-        'ასაღები': { class: 'status-processing', text: '⏳ მზად არის ასაღებად' },
-        'საწყობშია': { class: 'status-processing', text: '⏳ საწყობშია' },
-        'გატანილია ჩასაბარებლად': { class: 'status-processing', text: '⏳ მიემართება მისამართზე' },
-        'დაბრუნდა': { class: 'status-cancelled', text: '↩️ დაბრუნდა' },
-        'გაუქმებულია': { class: 'status-cancelled', text: '❌ გაუქმებულია' }
-    };
-    
-    return badgeMap[statusName] || { class: 'status-unknown', text: '📦 ' + statusName };
-}
-
-if (trackingBtn && trackingModal && closeTrackingBtn) {
-    trackingBtn.addEventListener('click', () => {
-        trackingModal.classList.add('active');
-        trackingOrderId.value = '';
-        trackingResult.style.display = 'none';
-        trackingLoading.style.display = 'none';
-        trackingResult.innerHTML = '';
-        trackingOrderId.focus();
-    });
-
-    closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
-    window.addEventListener('click', (e) => {
-        if (e.target === trackingModal) trackingModal.classList.remove('active');
-    });
-
-    trackingCheckBtn.addEventListener('click', async () => {
-        const orderId = trackingOrderId.value.trim();
-        if (!orderId) {
-            alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.');
-            return;
-        }
-
-        trackingLoading.style.display = 'block';
-        trackingResult.style.display = 'none';
-        trackingResult.innerHTML = '';
-        trackingCheckBtn.disabled = true;
-        trackingCheckBtn.textContent = '⏳ იტვირთება...';
-
-        try {
-            const response = await fetch(WORKER_URL_TRACKING, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ order_id: orderId })
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            // Если событий нет – ставим текущий статус как последний
+            if (!lastStatus && currentStatus) {
+                lastStatus = currentStatus;
             }
 
-            const data = await response.json();
-            trackingLoading.style.display = 'none';
-            trackingResult.style.display = 'block';
-
-            if (data.error) {
-                trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
-                return;
-            }
-
-            if (!data.data || data.data.length === 0) {
-                trackingResult.innerHTML = `<div class="error">❌ შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
-                return;
-            }
-
-            const order = data.data[0];
-            const currentStatus = order.statusName;
-            
-            // Парсим даты
-            const addDate = parseGeorgianDate(order.formatted_add_date);
-            
-            // Для delivered используем delivery_date
-            let deliveryDate = null;
-            if (order.delivery_date) {
-                deliveryDate = new Date(order.delivery_date);
-            }
-            
-            // === СОЗДАЕМ СОБЫТИЯ ===
-            const trackingEvents = [];
-            
-            // 1. Статус создания заказа
-            if (addDate) {
-                trackingEvents.push({
-                    status: 'ასაღები',
-                    created_at: addDate.toISOString()
-                });
-            }
-            
-            // 2. Если заказ доставлен - добавляем статус доставки
-            if (currentStatus === 'ჩაბარებულია' && deliveryDate) {
-                trackingEvents.push({
-                    status: 'ჩაბარებულია',
-                    created_at: deliveryDate.toISOString()
-                });
-            } else if (currentStatus && currentStatus !== 'ასაღები' && currentStatus !== 'ჩაბარებულია') {
-                // Для других статусов
-                const eventDate = deliveryDate || new Date();
-                trackingEvents.push({
-                    status: currentStatus,
-                    created_at: eventDate.toISOString()
-                });
-            }
-
-            // === ВАЖНО: Сортируем события по дате (от самой ранней к самой поздней) ===
-            trackingEvents.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-            
-            // === ВАЖНО: Определяем последний статус (самый поздний по дате) ===
-            const lastEvent = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1] : null;
-            const lastStatus = lastEvent ? lastEvent.status : null;
-            
-            // Строим карту дат
+            // Строим карту дат для отображения
             const statusDateMap = {};
             trackingEvents.forEach(ev => {
                 statusDateMap[ev.status] = ev.created_at;
@@ -653,23 +431,19 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
 
             // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
             let timelineHtml = '';
-            
             statusOrder.forEach((status) => {
                 const hasEvent = statusDateMap[status] !== undefined;
-                // Статус считается "прошлым", если он есть в событиях и НЕ является последним
                 const isPast = hasEvent && status !== lastStatus;
-                // Статус считается "текущим", если он есть в событиях и ЯВЛЯЕТСЯ последним
                 const isCurrent = status === lastStatus;
-                // Статус считается "будущим", если его нет в событиях
                 const isFuture = !hasEvent;
-                
+
                 let stepClass = 'future';
                 if (isPast) stepClass = 'past';
                 else if (isCurrent) stepClass = 'current';
-                
+
                 const translated = statusMap[status] || status;
                 const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
-                
+
                 let dateStr = '—';
                 if (hasEvent) {
                     const date = new Date(statusDateMap[status]);
@@ -678,7 +452,7 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                         hour: '2-digit', minute: '2-digit'
                     });
                 }
-                
+
                 timelineHtml += `
                     <div class="timeline-step-v ${stepClass}">
                         <div class="timeline-dot-v"></div>
@@ -690,10 +464,9 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 `;
             });
 
-            // === ФОРМИРУЕМ РЕЗУЛЬТАТ ===
             const statusBadge = getStatusBadge(currentStatus);
             const trackingCode = order.tracking_code || orderId;
-            
+
             const timelineContainer = `
                 <div style="background: white; padding: 1rem; border-radius: 1rem;">
                     <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">
@@ -708,7 +481,7 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                     </div>
                 </div>
             `;
-            
+
             trackingResult.innerHTML = timelineContainer;
 
         } catch (error) {
