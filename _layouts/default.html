@@ -440,608 +440,459 @@
 
     <!-- ===== СКРИПТЫ (общие для всех страниц) ===== -->
 <script>
-    // ========== АНИМАЦИЯ ПЛЕЙСХОЛДЕРА ==========
-    const s = document.getElementById('searchInput');
-    const ic = document.querySelector('.search-icon');
-    const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
-    let wi = 0, ci = 0, del = 0, to = null, act = 1;
-    const tp = () => {
-        if (!s || !act) return;
-        let cw = w[wi];
-        if (del) {
-            ci--;
-            s.placeholder = cw.substring(0, ci);
-            if (ci === 0) { del = 0; wi = (wi + 1) % w.length; to = setTimeout(tp, 500); }
-            else to = setTimeout(tp, 50);
-        } else {
-            ci++;
-            s.placeholder = cw.substring(0, ci);
-            if (ci === cw.length) { del = 1; to = setTimeout(tp, 2000); }
-            else to = setTimeout(tp, 100);
-        }
-    };
-    tp();
-    s.oninput = function() {
-        if (this.value.length) {
-            if (act) { act = 0; clearTimeout(to); s.placeholder = ''; }
-            ic.classList.add('rotated');
-        } else {
-            ic.classList.remove('rotated');
-            if (!act) {
-                if (s.placeholder === '') { del = 0; ci = 0; }
-                act = 1;
-                tp();
-            }
-        }
-    };
+    // ============================================
+    // 📌 ГЛАВНАЯ СТРАНИЦА — каталог
+    // ============================================
 
-    // ========== МОДАЛКА КОНСУЛЬТАЦИИ ==========
-    const consultModal = document.getElementById('consultModal');
-    const closeConsultBtn = document.getElementById('closeConsultModal');
-    const consultBtn = document.getElementById('consultBtnHeader');
-    if (consultBtn) {
-        consultBtn.onclick = () => consultModal.classList.add('active');
-    }
-    if (closeConsultBtn) {
-        closeConsultBtn.onclick = () => consultModal.classList.remove('active');
-    }
-
-    // ========== ПОИСК ПО КАТАЛОГУ ==========
-    (function() {
-        let s = document.getElementById('searchInput');
-        let ic = document.querySelector('.search-icon');
-        let r = document.createElement('div');
-        if (!s) return;
-        r.className = 'search-results';
-        s.parentNode.appendChild(r);
+    let currentProduct = null;
+    let currentCategory = 'all';
+    
+    // DOM элементы
+    const container = document.getElementById('catalogContainer');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const sortSelect = document.getElementById('sortSelect');
+    const resetBtn = document.getElementById('resetFilters');
+    const scrollTopBtn = document.getElementById('scrollTop');
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    
+    // ============================================
+    // 🆕 ФУНКЦИЯ ОТКРЫТИЯ ФОРМЫ ЗАКАЗА
+    // ============================================
+    function openOrderModal(product) {
+        currentProduct = product;
         
-        s.oninput = function() {
-            let q = this.value.trim();
-            if (q.length > 0) { 
-                ic && ic.classList.add('rotated'); 
-            } else { 
-                ic && ic.classList.remove('rotated'); 
-            }
-            if (!q) { 
-                r.innerHTML = ''; 
-                r.classList.remove('show'); 
-                return; 
-            }
-            fetch('/catalog.json').then(res => res.json()).then(d => {
-                let f = d.products.filter(p => 
-                    p.name.toLowerCase().includes(q.toLowerCase()) || 
-                    (p.description && p.description.toLowerCase().includes(q.toLowerCase()))
-                );
-                r.innerHTML = f.length ? 
-                    f.map(p => `<div class="search-result-item" data-id="${p.id}"><img src="${p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div><div>${p.name}</div><div style="font-weight:700;color:#2563eb">${p.price}</div></div></div>`).join('') : 
-                    '<div class="search-result-item">😕 ვერაფერი მოიძებნა</div>';
-                r.classList.add('show');
-                document.querySelectorAll('.search-result-item[data-id]').forEach(el => el.onclick = () => location.href = '/' + el.dataset.id);
-            }).catch(e => console.error(e));
-        };
-        
-        document.onclick = function(e) { 
-            if (!s.contains(e.target) && !r.contains(e.target)) {
-                r.classList.remove('show');
-            }
-        };
-    })();
-
-    // ========== КРЕСТИК ДЛЯ ОЧИСТКИ ПОИСКА ==========
-    (function() {
-        let inp = document.getElementById('searchInput');
-        let clr = document.querySelector('.search-clear');
-        if (!inp || !clr) return;
-        inp.addEventListener('input', function() {
-            if (this.value.length > 0) { clr.classList.add('show'); } else { clr.classList.remove('show'); }
-        });
-        clr.onclick = function() {
-            inp.value = '';
-            inp.focus();
-            clr.classList.remove('show');
-            inp.dispatchEvent(new Event('input'));
-        };
-    })();
-
-    // ========== СТАТУС ЗАКАЗА (ТРЕКИНГ) ==========
-    const trackingBtn = document.getElementById('trackingBtnHeader');
-    const trackingModal = document.getElementById('trackingModal');
-    const closeTrackingBtn = document.getElementById('closeTrackingModal');
-    const trackingOrderId = document.getElementById('trackingOrderId');
-    const trackingCheckBtn = document.getElementById('trackingCheckBtn');
-    const trackingResult = document.getElementById('trackingResult');
-    const trackingLoading = document.getElementById('trackingLoading');
-
-    const WORKER_URL_TRACKING = 'https://easyway-tracker.niko-oganesiani.workers.dev';
-
-    if (trackingBtn && trackingModal && closeTrackingBtn) {
-        trackingBtn.addEventListener('click', () => {
-            trackingModal.classList.add('active');
-            trackingOrderId.value = '';
-            trackingResult.style.display = 'none';
-            trackingLoading.style.display = 'none';
-            trackingResult.innerHTML = '';
-            trackingOrderId.focus();
-        });
-
-        closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
-        window.addEventListener('click', (e) => {
-            if (e.target === trackingModal) trackingModal.classList.remove('active');
-        });
-
-        trackingCheckBtn.addEventListener('click', async () => {
-            const orderId = trackingOrderId.value.trim();
-            if (!orderId) {
-                alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.');
-                return;
-            }
-            trackingLoading.style.display = 'block';
-            trackingResult.style.display = 'none';
-            trackingResult.innerHTML = '';
-            trackingCheckBtn.disabled = true;
-            trackingCheckBtn.textContent = '⏳ იტვირთება...';
-            try {
-                const response = await fetch(WORKER_URL_TRACKING, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ order_id: orderId })
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                trackingLoading.style.display = 'none';
-                trackingResult.style.display = 'block';
-                if (data.error) {
-                    trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
-                    return;
-                }
-                let trackingData = [];
-                if (Array.isArray(data)) trackingData = data;
-                else if (data.tracking && Array.isArray(data.tracking)) trackingData = data.tracking;
-                else {
-                    trackingResult.innerHTML = `<div class="error">❌ არასწორი მონაცემები</div>`;
-                    return;
-                }
-                if (trackingData.length === 0) {
-                    trackingResult.innerHTML = `<div class="error">❌ ინფორმაცია არ არის</div>`;
-                    return;
-                }
-                const last = trackingData[trackingData.length - 1];
-                const statusOrder = ['new', 'taking', 'taken', 'in_store', 'taken_store', 'delivered'];
-                const statusMap = {
-                    'new': 'შეკვეთა მიღებულია, მიწოდებას ახორციელებს საკურიერო კომპანია «EasyWay»',
-                    'taking': 'EasyWay მიემართება ENKA Electronics-ის საწყობში',
-                    'taken': 'შეკვეთა გადაეცა EasyWay-ს და მიემართება ლოგისტიკურ ცენტრში',
-                    'in_store': 'შეკვეთა მივიდა EasyWay-ს ლოგისტიკურ ცენტრში',
-                    'taken_store': 'EasyWay-ის კურიერმა აიღო შეკვეთა ლოგისტიკური ცენტრიდან და მიემართება თქვენს მისამართზე',
-                    'delivered': 'შეკვეთა მიწოდებულია',
-                    'cancel': 'გაუქმებულია',
-                    'cancelled': 'გაუქმებულია'
-                };
-                const allStatuses = ['new', 'taking', 'taken', 'in_store', 'taken_store', 'delivered'];
-                const lastStatus = trackingData.length > 0 ? trackingData[trackingData.length - 1].status : null;
-                const statusDateMap = {};
-                trackingData.forEach(ev => { statusDateMap[ev.status] = ev.created_at; });
-                let timelineHtml = '';
-                allStatuses.forEach((status) => {
-                    const isPast = statusDateMap[status] !== undefined && status !== lastStatus;
-                    const isCurrent = status === lastStatus;
-                    const isFuture = !isPast && !isCurrent;
-                    let stepClass = 'future';
-                    if (isPast) stepClass = 'past';
-                    else if (isCurrent) stepClass = 'current';
-                    const translated = statusMap[status] || status;
-                    const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
-                    let dateStr = '';
-                    if (isPast || isCurrent) {
-                        const date = new Date(statusDateMap[status]);
-                        dateStr = date.toLocaleString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric',
-                            hour: '2-digit', minute: '2-digit'
-                        });
-                    } else {
-                        dateStr = '—';
-                    }
-                    timelineHtml += `
-                        <div class="timeline-step-v ${stepClass}">
-                            <div class="timeline-dot-v"></div>
-                            <div class="timeline-content-v">
-                                <div class="timeline-date-v">${dateStr}</div>
-                                <div class="timeline-text-v">${textWithoutEmoji}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                const timelineContainer = `
-                    <div class="timeline-vertical">
-                        ${timelineHtml}
-                    </div>
-                `;
-                trackingResult.innerHTML = `
-                    <div style="background: white; padding: 1rem; border-radius: 1rem;">
-                        <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;text-align: center;">📦 შეკვეთა #${orderId}</p>
-                        <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
-                        ${timelineContainer}
-                    </div>
-                `;
-            } catch (error) {
-                trackingLoading.style.display = 'none';
-                trackingResult.style.display = 'block';
-                trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა. სცადეთ მოგვიანებით.</div>`;
-                console.error('Tracking error:', error);
-            } finally {
-                trackingCheckBtn.disabled = false;
-                trackingCheckBtn.textContent = 'შემოწმება';
-            }
-        });
-
-        trackingOrderId.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') trackingCheckBtn.click();
-        });
-    }
-
-    // ========== ГЛОБАЛЬНАЯ НАСТРОЙКА WORKER_URL ==========
-    if (typeof window.WORKER_URL === 'undefined') {
-        window.WORKER_URL = 'https://telegram-form-handler.niko-oganesiani.workers.dev';
-    }
-    console.log('✅ WORKER_URL глобально доступен:', window.WORKER_URL);
-
-    // ========== НОВАЯ МОДАЛКА ПОДТВЕРЖДЕНИЯ ЗАКАЗА ==========
-    const orderConfirmModal = document.getElementById('orderConfirmModal');
-    const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
-
-    // Функция показа модалки с данными заказа
-    function showOrderConfirm(data) {
-        document.getElementById('confirmName').textContent = data.name || '-';
-        document.getElementById('confirmPhone').textContent = data.phone || '-';
-        document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
-        document.getElementById('confirmPrice').textContent = (data.price || 39) + ' ₾';
-        
-        orderConfirmModal.classList.add('active');
-    }
-
-    // ========== СБРОС АНИМАЦИЙ ПРИ ОТКРЫТИИ МОДАЛКИ ==========
-    // Переопределяем функцию для сброса анимаций
-    window.showOrderConfirm = function(data) {
-        // Обновляем данные
-        document.getElementById('confirmName').textContent = data.name || '-';
-        document.getElementById('confirmPhone').textContent = data.phone || '-';
-        document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
-        document.getElementById('confirmPrice').textContent = (data.price || 39) + ' ₾';
-        
-        // СБРАСЫВАЕМ АНИМАЦИИ перед показом
+        // Находим модалку из default.html
         const modal = document.getElementById('orderConfirmModal');
-        const circle = modal.querySelector('.order-confirm-circle');
-        const inner = modal.querySelector('.order-confirm-inner');
-        const check = modal.querySelector('.order-confirm-check');
-        const particles = modal.querySelectorAll('.particle');
-        const title = modal.querySelector('.order-confirm-title');
-        const details = modal.querySelector('.order-confirm-details');
-        const message = modal.querySelector('.order-confirm-message');
-        const btn = modal.querySelector('.order-confirm-btn');
-        
-        // Удаляем все анимации
-        [circle, inner, check, title, details, message, btn].forEach(el => {
-            if (el) {
-                el.style.animation = 'none';
-                // Форсируем reflow
-                void el.offsetWidth;
-                el.style.animation = '';
-            }
-        });
-        
-        // Сбрасываем частицы
-        particles.forEach(p => {
-            p.style.animation = 'none';
-            void p.offsetWidth;
-            p.style.animation = '';
-        });
-        
-        // Показываем модалку
-        orderConfirmModal.classList.add('active');
-    };
-
-    // Закрытие по кнопке с полным сбросом
-    if (closeOrderConfirmBtn) {
-        closeOrderConfirmBtn.addEventListener('click', () => {
-            orderConfirmModal.classList.remove('active');
-            
-            // Сброс анимаций после закрытия
-            setTimeout(() => {
-                const circle = document.querySelector('.order-confirm-circle');
-                const inner = document.querySelector('.order-confirm-inner');
-                const check = document.querySelector('.order-confirm-check');
-                const particles = document.querySelectorAll('.particle');
-                const title = document.querySelector('.order-confirm-title');
-                const details = document.querySelector('.order-confirm-details');
-                const message = document.querySelector('.order-confirm-message');
-                const btn = document.querySelector('.order-confirm-btn');
-                
-                [circle, inner, check, title, details, message, btn].forEach(el => {
-                    if (el) {
-                        el.style.animation = 'none';
-                        void el.offsetWidth;
-                        el.style.animation = '';
-                    }
-                });
-                
-                particles.forEach(p => {
-                    p.style.animation = 'none';
-                    void p.offsetWidth;
-                    p.style.animation = '';
-                });
-            }, 300);
-        });
-    }
-
-    // Закрытие по клику вне модалки
-    window.addEventListener('click', (e) => {
-        if (e.target === orderConfirmModal) {
-            orderConfirmModal.classList.remove('active');
-            
-            // Сброс анимаций после закрытия
-            setTimeout(() => {
-                const circle = document.querySelector('.order-confirm-circle');
-                const inner = document.querySelector('.order-confirm-inner');
-                const check = document.querySelector('.order-confirm-check');
-                const particles = document.querySelectorAll('.particle');
-                const title = document.querySelector('.order-confirm-title');
-                const details = document.querySelector('.order-confirm-details');
-                const message = document.querySelector('.order-confirm-message');
-                const btn = document.querySelector('.order-confirm-btn');
-                
-                [circle, inner, check, title, details, message, btn].forEach(el => {
-                    if (el) {
-                        el.style.animation = 'none';
-                        void el.offsetWidth;
-                        el.style.animation = '';
-                    }
-                });
-                
-                particles.forEach(p => {
-                    p.style.animation = 'none';
-                    void p.offsetWidth;
-                    p.style.animation = '';
-                });
-            }, 300);
-        }
-    });
-
-    // ========== УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ДЛЯ ВСЕХ СТРАНИЦ ==========
-    // Функция для форматирования телефона
-    function formatPhoneInput(input) {
-        // Получаем значение
-        let value = input.value;
-        
-        // Убираем все пробелы
-        value = value.replace(/\s/g, '');
-        
-        // Если есть +995 в начале - убираем
-        if (value.startsWith('+995')) {
-            value = value.substring(4);
-        }
-        
-        // Удаляем все не-цифры
-        value = value.replace(/\D/g, '');
-        
-        // Если пользователь начал вводить 995 - очищаем поле и показываем ошибку
-        if (value.startsWith('995')) {
-            const wrapper = input.closest('.phone-wrapper');
-            if (wrapper) {
-                wrapper.classList.add('invalid');
-                wrapper.classList.remove('valid');
-            }
-            input.value = '';
+        if (!modal) {
+            alert(`Заказ: ${product.name}\nЦена: ${product.price}\n\nМенеджер свяжется с вами!`);
             return;
         }
         
-        // Ограничиваем длину 9 цифрами
-        if (value.length > 9) {
-            value = value.slice(0, 9);
+        // Заменяем содержимое модалки на форму
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.innerHTML = `
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.3rem;">📦</div>
+                <h3 style="font-size: 1.3rem; margin-bottom: 0.3rem; color: #0f172a;">${product.name}</h3>
+                <img src="${product.image}" style="max-width: 100px; max-height: 100px; object-fit: contain; border-radius: 0.5rem; margin: 0.5rem 0;" 
+                     onerror="this.src='https://via.placeholder.com/100?text=📱'" alt="${product.name}">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">${product.price}</div>
+            </div>
+            <form id="quickOrderForm">
+                <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required autocomplete="name">
+                <div class="phone-wrapper">
+                    <span class="phone-prefix">+995</span>
+                    <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
+                </div>
+                <button type="submit" class="btn-submit" style="background: #2563eb; color: white; border: none; padding: 0.9rem; width: 100%; border-radius: 1rem; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                    👉 შეკვეთა
+                </button>
+                <div style="margin-top: 0.8rem; font-size: 0.75rem; color: #64748b; text-align: center;">
+                    📞 მენეჯერი დაგიკავშირდებათ
+                </div>
+            </form>
+            <button class="close-modal" id="closeQuickOrderModal" style="background: #e2e8f0; border: none; padding: 0.7rem; width: 100%; border-radius: 1rem; cursor: pointer; margin-top: 1rem; font-weight: 500; transition: all 0.2s;">
+                დახურვა
+            </button>
+        `;
+        
+        modal.classList.add('active');
+        
+        // Подключаем обработчики
+        const quickForm = document.getElementById('quickOrderForm');
+        const quickName = document.getElementById('quickName');
+        const quickPhone = document.getElementById('quickPhone');
+        const closeQuickBtn = document.getElementById('closeQuickOrderModal');
+        
+        // Форматирование телефона
+        if (quickPhone) {
+            quickPhone.addEventListener('input', function() {
+                let val = this.value.replace(/\D/g, '');
+                if (val.length > 9) val = val.slice(0, 9);
+                let formatted = '';
+                for (let i = 0; i < val.length; i++) {
+                    if (i === 3 || i === 5 || i === 7) formatted += ' ';
+                    formatted += val[i];
+                }
+                this.value = formatted;
+            });
         }
         
-        // Форматируем с пробелами: 555 55 55 55
-        let formatted = '';
-        for (let i = 0; i < value.length; i++) {
-            if (i === 3 || i === 5 || i === 7) {
-                formatted += ' ';
-            }
-            formatted += value[i];
+        // Отправка формы
+        if (quickForm) {
+            quickForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = quickName.value.trim();
+                const phoneRaw = quickPhone.value.replace(/\s/g, '');
+                
+                if (!name) {
+                    alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+                    quickName.focus();
+                    return;
+                }
+                
+                if (!phoneRaw || phoneRaw.length !== 9 || !/^\d+$/.test(phoneRaw)) {
+                    alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)");
+                    quickPhone.focus();
+                    return;
+                }
+                
+                // Отправляем заказ
+                sendOrder(name, phoneRaw, product, modal);
+            });
         }
         
-        input.value = formatted;
+        // Закрытие по кнопке
+        if (closeQuickBtn) {
+            closeQuickBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+                // Восстанавливаем оригинальное содержимое модалки
+                restoreOrderConfirmModal();
+            });
+        }
         
-        // Визуальная обратная связь
-        const wrapper = input.closest('.phone-wrapper');
-        if (wrapper) {
-            wrapper.classList.remove('valid', 'invalid');
-            if (value.length === 9) {
-                wrapper.classList.add('valid');
-            } else if (value.length > 0) {
-                wrapper.classList.add('invalid');
+        // Закрытие по клику вне модалки
+        const closeHandler = function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                restoreOrderConfirmModal();
+                document.removeEventListener('click', closeHandler);
             }
+        };
+        setTimeout(() => document.addEventListener('click', closeHandler), 100);
+    }
+    
+    // ============================================
+    // ВОССТАНОВЛЕНИЕ ОРИГИНАЛЬНОЙ МОДАЛКИ
+    // ============================================
+    function restoreOrderConfirmModal() {
+        const modal = document.getElementById('orderConfirmModal');
+        if (!modal) return;
+        
+        // Восстанавливаем оригинальное содержимое из default.html
+        modal.querySelector('.modal-content').innerHTML = `
+            <div class="order-confirm-icon-wrapper">
+                <div class="order-confirm-circle"></div>
+                <div class="order-confirm-inner">
+                    <div class="order-confirm-check"></div>
+                </div>
+                <div class="order-confirm-particles">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                </div>
+            </div>
+            <h3 class="order-confirm-title">შეკვეთა მიღებულია!</h3>
+            <div class="order-confirm-details">
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">👤 კლიენტი</span>
+                    <span class="order-confirm-value" id="confirmName">-</span>
+                </div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">📱 ტელეფონი</span>
+                    <span class="order-confirm-value" id="confirmPhone">-</span>
+                </div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">📦 პროდუქტი</span>
+                    <span class="order-confirm-value" id="confirmProduct">-</span>
+                </div>
+                <div class="order-confirm-divider"></div>
+                <div class="order-confirm-row">
+                    <span class="order-confirm-label">💰 თანხა</span>
+                    <span class="order-confirm-price" id="confirmPrice">-</span>
+                </div>
+            </div>
+            <p class="order-confirm-message">📞 ჩვენი მენეჯერი მალე დაგიკავშირდებათ</p>
+            <button class="order-confirm-btn" id="closeOrderConfirmModal">✅ კარგი, გასაგებია</button>
+        `;
+        
+        // Переподключаем кнопку закрытия
+        const closeBtn = document.getElementById('closeOrderConfirmModal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('active');
+            });
         }
     }
-
-    // Универсальная функция отправки заказа
-    async function processOrder(event, nameId, phoneId, productField, priceField, productIdField) {
-        event.preventDefault();
-
-        const name = document.getElementById(nameId).value.trim();
-        const phoneInput = document.getElementById(phoneId);
-        let phone = phoneInput.value.trim();
-
-        // Убираем все пробелы и лишние символы
-        phone = phone.replace(/\s/g, '');
-
-        // Защита от +995 в начале (если вдруг)
-        if (phone.startsWith('+995')) {
-            phone = phone.substring(4);
-        }
-
-        if (!name) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-            return false;
-        }
-
-        // Проверка: ровно 9 цифр, не начинается с 0 или 995
-        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
-            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
-            
-            // Очищаем поле при ошибке
-            phoneInput.value = '';
-            
-            if (phone.startsWith('995')) {
-                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
-            } else if (phone.startsWith('0')) {
-                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
-            }
-            
-            alert(errorMsg);
-            phoneInput.focus();
-            return false;
-        }
-
-        // Добавляем +995 к номеру для отправки
+    
+    // ============================================
+    // ОТПРАВКА ЗАКАЗА
+    // ============================================
+    async function sendOrder(name, phone, product, modal) {
         const fullPhone = '+995' + phone;
-
-        const form = event.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        data.name = name;
-        data.phone = fullPhone;
-
-        // Получаем данные из полей или из data-атрибутов
-        const productName = data.product || (productField ? document.getElementById(productField)?.value : 'Товар');
-        const productPrice = parseFloat(data.price) || (priceField ? parseFloat(document.getElementById(priceField)?.value) : 0);
-        const productId = data.product_id || (productIdField ? document.getElementById(productIdField)?.value : 'product');
-
-        const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-
+        const data = {
+            name: name,
+            phone: fullPhone,
+            product: product.name,
+            price: product.priceValue || product.price,
+            product_id: product.id || 'product'
+        };
+        
+        // Меняем текст кнопки
+        const submitBtn = document.querySelector('#quickOrderForm .btn-submit');
+        const originalText = submitBtn ? submitBtn.textContent : 'Отправка...';
+        if (submitBtn) {
+            submitBtn.textContent = "⏳ იგზავნება...";
+            submitBtn.disabled = true;
+        }
+        
         try {
-            const response = await fetch(window.WORKER_URL, {
+            const workerUrl = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+            console.log('📤 Отправка заказа:', data);
+            
+            const response = await fetch(workerUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
-
+            
+            console.log('📥 Ответ от сервера:', response.status);
+            
             if (response.ok) {
                 // Отправляем пиксель Facebook
                 if (typeof fbq !== 'undefined') {
                     fbq('track', 'Purchase', {
-                        content_ids: [productId],
+                        content_ids: [product.id || 'product'],
                         currency: 'GEL',
-                        value: productPrice,
-                        content_name: productName
+                        value: product.priceValue || product.price,
+                        content_name: product.name
                     });
                 }
-
-                // ✅ ПОКАЗЫВАЕМ МОДАЛКУ
-                showOrderConfirm({
-                    name: name,
-                    phone: fullPhone,
-                    product: productName || 'Товар',
-                    price: productPrice || 0
-                });
-
-                // Очищаем поля
-                document.getElementById(nameId).value = "";
-                document.getElementById(phoneId).value = "";
                 
-                // Убираем классы валидации
-                const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
-                if (wrapper) {
-                    wrapper.classList.remove('valid', 'invalid');
+                // Закрываем модалку с формой
+                if (modal) {
+                    modal.classList.remove('active');
                 }
+                
+                // Восстанавливаем оригинальное содержимое модалки
+                restoreOrderConfirmModal();
+                
+                // Показываем анимированную модалку подтверждения через 300ms
+                setTimeout(() => {
+                    // Используем window.showOrderConfirm (глобальная функция из default.html)
+                    if (typeof window.showOrderConfirm === 'function') {
+                        window.showOrderConfirm({
+                            name: name,
+                            phone: fullPhone,
+                            product: product.name,
+                            price: product.priceValue || product.price
+                        });
+                    } else {
+                        // Fallback
+                        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
+                    }
+                }, 300);
+                
             } else {
                 const errorText = await response.text();
-                console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+                console.error('❌ Ошибка от сервера:', response.status, errorText);
                 alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
             }
         } catch (error) {
             console.error('❌ Ошибка сети:', error);
             alert('❌ Ошибка сети. Проверьте подключение.');
         }
-
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-
-    // ========== АВТОМАТИЧЕСКОЕ ПОДКЛЮЧЕНИЕ ВСЕХ ФОРМ ==========
-    document.addEventListener('DOMContentLoaded', function() {
-        // Находим все формы заказа на странице
-        const orderForms = document.querySelectorAll('.order-form, form[data-order-form]');
         
-        orderForms.forEach(form => {
-            // Ищем поля ввода
-            const nameInput = form.querySelector('input[name="name"], input[placeholder*="სახელი"], input[placeholder*="Name"]');
-            const phoneInput = form.querySelector('input[name="phone"], input[placeholder*="ტელეფონი"], input[type="tel"]');
-            
-            // Ищем скрытые поля с данными товара
-            const productInput = form.querySelector('input[name="product"]');
-            const priceInput = form.querySelector('input[name="price"]');
-            const productIdInput = form.querySelector('input[name="product_id"]');
-            
-            // Если есть поля для имени и телефона - подключаем обработчик
-            if (nameInput && phoneInput) {
-                // Генерируем уникальные ID если их нет
-                if (!nameInput.id) {
-                    nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
-                }
-                if (!phoneInput.id) {
-                    phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
-                }
-                
-                // Добавляем форматирование телефона
-                phoneInput.addEventListener('input', function() {
-                    formatPhoneInput(this);
-                });
-                phoneInput.addEventListener('change', function() {
-                    formatPhoneInput(this);
-                });
-                
-                // Убеждаемся, что телефон внутри .phone-wrapper
-                if (!phoneInput.closest('.phone-wrapper')) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'phone-wrapper';
-                    const prefix = document.createElement('span');
-                    prefix.className = 'phone-prefix';
-                    prefix.textContent = '+995';
-                    phoneInput.parentNode.insertBefore(wrapper, phoneInput);
-                    wrapper.appendChild(prefix);
-                    wrapper.appendChild(phoneInput);
-                }
-                
-                // Подключаем обработчик отправки
-                form.addEventListener('submit', function(e) {
-                    const nameId = nameInput.id;
-                    const phoneId = phoneInput.id;
-                    const productField = productInput ? productInput.id : null;
-                    const priceField = priceInput ? priceInput.id : null;
-                    const productIdField = productIdInput ? productIdInput.id : null;
-                    
-                    processOrder(e, nameId, phoneId, productField, priceField, productIdField);
-                });
+        if (submitBtn) {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+    
+    // ============================================
+    // РЕНДЕР ТОВАРОВ
+    // ============================================
+    function renderProducts() {
+        const products = window.allProducts || [];
+        
+        let filtered = [...products];
+        
+        if (currentCategory !== 'all') {
+            filtered = filtered.filter(p => 
+                p.categories && p.categories.includes(currentCategory)
+            );
+        }
+        
+        const minPrice = parseInt(minPriceInput.value);
+        if (!isNaN(minPrice)) filtered = filtered.filter(p => p.priceValue >= minPrice);
+        const maxPrice = parseInt(maxPriceInput.value);
+        if (!isNaN(maxPrice)) filtered = filtered.filter(p => p.priceValue <= maxPrice);
+        
+        const sortBy = sortSelect.value;
+        if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+        if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
+        if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
+        if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
+        
+        const hasMin = minPriceInput.value !== '';
+        const hasMax = maxPriceInput.value !== '';
+        const hasSort = sortSelect.value !== 'name-asc';
+        
+        if (hasMin || hasMax || hasSort) {
+            resetBtn.classList.add('show');
+        } else {
+            resetBtn.classList.remove('show');
+        }
+        
+        if (filtered.length === 0) {
+            container.innerHTML = '<div class="empty-state">😕 პროდუქტი ვერ მოიძებნა</div>';
+            return;
+        }
+        
+        container.innerHTML = filtered.map(product => `
+            <div class="product-card">
+                <a href="/${product.id}" style="text-decoration: none; color: inherit; display: block;">
+                    <img class="product-image" src="${product.image}" alt="${product.name}" 
+                         onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
+                </a>
+                <div class="product-info">
+                    <a href="/${product.id}" style="text-decoration: none; color: inherit;">
+                        <div class="product-name">${product.name}</div>
+                    </a>
+                    <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
+                    <div class="price-and-badges">
+                        <div class="product-price">${product.price}</div>
+                        <div class="shipping-badges">
+                            <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
+                            <span class="cash-badge">💵 გადახდა მიღებისას</span>
+                            <span class="warranty-badge">🛡️ ${product.warranty || '12 месяцев'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-order" onclick='openOrderModal(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
+                        შეკვეთა
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // ============================================
+    // СОБЫТИЯ
+    // ============================================
+    minPriceInput.addEventListener('input', renderProducts);
+    maxPriceInput.addEventListener('input', renderProducts);
+    sortSelect.addEventListener('change', renderProducts);
+    resetBtn.addEventListener('click', function() {
+        minPriceInput.value = '';
+        maxPriceInput.value = '';
+        sortSelect.value = 'name-asc';
+        currentCategory = 'all';
+        
+        categoryBtns.forEach(btn => {
+            if (btn.dataset.category === 'all') {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
             }
         });
         
-        // Также поддерживаем формы с конкретными ID (для обратной совместимости)
-        const formTop = document.getElementById('orderFormTop');
-        const formBottom = document.getElementById('orderFormBottom');
-        
-        if (formTop && !formTop._listenerAdded) {
-            formTop._listenerAdded = true;
-            // Убеждаемся, что обработчик не добавится дважды
+        const selectedValueSpan = document.getElementById('selectedValue');
+        if (selectedValueSpan) {
+            selectedValueSpan.textContent = 'სახელი (ა-ჰ)';
         }
         
-        if (formBottom && !formBottom._listenerAdded) {
-            formBottom._listenerAdded = true;
-        }
+        document.querySelectorAll('.select-option').forEach(opt => {
+            if (opt.dataset.value === 'name-asc') {
+                opt.classList.add('selected');
+            } else {
+                opt.classList.remove('selected');
+            }
+        });
         
-        console.log('✅ Универсальная система заказов готова! Найдено форм:', orderForms.length);
+        renderProducts();
     });
+    
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = btn.dataset.category;
+            renderProducts();
+        });
+    });
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) scrollTopBtn.classList.add('show');
+        else scrollTopBtn.classList.remove('show');
+    });
+    scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    
+    // ============================================
+    // ЗАГРУЗКА КАТАЛОГА
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('📥 Загружаем catalog.json...');
+        
+        fetch('/catalog.json')
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.json();
+            })
+            .then(data => {
+                window.allProducts = data.products.map(p => ({
+                    ...p,
+                    priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
+                }));
+                console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
+                
+                renderProducts();
+            })
+            .catch(e => {
+                console.error('❌ Ошибка загрузки каталога:', e);
+                container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
+            });
+    });
+    
+    // ============================================
+    // КАСТОМНЫЙ СЕЛЕКТ
+    // ============================================
+    const customSelect = document.getElementById('customSortSelect');
+    const selectTrigger = document.getElementById('selectTrigger');
+    const selectOptions = document.getElementById('selectOptions');
+    const selectedValueSpan = document.getElementById('selectedValue');
+    const hiddenSelect = document.getElementById('sortSelect');
+    
+    if (selectTrigger && customSelect && selectOptions) {
+        selectTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            customSelect.classList.toggle('open');
+        });
+        
+        document.querySelectorAll('.select-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const value = option.dataset.value;
+                const text = option.textContent;
+                
+                if (selectedValueSpan) {
+                    selectedValueSpan.textContent = text;
+                }
+                if (hiddenSelect) {
+                    hiddenSelect.value = value;
+                }
+                
+                document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                
+                customSelect.classList.remove('open');
+                
+                const event = new Event('change');
+                if (hiddenSelect) {
+                    hiddenSelect.dispatchEvent(event);
+                }
+            });
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (!customSelect.contains(e.target)) {
+                customSelect.classList.remove('open');
+            }
+        });
+    }
 </script>
 </body>
 </html>
