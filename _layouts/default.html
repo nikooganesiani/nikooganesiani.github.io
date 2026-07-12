@@ -557,126 +557,110 @@ if (quickForm) {
         }
     }
 
-async function processOrder(event, nameId, phoneId) {
-    event.preventDefault();
+    async function processOrder(event, nameId, phoneId) {
+        event.preventDefault();
 
-    const name = document.getElementById(nameId).value.trim();
-    const phoneInput = document.getElementById(phoneId);
-    let phone = phoneInput.value.trim();
+        const name = document.getElementById(nameId).value.trim();
+        const phoneInput = document.getElementById(phoneId);
+        let phone = phoneInput.value.trim();
 
-    phone = phone.replace(/\s/g, '');
+        phone = phone.replace(/\s/g, '');
 
-    if (phone.startsWith('+995')) {
-        phone = phone.substring(4);
-    }
-
-    if (!name) {
-        alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-        return false;
-    }
-
-    if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
-        let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
-        phoneInput.value = '';
-        if (phone.startsWith('995')) {
-            errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
-        } else if (phone.startsWith('0')) {
-            errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
+        if (phone.startsWith('+995')) {
+            phone = phone.substring(4);
         }
-        alert(errorMsg);
-        phoneInput.focus();
-        return false;
-    }
 
-    const fullPhone = '+995' + phone;
-    const form = event.target;
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    data.name = name;
-    data.phone = fullPhone;
+        if (!name) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+            return false;
+        }
 
-    // Удаляем потенциально конфликтные поля
-    delete data.currency;
-    delete data.value;
-    delete data.content_name;
-    delete data.content_ids;
+        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
+            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
+            phoneInput.value = '';
+            if (phone.startsWith('995')) {
+                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
+            } else if (phone.startsWith('0')) {
+                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
+            }
+            alert(errorMsg);
+            phoneInput.focus();
+            return false;
+        }
 
-    const productId = data.product_id || 'Smartscale';
-    const productName = data.product || 'Smartscale';
-    const productPrice = parseFloat(data.price) || 39;
+        const fullPhone = '+995' + phone;
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        data.name = name;
+        data.phone = fullPhone;
 
-    console.log('📦 Данные формы (полные):', JSON.stringify(data, null, 2));
-    console.log('💰 Цена:', productPrice, 'Тип:', typeof productPrice);
+        const productId = data.product_id;
+        const productName = data.product;
+        const productPrice = parseFloat(data.price);
 
-    const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = "⏳ იგზავნება...";
-    submitBtn.disabled = true;
+        const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
 
-    try {
-        const response = await fetch(window.WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
+        try {
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-        if (response.ok) {
-            // ===== META PIXEL (чистые параметры) =====
-            setTimeout(function() {
-                try {
-                    if (typeof fbq !== 'undefined') {
-                        var pixelParams = {
-                            content_ids: [productId],
-                            content_type: 'product',
-                            currency: 'GEL',
-                            value: productPrice
-                        };
-                        
-                        if (productName && typeof productName === 'string') {
-                            pixelParams.content_name = productName;
-                        }
-                        
-                        console.log('📊 Pixel params:', JSON.stringify(pixelParams));
-                        fbq('track', 'Purchase', pixelParams);
-                        console.log('✅ Meta Pixel: Purchase sent');
-                    }
-                } catch(e) {
-                    console.warn('⚠️ Pixel error:', e);
-                }
-            }, 500);
-            // ===== END META PIXEL =====
-
-            if (typeof window.showOrderConfirm === 'function') {
-                window.showOrderConfirm({
-                    name: name,
-                    phone: fullPhone,
-                    product: productName,
-                    price: productPrice + ' ₾'
+if (response.ok) {
+    // ===== META PIXEL (с задержкой) =====
+    setTimeout(function() {
+        try {
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Purchase', {
+                    content_ids: [productId],
+                    currency: 'GEL',
+                    value: productPrice,
+                    content_name: productName
                 });
-            } else {
-                alert('✨ მადლობა, ' + name + '! თქვენი შეკვეთა მიღებულია.');
+                console.log('✅ Meta Pixel: Purchase sent');
             }
-
-            document.getElementById(nameId).value = "";
-            document.getElementById(phoneId).value = "";
-            
-            const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
-            if (wrapper) {
-                wrapper.classList.remove('valid', 'invalid');
-            }
-        } else {
-            const errorText = await response.text();
-            console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-            alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+        } catch(e) {
+            // Игнорируем
         }
-    } catch (error) {
-        console.error('❌ Ошибка сети:', error);
-        alert('❌ Ошибка сети. Проверьте подключение.');
+    }, 5000);
+    // ===== END META PIXEL =====
+
+    if (typeof window.showOrderConfirm === 'function') {
+        window.showOrderConfirm({
+            name: name,
+            phone: fullPhone,
+            product: productName || 'Товар',
+            price: productPrice || 0
+        });
+    } else {
+        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
     }
 
-    submitBtn.textContent = originalText;
-    submitBtn.disabled = false;
+    document.getElementById(nameId).value = "";
+    document.getElementById(phoneId).value = "";
+    
+    const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('valid', 'invalid');
+    }
+} else {
+    const errorText = await response.text();
+    console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
+    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
 }
+        } catch (error) {
+            console.error('❌ Ошибка сети:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
 
     // Автоматическое подключение всех форм с классом .order-form
     document.addEventListener('DOMContentLoaded', function() {
