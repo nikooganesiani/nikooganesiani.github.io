@@ -345,7 +345,7 @@
         </div>
     </div>
 
-    <script>
+<script>
     // ===== АНИМАЦИЯ ПЛЕЙСХОЛДЕРА =====
     const s = document.getElementById('searchInput');
     const ic = document.querySelector('.search-icon');
@@ -377,7 +377,7 @@ const trackingCheckBtn = document.getElementById('trackingCheckBtn');
 const trackingResult = document.getElementById('trackingResult');
 const trackingLoading = document.getElementById('trackingLoading');
 
-// URL вашего Worker (без указания компании доставки)
+// URL вашего Worker
 const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
 
 // Маппинг статусов (публичная информация)
@@ -388,13 +388,71 @@ const statusMap = {
     'ჩაბარებულია': 'შეკვეთა ჩაბარებულია'
 };
 
-// Порядок статусов (убираем возврат и отмену)
+// Порядок статусов
 const statusOrder = [
     'ასაღები',
     'საწყობშია',
     'გატანილია ჩასაბარებლად',
     'ჩაბარებულია'
 ];
+
+// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ПЕРЕНЕСЕНЫ ВВЕРХ) =====
+function parseGeorgianDate(dateStr) {
+    if (!dateStr) return null;
+    try {
+        const parts = dateStr.trim().split(' ');
+        const dateParts = parts[0].split('.');
+        if (dateParts.length === 3) {
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1;
+            const year = parseInt(dateParts[2]);
+            let hours = 0, minutes = 0;
+            if (parts.length > 1 && parts[1]) {
+                const timeParts = parts[1].split(':');
+                if (timeParts.length === 2) {
+                    hours = parseInt(timeParts[0]);
+                    minutes = parseInt(timeParts[1]);
+                }
+            }
+            return new Date(year, month, day, hours, minutes);
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function getStatusBadge(statusName) {
+    if (!statusName) {
+        return `<span class="status-badge status-unknown">📦 უცნობი</span>`;
+    }
+
+    const badgeMap = {
+        'ჩაბარებულია': {
+            class: 'status-badge-delivered',
+            text: '✅ ჩაბარებულია'
+        },
+        'ასაღები': {
+            class: 'status-badge-processing',
+            text: '⏳ მზად არის ასაღებად'
+        },
+        'საწყობშია': {
+            class: 'status-badge-processing',
+            text: '⏳ საწყობშია'
+        },
+        'გატანილია ჩასაბარებლად': {
+            class: 'status-badge-shipping',
+            text: '🚚 მიემართება მისამართზე'
+        }
+    };
+
+    const badge = badgeMap[statusName] || {
+        class: 'status-badge-unknown',
+        text: '📦 ' + statusName
+    };
+
+    return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
+}
 
 if (trackingBtn && trackingModal && closeTrackingBtn) {
     trackingBtn.addEventListener('click', () => {
@@ -612,116 +670,57 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
     });
 }
 
-// Вспомогательные функции
-function parseGeorgianDate(dateStr) {
-    if (!dateStr) return null;
-    try {
-        const parts = dateStr.trim().split(' ');
-        const dateParts = parts[0].split('.');
-        if (dateParts.length === 3) {
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1;
-            const year = parseInt(dateParts[2]);
-            let hours = 0, minutes = 0;
-            if (parts.length > 1 && parts[1]) {
-                const timeParts = parts[1].split(':');
-                if (timeParts.length === 2) {
-                    hours = parseInt(timeParts[0]);
-                    minutes = parseInt(timeParts[1]);
-                }
-            }
-            return new Date(year, month, day, hours, minutes);
-        }
-        return null;
-    } catch (e) {
-        return null;
-    }
-}
+// ===== WORKER_URL =====
+if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-form-handler.niko-oganesiani.workers.dev';}
+console.log('✅ WORKER_URL:',window.WORKER_URL);
 
-// ДИЗАЙНЕРСКИЙ СТАТУС-БЕЙДЖ
-function getStatusBadge(statusName) {
-    if (!statusName) {
-        return `<span class="status-badge status-unknown">📦 უცნობი</span>`;
-    }
+// ===== МОДАЛКА ФОРМЫ =====
+const orderFormModal=document.getElementById('orderFormModal');
+const closeOrderFormBtn=document.getElementById('closeOrderFormModal');
+const quickForm=document.getElementById('quickOrderForm');
+const quickName=document.getElementById('quickName');
+const quickPhone=document.getElementById('quickPhone');
 
-    // Бейджи с градиентом и тенью
-    const badgeMap = {
-        'ჩაბარებულია': {
-            class: 'status-badge-delivered',
-            text: '✅ ჩაბარებულია'
-        },
-        'ასაღები': {
-            class: 'status-badge-processing',
-            text: '⏳ მზად არის ასაღებად'
-        },
-        'საწყობშია': {
-            class: 'status-badge-processing',
-            text: '⏳ საწყობშია'
-        },
-        'გატანილია ჩასაბარებლად': {
-            class: 'status-badge-shipping',
-            text: '🚚 მიემართება მისამართზე'
-        }
-    };
+// Глобальная функция для открытия формы
+window.openOrderForm = function(product) {
+    document.getElementById('formProductName').textContent = product.name;
+    document.getElementById('formProductImage').src = product.image;
+    document.getElementById('formProductImage').onerror = function() { this.src='https://via.placeholder.com/120?text=📱'; };
+    document.getElementById('formProductPrice').textContent = product.price;
+    quickName.value = '';
+    quickPhone.value = '';
+    orderFormModal.classList.add('active');
+    
+    // Сохраняем продукт для отправки
+    orderFormModal.dataset.product = JSON.stringify(product);
+};
 
-    const badge = badgeMap[statusName] || {
-        class: 'status-badge-unknown',
-        text: '📦 ' + statusName
-    };
-
-    return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
-}
-    // ===== WORKER_URL =====
-    if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-form-handler.niko-oganesiani.workers.dev';}
-    console.log('✅ WORKER_URL:',window.WORKER_URL);
-
-    // ===== МОДАЛКА ФОРМЫ =====
-    const orderFormModal=document.getElementById('orderFormModal');
-    const closeOrderFormBtn=document.getElementById('closeOrderFormModal');
-    const quickForm=document.getElementById('quickOrderForm');
-    const quickName=document.getElementById('quickName');
-    const quickPhone=document.getElementById('quickPhone');
-
-    // Глобальная функция для открытия формы
-    window.openOrderForm = function(product) {
-        document.getElementById('formProductName').textContent = product.name;
-        document.getElementById('formProductImage').src = product.image;
-        document.getElementById('formProductImage').onerror = function() { this.src='https://via.placeholder.com/120?text=📱'; };
-        document.getElementById('formProductPrice').textContent = product.price;
-        quickName.value = '';
-        quickPhone.value = '';
-        orderFormModal.classList.add('active');
-        
-        // Сохраняем продукт для отправки
-        orderFormModal.dataset.product = JSON.stringify(product);
-    };
-
-    // Закрытие формы
-    if(closeOrderFormBtn) {
-        closeOrderFormBtn.addEventListener('click', function() {
-            orderFormModal.classList.remove('active');
-        });
-    }
-    window.addEventListener('click', function(e) {
-        if(e.target === orderFormModal) orderFormModal.classList.remove('active');
+// Закрытие формы
+if(closeOrderFormBtn) {
+    closeOrderFormBtn.addEventListener('click', function() {
+        orderFormModal.classList.remove('active');
     });
+}
+window.addEventListener('click', function(e) {
+    if(e.target === orderFormModal) orderFormModal.classList.remove('active');
+});
 
-    // ===== ФОРМАТИРОВАНИЕ ТЕЛЕФОНА =====
-    if(quickPhone) {
-        quickPhone.addEventListener('input', function() {
-            let val = this.value.replace(/\D/g, '');
-            if(val.startsWith('995')) val = val.substring(3);
-            if(val.length > 9) val = val.slice(0, 9);
-            let formatted = '';
-            for(let i = 0; i < val.length; i++) {
-                if(i === 3 || i === 5 || i === 7) formatted += ' ';
-                formatted += val[i];
-            }
-            this.value = formatted;
-        });
-    }
+// ===== ФОРМАТИРОВАНИЕ ТЕЛЕФОНА =====
+if(quickPhone) {
+    quickPhone.addEventListener('input', function() {
+        let val = this.value.replace(/\D/g, '');
+        if(val.startsWith('995')) val = val.substring(3);
+        if(val.length > 9) val = val.slice(0, 9);
+        let formatted = '';
+        for(let i = 0; i < val.length; i++) {
+            if(i === 3 || i === 5 || i === 7) formatted += ' ';
+            formatted += val[i];
+        }
+        this.value = formatted;
+    });
+}
 
-    // ===== ОТПРАВКА ЗАКАЗА (из модалки на главной) =====
+// ===== ОТПРАВКА ЗАКАЗА (из модалки на главной) =====
 if (quickForm) {
     quickForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -785,9 +784,9 @@ if (quickForm) {
     });
 }
 
-    // ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ =====
-    const orderConfirmModal = document.getElementById('orderConfirmModal');
-    const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
+// ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ =====
+const orderConfirmModal = document.getElementById('orderConfirmModal');
+const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
 
 window.showOrderConfirm = function(data) {
     document.getElementById('confirmName').textContent = data.name || '-';
@@ -813,105 +812,105 @@ window.showOrderConfirm = function(data) {
         orderConfirmModal.classList.add('active');
     };
 
-    if(closeOrderConfirmBtn) {
-        closeOrderConfirmBtn.addEventListener('click', function() {
-            orderConfirmModal.classList.remove('active');
-        });
-    }
-    window.addEventListener('click', function(e) {
-        if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
+if(closeOrderConfirmBtn) {
+    closeOrderConfirmBtn.addEventListener('click', function() {
+        orderConfirmModal.classList.remove('active');
     });
+}
+window.addEventListener('click', function(e) {
+    if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
+});
 
-    // ===== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК ДЛЯ ВСЕХ ФОРМ НА САЙТЕ =====
-    function formatPhoneInput(input) {
-        let value = input.value;
-        value = value.replace(/\s/g, '');
-        if (value.startsWith('+995')) {
-            value = value.substring(4);
-        }
-        value = value.replace(/\D/g, '');
-        if (value.startsWith('995')) {
-            const wrapper = input.closest('.phone-wrapper');
-            if (wrapper) {
-                wrapper.classList.add('invalid');
-                wrapper.classList.remove('valid');
-            }
-            input.value = '';
-            return;
-        }
-        if (value.length > 9) {
-            value = value.slice(0, 9);
-        }
-        let formatted = '';
-        for (let i = 0; i < value.length; i++) {
-            if (i === 3 || i === 5 || i === 7) formatted += ' ';
-            formatted += value[i];
-        }
-        input.value = formatted;
+// ===== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК ДЛЯ ВСЕХ ФОРМ НА САЙТЕ =====
+function formatPhoneInput(input) {
+    let value = input.value;
+    value = value.replace(/\s/g, '');
+    if (value.startsWith('+995')) {
+        value = value.substring(4);
+    }
+    value = value.replace(/\D/g, '');
+    if (value.startsWith('995')) {
         const wrapper = input.closest('.phone-wrapper');
         if (wrapper) {
-            wrapper.classList.remove('valid', 'invalid');
-            if (value.length === 9) {
-                wrapper.classList.add('valid');
-            } else if (value.length > 0) {
-                wrapper.classList.add('invalid');
-            }
+            wrapper.classList.add('invalid');
+            wrapper.classList.remove('valid');
+        }
+        input.value = '';
+        return;
+    }
+    if (value.length > 9) {
+        value = value.slice(0, 9);
+    }
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i === 3 || i === 5 || i === 7) formatted += ' ';
+        formatted += value[i];
+    }
+    input.value = formatted;
+    const wrapper = input.closest('.phone-wrapper');
+    if (wrapper) {
+        wrapper.classList.remove('valid', 'invalid');
+        if (value.length === 9) {
+            wrapper.classList.add('valid');
+        } else if (value.length > 0) {
+            wrapper.classList.add('invalid');
         }
     }
+}
 
-    async function processOrder(event, nameId, phoneId) {
-        event.preventDefault();
+async function processOrder(event, nameId, phoneId) {
+    event.preventDefault();
 
-        const name = document.getElementById(nameId).value.trim();
-        const phoneInput = document.getElementById(phoneId);
-        let phone = phoneInput.value.trim();
+    const name = document.getElementById(nameId).value.trim();
+    const phoneInput = document.getElementById(phoneId);
+    let phone = phoneInput.value.trim();
 
-        phone = phone.replace(/\s/g, '');
+    phone = phone.replace(/\s/g, '');
 
-        if (phone.startsWith('+995')) {
-            phone = phone.substring(4);
+    if (phone.startsWith('+995')) {
+        phone = phone.substring(4);
+    }
+
+    if (!name) {
+        alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
+        return false;
+    }
+
+    if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
+        let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
+        phoneInput.value = '';
+        if (phone.startsWith('995')) {
+            errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
+        } else if (phone.startsWith('0')) {
+            errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
         }
+        alert(errorMsg);
+        phoneInput.focus();
+        return false;
+    }
 
-        if (!name) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-            return false;
-        }
+    const fullPhone = '+995' + phone;
+    const form = event.target;
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    data.name = name;
+    data.phone = fullPhone;
 
-        if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
-            let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
-            phoneInput.value = '';
-            if (phone.startsWith('995')) {
-                errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
-            } else if (phone.startsWith('0')) {
-                errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
-            }
-            alert(errorMsg);
-            phoneInput.focus();
-            return false;
-        }
+    const productId = data.product_id;
+    const productName = data.product;
+    const productPrice = parseFloat(data.price);
 
-        const fullPhone = '+995' + phone;
-        const form = event.target;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        data.name = name;
-        data.phone = fullPhone;
+    const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = "⏳ იგზავნება...";
+    submitBtn.disabled = true;
 
-        const productId = data.product_id;
-        const productName = data.product;
-        const productPrice = parseFloat(data.price);
-
-        const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
-        submitBtn.disabled = true;
-
-        try {
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+    try {
+        const response = await fetch(window.WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
 
 if (response.ok) {
     // ===== META PIXEL (с задержкой) =====
@@ -955,46 +954,46 @@ if (response.ok) {
     console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
     alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
 }
-        } catch (error) {
-            console.error('❌ Ошибка сети:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+    } catch (error) {
+        console.error('❌ Ошибка сети:', error);
+        alert('❌ Ошибка сети. Проверьте подключение.');
     }
 
-    // Автоматическое подключение всех форм с классом .order-form
-    document.addEventListener('DOMContentLoaded', function() {
-        const orderForms = document.querySelectorAll('.order-form');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+}
+
+// Автоматическое подключение всех форм с классом .order-form
+document.addEventListener('DOMContentLoaded', function() {
+    const orderForms = document.querySelectorAll('.order-form');
+    
+    orderForms.forEach(form => {
+        const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
+        const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
         
-        orderForms.forEach(form => {
-            const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
-            const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
-            
-            if (nameInput && phoneInput) {
-                if (!nameInput.id) {
-                    nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
-                }
-                if (!phoneInput.id) {
-                    phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
-                }
-                
-                phoneInput.addEventListener('input', function() {
-                    formatPhoneInput(this);
-                });
-                phoneInput.addEventListener('change', function() {
-                    formatPhoneInput(this);
-                });
-                
-                form.addEventListener('submit', function(e) {
-                    processOrder(e, nameInput.id, phoneInput.id);
-                });
+        if (nameInput && phoneInput) {
+            if (!nameInput.id) {
+                nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
             }
-        });
-        
-        console.log('✅ Универсальная система заказов готова!');
+            if (!phoneInput.id) {
+                phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            phoneInput.addEventListener('input', function() {
+                formatPhoneInput(this);
+            });
+            phoneInput.addEventListener('change', function() {
+                formatPhoneInput(this);
+            });
+            
+            form.addEventListener('submit', function(e) {
+                processOrder(e, nameInput.id, phoneInput.id);
+            });
+        }
     });
-    </script>
+    
+    console.log('✅ Универсальная система заказов готова!');
+});
+</script>
 </body>
 </html>
