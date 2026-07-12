@@ -561,6 +561,524 @@ title: "მთავარი"
     border-color: #51cf66;
     box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.1);
 }
+/* ============================================
+   🎬 АНИМАЦИИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
+   ============================================ */
+
+/* ---- БАЗОВЫЕ АНИМАЦИИ ---- */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes rippleEffect {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ---- КАТЕГОРИИ (fade + slide) ---- */
+.category-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.category-btn.active {
+    transform: scale(0.95);
+    background: #2563eb;
+    color: white;
+}
+
+.category-btn:active {
+    transform: scale(0.92);
+}
+
+/* Ripple эффект для кнопок категорий */
+.category-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.category-btn:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ---- ФИЛЬТРЫ (slide-down) ---- */
+.filters-bar {
+    animation: slideDown 0.4s ease;
+}
+
+.filter-group {
+    transition: all 0.3s ease;
+}
+
+.filter-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* ---- КАРТОЧКИ ТОВАРОВ (stagger + fade-up) ---- */
+.product-card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.5s ease forwards;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Stagger эффект для карточек */
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(4) { animation-delay: 0.2s; }
+.product-card:nth-child(5) { animation-delay: 0.25s; }
+.product-card:nth-child(6) { animation-delay: 0.3s; }
+.product-card:nth-child(7) { animation-delay: 0.35s; }
+.product-card:nth-child(8) { animation-delay: 0.4s; }
+.product-card:nth-child(9) { animation-delay: 0.45s; }
+.product-card:nth-child(10) { animation-delay: 0.5s; }
+.product-card:nth-child(11) { animation-delay: 0.55s; }
+.product-card:nth-child(12) { animation-delay: 0.6s; }
+
+.product-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* ---- КНОПКИ (pulse + ripple) ---- */
+.btn-order {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-order:active {
+    transform: scale(0.95);
+}
+
+/* Ripple эффект для кнопки заказа */
+.btn-order::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-order:active::after {
+    width: 400px;
+    height: 400px;
+}
+
+.btn-order:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+/* ---- БЕЙДЖИ (pop) ---- */
+.free-shipping-badge,
+.cash-badge,
+.warranty-badge {
+    animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.free-shipping-badge { animation-delay: 0.1s; }
+.cash-badge { animation-delay: 0.2s; }
+.warranty-badge { animation-delay: 0.3s; }
+
+.free-shipping-badge:hover,
+.cash-badge:hover,
+.warranty-badge:hover {
+    transform: scale(1.05);
+}
+
+/* ---- КНОПКА НАВЕРХ (bounce) ---- */
+.scroll-top {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.scroll-top.show {
+    animation: bounceIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+}
+
+.scroll-top:hover {
+    transform: scale(1.1) rotate(-5deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ---- МОДАЛЬНОЕ ОКНО (scale + fade) ---- */
+.modal.active {
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.3s ease;
+}
+
+.modal-content:hover {
+    transform: scale(1.01);
+}
+
+/* ---- СКЕЛЕТОНЫ (улучшенная анимация) ---- */
+.skeleton-img,
+.skeleton-title,
+.skeleton-price,
+.skeleton-btn {
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 0.5rem;
+}
+
+/* ---- ПУСТОЕ СОСТОЯНИЕ (fadeIn) ---- */
+.empty-state {
+    animation: fadeIn 0.6s ease;
+}
+
+/* ---- ИНПУТЫ (при фокусе) ---- */
+.input-field,
+.phone-input {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-field:focus,
+.phone-input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+}
+
+.phone-wrapper {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.phone-wrapper:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.15);
+}
+
+/* ---- КАСТОМНЫЙ СЕЛЕКТ ---- */
+.select-trigger {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.select-trigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.select-options {
+    animation: slideDown 0.2s ease;
+}
+
+.select-option {
+    transition: all 0.2s ease;
+}
+
+.select-option:hover {
+    transform: translateX(5px);
+    background: #f1f5f9;
+}
+
+.select-option.selected {
+    background: #2563eb;
+    color: white;
+    transform: translateX(5px);
+}
+
+/* ---- RESET КНОПКА ---- */
+.reset-filters {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reset-filters.show {
+    animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: inline-block;
+}
+
+.reset-filters:hover {
+    transform: scale(1.05) rotate(-2deg);
+}
+
+/* ---- ИЗОБРАЖЕНИЯ ТОВАРОВ ---- */
+.product-image {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.08) rotate(1deg);
+}
+
+/* ---- ССЫЛКИ В КАРТОЧКАХ ---- */
+.product-card a {
+    transition: all 0.3s ease;
+}
+
+.product-card a:hover {
+    transform: translateX(3px);
+}
+
+/* ---- НАЗВАНИЕ ТОВАРА ---- */
+.product-name {
+    transition: color 0.3s ease;
+}
+
+.product-card:hover .product-name {
+    color: #2563eb;
+}
+
+/* ---- ЦЕНА ---- */
+.product-price {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .product-price {
+    transform: scale(1.05);
+    color: #1d4ed8;
+}
+
+/* ============================================
+   🎯 ДОПОЛНИТЕЛЬНЫЕ ЭФФЕКТЫ
+   ============================================ */
+
+/* Микро-интеракции для элементов */
+.categories-bar {
+    animation: slideDown 0.5s ease;
+}
+
+/* Плавное появление контента при загрузке */
+.container {
+    animation: fadeIn 0.8s ease;
+}
+
+/* Эффект для фильтров при изменении */
+.filter-group input {
+    transition: all 0.3s ease;
+}
+
+.filter-group input:focus {
+    transform: scale(1.05);
+}
+
+/* Эффект для бейджей доставки */
+.shipping-badges {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .shipping-badges {
+    transform: translateX(-5px);
+}
+
+/* Кнопка закрытия модалки */
+.close-modal {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.close-modal:hover {
+    background: #cbd5e1;
+    transform: scale(1.02);
+}
+
+/* Кнопка отправки заказа */
+.btn-submit {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.btn-submit:active {
+    transform: scale(0.95);
+}
+
+/* Ripple для кнопки отправки */
+.btn-submit::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-submit:active::after {
+    width: 400px;
+    height: 400px;
+}
+
+/* ============================================
+   📱 АДАПТИВНЫЕ АНИМАЦИИ
+   ============================================ */
+
+@media (max-width: 640px) {
+    /* Уменьшаем анимации на мобильных */
+    .product-card {
+        animation-duration: 0.4s;
+    }
+    
+    .product-card:nth-child(1) { animation-delay: 0.03s; }
+    .product-card:nth-child(2) { animation-delay: 0.06s; }
+    .product-card:nth-child(3) { animation-delay: 0.09s; }
+    .product-card:nth-child(4) { animation-delay: 0.12s; }
+    .product-card:nth-child(5) { animation-delay: 0.15s; }
+    .product-card:nth-child(6) { animation-delay: 0.18s; }
+    
+    .modal-content {
+        animation: modalSlideIn 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    /* Упрощаем hover эффекты на мобильных */
+    .product-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .btn-order:hover {
+        transform: none;
+    }
+}
+
+/* Для пользователей с предпочтением уменьшенного движения */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .product-card {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
 </style>
 
 <div class="categories-bar">
