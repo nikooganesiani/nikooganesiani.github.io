@@ -421,82 +421,68 @@
     }
 
     // ===== ОТПРАВКА ЗАКАЗА (из модалки на главной) =====
-    if(quickForm) {
-        quickForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const name = quickName.value.trim();
-            const phoneRaw = quickPhone.value.replace(/\s/g, '');
-            
-            if(!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); quickName.focus(); return; }
-            if(!phoneRaw || phoneRaw.length !== 9 || !/^\d+$/.test(phoneRaw)) {
-                alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი)");
-                quickPhone.focus();
-                return;
-            }
-            
-            const product = JSON.parse(orderFormModal.dataset.product || '{}');
-            const fullPhone = '+995' + phoneRaw;
-            const submitBtn = quickForm.querySelector('.btn-submit');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = "⏳ იგზავნება...";
-            submitBtn.disabled = true;
-            
-            try {
-                const data = {
-                    name: name,
-                    phone: fullPhone,
-                    product: product.name || 'Товар',
-                    price: product.price || '0 ₾'
-                };
-                
-                const response = await fetch(window.WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-if (response.ok) {
-    // ===== META PIXEL =====
-    try {
-        if (typeof fbq !== 'undefined') {
-            fbq('track', 'Purchase', {
-                content_ids: [product.id || 'product'],
-                currency: 'GEL',
-                value: parseFloat(product.price) || 0,
-                content_name: product.name || 'Товар'
-            });
+if (quickForm) {
+    quickForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const name = quickName.value.trim();
+        const phoneRaw = quickPhone.value.replace(/\s/g, '');
+        
+        if(!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); quickName.focus(); return; }
+        if(!phoneRaw || phoneRaw.length !== 9 || !/^\d+$/.test(phoneRaw)) {
+            alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი)");
+            quickPhone.focus();
+            return;
         }
-    } catch(e) {}
-    // ===== END META PIXEL =====
-    
-    // Закрываем форму
-    orderFormModal.classList.remove('active');
-    
-    // Показываем подтверждение
-    setTimeout(function() {
-        if(typeof window.showOrderConfirm === 'function') {
-            window.showOrderConfirm({
+        
+        const product = JSON.parse(orderFormModal.dataset.product || '{}');
+        const fullPhone = '+995' + phoneRaw;
+        const submitBtn = quickForm.querySelector('.btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.disabled = true;
+        
+        try {
+            const data = {
                 name: name,
                 phone: fullPhone,
                 product: product.name || 'Товар',
                 price: product.price || '0 ₾'
-            });
-        }
-    }, 300);
-    
-} else {
-    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-}
-            } catch(error) {
-                console.error('❌ Ошибка:', error);
-                alert('❌ Ошибка сети. Проверьте подключение.');
-            }
+            };
             
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        });
-    }
+            const response = await fetch(window.WORKER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                // Закрываем форму
+                orderFormModal.classList.remove('active');
+                
+                // Показываем подтверждение
+                setTimeout(function() {
+                    if(typeof window.showOrderConfirm === 'function') {
+                        window.showOrderConfirm({
+                            name: name,
+                            phone: fullPhone,
+                            product: product.name || 'Товар',
+                            price: product.price || '0 ₾'
+                        });
+                    }
+                }, 300);
+            } else {
+                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+            }
+        } catch(error) {
+            console.error('❌ Ошибка:', error);
+            alert('❌ Ошибка сети. Проверьте подключение.');
+        }
+        
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    });
+}
 
     // ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ =====
     const orderConfirmModal = document.getElementById('orderConfirmModal');
