@@ -31,19 +31,17 @@ catalog.products.forEach(product => {
     return;
   }
 
-  const content = `---
-id: "${product.id}"
+const content = `---
+layout: product
+id: ${product.id}
 name: "${product.name}"
 price: "${product.price}"
 image: "${product.image}"
 description: "${product.description}"
 warranty: "${product.warranty || '12 თვე'}"
 categories: ${JSON.stringify(product.categories || [])}
-layout: product
 permalink: /${product.id}/
 ---
-
-<!-- Product page: ${product.name} -->
 `;
 
   const filePath = path.join(productsDir, `${product.id}.md`);
