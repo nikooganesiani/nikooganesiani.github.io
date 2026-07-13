@@ -14,16 +14,15 @@ exclude:
   - README.md
   - catalog.json  # Не копируем в _site
 
-# Добавляем коллекцию товаров
+# Коллекция товаров
 collections:
   products:
     output: true
     permalink: /:collection/:path/
 
-# Настройки для страниц товаров
+# Настройки по умолчанию для товаров
 defaults:
   - scope:
       path: "_products/*.md"
     values:
       layout: "product"
-      permalink: /:title/
