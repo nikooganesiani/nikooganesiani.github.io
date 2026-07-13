@@ -1,53 +1,48 @@
 const fs = require('fs');
 const path = require('path');
 
-// catalog.json в корне
-const catalogPath = path.join(__dirname, 'catalog.json');
-const productsDir = path.join(__dirname, '_products');
+console.log('🚀 Script started...');
 
-// Создаём папку _products если её нет
+const catalogPath = path.join(process.cwd(), 'application/json', 'catalog.json'); 
+// Исправил путь, так как в твоем первом сообщении JSON лежал в папке application/json
+
+const productsDir = path.join(process.cwd(), '_products');
+
 if (!fs.existsSync(productsDir)) {
-  fs.mkdirSync(productsDir);
+  fs.mkdirSync(productsDir, { recursive: true });
+  console.log('📁 Created _products directory');
 }
 
-// Проверяем существование catalog.json
 if (!fs.existsSync(catalogPath)) {
-  console.error('❌ catalog.json not found!');
+  console.error('❌ ERROR: catalog.json NOT FOUND at path:', catalogPath);
   process.exit(1);
 }
 
 const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+const products = catalog.products || [];
 
-if (!catalog.products || catalog.products.length === 0) {
-  console.log('⚠️ No products found');
-  process.exit(0);
+console.log(`📦 Found ${products.length} products in catalog.`);
+
+if (products.length === 0) {
+  console.error('❌ ERROR: No products to generate!');
+  process.exit(1);
 }
 
-let generated = 0;
-
-catalog.products.forEach(product => {
-  if (!product.id || product.id === '') {
-    console.log(`⚠️ Skipping product without ID: ${product.name}`);
-    return;
-  }
-
-const content = `---
+products.forEach(product => {
+  const content = `---
 layout: product
-id: ${product.id}
+id: "${product.id}"
 name: "${product.name}"
 price: "${product.price}"
 image: "${product.image}"
 description: "${product.description}"
 warranty: "${product.warranty || '12 თვე'}"
-categories: ${JSON.stringify(product.categories || [])}
 permalink: /${product.id}/
 ---
 `;
 
-  const filePath = path.join(productsDir, `${product.id}.md`);
-  fs.writeFileSync(filePath, content);
+  fs.writeFileSync(path.join(productsDir, `${product.id}.md`), content);
   console.log(`✅ Generated: ${product.id}.md`);
-  generated++;
 });
 
-console.log(`\n✅ Done! Generated ${generated} product pages.`);
+console.log('✨ All pages generated successfully!');
