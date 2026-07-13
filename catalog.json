@@ -1,8 +1,8 @@
 {
   "products": [
     {
-      "id": "smartscale",
-      "name": "ჭკვიანი სასწორი | Smart Scale",
+      "id": "tiffanysmartscale",
+      "name": "ჭკვიანი სასწორი (Smart Scale)",
       "price": "39₾",
       "image": "/img/products/scale.webp",
       "categories": ["smarthome", "selfcare"],
@@ -10,7 +10,7 @@
       "warranty": "გარანტია: 12 თვე"
     },
     {
-      "id": "",
+      "id": "grillsokany",
       "name": "გრილი-ტოსტერი Sokany",
       "price": "49₾",
       "image": "/img/products/grillsokany.webp",
@@ -19,7 +19,7 @@
       "warranty": "გარანტია: 12 თვე"
     },
     {
-      "id": "",
+      "id": "hauzerelectrokettle",
       "name": "ელექტრო ჩაიდანი Hauzer",
       "price": "89₾",
       "image": "/img/products/kettlehauzer1.webp",
@@ -28,7 +28,7 @@
       "warranty": "გარანტია: 24 თვე"
     },
     {
-      "id": "",
+      "id": "printerhpm106w",
       "name": "პრინტერი HP LaserJet Ultra M106W (მეორადი)",
       "price": "249₾",
       "image": "/img/products/printerhpm106w.webp",
