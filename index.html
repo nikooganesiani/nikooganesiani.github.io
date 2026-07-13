@@ -822,10 +822,10 @@ title: "მთავარი"
         
         container.innerHTML = filtered.map(product => `
             <div class="product-card">
-                <a href="/${product.id}" style="text-decoration: none; color: inherit; display: block;">
-                    <img class="product-image" src="${product.image}" alt="${product.name}" 
-                         onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
-                </a>
+<!-- В карточке товара -->
+<a href="/{{ product.id }}" style="text-decoration: none; color: inherit; display: block;">
+    <img class="product-image" src="{{ product.image }}" alt="{{ product.name }}">
+</a>
                 <div class="product-info">
                     <a href="/${product.id}" style="text-decoration: none; color: inherit;">
                         <div class="product-name">${product.name}</div>
