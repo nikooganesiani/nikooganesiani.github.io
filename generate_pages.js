@@ -1,9 +1,8 @@
-// generate_pages.js
 const fs = require('fs');
 const path = require('path');
 
-// Читаем каталог
-const catalogPath = path.join(__dirname, '_data', 'catalog.json');
+// catalog.json в корне
+const catalogPath = path.join(__dirname, 'catalog.json');
 const productsDir = path.join(__dirname, '_products');
 
 // Создаём папку _products если её нет
@@ -11,24 +10,27 @@ if (!fs.existsSync(productsDir)) {
   fs.mkdirSync(productsDir);
 }
 
-// Читаем JSON
-const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
-
-// Проверяем товары
-if (!catalog.products || catalog.products.length === 0) {
-  console.log('❌ Нет товаров в catalog.json');
+// Проверяем существование catalog.json
+if (!fs.existsSync(catalogPath)) {
+  console.error('❌ catalog.json not found!');
   process.exit(1);
 }
 
-// Создаём страницы для каждого товара
+const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+
+if (!catalog.products || catalog.products.length === 0) {
+  console.log('⚠️ No products found');
+  process.exit(0);
+}
+
+let generated = 0;
+
 catalog.products.forEach(product => {
-  // Пропускаем товары без ID
   if (!product.id || product.id === '') {
-    console.log(`⚠️ Пропускаем товар без ID: ${product.name}`);
+    console.log(`⚠️ Skipping product without ID: ${product.name}`);
     return;
   }
 
-  // Формируем содержимое .md файла
   const content = `---
 id: "${product.id}"
 name: "${product.name}"
@@ -41,16 +43,13 @@ layout: product
 permalink: /${product.id}/
 ---
 
-<!-- Страница товара ${product.name} -->
+<!-- Product page: ${product.name} -->
 `;
 
-  // Сохраняем файл
-  const fileName = `${product.id}.md`;
-  const filePath = path.join(productsDir, fileName);
-  
+  const filePath = path.join(productsDir, `${product.id}.md`);
   fs.writeFileSync(filePath, content);
-  console.log(`✅ Создана страница: ${fileName} (${product.name})`);
+  console.log(`✅ Generated: ${product.id}.md`);
+  generated++;
 });
 
-console.log(`\n✅ Готово! Создано ${catalog.products.filter(p => p.id).length} страниц товаров.`);
-console.log('📝 Запустите "bundle exec jekyll build" для сборки сайта.');
+console.log(`\n✅ Done! Generated ${generated} product pages.`);
