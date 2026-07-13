@@ -23,7 +23,7 @@ exclude:
 collections:
   products:
     output: true
-    permalink: /:collection/:path/
+    permalink: /:path/
 
 # Настройки по умолчанию для товаров
 defaults:
