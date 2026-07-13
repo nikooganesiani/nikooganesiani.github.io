@@ -1,0 +1,421 @@
+---
+layout: default
+---
+
+<style>
+    /* Копируем ваши стили из index.html */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    .product-page {
+        max-width: 1280px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+        animation: fadeIn 0.6s ease;
+    }
+
+    .product-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        background: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .product-gallery {
+        position: sticky;
+        top: 2rem;
+        height: fit-content;
+    }
+
+    .product-main-image {
+        width: 100%;
+        height: 500px;
+        object-fit: contain;
+        background: #f8fafc;
+        border-radius: 1rem;
+        padding: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .product-main-image:hover {
+        transform: scale(1.02);
+    }
+
+    .product-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .product-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.3;
+    }
+
+    .product-price-large {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2563eb;
+        padding: 0.5rem 0;
+    }
+
+    .product-description-full {
+        font-size: 1rem;
+        color: #475569;
+        line-height: 1.8;
+        padding: 1rem 0;
+        border-top: 2px solid #f1f5f9;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .product-specs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        padding: 0.5rem 0;
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+    }
+
+    .spec-label {
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .spec-value {
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    .badges-container {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        padding: 0.5rem 0;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .badge-shipping { background: #dcfce7; color: #2d6a4f; }
+    .badge-cash { background: #dbeafe; color: #1e40af; }
+    .badge-warranty { background: #ffedd5; color: #b45309; }
+
+    .order-section {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .order-section h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: #0f172a;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #475569;
+        margin-bottom: 0.3rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-group textarea {
+        min-height: 80px;
+        resize: vertical;
+    }
+
+    .btn-submit-order {
+        width: 100%;
+        padding: 1rem;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit-order:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        background: #1d4ed8;
+    }
+
+    .btn-submit-order:active {
+        transform: scale(0.95);
+    }
+
+    /* Related products */
+    .related-products {
+        margin-top: 3rem;
+    }
+
+    .related-products h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #0f172a;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .related-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        cursor: pointer;
+    }
+
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .related-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: contain;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-card .name {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.9rem;
+    }
+
+    .related-card .price {
+        color: #2563eb;
+        font-weight: 700;
+        margin-top: 0.3rem;
+    }
+
+    /* Back button */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #2563eb;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        background: #eff6ff;
+    }
+
+    .back-link:hover {
+        background: #dbeafe;
+        transform: translateX(-5px);
+    }
+
+    @media (max-width: 768px) {
+        .product-layout {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .product-main-image {
+            height: 300px;
+        }
+
+        .product-title {
+            font-size: 1.5rem;
+        }
+
+        .product-price-large {
+            font-size: 2rem;
+        }
+
+        .product-specs {
+            grid-template-columns: 1fr;
+        }
+
+        .related-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="product-page">
+    <!-- Кнопка назад -->
+    <a href="/" class="back-link">← ყველა პროდუქტი</a>
+
+    <div class="product-layout">
+        <!-- Левая колонка - фото -->
+        <div class="product-gallery">
+            <img 
+                src="{{ page.image }}" 
+                alt="{{ page.name }}"
+                class="product-main-image"
+                onerror="this.src='https://via.placeholder.com/500x500?text=📱'"
+            >
+        </div>
+
+        <!-- Правая колонка - информация -->
+        <div class="product-details">
+            <h1 class="product-title">{{ page.name }}</h1>
+            <div class="product-price-large">{{ page.price }}</div>
+
+            <div class="badges-container">
+                <span class="badge badge-shipping">🚚 უფასო მიტანა</span>
+                <span class="badge badge-cash">💵 გადახდა მიღებისას</span>
+                <span class="badge badge-warranty">🛡️ {{ page.warranty | default: "12 თვე" }}</span>
+            </div>
+
+            <div class="product-description-full">
+                {{ page.description }}
+            </div>
+
+            <!-- Характеристики -->
+            <div class="product-specs">
+                <div class="spec-item">
+                    <span class="spec-label">📦 მდგომარეობა</span>
+                    <span class="spec-value">ახალი</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">🛡️ გარანტია</span>
+                    <span class="spec-value">{{ page.warranty | default: "12 თვე" }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">📦 მიწოდება</span>
+                    <span class="spec-value">მთელ საქართველოში</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">💳 გადახდა</span>
+                    <span class="spec-value">მიღებისას</span>
+                </div>
+            </div>
+
+            <!-- Форма заказа -->
+            <div class="order-section">
+                <h3>📝 შეკვეთა</h3>
+                <form id="orderForm" onsubmit="return handleOrder(event)">
+                    <div class="form-group">
+                        <label for="customerName">სახელი</label>
+                        <input type="text" id="customerName" placeholder="თქვენი სახელი" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerPhone">ტელეფონი</label>
+                        <input type="tel" id="customerPhone" placeholder="+995 5XX XX XX XX" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerComment">კომენტარი</label>
+                        <textarea id="customerComment" placeholder="დამატებითი ინფორმაცია"></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit-order">
+                        🛒 შეკვეთა
+                    </button>
+                    <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b; text-align: center;">
+                        🔒 მონაცემები დაცულია
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Похожие товары -->
+    {% if page.related_products %}
+    <div class="related-products">
+        <h2>🔄 მსგავსი პროდუქტები</h2>
+        <div class="related-grid">
+            {% for related in page.related_products %}
+            <a href="/{{ related.id }}" style="text-decoration: none; color: inherit;">
+                <div class="related-card">
+                    <img src="{{ related.image }}" alt="{{ related.name }}" onerror="this.src='https://via.placeholder.com/200x150?text=📱'">
+                    <div class="name">{{ related.name }}</div>
+                    <div class="price">{{ related.price }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Обработчик формы заказа
+    function handleOrder(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        const comment = document.getElementById('customerComment').value;
+        const productName = "{{ page.name }}";
+        const productPrice = "{{ page.price }}";
+        
+        // Показываем уведомление
+        alert(`✅ შეკვეთა მიღებულია!\n\n📦 პროდუქტი: ${productName}\n💰 ფასი: ${productPrice}\n👤 სახელი: ${name}\n📞 ტელეფონი: ${phone}\n📝 კომენტარი: ${comment || 'არ არის'}\n\n📞 ჩვენ დაგიკავშირდებით 24 საათის განმავლობაში.`);
+        
+        // Очищаем форму
+        document.getElementById('orderForm').reset();
+        
+        return false;
+    }
+</script>
