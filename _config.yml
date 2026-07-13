@@ -5,3 +5,25 @@ url: "enkaelectronics.com.ge"   # 👈 твой кастомный домен
 baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
+
+# Для генерации страниц товаров
+collections:
+  products:
+    output: true
+    permalink: /:collection/:path/
+
+# Исключаем ненужные файлы
+exclude:
+  - node_modules
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - catalog.json  # Не копируем в _site
+
+# Данные каталога
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
