@@ -3,9 +3,8 @@ const path = require('path');
 
 console.log('🚀 Script started...');
 
-const catalogPath = path.join(process.cwd(), 'application/json', 'catalog.json'); 
-// Исправил путь, так как в твоем первом сообщении JSON лежал в папке application/json
-
+// Исправлено: теперь ищем catalog.json прямо в корне
+const catalogPath = path.join(process.cwd(), 'catalog.json'); 
 const productsDir = path.join(process.cwd(), '_products');
 
 if (!fs.existsSync(productsDir)) {
@@ -15,6 +14,8 @@ if (!fs.existsSync(productsDir)) {
 
 if (!fs.existsSync(catalogPath)) {
   console.error('❌ ERROR: catalog.json NOT FOUND at path:', catalogPath);
+  // Выведем список файлов в корне для отладки, если не найдено
+  console.log('Files in root:', fs.readdirSync(process.cwd()));
   process.exit(1);
 }
 
