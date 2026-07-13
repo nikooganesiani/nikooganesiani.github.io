@@ -6,6 +6,7 @@ baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
 
+# Исключаем лишние папки
 exclude:
   - vendor
   - node_modules
@@ -15,6 +16,8 @@ exclude:
   - generate_pages.js
   - .github
   - .gitignore
+  - .git
+  - .bundle
 
 # Коллекция товаров
 collections:
@@ -28,3 +31,17 @@ defaults:
       path: "_products/*.md"
     values:
       layout: "product"
+      permalink: /:title/
+
+# Плагины (стандартные для GitHub Pages)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Настройки для sitemap
+sitemap:
+  filename: sitemap.xml
+
+# Локализация
+lang: "ka"
+locale: "ka_GE"
