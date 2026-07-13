@@ -820,32 +820,31 @@ title: "მთავარი"
             return;
         }
         
-        container.innerHTML = filtered.map(product => `
-            <div class="product-card">
-<!-- В карточке товара -->
-<a href="/{{ product.id }}" style="text-decoration: none; color: inherit; display: block;">
-    <img class="product-image" src="{{ product.image }}" alt="{{ product.name }}">
-</a>
-                <div class="product-info">
-                    <a href="/${product.id}" style="text-decoration: none; color: inherit;">
-                        <div class="product-name">${product.name}</div>
-                    </a>
-                    <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
-                    <div class="price-and-badges">
-                        <div class="product-price">${product.price}</div>
-                        <div class="shipping-badges">
-                            <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
-                            <span class="cash-badge">💵 გადახდა მიღებისას</span>
-                            <span class="warranty-badge">🛡️ ${product.warranty || '12 месяцев'}</span>
-                        </div>
-                    </div>
-                    <button class="btn-order" onclick='window.openOrderForm(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
-                        შეკვეთა
-                    </button>
+container.innerHTML = filtered.map(product => `
+    <div class="product-card">
+        <a href="/${product.id}" style="text-decoration: none; color: inherit; display: block;">
+            <img class="product-image" src="${product.image}" alt="${product.name}"
+                 onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
+        </a>
+        <div class="product-info">
+            <a href="/${product.id}" style="text-decoration: none; color: inherit;">
+                <div class="product-name">${product.name}</div>
+            </a>
+            <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
+            <div class="price-and-badges">
+                <div class="product-price">${product.price}</div>
+                <div class="shipping-badges">
+                    <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
+                    <span class="cash-badge">💵 გადახდა მიღებისას</span>
+                    <span class="warranty-badge">🛡️ ${product.warranty || '12 месяцев'}</span>
                 </div>
             </div>
-        `).join('');
-    }
+            <button class="btn-order" onclick='window.openOrderForm(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
+                შეკვეთა
+            </button>
+        </div>
+    </div>
+`).join('');
     
     // ============================================
     // СОБЫТИЯ
