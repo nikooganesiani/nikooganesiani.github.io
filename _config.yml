@@ -6,13 +6,15 @@ baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
 
-# Исключаем ненужные файлы
 exclude:
+  - vendor
   - node_modules
   - Gemfile
   - Gemfile.lock
   - README.md
-  - catalog.json  # Не копируем в _site
+  - generate_pages.js
+  - .github
+  - .gitignore
 
 # Коллекция товаров
 collections:
