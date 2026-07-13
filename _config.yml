@@ -31,7 +31,6 @@ defaults:
       path: "_products/*.md"
     values:
       layout: "product"
-      permalink: /:title/
 
 # Плагины (стандартные для GitHub Pages)
 plugins:
