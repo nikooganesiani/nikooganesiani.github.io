@@ -6,12 +6,6 @@ baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
 
-# Для генерации страниц товаров
-collections:
-  products:
-    output: true
-    permalink: /:collection/:path/
-
 # Исключаем ненужные файлы
 exclude:
   - node_modules
@@ -20,10 +14,16 @@ exclude:
   - README.md
   - catalog.json  # Не копируем в _site
 
-# Данные каталога
+# Добавляем коллекцию товаров
+collections:
+  products:
+    output: true
+    permalink: /:collection/:path/
+
+# Настройки для страниц товаров
 defaults:
   - scope:
-      path: ""
-      type: "pages"
+      path: "_products/*.md"
     values:
-      layout: "default"
+      layout: "product"
+      permalink: /:title/
