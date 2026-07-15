@@ -920,12 +920,14 @@ const eventId = Date.now().toString(36) + Math.random().toString(36).substring(2
 try {
     // 1. Отправляем через пиксель
     if (typeof fbq !== 'undefined') {
-        fbq('track', 'Purchase', {
-            content_ids: [productId],
-            currency: 'GEL',
-            value: productPrice,
-            content_name: productName
-        }, { eventID: eventId });
+fbq('track', 'Purchase', {
+    content_ids: [productId],
+    value: productPrice,
+    content_name: productName
+}, { 
+    eventID: eventId,
+    currency: 'GEL'       // ← перенести сюда
+});
         console.log('✅ Meta Pixel: Purchase sent, eventID:', eventId);
     }
     
