@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": "",
+      "id": "/",
       "name": "ჭკვიანი სასწორი (Smart Scale)",
       "price": "39₾",
       "image": "/img/products/scale.webp",
@@ -10,7 +10,7 @@
       "warranty": "გარანტია: 12 თვე"
     },
     {
-      "id": "",
+      "id": "/",
       "name": "გრილი-ტოსტერი Sokany",
       "price": "49₾",
       "image": "/img/products/grillsokany.webp",
@@ -19,7 +19,7 @@
       "warranty": "გარანტია: 12 თვე"
     },
     {
-      "id": "",
+      "id": "/",
       "name": "ელექტრო ჩაიდანი Hauzer",
       "price": "89₾",
       "image": "/img/products/kettlehauzer1.webp",
