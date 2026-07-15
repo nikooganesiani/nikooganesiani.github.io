@@ -923,6 +923,7 @@ if (typeof fbq !== 'undefined') {
     fbq('track', 'Purchase', {
         content_ids: [productId],
         value: productPrice,
+        currency: 'GEL',       // ← ВОЗВРАЩАЕМ СЮДА
         content_name: productName
     }, { 
         eventID: eventId      // ← Оставляем только это
@@ -934,6 +935,7 @@ if (typeof fbq !== 'undefined') {
     if (typeof window.sendCapiEvent === 'function') {
         window.sendCapiEvent('Purchase', {
             value: productPrice,
+            currency: 'GEL',
             content_ids: [productId],
             content_name: productName
         }, eventId);
