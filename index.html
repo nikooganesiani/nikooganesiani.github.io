@@ -23,11 +23,6 @@ title: "მთავარი"
     .category-btn,
     .reset-filters,
     .select-trigger,
-    .scroll-top,
-    a {
-        -webkit-tap-highlight-color: transparent !important;
-        outline: none !important;
-    }
 
     /* Разрешаем выделение текста в инпутах */
     input,
@@ -819,9 +814,6 @@ title: "მთავარი"
     </div>
 </main>
 
-<!-- Кнопка наверх -->
-<div class="scroll-top" id="scrollTop">⬆️</div>
-
 <script>
     // ============================================
     // 📌 ГЛАВНАЯ СТРАНИЦА — каталог
@@ -835,7 +827,6 @@ title: "მთავარი"
     const maxPriceInput = document.getElementById('maxPrice');
     const sortSelect = document.getElementById('sortSelect');
     const resetBtn = document.getElementById('resetFilters');
-    const scrollTopBtn = document.getElementById('scrollTop');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
     function renderProducts() {
@@ -983,12 +974,6 @@ title: "მთავარი"
             renderProducts();
         });
     });
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) scrollTopBtn.classList.add('show');
-        else scrollTopBtn.classList.remove('show');
-    });
-    scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
     document.addEventListener('DOMContentLoaded', function() {
         fetch('/catalog.json')
