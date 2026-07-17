@@ -877,7 +877,7 @@ title: "მთავარი"
                      ontouchend="handleSwipe('${product.id}', event)">
                     ${discountBadge}
                     
-                    <a href="catalog/${product.id}" style="display: block;">
+                    <a href="product/${product.id}" style="display: block;">
                         <img class="product-image" id="img-${product.id}" src="${imgs[0] || 'https://via.placeholder.com/280x220?text=📱'}" alt="${product.name}"
                              onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
                     </a>
@@ -888,7 +888,7 @@ title: "მთავარი"
                     ` : ''}
                 </div>
                 <div class="product-info">
-                    <a href="catalog/${product.id}" style="text-decoration: none; color: inherit;">
+                    <a href="product/${product.id}" style="text-decoration: none; color: inherit;">
                         <div class="product-name">${product.name}</div>
                     </a>
                     <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
