@@ -3,87 +3,338 @@ layout: default
 ---
 
 <style>
-    /* Копируем ваши стили из index.html */
+    /* --- Ваши оригинальные стили из index.html (скопированы и адаптированы) --- */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
-    .product-page {
+    button,
+    .btn-order,
+    .btn-submit,
+    .close-modal,
+    .category-btn,
+    .reset-filters,
+    .select-trigger,
+    .scroll-top,
+    a {
+        -webkit-tap-highlight-color: transparent !important;
+        outline: none !important;
+    }
+
+    input,
+    textarea {
+        -webkit-user-select: text !important;
+        user-select: text !important;
+    }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 10px; transition: all 0.2s; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #1d4ed8, #1e40af); cursor: pointer; }
+    * { scrollbar-width: thin; scrollbar-color: #2563eb #f1f5f9; }
+    html { overflow-y: scroll; }
+
+    body {
+        background: #f8fafc;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    main { flex: 1; }
+    
+    .container {
         max-width: 1280px;
-        margin: 2rem auto;
+        margin: 0 auto;
         padding: 0 1.5rem;
         animation: fadeIn 0.6s ease;
     }
 
-    .product-layout {
+    /* --- НОВЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ ТОВАРА --- */
+    
+    /* Общие для страницы */
+    .product-page {
+        padding: 1.5rem 0;
+    }
+
+    /* Навигационная цепочка (Breadcrumbs) */
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+    .breadcrumbs a {
+        color: #2563eb;
+        text-decoration: none;
+        transition: color 0.2s;
+        font-weight: 500;
+    }
+    .breadcrumbs a:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+    }
+    .breadcrumbs .separator {
+        color: #94a3b8;
+    }
+    .breadcrumbs .current {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    /* Основная сетка: фото + информация */
+    .product-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 3rem;
+        gap: 2.5rem;
         background: white;
         border-radius: 1.5rem;
         padding: 2rem;
         box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin-bottom: 2.5rem;
     }
 
+    /* --- ГАЛЕРЕЯ --- */
     .product-gallery {
-        position: sticky;
-        top: 2rem;
-        height: fit-content;
-    }
-
-    .product-main-image {
-        width: 100%;
-        height: 500px;
-        object-fit: contain;
-        background: #f8fafc;
-        border-radius: 1rem;
-        padding: 1rem;
-        transition: transform 0.3s ease;
-    }
-
-    .product-main-image:hover {
-        transform: scale(1.02);
-    }
-
-    .product-details {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
+    }
+    .main-image {
+        width: 100%;
+        aspect-ratio: 1/1;
+        background: #f8fafc;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .main-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+    }
+    .main-image:hover img {
+        transform: scale(1.05);
     }
 
+    .thumbnail-list {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .thumbnail {
+        width: 70px;
+        height: 70px;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem;
+    }
+    .thumbnail img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    .thumbnail:hover {
+        border-color: #94a3b8;
+        transform: translateY(-2px);
+    }
+    .thumbnail.active {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    /* --- ИНФОРМАЦИЯ О ТОВАРЕ --- */
+    .product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    .product-brand {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #2563eb;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
     .product-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: #0f172a;
         line-height: 1.3;
+        margin: 0;
+    }
+    .product-sku {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-top: -0.5rem;
     }
 
-    .product-price-large {
+    /* Бейджи */
+    .badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 0.25rem 0;
+    }
+    .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .badge-new { background: #dbeafe; color: #1e40af; }
+    .badge-sale { background: #fee2e2; color: #dc2626; }
+    .badge-stock { background: #dcfce7; color: #2d6a4f; }
+
+    /* Цена */
+    .price-block {
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 0.5rem 0;
+    }
+    .current-price {
         font-size: 2.5rem;
         font-weight: 700;
         color: #2563eb;
-        padding: 0.5rem 0;
+    }
+    .old-price {
+        font-size: 1.3rem;
+        font-weight: 500;
+        color: #94a3b8;
+        text-decoration: line-through;
+    }
+    .price-installment {
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 500;
+        background: #f1f5f9;
+        padding: 0.25rem 1rem;
+        border-radius: 2rem;
+    }
+    .price-installment span {
+        color: #0f172a;
+        font-weight: 700;
     }
 
-    .product-description-full {
-        font-size: 1rem;
-        color: #475569;
-        line-height: 1.8;
-        padding: 1rem 0;
-        border-top: 2px solid #f1f5f9;
-        border-bottom: 2px solid #f1f5f9;
-    }
-
-    .product-specs {
+    /* Блок "Доставка и оплата" */
+    .delivery-info {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        padding: 0.5rem 0;
+        gap: 0.75rem;
+        background: #f8fafc;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+    .delivery-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #475569;
+    }
+    .delivery-item .icon {
+        font-size: 1.4rem;
+    }
+    .delivery-item .label {
+        font-weight: 500;
+        color: #0f172a;
     }
 
+    /* Кнопка "В корзину" */
+    .add-to-cart-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 3rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-top: 0.5rem;
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    }
+    .add-to-cart-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.35);
+    }
+    .add-to-cart-btn:active {
+        transform: scale(0.97);
+    }
+
+    /* Вкладки (Tabs) */
+    .tabs {
+        margin-top: 2.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        gap: 2rem;
+    }
+    .tab-btn {
+        background: none;
+        border: none;
+        padding: 0.75rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+    }
+    .tab-btn:hover {
+        color: #0f172a;
+    }
+    .tab-btn.active {
+        color: #2563eb;
+        border-bottom-color: #2563eb;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 1.5rem 0;
+        animation: fadeIn 0.3s ease;
+    }
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Характеристики (Specs) */
+    .specs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem 2rem;
+    }
     .spec-item {
         display: flex;
         justify-content: space-between;
@@ -91,124 +342,29 @@ layout: default
         border-bottom: 1px solid #f1f5f9;
         font-size: 0.9rem;
     }
-
-    .spec-label {
+    .spec-item .label {
         color: #64748b;
-        font-weight: 500;
     }
-
-    .spec-value {
+    .spec-item .value {
         color: #0f172a;
-        font-weight: 600;
-    }
-
-    .badges-container {
-        display: flex;
-        gap: 0.8rem;
-        flex-wrap: wrap;
-        padding: 0.5rem 0;
-    }
-
-    .badge {
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.8rem;
         font-weight: 500;
+        text-align: right;
     }
 
-    .badge-shipping { background: #dcfce7; color: #2d6a4f; }
-    .badge-cash { background: #dbeafe; color: #1e40af; }
-    .badge-warranty { background: #ffedd5; color: #b45309; }
-
-    .order-section {
-        background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        margin-top: 0.5rem;
-    }
-
-    .order-section h3 {
-        font-size: 1.1rem;
-        margin-bottom: 1rem;
-        color: #0f172a;
-    }
-
-    .form-group {
-        margin-bottom: 1rem;
-    }
-
-    .form-group label {
-        display: block;
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #475569;
-        margin-bottom: 0.3rem;
-    }
-
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 0.75rem;
-        border: 2px solid #e2e8f0;
-        border-radius: 0.75rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: white;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        transform: translateY(-2px);
-    }
-
-    .form-group textarea {
-        min-height: 80px;
-        resize: vertical;
-    }
-
-    .btn-submit-order {
-        width: 100%;
-        padding: 1rem;
-        background: #2563eb;
-        color: white;
-        border: none;
-        border-radius: 2rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-submit-order:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
-        background: #1d4ed8;
-    }
-
-    .btn-submit-order:active {
-        transform: scale(0.95);
-    }
-
-    /* Related products */
+    /* Блок "Похожие товары" */
     .related-products {
         margin-top: 3rem;
     }
-
     .related-products h2 {
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
         color: #0f172a;
     }
-
     .related-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 1.5rem;
     }
-
     .related-card {
         background: white;
         border-radius: 1rem;
@@ -217,33 +373,92 @@ layout: default
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
     }
-
     .related-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        transform: translateY(-6px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
-
     .related-card img {
         width: 100%;
-        height: 150px;
+        aspect-ratio: 1/1;
         object-fit: contain;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
     }
-
     .related-card .name {
         font-weight: 600;
         color: #0f172a;
         font-size: 0.9rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.3;
     }
-
     .related-card .price {
         color: #2563eb;
         font-weight: 700;
-        margin-top: 0.3rem;
+        margin-top: 0.5rem;
+        font-size: 1.1rem;
     }
 
-    /* Back button */
+    /* --- АДАПТИВНОСТЬ --- */
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            padding: 1.25rem;
+        }
+        .product-title {
+            font-size: 1.4rem;
+        }
+        .current-price {
+            font-size: 2rem;
+        }
+        .specs-grid {
+            grid-template-columns: 1fr;
+        }
+        .delivery-info {
+            grid-template-columns: 1fr;
+        }
+        .related-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+        .thumbnail {
+            width: 55px;
+            height: 55px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .container {
+            padding: 0 1rem;
+        }
+        .product-grid {
+            padding: 1rem;
+        }
+        .current-price {
+            font-size: 1.7rem;
+        }
+        .tabs {
+            gap: 1rem;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .related-grid {
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        }
+    }
+
+    /* Стили для страницы по умолчанию */
     .back-link {
         display: inline-flex;
         align-items: center;
@@ -257,165 +472,244 @@ layout: default
         border-radius: 2rem;
         background: #eff6ff;
     }
-
     .back-link:hover {
         background: #dbeafe;
         transform: translateX(-5px);
     }
 
-    @media (max-width: 768px) {
-        .product-layout {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            padding: 1rem;
-        }
-
-        .product-main-image {
-            height: 300px;
-        }
-
-        .product-title {
-            font-size: 1.5rem;
-        }
-
-        .product-price-large {
-            font-size: 2rem;
-        }
-
-        .product-specs {
-            grid-template-columns: 1fr;
-        }
-
-        .related-grid {
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        }
-    }
-
+    /* Анимации */
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
-<div class="product-page">
-    <!-- Кнопка назад -->
-    <a href="/" class="back-link">← ყველა პროდუქტი</a>
+<main>
+    <div class="container product-page">
 
-    <div class="product-layout">
-        <!-- Левая колонка - фото -->
-        <div class="product-gallery">
-            <img 
-                src="{{ page.image }}" 
-                alt="{{ page.name }}"
-                class="product-main-image"
-                onerror="this.src='https://via.placeholder.com/500x500?text=📱'"
-            >
+        <!-- Хлебные крошки -->
+        <nav class="breadcrumbs">
+            <a href="/">მთავარი</a>
+            <span class="separator">/</span>
+            <a href="/catalog">კატალოგი</a>
+            <span class="separator">/</span>
+            <span class="current">{{ page.name }}</span>
+        </nav>
+
+        <!-- Кнопка назад -->
+        <a href="/" class="back-link">← ყველა პროდუქტი</a>
+
+        <!-- Основная информация о товаре -->
+        <div class="product-grid">
+            <!-- Левая колонка: Галерея -->
+            <div class="product-gallery">
+                <div class="main-image" id="mainImageContainer">
+                    <img 
+                        id="mainImage"
+                        src="{{ page.image }}" 
+                        alt="{{ page.name }}"
+                        onerror="this.src='https://via.placeholder.com/500x500?text=📱'"
+                    >
+                </div>
+                <div class="thumbnail-list" id="thumbnailContainer">
+                    <!-- Миниатюры будут динамически добавлены через JS -->
+                </div>
+            </div>
+
+            <!-- Правая колонка: Информация -->
+            <div class="product-info">
+                <div class="product-brand">{{ page.brand | default: "ILIFE" }}</div>
+                <h1 class="product-title">{{ page.name }}</h1>
+                <div class="product-sku">SKU: {{ page.sku | default: "N/A" }}</div>
+
+                <!-- Бейджи -->
+                <div class="badges">
+                    <span class="badge badge-new">🆕 ახალი</span>
+                    <span class="badge badge-stock">✅ მარაგშია</span>
+                    {% if page.discount %}
+                        <span class="badge badge-sale">🔥 -{{ page.discount }}%</span>
+                    {% endif %}
+                </div>
+
+                <!-- Цена -->
+                <div class="price-block">
+                    <span class="current-price">{{ page.price }} ₾</span>
+                    {% if page.old_price %}
+                        <span class="old-price">{{ page.old_price }} ₾</span>
+                    {% endif %}
+                    <span class="price-installment">თვეში: <span>{{ page.installment | default: "100" }} ₾</span> -დან</span>
+                </div>
+
+                <!-- Доставка и оплата -->
+                <div class="delivery-info">
+                    <div class="delivery-item">
+                        <span class="icon">🚚</span>
+                        <div>
+                            <div class="label">უფასო მიტანა</div>
+                            <span>მთელ საქართველოში</span>
+                        </div>
+                    </div>
+                    <div class="delivery-item">
+                        <span class="icon">💳</span>
+                        <div>
+                            <div class="label">გადახდა მიღებისას</div>
+                            <span>ან ონლაინ ბარათით</span>
+                        </div>
+                    </div>
+                    <div class="delivery-item">
+                        <span class="icon">🛡️</span>
+                        <div>
+                            <div class="label">გარანტია</div>
+                            <span>{{ page.warranty | default: "12" }} თვე</span>
+                        </div>
+                    </div>
+                    <div class="delivery-item">
+                        <span class="icon">🔄</span>
+                        <div>
+                            <div class="label">დაბრუნება</div>
+                            <span>14 დღის განმავლობაში</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Кнопка "В корзину" -->
+                <button class="add-to-cart-btn" onclick="alert('✅ პროდუქტი დაემატა კალათაში!')">
+                    🛒 კალათაში დამატება
+                </button>
+            </div>
         </div>
 
-        <!-- Правая колонка - информация -->
-        <div class="product-details">
-            <h1 class="product-title">{{ page.name }}</h1>
-            <div class="product-price-large">{{ page.price }}</div>
+        <!-- Вкладки -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="description">📄 აღწერა</button>
+            <button class="tab-btn" data-tab="specs">📊 მახასიათებლები</button>
+            <button class="tab-btn" data-tab="reviews">⭐ მიმოხილვები</button>
+        </div>
 
-            <div class="badges-container">
-                <span class="badge badge-shipping">🚚 უფასო მიტანა</span>
-                <span class="badge badge-cash">💵 გადახდა მიღებისას</span>
-                <span class="badge badge-warranty">🛡️ {{ page.warranty | default: "12 თვე" }}</span>
-            </div>
+        <!-- Содержимое вкладок -->
+        <div class="tab-content active" id="tab-description">
+            <p style="line-height: 1.8; color: #475569; font-size: 1rem;">
+                {{ page.description | default: "აღწერა დროებით მიუწვდომელია. გთხოვთ, ეწვიოთ ჩვენს მაღაზიას დამატებითი ინფორმაციისთვის." }}
+            </p>
+        </div>
 
-            <div class="product-description-full">
-                {{ page.description }}
-            </div>
-
-            <!-- Характеристики -->
-            <div class="product-specs">
-                <div class="spec-item">
-                    <span class="spec-label">📦 მდგომარეობა</span>
-                    <span class="spec-value">ახალი</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-label">🛡️ გარანტია</span>
-                    <span class="spec-value">{{ page.warranty | default: "12 თვე" }}</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-label">📦 მიწოდება</span>
-                    <span class="spec-value">მთელ საქართველოში</span>
-                </div>
-                <div class="spec-item">
-                    <span class="spec-label">💳 გადახდა</span>
-                    <span class="spec-value">მიღებისას</span>
-                </div>
-            </div>
-
-            <!-- Форма заказа -->
-            <div class="order-section">
-                <h3>📝 შეკვეთა</h3>
-                <form id="orderForm" onsubmit="return handleOrder(event)">
-                    <div class="form-group">
-                        <label for="customerName">სახელი</label>
-                        <input type="text" id="customerName" placeholder="თქვენი სახელი" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="customerPhone">ტელეფონი</label>
-                        <input type="tel" id="customerPhone" placeholder="+995 5XX XX XX XX" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="customerComment">კომენტარი</label>
-                        <textarea id="customerComment" placeholder="დამატებითი ინფორმაცია"></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit-order">
-                        🛒 შეკვეთა
-                    </button>
-                    <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b; text-align: center;">
-                        🔒 მონაცემები დაცულია
-                    </div>
-                </form>
+        <div class="tab-content" id="tab-specs">
+            <div class="specs-grid">
+                <div class="spec-item"><span class="label">ბრენდი</span><span class="value">{{ page.brand | default: "ILIFE" }}</span></div>
+                <div class="spec-item"><span class="label">მოდელი</span><span class="value">{{ page.model | default: "A20" }}</span></div>
+                <div class="spec-item"><span class="label">ტიპი</span><span class="value">{{ page.type | default: "რობოტი მტვერსასრუტი" }}</span></div>
+                <div class="spec-item"><span class="label">წმენდის ტიპი</span><span class="value">{{ page.clean_type | default: "სველი / მშრალი" }}</span></div>
+                <div class="spec-item"><span class="label">გარანტია</span><span class="value">{{ page.warranty | default: "12" }} თვე</span></div>
+                <div class="spec-item"><span class="label">მდგომარეობა</span><span class="value">ახალი</span></div>
             </div>
         </div>
-    </div>
 
-    <!-- Похожие товары -->
-    {% if page.related_products %}
-    <div class="related-products">
-        <h2>🔄 მსგავსი პროდუქტები</h2>
-        <div class="related-grid">
-            {% for related in page.related_products %}
-            <a href="/{{ related.id }}" style="text-decoration: none; color: inherit;">
-                <div class="related-card">
-                    <img src="{{ related.image }}" alt="{{ related.name }}" onerror="this.src='https://via.placeholder.com/200x150?text=📱'">
+        <div class="tab-content" id="tab-reviews">
+            <p style="color: #64748b; text-align: center; padding: 2rem 0;">⭐ მიმოხილვები ჯერ არ არის. იყავი პირველი!</p>
+        </div>
+
+        <!-- Похожие товары -->
+        {% if page.related_products %}
+        <div class="related-products">
+            <h2>🔄 მსგავსი პროდუქტები</h2>
+            <div class="related-grid">
+                {% for related in page.related_products %}
+                <a href="/{{ related.id }}" class="related-card">
+                    <img src="{{ related.image }}" alt="{{ related.name }}" onerror="this.src='https://via.placeholder.com/200x200?text=📱'">
                     <div class="name">{{ related.name }}</div>
-                    <div class="price">{{ related.price }}</div>
-                </div>
-            </a>
-            {% endfor %}
+                    <div class="price">{{ related.price }} ₾</div>
+                </a>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
+
     </div>
-    {% endif %}
-</div>
+</main>
 
 <script>
-    // Обработчик формы заказа
+    // ============================================
+    // 1. УПРАВЛЕНИЕ ГАЛЕРЕЕЙ
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Получаем все изображения из переменной page.images (если она есть)
+        // или создаем массив из одного изображения.
+        const images = [
+            {% if page.images %}
+                {% for img in page.images %}
+                    '{{ img }}',
+                {% endfor %}
+            {% else %}
+                '{{ page.image }}',
+            {% endif %}
+        ].filter(url => url && url !== '');
+
+        const mainImage = document.getElementById('mainImage');
+        const thumbnailContainer = document.getElementById('thumbnailContainer');
+
+        if (thumbnailContainer && images.length > 0) {
+            thumbnailContainer.innerHTML = '';
+            images.forEach((imgSrc, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail' + (index === 0 ? ' active' : '');
+                thumb.innerHTML = `<img src="${imgSrc}" alt="Thumbnail ${index + 1}" loading="lazy">`;
+                thumb.addEventListener('click', function() {
+                    // Обновляем главное изображение
+                    mainImage.src = imgSrc;
+                    // Обновляем активный класс
+                    document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+                thumbnailContainer.appendChild(thumb);
+            });
+        }
+    });
+
+    // ============================================
+    // 2. УПРАВЛЕНИЕ ВКЛАДКАМИ (TABS)
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabContents = {
+            description: document.getElementById('tab-description'),
+            specs: document.getElementById('tab-specs'),
+            reviews: document.getElementById('tab-reviews')
+        };
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Убираем активный класс у всех кнопок
+                tabButtons.forEach(b => b.classList.remove('active'));
+                // Добавляем активный класс нажатой кнопке
+                this.classList.add('active');
+
+                // Скрываем все табы
+                Object.values(tabContents).forEach(content => {
+                    if (content) content.classList.remove('active');
+                });
+
+                // Показываем нужный таб
+                const tabId = this.dataset.tab;
+                if (tabContents[tabId]) {
+                    tabContents[tabId].classList.add('active');
+                }
+            });
+        });
+    });
+
+    // ============================================
+    // 3. ОБРАБОТЧИК ФОРМЫ ЗАКАЗА (если есть)
+    // ============================================
+    // Этот функционал можно оставить или убрать,
+    // так как основная кнопка теперь "В корзину"
+    // Но если вы хотите сохранить форму заказа на странице, 
+    // вы можете раскомментировать и адаптировать этот код.
+    
+    /*
     function handleOrder(event) {
         event.preventDefault();
-        
-        const name = document.getElementById('customerName').value;
-        const phone = document.getElementById('customerPhone').value;
-        const comment = document.getElementById('customerComment').value;
-        const productName = "{{ page.name }}";
-        const productPrice = "{{ page.price }}";
-        
-        // Показываем уведомление
-        alert(`✅ შეკვეთა მიღებულია!\n\n📦 პროდუქტი: ${productName}\n💰 ფასი: ${productPrice}\n👤 სახელი: ${name}\n📞 ტელეფონი: ${phone}\n📝 კომენტარი: ${comment || 'არ არის'}\n\n📞 ჩვენ დაგიკავშირდებით 24 საათის განმავლობაში.`);
-        
-        // Очищаем форму
-        document.getElementById('orderForm').reset();
-        
+        alert('✅ შეკვეთა მიღებულია!');
         return false;
     }
+    */
 </script>
