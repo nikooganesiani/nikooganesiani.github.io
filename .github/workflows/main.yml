@@ -11,7 +11,6 @@ permissions:
   id-token: write
 
 jobs:
-  # Объединяем Сборку и Деплой в GitHub Pages в ОДНУ джобу
   build-and-deploy-gh:
     runs-on: ubuntu-latest
     environment:
@@ -20,24 +19,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. Пропускаем Setup Node.js (экономим ~20 сек). 
-      # Node.js уже есть в системе Ubuntu на GitHub.
       - name: Generate product pages
         run: node generate_pages.js
 
-      # 2. Настраиваем Ruby только для Jekyll
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true # Это важно для скорости последующих запусков
+          bundler-cache: true
 
       - name: Build Jekyll site
         run: bundle exec jekyll build
         env:
           JEKYLL_ENV: production
 
-      # 3. Деплой в GitHub Pages происходит прямо здесь (экономим ~30 сек на пересылке файлов)
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -47,7 +42,13 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      # 4. Сохраняем артефакт для Cloudflare (на случай, если захочешь нажать кнопку)
+      - name: Purge cache (via curl)
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"purge_everything":true}'
+
       - name: Upload Build Artifact for Cloudflare
         uses: actions/upload-artifact@v4
         with:
@@ -55,24 +56,6 @@ jobs:
           path: _site/
           retention-days: 1
 
-          # 5. Автообновление кеша Cloudflare, т.е Cache Purge
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: "nikooganesiani-github-io"
-          directory: "_site"
-
-      # Добавляем и сюда, чтобы при ручном деплое тоже всё чистилось
-- name: Purge cache (via curl)
-        run: |
-          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
-          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
-          -H "Content-Type: application/json" \
-          --data '{"purge_everything":true}'
-
-  # Cloudflare остается отдельной джобой, так как она запускается только вручную
   deploy-cloudflare:
     needs: build-and-deploy-gh
     if: github.event_name == 'workflow_dispatch'
@@ -91,3 +74,10 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: "nikooganesiani-github-io"
           directory: "_site"
+
+      - name: Purge cache (via curl)
+        run: |
+          curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"purge_everything":true}'
