@@ -4,225 +4,289 @@ title: "გადახდა და მიწოდება"
 ---
 
 <style>
-    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
-    
-    .delivery-card {
-        max-width: 680px;
-        width: 100%;
-        margin: 0 auto;  /* ← центрируем по горизонтали */
-        background: white;
-        border-radius: 32px;
-        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.2s ease;
+    :root {
+        --primary-color: #2563eb;
+        --success-color: #059669;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --card-bg: #ffffff;
+        --accent-soft: #f8fafc;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .delivery-card:hover {
-        transform: translateY(-3px);
+    .delivery-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .delivery-card {
+        background: var(--card-bg);
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        overflow: hidden;
     }
 
     .card-header {
-        background: white;
-        padding: 32px 36px 16px 36px;
-        border-bottom: 1px solid #e9edf2;
+        padding: 60px 40px 30px;
         text-align: center;
+        background: linear-gradient(to bottom, #f1f5f9, transparent);
     }
 
     .card-header h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        margin-bottom: 8px;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+        margin: 0;
     }
 
-    .card-content {
-        padding: 28px 36px 36px 36px;
-    }
-
-    /* Бесплатная доставка */
-    .free-delivery {
-        background: linear-gradient(135deg, #1a4a2a, #0f3a1f);
+    /* Баннер бесплатной доставки */
+    .delivery-hero {
+        margin: 20px 40px 40px;
+        padding: 40px;
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 32px;
         color: white;
         text-align: center;
-        padding: 24px;
-        border-radius: 28px;
-        margin: 0 0 32px 0;
+        position: relative;
+        overflow: hidden;
     }
 
-    .free-delivery h2 {
-        font-size: 1.8rem;
+    .delivery-hero::after {
+        content: "🚚";
+        position: absolute;
+        right: -20px;
+        bottom: -10px;
+        font-size: 120px;
+        opacity: 0.1;
+        transform: rotate(-15deg);
+    }
+
+    .delivery-hero h2 {
+        font-size: 2rem;
+        font-weight: 800;
         margin-bottom: 8px;
+        color: #f8fafc;
     }
 
-    .free-delivery p {
-        opacity: 0.9;
-        font-size: 1rem;
+    .delivery-hero p {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        letter-spacing: 1px;
     }
 
-    /* Шаги */
-    .steps {
-        margin: 20px 0;
+    /* Таймлайн шагов */
+    .steps-timeline {
+        padding: 0 40px 40px;
+        position: relative;
     }
 
-    .step {
+    .step-item {
         display: flex;
-        align-items: flex-start;
-        gap: 16px;
-        padding: 14px 0;
-        border-bottom: 1px solid #eef2f8;
+        gap: 24px;
+        margin-bottom: 30px;
+        position: relative;
+        animation: fadeInLeft 0.6s ease backwards;
     }
 
-    .step:last-child {
-        border-bottom: none;
+    .step-item:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 48px;
+        bottom: -20px;
+        width: 2px;
+        background: #e2e8f0;
     }
 
-    .step-number {
-        width: 36px;
-        height: 36px;
-        background: #1a2a3a;
-        color: white;
-        border-radius: 36px;
+    .step-badge {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
+        font-weight: 800;
+        font-size: 1.2rem;
         flex-shrink: 0;
+        z-index: 1;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
     }
 
-    .step-text {
-        flex: 1;
-        color: #2c3f4f;
-        line-height: 1.45;
+    .step-content {
+        padding-top: 12px;
     }
 
-    /* Оплата */
+    .step-content p {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* Способы оплаты */
+    .payment-section {
+        margin: 0 40px 40px;
+        padding: 30px;
+        background: var(--accent-soft);
+        border-radius: 28px;
+        text-align: center;
+    }
+
+    .payment-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+    }
+
     .payment-methods {
         display: flex;
-        gap: 20px;
         justify-content: center;
-        margin: 28px 0 16px 0;
+        gap: 15px;
         flex-wrap: wrap;
     }
 
-    .payment-badge {
-        background: #f0f4f9;
-        padding: 10px 28px;
-        border-radius: 60px;
-        font-weight: 500;
-        color: #1a2a3a;
+    .payment-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: white;
+        border-radius: 100px;
+        font-weight: 700;
+        color: var(--text-main);
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .payment-chip svg {
+        color: var(--success-color);
+    }
+
+    /* Футер */
+    .footer-actions {
+        padding: 0 40px 60px;
+        text-align: center;
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: #f0f4f9;
-        padding: 10px 24px;
-        border-radius: 60px;
+        gap: 10px;
+        padding: 16px 36px;
+        background: var(--text-main);
+        color: white;
+        border-radius: 100px;
         text-decoration: none;
-        font-weight: 500;
-        color: #1f3a4b;
-        transition: all 0.2s;
-        margin-top: 32px;
+        font-weight: 600;
+        transition: var(--transition);
     }
 
     .back-link:hover {
-        background: #e4eaf1;
-        transform: translateX(-4px);
+        background: var(--primary-color);
+        transform: translateX(-5px);
     }
 
-    .card-footer {
-        background: #fafcff;
-        padding: 20px 36px 28px 36px;
-        border-top: 1px solid #eef2f8;
-        font-size: 0.8rem;
-        color: #8a99aa;
-        text-align: center;
+    /* Анимации */
+    @keyframes fadeInLeft {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
     }
 
-    @media (max-width: 600px) {
-        .delivery-card {
-            margin: 0;
-            border-radius: 20px;
-        }
-        .card-header {
-            padding: 24px 24px 12px 24px;
-        }
-        .card-header h1 {
-            font-size: 1.6rem;
-        }
-        .card-content {
-            padding: 20px 24px 28px 24px;
-        }
-        .free-delivery h2 {
-            font-size: 1.4rem;
-        }
-        .free-delivery {
-            padding: 18px;
-        }
-        .step-number {
-            width: 32px;
-            height: 32px;
-            font-size: 0.9rem;
-        }
-        .payment-methods {
-            gap: 12px;
-        }
-        .payment-badge {
-            padding: 8px 20px;
-            font-size: 0.9rem;
-        }
+    /* Адаптивность */
+    @media (max-width: 650px) {
+        .card-header h1 { font-size: 1.8rem; }
+        .delivery-hero { padding: 30px 20px; margin: 10px 20px 30px; }
+        .delivery-hero h2 { font-size: 1.5rem; }
+        .steps-timeline, .payment-section, .footer-actions { padding: 20px; margin: 10px 20px; }
+        .step-item { gap: 16px; }
+        .step-badge { width: 40px; height: 40px; font-size: 1rem; }
+        .step-item:not(:last-child)::before { left: 19px; top: 40px; }
+        .step-content p { font-size: 0.95rem; }
     }
 </style>
 
-<div class="delivery-card">
-    <div class="card-header">
-        <h1>გადახდა და მიწოდება</h1>
-    </div>
+<div class="delivery-container">
+    <div class="delivery-card">
+        <header class="card-header">
+            <h1>გადახდა და მიწოდება</h1>
+        </header>
 
-    <div class="card-content">
-        <!-- Бесплатная доставка -->
-        <div class="free-delivery">
-            <h2>🚚 უფასო მიწოდება</h2>
+        <!-- Бесплатная доставка Hero -->
+        <div class="delivery-hero">
+            <h2>უფასო მიწოდება</h2>
             <p>მთელ საქართველოში</p>
         </div>
 
-        <!-- Как оформить заказ -->
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <div class="step-text">შეავსეთ სახელი და ტელეფონი შეკვეთის ფორმაში</div>
+        <!-- Процесс заказа -->
+        <div class="steps-timeline">
+            <div class="step-item" style="animation-delay: 0.1s;">
+                <div class="step-badge">1</div>
+                <div class="step-content">
+                    <p>შეავსეთ სახელი და ტელეფონი შეკვეთის ფორმაში</p>
+                </div>
             </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <div class="step-text">დაგირეკავთ, შევთანხმდებით მისამართსა და მიტანის დროზე</div>
+
+            <div class="step-item" style="animation-delay: 0.2s;">
+                <div class="step-badge">2</div>
+                <div class="step-content">
+                    <p>დაგირეკავთ, შევთანხმდებით მისამართსა და მიტანის დროზე</p>
+                </div>
             </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <div class="step-text">ნივთის კურიერისთვის გადაცემისას, თქვენს ნომერზე მიიღებთ SMS-ით 7-ნიშნა კოდს რომლითაც შეძლებთ შეკვეთის სტატუსის შემოწმებას</div>
+
+            <div class="step-item" style="animation-delay: 0.3s;">
+                <div class="step-badge">3</div>
+                <div class="step-content">
+                    <p>ნივთის კურიერისთვის გადაცემისას, თქვენს ნომერზე მიიღებთ SMS-ით 7-ნიშნა კოდს რომლითაც შეძლებთ შეკვეთის სტატუსის შემოწმებას</p>
+                </div>
             </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <div class="step-text">EasyWay-ს კურიერი მოგიტანთ პროდუქტს მითითებულ მისამართზე</div>
+
+            <div class="step-item" style="animation-delay: 0.4s;">
+                <div class="step-badge">4</div>
+                <div class="step-content">
+                    <p>EasyWay-ს კურიერი მოგიტანთ პროდუქტს მითითებულ მისამართზე</p>
+                </div>
             </div>
-            <div class="step">
-                <div class="step-number">5</div>
-                <div class="step-text">✅ გადახდა შეგიძლიათ ნაღდი ანგარიშსწორებით ან ბარათით, გადახდის შემდეგ კურიერი გადმოგცემთ პროდუქტს</div>
+
+            <div class="step-item" style="animation-delay: 0.5s;">
+                <div class="step-badge">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <div class="step-content">
+                    <p><strong>გადახდა</strong> შეგიძლიათ ნაღდი ანგარიშსწორებით ან ბარათით, გადახდის შემდეგ კურიერი გადმოგცემთ პროდუქტს</p>
+                </div>
             </div>
         </div>
 
-        <!-- Способы оплаты -->
-        <div class="payment-methods">
-            <span class="payment-badge">💵 ნაღდი</span>
-            <span class="payment-badge">💳 ბარათი</span>
+        <!-- Оплата -->
+        <div class="payment-section">
+            <div class="payment-title">გადახდის მეთოდები</div>
+            <div class="payment-methods">
+                <div class="payment-chip">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    ნაღდი
+                </div>
+                <div class="payment-chip">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    ბარათი
+                </div>
+            </div>
         </div>
 
-        <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+        <footer class="footer-actions">
+            <a href="#" id="backButton" class="back-link">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                უკან დაბრუნება
+            </a>
+        </footer>
     </div>
 </div>
 
