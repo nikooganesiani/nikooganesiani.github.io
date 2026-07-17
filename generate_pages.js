@@ -36,19 +36,18 @@ products.forEach(product => {
   const content = `---
 layout: product
 id: "${product.id}"
-sku: "${product.sku || 'N/A'}"
+sku: "${product.sku || product.id}"
 name: "${product.name}"
-brand: "${product.brand || 'ENKA Electronics'}"
+brand: "${product.brand || 'ENKA'}"
 price: "${product.price}"
 oldPrice: "${product.oldPrice || ''}"
 ${imagesYaml}
 ${specsYaml}
 description: "${product.description || ''}"
+longDescription: "${product.longDescription || product.description || ''}"
 warranty: "${product.warranty || '12 თვე'}"
 permalink: /${product.id}/
 ---
 `;
-
   fs.writeFileSync(path.join(productsDir, `${product.id}.md`), content);
-  console.log(`✅ Страница создана: ${product.id}.md`);
 });
