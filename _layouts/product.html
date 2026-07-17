@@ -3,267 +3,287 @@ layout: default
 ---
 
 <style>
-    /* ЛОКАЛЬНЫЕ СТИЛИ СТРАНИЦЫ ТОВАРА */
-    .product-page {
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
+    /* ОБЩИЕ КОНТЕЙНЕРЫ (В СТИЛЕ ALTA) */
+    .product-view-wrapper {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 1.5rem;
     }
 
-    /* Хлебные крошки */
-    .breadcrumbs {
+    /* BREADCRUMBS & SKU */
+    .product-top-meta {
         display: flex;
-        gap: 0.5rem;
+        justify-content: space-between;
         align-items: center;
+        margin-bottom: 1rem;
         font-size: 0.85rem;
         color: #64748b;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
     }
-    .breadcrumbs a {
-        color: #2563eb;
+    .alta-breadcrumbs {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+    }
+    .alta-breadcrumbs a {
         text-decoration: none;
-        transition: color 0.2s;
+        color: #1e293b;
+        font-weight: 500;
     }
-    .breadcrumbs a:hover { text-decoration: underline; }
-    .breadcrumbs span { user-select: none; }
+    .alta-breadcrumbs span { color: #94a3b8; }
 
-    /* Основная сетка */
-    .product-main {
+    /* LAYOUT GRID */
+    .product-main-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
+        grid-template-columns: 1fr 450px;
+        gap: 2rem;
+        align-items: start;
+    }
+
+    /* LEFT SIDE: GALLERY */
+    .gallery-container {
         background: white;
+        border-radius: 1rem;
         padding: 2rem;
-        border-radius: 2rem;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    }
-
-    /* Слева: Изображения */
-    .product-gallery {
         display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .main-image-container {
-        width: 100%;
-        height: 450px;
-        background: #fff;
-        border-radius: 1.5rem;
-        display: flex;
-        align-items: center;
         justify-content: center;
-        overflow: hidden;
-        border: 1px solid #f1f5f9;
+        align-items: center;
+        min-height: 500px;
+        border: 1px solid #e2e8f0;
     }
-    .main-image-container img {
-        max-width: 90%;
-        max-height: 90%;
+    .gallery-container img {
+        max-width: 100%;
+        max-height: 450px;
         object-fit: contain;
-        transition: transform 0.3s ease;
-    }
-    .main-image-container:hover img {
-        transform: scale(1.05);
     }
 
-    /* Справа: Инфо */
-    .product-buy-block {
+    /* RIGHT SIDE: INFO & BUY */
+    .product-info-column {
         display: flex;
         flex-direction: column;
+        gap: 1.5rem;
     }
-    .product-sku {
-        font-size: 0.8rem;
-        color: #94a3b8;
-        margin-bottom: 0.5rem;
-    }
-    .product-title {
-        font-size: 1.8rem;
+
+    .product-title-h1 {
+        font-size: 1.5rem;
         font-weight: 700;
         color: #0f172a;
-        line-height: 1.2;
+        line-height: 1.3;
+    }
+
+    /* Краткие характеристики (как под заголовком у Альта) */
+    .quick-specs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1.5rem;
+    }
+    .quick-spec-item {
+        display: flex;
+        font-size: 0.9rem;
+    }
+    .qs-label { color: #64748b; width: 120px; }
+    .qs-value { color: #1e293b; font-weight: 600; }
+
+    /* БЛОК ЦЕНЫ (Sticky box) */
+    .purchase-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        position: sticky;
+        top: 100px;
+    }
+
+    .alta-price-row {
+        display: flex;
+        flex-direction: column;
         margin-bottom: 1.5rem;
     }
-    .product-meta-mini {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-        margin-bottom: 2rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #f1f5f9;
-    }
-    .meta-item {
-        display: flex;
-        font-size: 0.95rem;
-    }
-    .meta-label { color: #64748b; min-width: 120px; }
-    .meta-value { color: #1e293b; font-weight: 600; }
-
-    /* Цена и кнопка */
-    .price-section {
-        background: #f8fafc;
-        padding: 1.5rem;
-        border-radius: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .current-price {
-        font-size: 2.5rem;
+    .alta-main-price {
+        font-size: 2.2rem;
         font-weight: 800;
-        color: #2563eb;
+        color: #2563eb; /* Ваш синий */
     }
-    .warranty-info {
+    .alta-price-currency { font-size: 1.5rem; margin-left: 2px; }
+
+    .installment-promo {
+        background: #f1f5f9;
+        padding: 0.75rem;
+        border-radius: 0.75rem;
         font-size: 0.85rem;
-        color: #16a34a;
+        margin-bottom: 1.5rem;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.4rem;
     }
 
-    .btn-main-buy {
+    /* КНОПКА КУПИТЬ */
+    .alta-btn-buy {
+        width: 100%;
         background: #2563eb;
         color: white;
         border: none;
-        padding: 1.2rem;
-        border-radius: 1rem;
-        font-size: 1.2rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        font-size: 1.1rem;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.2s;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.8rem;
+        gap: 0.5rem;
     }
-    .btn-main-buy:hover {
+    .alta-btn-buy:hover {
         background: #1d4ed8;
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+        box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
     }
 
-    /* Характеристики */
-    .specs-section {
+    /* ТАБЛИЦА ХАРАКТЕРИСТИК (В ТОЧНОСТИ КАК НА АЛЬТА) */
+    .specifications-section {
         margin-top: 3rem;
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        border: 1px solid #e2e8f0;
     }
-    .specs-title {
-        font-size: 1.5rem;
+    .spec-group-title {
         font-weight: 700;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        margin: 1.5rem 0 1rem;
         color: #0f172a;
     }
-    .specs-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem 4rem;
-    }
-    .spec-row {
+    .spec-table-row {
         display: flex;
-        justify-content: space-between;
-        padding: 0.8rem 0;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed #e2e8f0;
         font-size: 0.95rem;
     }
-    .spec-name { color: #64748b; }
-    .spec-val { color: #1e293b; font-weight: 600; text-align: right; }
+    .spec-table-row:last-child { border-bottom: none; }
+    .spec-label { color: #64748b; flex: 1; }
+    .spec-value { color: #1e293b; font-weight: 600; flex: 1; }
 
-    /* Мобильная адаптация */
-    @media (max-width: 900px) {
-        .product-main { grid-template-columns: 1fr; gap: 2rem; padding: 1.5rem; }
-        .main-image-container { height: 300px; }
-        .specs-grid { grid-template-columns: 1fr; gap: 0; }
-        .product-title { font-size: 1.4rem; }
+    /* MOBILE ADAPTATION */
+    @media (max-width: 1024px) {
+        .product-main-grid { grid-template-columns: 1fr; }
+        .purchase-card { position: static; }
+        .gallery-container { min-height: 300px; }
     }
 </style>
 
-<div class="container product-page">
-    <!-- Хлебные крошки -->
-    <nav class="breadcrumbs">
-        <a href="/">მთავარი</a>
-        <span>/</span>
-        <a href="/?cat=all">კატალოგი</a>
-        <span>/</span>
-        <span style="color: #94a3b8;">{{ page.name }}</span>
-    </nav>
+<div class="product-view-wrapper">
+    <!-- TOP META -->
+    <div class="product-top-meta">
+        <nav class="alta-breadcrumbs">
+            <a href="/">მთავარი</a>
+            <span>/</span>
+            <a href="/">კატალოგი</a>
+            <span>/</span>
+            <span>{{ page.name | truncate: 30 }}</span>
+        </nav>
+        <div class="product-sku-code">კოდი: {{ page.id | upcase }}</div>
+    </div>
 
-    <div class="product-main">
-        <!-- Левая часть: Фото -->
-        <div class="product-gallery">
-            <div class="main-image-container">
-                <img id="mainImg" src="{{ page.image }}" alt="{{ page.name }}">
-            </div>
+    <!-- MAIN CONTENT -->
+    <div class="product-main-grid">
+        
+        <!-- LEFT: GALLERY -->
+        <div class="gallery-container">
+            <img src="{{ page.image }}" alt="{{ page.name }}" id="mainProductImg">
         </div>
 
-        <!-- Правая часть: Покупка -->
-        <div class="product-buy-block">
-            <div class="product-sku">კოდი: {{ page.id | upcase | slice: 0, 8 }}</div>
-            <h1 class="product-title">{{ page.name }}</h1>
+        <!-- RIGHT: PURCHASE BLOCK -->
+        <div class="product-info-column">
+            <h1 class="product-title-h1">{{ page.name }}</h1>
 
-            <div class="product-meta-mini">
-                <div class="meta-item">
-                    <span class="meta-label">ბრენდი:</span>
-                    <span class="meta-value">ENKA</span>
+            <!-- QUICK SPECS -->
+            <div class="quick-specs">
+                <div class="quick-spec-item">
+                    <span class="qs-label">ბრენდი:</span>
+                    <span class="qs-value">ENKA Electronics</span>
                 </div>
-                <div class="meta-item">
-                    <span class="meta-label">მდგომარეობა:</span>
-                    <span class="meta-value">ახალი</span>
+                <div class="quick-spec-item">
+                    <span class="qs-label">გარანტია:</span>
+                    <span class="qs-value">{{ page.warranty }}</span>
+                </div>
+                <div class="quick-spec-item">
+                    <span class="qs-label">მიწოდება:</span>
+                    <span class="qs-value">✅ უფასო</span>
                 </div>
             </div>
 
-            <div class="price-section">
-                <div class="current-price">{{ page.price }}</div>
-                <div class="warranty-info">
-                    <span>🛡️</span> {{ page.warranty | default: "12 თვე" }}
+            <!-- PURCHASE CARD -->
+            <div class="purchase-card">
+                <div class="alta-price-row">
+                    <span style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.3rem;">ფასი:</span>
+                    <div class="alta-main-price">
+                        {{ page.price | replace: '₾', '' }}<span class="alta-price-currency">₾</span>
+                    </div>
                 </div>
-                
-                <!-- Кнопка "Купить" (вызывает вашу функцию) -->
-                <button class="btn-main-buy" onclick='openOrderFromPage()'>
-                    🛒 შეკვეთა
+
+                <div class="installment-promo">
+                    <span>თვეში: <b>{{ page.price | replace: '₾', '' | plus: 0 | divided_by: 12 | round }} ₾</b> -დან</span>
+                    <span style="color: #2563eb; cursor: pointer;">🔍</span>
+                </div>
+
+                <button class="alta-btn-buy" onclick="handleBuyClick()">
+                    🛒 ყიდვა
                 </button>
-            </div>
-            
-            <div style="margin-top: 1.5rem; color: #64748b; font-size: 0.85rem; line-height: 1.6;">
-                {{ page.description }}
+                
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: #16a34a; font-weight: 600;">
+                    ● მარაგშია
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Характеристики (как в alta.ge) -->
-    <div class="specs-section">
-        <h2 class="specs-title">სპეციფიკაციები</h2>
-        <div class="specs-grid">
-            <div class="spec-row">
-                <span class="spec-name">ტიპი</span>
-                <span class="spec-val">ელექტრონიკა</span>
+    <!-- SPECIFICATIONS TABLE -->
+    <div class="specifications-section" id="specs">
+        <h2 style="font-size: 1.5rem; margin-bottom: 2rem;">სპეციფიკაციები</h2>
+        
+        <div class="spec-group">
+            <div class="spec-group-title">ძირითადი მახასიათებლები</div>
+            <div class="spec-table-row">
+                <div class="spec-label">მოდელი</div>
+                <div class="spec-value">{{ page.id }}</div>
             </div>
-            <div class="spec-row">
-                <span class="spec-name">მოდელი</span>
-                <span class="spec-val">{{ page.id }}</span>
+            <div class="spec-table-row">
+                <div class="spec-label">გარანтиა</div>
+                <div class="spec-value">{{ page.warranty }}</div>
             </div>
-            <div class="spec-row">
-                <span class="spec-name">გარანტია</span>
-                <span class="spec-val">{{ page.warranty }}</span>
+            <div class="spec-table-row">
+                <div class="spec-label">მდგომარეობა</div>
+                <div class="spec-value">ახალი</div>
             </div>
-            <div class="spec-row">
-                <span class="spec-name">მიტანა</span>
-                <span class="spec-val">უფასო</span>
+        </div>
+
+        <div class="spec-group">
+            <div class="spec-group-title">პროდუქტის აღწერა</div>
+            <div style="padding: 1rem 0; line-height: 1.6; color: #475569; font-size: 0.95rem;">
+                {{ page.description }}
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Функция для связки кнопки страницы с глобальным скриптом заказа в default.html
-    function openOrderFromPage() {
-        const productData = {
+    // Интеграция с вашей системой заказа
+    function handleBuyClick() {
+        const product = {
             id: "{{ page.id }}",
             name: "{{ page.name }}",
             price: "{{ page.price }}",
             image: "{{ page.image }}"
         };
         
-        if (window.openOrderForm) {
-            window.openOrderForm(productData);
+        // Вызываем глобальную функцию из default.html
+        if (typeof window.openOrderForm === 'function') {
+            window.openOrderForm(product);
         } else {
-            console.error("Order form function not found in default.html");
+            alert('შეკვეთის ფორმა მიუწვდომელია');
         }
     }
 </script>
