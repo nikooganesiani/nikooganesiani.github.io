@@ -11,51 +11,33 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  # Объединяем Сборку и Деплой в GitHub Pages в ОДНУ джобу
+  build-and-deploy-gh:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Рекомендую 20, так как 18 устаревает
+      # 1. Пропускаем Setup Node.js (экономим ~20 сек). 
+      # Node.js уже есть в системе Ubuntu на GitHub.
+      - name: Generate product pages
+        run: node generate_pages.js
 
+      # 2. Настраиваем Ruby только для Jekyll
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
-
-      - name: Generate product pages
-        run: node generate_pages.js
+          bundler-cache: true # Это важно для скорости последующих запусков
 
       - name: Build Jekyll site
         run: bundle exec jekyll build
         env:
           JEKYLL_ENV: production
 
-      # Сохраняем папку _site, чтобы другие job-ы могли её скачать
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-build
-          path: _site/
-          retention-days: 1
-
-  deploy-github:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: site-build
-          path: _site/
-
+      # 3. Деплой в GitHub Pages происходит прямо здесь (экономим ~30 сек на пересылке файлов)
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -65,9 +47,17 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      # 4. Сохраняем артефакт для Cloudflare (на случай, если захочешь нажать кнопку)
+      - name: Upload Build Artifact for Cloudflare
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-build
+          path: _site/
+          retention-days: 1
+
+  # Cloudflare остается отдельной джобой, так как она запускается только вручную
   deploy-cloudflare:
-    needs: build
-    # Запускать ТОЛЬКО если нажали кнопку вручную (workflow_dispatch)
+    needs: build-and-deploy-gh
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
@@ -82,5 +72,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: "nikooganesiani-github-io" # ПРОВЕРЬТЕ ЭТО ИМЯ В ПАНЕЛИ CLOUDFLARE
+          projectName: "nikooganesiani-github-io"
           directory: "_site"
