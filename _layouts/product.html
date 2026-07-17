@@ -58,17 +58,33 @@ layout: default
     .gallery-section { touch-action: pan-y; }
 </style>
 
-<div class="product-view-container">
-    <!-- НАВИГАЦИЯ (BREADCRUMBS) -->
-    <div class="top-navigation">
-        <ul class="breadcrumbs">
-            <li><a href="/">მთავარი</a></li>
-            <span>/</span>
-            <li><a href="/">კატალოგი</a></li>
-            <span>/</span>
-            <li style="color: #94a3b8">{{ page.name | truncate: 35 }}</li>
-        </ul>
-    </div>
+<div class="top-navigation">
+    <ul class="breadcrumbs">
+        <li><a href="/">მთავარი</a></li>
+        <span>/</span>
+        <li><a href="/">კატალოგი</a></li>
+        <span>/</span>
+        <li>
+            {% assign first_cat = page.categories | first %}
+            <a href="/?category={{ first_cat }}">
+                {% for cat_id in page.categories %}
+                    {% case cat_id %}
+                        {% when 'smarthome' %}ჭკვიანი სახლი
+                        {% when 'kitchen' %}სამზარეულო
+                        {% when 'homecare' %}სახლის მოვლა
+                        {% when 'selfcare' %}თავის მოვლა
+                        {% when 'building' %}სამშენებლო ტექნიკა
+                        {% when 'computer' %}კომპიუტერული ტექნიკა
+                        {% else %}{{ cat_id }}
+                    {% endcase %}
+                    {% unless forloop.last %} და {% endunless %}
+                {% endfor %}
+            </a>
+        </li>
+        <span>/</span>
+        <li style="color: #94a3b8">{{ page.name | truncate: 35 }}</li>
+    </ul>
+</div>
 
     <div class="product-grid">
         <!-- ГАЛЕРЕЯ -->
