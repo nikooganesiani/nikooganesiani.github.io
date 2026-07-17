@@ -55,6 +55,22 @@ jobs:
           path: _site/
           retention-days: 1
 
+          # 5. Автообновление кеша Cloudflare, т.е Cache Purge
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: "nikooganesiani-github-io"
+          directory: "_site"
+
+      # Добавляем и сюда, чтобы при ручном деплое тоже всё чистилось
+      - name: Purge cache
+        uses: jakejarvis/cloudflare-purge-action@master
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
   # Cloudflare остается отдельной джобой, так как она запускается только вручную
   deploy-cloudflare:
     needs: build-and-deploy-gh
