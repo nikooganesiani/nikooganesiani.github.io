@@ -60,5 +60,5 @@ jobs:
       with:
         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        projectName: "nikooganesiani"  # ← замените на имя вашего проекта
+        projectName: "nikooganesiani-github-io"  # ← замените на имя вашего проекта
         directory: "_site"  # Jekyll собрал сайт сюда
