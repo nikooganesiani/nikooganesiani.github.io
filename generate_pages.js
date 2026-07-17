@@ -41,6 +41,7 @@ name: "${product.name}"
 brand: "${product.brand || 'ENKA'}"
 price: "${product.price}"
 oldPrice: "${product.oldPrice || ''}"
+categories: ${JSON.stringify(product.categories || [])} 
 ${imagesYaml}
 ${specsYaml}
 description: "${product.description || ''}"
