@@ -4,208 +4,228 @@ title: "კონტაქტები"
 ---
 
 <style>
-    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
-    
-    /* Убираем переопределение body — оставляем как есть из default.html */
-    
-    .contacts-card {
-        max-width: 680px;
-        width: 100%;
-        margin: 0 auto;  /* ← центрируем по горизонтали */
-        background: white;
-        border-radius: 32px;
-        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    :root {
+        --primary-color: #2563eb;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --card-bg: #ffffff;
+        --accent-soft: #f1f5f9;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .contacts-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.15);
+    .contacts-container {
+        max-width: 850px;
+        margin: 40px auto;
+        padding: 0 20px;
+        font-family: inherit;
+    }
+
+    .contacts-card {
+        background: var(--card-bg);
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        overflow: hidden;
+        position: relative;
     }
 
     .card-header {
-        background: white;
-        padding: 32px 36px 16px 36px;
-        border-bottom: 1px solid #e9edf2;
+        padding: 60px 40px 40px;
         text-align: center;
+        background: radial-gradient(circle at top right, #f8fafc, transparent);
     }
 
     .card-header h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        margin-bottom: 8px;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 12px;
+        letter-spacing: -0.03em;
     }
 
-    .subtitle {
-        color: #7e8c9e;
-        font-size: 0.9rem;
-        margin-top: 8px;
+    .subtitle-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        background: #f0fdf4;
+        color: #166534;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid #dcfce7;
     }
 
     .card-content {
-        padding: 28px 36px 36px 36px;
+        padding: 0 40px 40px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
     }
 
     .contact-item {
         display: flex;
-        align-items: center;
-        gap: 18px;
-        padding: 20px 0;
-        border-bottom: 1px solid #eef2f8;
-        transition: background 0.2s;
-    }
-
-    .contact-item:last-child {
-        border-bottom: none;
-    }
-
-    .contact-icon {
-        width: 56px;
-        height: 56px;
-        background: #f0f4f9;
+        flex-direction: column;
+        padding: 24px;
+        background: var(--accent-soft);
         border-radius: 28px;
+        text-decoration: none;
+        transition: var(--transition);
+        border: 1px solid transparent;
+    }
+
+    .contact-item:hover {
+        background: white;
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary-color);
+    }
+
+    .icon-wrapper {
+        width: 48px;
+        height: 48px;
+        background: white;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 26px;
-        flex-shrink: 0;
-        transition: transform 0.2s;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        color: var(--primary-color);
     }
 
-    .contact-item:hover .contact-icon {
-        transform: scale(1.05);
-        background: #e8edf4;
-    }
-
-    .contact-info {
-        flex: 1;
+    .contact-item:hover .icon-wrapper {
+        background: var(--primary-color);
+        color: white;
     }
 
     .contact-label {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 600;
-        color: #8a99aa;
-        margin-bottom: 6px;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
     }
 
     .contact-value {
-        font-size: 1.1rem;
-        font-weight: 500;
-        color: #1e2f3c;
-        text-decoration: none;
-        display: inline-block;
-        transition: color 0.2s;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--text-main);
+        word-break: break-all;
     }
 
-    .contact-value:hover {
-        color: #3b82f6;
-    }
-
-    a.contact-value {
-        text-decoration: none;
+    .footer-actions {
+        grid-column: span 2;
+        text-align: center;
+        margin-top: 20px;
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: #f0f4f9;
-        padding: 10px 24px;
-        border-radius: 60px;
+        gap: 10px;
+        padding: 14px 32px;
+        background: var(--text-main);
+        color: white;
+        border-radius: 100px;
         text-decoration: none;
-        font-weight: 500;
-        color: #1f3a4b;
-        transition: all 0.2s;
-        margin-top: 28px;
+        font-weight: 600;
+        transition: var(--transition);
     }
 
     .back-link:hover {
-        background: #e4eaf1;
-        transform: translateX(-4px);
-        gap: 12px;
+        background: var(--primary-color);
+        transform: scale(1.05);
+        box-shadow: 0 10px 20px -10px var(--primary-color);
     }
 
-    @media (max-width: 600px) {
-        .contacts-card {
-            margin: 0;  /* на мобилках убираем отступы, чтобы карточка была на всю ширину */
-            border-radius: 20px;
+    /* Мобильная адаптация */
+    @media (max-width: 650px) {
+        .card-content {
+            grid-template-columns: 1fr;
+            padding: 0 24px 30px;
+        }
+        .footer-actions {
+            grid-column: 1;
         }
         .card-header {
-            padding: 24px 24px 12px 24px;
+            padding: 40px 24px 30px;
         }
         .card-header h1 {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
         }
-        .card-content {
-            padding: 20px 24px 28px 24px;
-        }
-        .contact-icon {
-            width: 48px;
-            height: 48px;
-            font-size: 22px;
-        }
-        .contact-value {
-            font-size: 0.95rem;
-        }
-        .back-link {
-            padding: 8px 20px;
+        .contact-item {
+            padding: 20px;
         }
     }
+
+    /* Анимация появления */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .contact-item {
+        animation: fadeInUp 0.5s ease backwards;
+    }
+    .contact-item:nth-child(1) { animation-delay: 0.1s; }
+    .contact-item:nth-child(2) { animation-delay: 0.2s; }
+    .contact-item:nth-child(3) { animation-delay: 0.3s; }
+    .contact-item:nth-child(4) { animation-delay: 0.4s; }
 </style>
 
-<div class="contacts-card">
-    <div class="card-header">
-        <h1>კონტაქტები</h1>
-        <div class="subtitle">სამუშაო საათი: ყოველდღე 09:00-21:00.</div>
-    </div>
+<div class="contacts-container">
+    <div class="contacts-card">
+        <div class="card-header">
+            <h1>კონტაქტები</h1>
+            <div class="subtitle-badge">
+                🕒 სამუშაო საათი: 09:00 - 21:00
+            </div>
+        </div>
 
-<div class="card-content">
-    <!-- Телефон -->
-    <div class="contact-item">
-        <div class="contact-icon">📞</div>
-        <div class="contact-info">
-            <div class="contact-label">ტელეფონი</div>
-            <a href="tel:+995551178990" class="contact-value">+995 551 17 89 90</a>
+        <div class="card-content">
+            <!-- Телефон -->
+            <a href="tel:+995551178990" class="contact-item">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </div>
+                <div class="contact-label">ტელეფონი</div>
+                <div class="contact-value">+995 551 17 89 90</div>
+            </a>
+
+            <!-- WhatsApp -->
+            <a href="https://wa.me/995551178990" target="_blank" class="contact-item">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="contact-label">WhatsApp</div>
+                <div class="contact-value">+995 551 17 89 90</div>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:enka.electronics.ge@gmail.com" class="contact-item">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="contact-label">ელ-ფოსტა</div>
+                <div class="contact-value">enka.electronics.ge@gmail.com</div>
+            </a>
+
+            <!-- Facebook -->
+            <a href="https://www.facebook.com/enkaelectronics" target="_blank" class="contact-item">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </div>
+                <div class="contact-label">Facebook</div>
+                <div class="contact-value">enkaelectronics</div>
+            </a>
+
+            <div class="footer-actions">
+                <a href="#" id="backButton" class="back-link">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    უკან დაბრუნება
+                </a>
+            </div>
         </div>
     </div>
-
-    <!-- WhatsApp -->
-    <div class="contact-item">
-        <div class="contact-icon">💚</div>
-        <div class="contact-info">
-            <div class="contact-label">WhatsApp</div>
-            <a href="https://wa.me/995551178990" class="contact-value" target="_blank" rel="noopener noreferrer">+995 551 17 89 90</a>
-        </div>
-    </div>
-
-    <!-- Email -->
-    <div class="contact-item">
-        <div class="contact-icon">✉️</div>
-        <div class="contact-info">
-            <div class="contact-label">ელ-ფოსტა</div>
-            <a href="mailto:enka.electronics.ge@gmail.com" class="contact-value">enka.electronics.ge@gmail.com</a>
-        </div>
-    </div>
-
-    <!-- Facebook -->
-    <div class="contact-item">
-        <div class="contact-icon">📘</div>
-        <div class="contact-info">
-            <div class="contact-label">Facebook</div>
-            <a href="https://www.facebook.com/enkaelectronics" target="_blank" rel="noopener noreferrer" class="contact-value">facebook.com/enkaelectronics</a>
-        </div>
-    </div>
-
-    <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
-</div>
 </div>
 
 <script>
