@@ -11,24 +11,6 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 <style>
-/* Оверлей для блюра */
-#searchBlurOverlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    backdrop-filter: blur(0px); /* Начальное состояние */
-    background: rgba(255, 255, 255, 0.01); /* Почти прозрачный */
-    z-index: 99;
-    pointer-events: none; /* Чтобы не мешал кликам, когда не активен */
-    opacity: 0;
-    transition: opacity 0.8s ease, backdrop-filter 0.8s ease;
-}
-
-#searchBlurOverlay.active {
-    opacity: 1;
-    backdrop-filter: blur(12px);
-    pointer-events: auto; /* Блокируем клики по контенту при поиске */
-}
         *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
         ::-webkit-scrollbar{width:10px;height:10px}
         ::-webkit-scrollbar-track{background:#f1f5f9;border-radius:10px}
@@ -904,18 +886,6 @@ if (quickForm) {
         submitBtn.disabled = false;
     });
 }
-// Создаем оверлей программно
-const blurOverlay = document.createElement('div');
-blurOverlay.id = 'searchBlurOverlay';
-document.body.appendChild(blurOverlay);
-
-const sInp = document.getElementById('searchInput');
-
-sInp.addEventListener('focus', () => blurOverlay.classList.add('active'));
-sInp.addEventListener('blur', () => {
-    // Небольшая задержка, чтобы клики по результатам поиска срабатывали
-    setTimeout(() => blurOverlay.classList.remove('active'), 150);
-});
 // ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ =====
 const orderConfirmModal = document.getElementById('orderConfirmModal');
 const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
