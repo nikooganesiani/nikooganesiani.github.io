@@ -703,6 +703,64 @@ title: "მთავარი"
             background-position: 200% 0;
         }
     }
+    
+    /* Стили для мини-карусели в карточке */
+    .product-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .slider-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid #e2e8f0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 10;
+        font-size: 14px;
+        color: #1e293b;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0; /* Скрыто до наведения */
+        backdrop-filter: blur(4px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .product-image-wrapper:hover .slider-arrow {
+        opacity: 1;
+    }
+
+    .slider-arrow:hover {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .slider-arrow:active {
+        transform: translateY(-50%) scale(0.9);
+    }
+
+    .arrow-prev { left: 10px; }
+    .arrow-next { right: 10px; }
+
+    /* На мобильных стрелки видны всегда */
+    @media (max-width: 768px) {
+        .slider-arrow { 
+            opacity: 0.8; 
+            width: 36px; 
+            height: 36px; 
+            background: white;
+        }
+    }
 </style>
 
 <div class="categories-bar">
@@ -750,7 +808,7 @@ title: "მთავარი"
         </div>
 
         <div class="catalog" id="catalogContainer">
-            <!-- 6 скелетонов -->
+            <!-- Скелетоны -->
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
@@ -771,7 +829,6 @@ title: "მთავარი"
 
     let currentCategory = 'all';
     
-    // DOM элементы
     const container = document.getElementById('catalogContainer');
     const minPriceInput = document.getElementById('minPrice');
     const maxPriceInput = document.getElementById('maxPrice');
@@ -785,13 +842,10 @@ title: "მთავარი"
     // ============================================
     function renderProducts() {
         const products = window.allProducts || [];
-        
         let filtered = [...products];
         
         if (currentCategory !== 'all') {
-            filtered = filtered.filter(p => 
-                p.categories && p.categories.includes(currentCategory)
-            );
+            filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
         
         const minPrice = parseInt(minPriceInput.value);
@@ -805,81 +859,100 @@ title: "მთავარი"
         if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
         
-        const hasMin = minPriceInput.value !== '';
-        const hasMax = maxPriceInput.value !== '';
-        const hasSort = sortSelect.value !== 'name-asc';
-        
-        if (hasMin || hasMax || hasSort) {
-            resetBtn.classList.add('show');
-        } else {
-            resetBtn.classList.remove('show');
-        }
-        
         if (filtered.length === 0) {
             container.innerHTML = '<div class="empty-state">😕 პროდუქტი ვერ მოიძებნა</div>';
             return;
         }
         
-container.innerHTML = filtered.map(product => `
-    <div class="product-card">
-        <a href="/${product.id}/" style="text-decoration: none; color: inherit; display: block;">
-            <!-- ИСПРАВЛЕНО: берем первую картинку из массива -->
-            <img class="product-image" src="${product.images ? product.images[0] : '/img/no-image.png'}" alt="${product.name}"
-                 onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
-        </a>
-        <div class="product-info">
-            <a href="/${product.id}/" style="text-decoration: none; color: inherit;">
-                <div class="product-name">${product.name}</div>
-            </a>
-            <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
-            <div class="price-and-badges">
-                <div class="product-price">${product.price}</div>
-                <div class="shipping-badges">
-                    <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
-                    <span class="cash-badge">💵 გადახდა მიღებისას</span>
-                    <span class="warranty-badge">🛡️ ${product.warranty || '12 месяцев'}</span>
+        container.innerHTML = filtered.map(product => {
+            const imgs = product.images || (product.image ? [product.image] : []);
+            const hasMultipleImages = imgs.length > 1;
+            
+            // Предотвращаем ошибки в JSON из-за кавычек
+            const productDataAttr = JSON.stringify(product).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+
+            return `
+            <div class="product-card" data-id="${product.id}">
+                <div class="product-image-wrapper">
+                    ${product.oldPrice ? `<div style="position:absolute; top:12px; left:12px; background:#dc2626; color:white; padding:4px 10px; border-radius:8px; font-size:0.75rem; font-weight:700; z-index:5; box-shadow: 0 4px 10px rgba(220,38,38,0.3);">ფასდაკლება</div>` : ''}
+                    
+                    <a href="/${product.id}/" style="display: block;">
+                        <img class="product-image" id="img-${product.id}" src="${imgs[0] || 'https://via.placeholder.com/280x220?text=📱'}" alt="${product.name}"
+                             onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
+                    </a>
+                    
+                    ${hasMultipleImages ? `
+                        <button class="slider-arrow arrow-prev" onclick="changeCardImg('${product.id}', -1, event)">❮</button>
+                        <button class="slider-arrow arrow-next" onclick="changeCardImg('${product.id}', 1, event)">❯</button>
+                    ` : ''}
+                </div>
+                <div class="product-info">
+                    <a href="/${product.id}/" style="text-decoration: none; color: inherit;">
+                        <div class="product-name">${product.name}</div>
+                    </a>
+                    <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
+                    <div class="price-and-badges">
+                        <div style="display:flex; flex-direction:column;">
+                            ${product.oldPrice ? `<span style="text-decoration:line-through; color:#94a3b8; font-size:0.85rem; margin-bottom:-2px;">${product.oldPrice}</span>` : ''}
+                            <div class="product-price">${product.price}</div>
+                        </div>
+                        <div class="shipping-badges">
+                            <span class="free-shipping-badge">🚚 უფასო მიტანა</span>
+                            <span class="cash-badge">💵 გადახდა მიღებისას</span>
+                            <span class="warranty-badge">🛡️ ${product.warranty || '12 თვე'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
+                        შეკვეთა
+                    </button>
                 </div>
             </div>
-            <button class="btn-order" onclick='window.openOrderForm(${JSON.stringify(product).replace(/'/g, "&#39;")})'>
-                შეკვეთა
-            </button>
-        </div>
-    </div>
-`).join('');
-}    
+        `}).join('');
+    }
+
+    // Переключение картинок в карточке
+    window.changeCardImg = function(productId, direction, event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const product = window.allProducts.find(p => p.id === productId);
+        if (!product) return;
+        
+        const imgs = product.images || [product.image];
+        const imgElement = document.getElementById(`img-${productId}`);
+        const currentFullSrc = imgElement.src;
+        
+        let currentIndex = imgs.findIndex(path => currentFullSrc.endsWith(path));
+
+        if (currentIndex === -1) currentIndex = 0;
+
+        let nextIndex = currentIndex + direction;
+        if (nextIndex >= imgs.length) nextIndex = 0;
+        if (nextIndex < 0) nextIndex = imgs.length - 1;
+
+        imgElement.src = imgs[nextIndex];
+    };
+
     // ============================================
-    // СОБЫТИЯ
+    // СОБЫТИЯ И ЛОГИКА
     // ============================================
     minPriceInput.addEventListener('input', renderProducts);
     maxPriceInput.addEventListener('input', renderProducts);
     sortSelect.addEventListener('change', renderProducts);
+    
     resetBtn.addEventListener('click', function() {
         minPriceInput.value = '';
         maxPriceInput.value = '';
         sortSelect.value = 'name-asc';
         currentCategory = 'all';
-        
         categoryBtns.forEach(btn => {
-            if (btn.dataset.category === 'all') {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
+            btn.classList.toggle('active', btn.dataset.category === 'all');
         });
-        
         const selectedValueSpan = document.getElementById('selectedValue');
-        if (selectedValueSpan) {
-            selectedValueSpan.textContent = 'სახელი (ა-ჰ)';
-        }
-        
+        if (selectedValueSpan) selectedValueSpan.textContent = 'სახელი (ა-ჰ)';
         document.querySelectorAll('.select-option').forEach(opt => {
-            if (opt.dataset.value === 'name-asc') {
-                opt.classList.add('selected');
-            } else {
-                opt.classList.remove('selected');
-            }
+            opt.classList.toggle('selected', opt.dataset.value === 'name-asc');
         });
-        
         renderProducts();
     });
     
@@ -898,35 +971,23 @@ container.innerHTML = filtered.map(product => `
     });
     scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-    // ============================================
-    // ЗАГРУЗКА КАТАЛОГА
-    // ============================================
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('📥 Загружаем catalog.json...');
-        
         fetch('/catalog.json')
-            .then(res => {
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 window.allProducts = data.products.map(p => ({
                     ...p,
                     priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
                 }));
-                console.log('✅ Каталог загружен, товаров:', window.allProducts.length);
-                
                 renderProducts();
             })
             .catch(e => {
-                console.error('❌ Ошибка загрузки каталога:', e);
+                console.error('❌ Error loading catalog:', e);
                 container.innerHTML = '<div class="empty-state">❌ შეცდომა: catalog.json ვერ მოიძებნა</div>';
             });
     });
     
-    // ============================================
     // КАСТОМНЫЙ СЕЛЕКТ
-    // ============================================
     const customSelect = document.getElementById('customSortSelect');
     const selectTrigger = document.getElementById('selectTrigger');
     const selectOptions = document.getElementById('selectOptions');
@@ -943,30 +1004,19 @@ container.innerHTML = filtered.map(product => `
             option.addEventListener('click', () => {
                 const value = option.dataset.value;
                 const text = option.textContent;
-                
-                if (selectedValueSpan) {
-                    selectedValueSpan.textContent = text;
-                }
+                if (selectedValueSpan) selectedValueSpan.textContent = text;
                 if (hiddenSelect) {
                     hiddenSelect.value = value;
+                    hiddenSelect.dispatchEvent(new Event('change'));
                 }
-                
                 document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
                 option.classList.add('selected');
-                
                 customSelect.classList.remove('open');
-                
-                const event = new Event('change');
-                if (hiddenSelect) {
-                    hiddenSelect.dispatchEvent(event);
-                }
             });
         });
         
         document.addEventListener('click', (e) => {
-            if (!customSelect.contains(e.target)) {
-                customSelect.classList.remove('open');
-            }
+            if (!customSelect.contains(e.target)) customSelect.classList.remove('open');
         });
     }
 </script>
