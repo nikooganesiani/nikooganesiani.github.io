@@ -25,8 +25,7 @@ products.forEach(product => {
     imagesYaml += `  - "${img}"\n`;
   });
 
-  // УБРАЛИ permalink отсюда, чтобы не было конфликта с _config.yml
-  const content = `---
+const content = `---
 layout: product
 id: "${product.id}"
 sku: "${product.sku || product.id}"
