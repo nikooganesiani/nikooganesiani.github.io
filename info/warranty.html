@@ -4,300 +4,291 @@ title: "გარანტია და დაბრუნება"
 ---
 
 <style>
-    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
-    
-    .warranty-card {
-        max-width: 780px;
-        width: 100%;
-        margin: 0 auto;
-        background: white;
-        border-radius: 32px;
-        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.2s ease;
+    :root {
+        --primary-color: #2563eb;
+        --success-color: #059669;
+        --error-color: #dc2626;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --card-bg: #ffffff;
+        --accent-soft: #f8fafc;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .warranty-card:hover {
-        transform: translateY(-3px);
+    .warranty-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .warranty-card {
+        background: var(--card-bg);
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        overflow: hidden;
     }
 
     .card-header {
-        background: white;
-        padding: 32px 36px 16px 36px;
-        border-bottom: 1px solid #e9edf2;
+        padding: 60px 40px 30px;
         text-align: center;
+        background: linear-gradient(to bottom, #f1f5f9, transparent);
     }
 
     .card-header h1 {
-        font-size: 2rem;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.03em;
+        margin: 0;
+    }
+
+    /* Главное правило - Баннер */
+    .alert-banner {
+        margin: 20px 40px;
+        padding: 24px;
+        background: #fff1f2;
+        border-radius: 24px;
+        border: 1px solid #ffe4e6;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: #991b1b;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    .alert-banner svg {
+        flex-shrink: 0;
+        color: var(--error-color);
+    }
+
+    .alert-banner p {
+        margin: 0;
         font-weight: 600;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        margin-bottom: 8px;
+        line-height: 1.5;
     }
 
-    .card-content {
-        padding: 28px 36px 36px 36px;
+    /* Сетка сравнения: Что покрывается / Что нет */
+    .status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 20px 40px;
     }
 
-    .section {
-        margin-bottom: 32px;
+    .status-box {
+        padding: 30px;
+        border-radius: 32px;
+        transition: var(--transition);
+        border: 1px solid transparent;
     }
 
-    .section h2 {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: #1e2f3c;
-        margin-bottom: 16px;
+    .status-box.covered {
+        background: #f0fdf4;
+        border-color: #dcfce7;
+    }
+
+    .status-box.not-covered {
+        background: #fef2f2;
+        border-color: #fee2e2;
+    }
+
+    .status-box h3 {
         display: flex;
         align-items: center;
         gap: 10px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 20px;
     }
 
-    .section p {
-        line-height: 1.55;
-        color: #2c3f4f;
-        margin-bottom: 16px;
-    }
+    .status-box.covered h3 { color: #166534; }
+    .status-box.not-covered h3 { color: #991b1b; }
 
-    /* Главный блок с условием */
-    .main-rule {
-        background: #fef2f2;
-        border-left: 4px solid #dc2626;
-        padding: 20px 24px;
-        border-radius: 20px;
-        margin: 20px 0;
-    }
-
-    .main-rule p {
-        margin: 0;
-        font-weight: 500;
-        color: #991b1b;
-    }
-
-    /* Что покрывается */
-    .covered {
-        background: #f0fdf4;
-        border-radius: 20px;
-        padding: 20px 24px;
-        margin: 20px 0;
-    }
-
-    .newcovered {
-        background: #ffffff;
-        border-radius: 20px;
-        padding: 20px 24px;
-        margin: 20px 0;
-        border: 1px solid #e9edf2;
-    }
-
-    .covered h3 {
-        color: #166534;
-        margin-bottom: 12px;
-        font-size: 1.1rem;
-    }
-
-    .newcovered h3 {
-        color: #1e2f3c;
-        margin-bottom: 12px;
-        font-size: 1.1rem;
-    }
-
-    .not-covered {
-        background: #fef2f2;
-        border-radius: 20px;
-        padding: 20px 24px;
-        margin: 20px 0;
-    }
-
-    .not-covered h3 {
-        color: #991b1b;
-        margin-bottom: 12px;
-        font-size: 1.1rem;
-    }
-
-    /* ===== СТИЛИ ДЛЯ СПИСКОВ ===== */
-    
-    .check-list {
+    .status-list {
         list-style: none;
-        padding-left: 0;
+        padding: 0;
         margin: 0;
     }
 
-    .check-list li {
-        padding: 6px 0 6px 26px;
-        position: relative;
-        color: #166534;
+    .status-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        line-height: 1.4;
     }
 
-    .check-list li::before {
-        content: "✓";
-        position: absolute;
-        left: 0;
-        color: #22c55e;
+    .status-list svg {
+        flex-shrink: 0;
+        margin-top: 3px;
+    }
+
+    /* Секция Возврата и Формы */
+    .info-section {
+        margin: 20px 40px;
+        padding: 32px;
+        background: var(--accent-soft);
+        border-radius: 32px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .info-section h3 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 20px;
+    }
+
+    .info-grid-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 12px;
+        list-style: none;
+        padding: 0;
+    }
+
+    .info-grid-list li {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid #edf2f7;
+    }
+
+    .info-grid-list li::before {
+        content: "→";
+        color: var(--primary-color);
         font-weight: bold;
     }
 
-    /* Стили для нового списка — теперь отступы такие же, как у check-list */
-    .newlist {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-    }
-
-    .newlist li {
-        padding: 6px 0 6px 26px;
-        position: relative;
-        color: #2c3f4f;
-    }
-
-    .newlist li::before {
-        content: "▸";
-        position: absolute;
-        left: 0;
-        color: #3b82f6;
-        font-weight: bold;
-    }
-
-    .cross-list {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-    }
-
-    .cross-list li {
-        padding: 6px 0 6px 26px;
-        position: relative;
-        color: #991b1b;
-    }
-
-    .cross-list li::before {
-        content: "✗";
-        position: absolute;
-        left: 0;
-        color: #dc2626;
-        font-weight: bold;
+    /* Футер */
+    .footer-actions {
+        padding: 20px 40px 60px;
+        text-align: center;
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        background: #f0f4f9;
-        padding: 10px 24px;
-        border-radius: 60px;
+        gap: 10px;
+        padding: 14px 32px;
+        background: var(--text-main);
+        color: white;
+        border-radius: 100px;
         text-decoration: none;
-        font-weight: 500;
-        color: #1f3a4b;
-        transition: all 0.2s;
-        margin-top: 20px;
+        font-weight: 600;
+        transition: var(--transition);
     }
 
     .back-link:hover {
-        background: #e4eaf1;
-        transform: translateX(-4px);
+        background: var(--primary-color);
+        transform: scale(1.05);
     }
 
-    .card-footer {
-        background: #fafcff;
-        padding: 20px 36px 28px 36px;
-        border-top: 1px solid #eef2f8;
-        font-size: 0.8rem;
-        color: #8a99aa;
-        text-align: center;
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    hr {
-        margin: 24px 0;
-        border-top: 1px solid #eef2f8;
-    }
-
-    @media (max-width: 600px) {
-        .warranty-card {
-            margin: 0;
-            border-radius: 20px;
-        }
-        .card-header {
-            padding: 24px 24px 12px 24px;
-        }
-        .card-header h1 {
-            font-size: 1.6rem;
-        }
-        .card-content {
-            padding: 20px 24px 28px 24px;
-        }
-        .covered, .not-covered, .main-rule {
-            padding: 16px 18px;
-        }
-        .newcovered {
-            padding: 16px 18px;
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .status-grid { grid-template-columns: 1fr; }
+        .card-header h1 { font-size: 1.8rem; }
+        .alert-banner, .status-grid, .info-section, .footer-actions {
+            padding: 20px;
+            margin: 10px 20px;
         }
     }
 </style>
 
-<div class="warranty-card">
-    <div class="card-header">
-        <h1>გარანტია</h1>
-    </div>
+<div class="warranty-container">
+    <div class="warranty-card">
+        <header class="card-header">
+            <h1>გარანტია</h1>
+        </header>
 
-    <div class="card-content">
         <!-- Главное условие -->
-        <div class="main-rule">
-            <p>⚠️ გარანტია ვრცელდება <strong>მხოლოდ ქარხნულ დეფექტზე</strong> და არ ფარავს გარეგან ზემოქმედებას.</p>
+        <div class="alert-banner">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            <p>გარანტია ვრცელდება <strong>მხოლოდ ქარხნულ დეფექტზე</strong> და არ ფარავს გარეგან ზემოქმედებას.</p>
         </div>
 
-        <!-- Что покрывается -->
-        <div class="covered">
-            <h3>✅ რა ფარავს გარანტია</h3>
-            <ul class="check-list">
-                <li>ქარხნული დეფექტი (აწყობის ხარვეზი)</li>
-            </ul>
+        <div class="status-grid">
+            <!-- Что покрывается -->
+            <div class="status-box covered">
+                <h3>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                    რა ფარავს
+                </h3>
+                <ul class="status-list">
+                    <li>ქარხნული დეფექტი (აწყობის ხარვეზი)</li>
+                </ul>
+            </div>
+
+            <!-- Что НЕ покрывается -->
+            <div class="status-box not-covered">
+                <h3>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    რა არ ფარავს
+                </h3>
+                <ul class="status-list">
+                    <li>მექანიკური დაზიანება (დარტყმა, ბზარი)</li>
+                    <li>წყლის ან სითხის მოხვედრა</li>
+                    <li>დენის ძაბვის მატება, არასწორი დატენვა</li>
+                    <li>არაორიგინალი აქსესუარები</li>
+                    <li>ბუნებრივი ცვეთა (ბატარეა, კორპუსი)</li>
+                </ul>
+            </div>
         </div>
 
-        <!-- Что НЕ покрывается -->
-        <div class="not-covered">
-            <h3>❌ რა არ ფარავს</h3>
-            <ul class="cross-list">
-                <li>მექანიკური დაზიანება (დარტყმა, ჩავარდნა, ბზარი)</li>
-                <li>წყლის ან სითხის მოხვედრა</li>
-                <li>დენის ძაბვის მატება, არასწორი დატენვა</li>
-                <li>არაორიგინალი აქსესუარები</li>
-                <li>ბუნებრივი ცვეთა (ბატარეა, კორპუსი)</li>
-            </ul>
-        </div>
-
-        <hr>
-
-        <!-- Коротко как подать -->
-        <div class="newcovered">
-            <h3>📦 დაბრუნების პოლიტიკა</h3>    
-            <ul class="newlist">
+        <!-- Возврат -->
+        <div class="info-section">
+            <h3>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                დაბრუნების პოლიტიკა
+            </h3>
+            <ul class="info-grid-list">
                 <li>დაბრუნება შესაძლებელია 14 დღეში.</li>
                 <li>ვადა ითვლება მიღებიდან.</li>
                 <li>დაბრუნება უნდა იყოს დაუზიანებელი.</li>
                 <li>შეფუთვა უნდა იყოს სრული.</li>
                 <li>დაზიანებული შეფუთვა არ მიიღება.</li>
-                <li>თანხა ბრუნდება 14 დღეში, იგივე გადახდის მეთოდით.</li>
+                <li>თანხა ბრუნდება 14 დღეში.</li>
                 <li>მომხმარებელი აბრუნებს ნივთს 7 დღეში.</li>
             </ul>
         </div>
 
-        <div class="newcovered">
-            <h3>📝 ხელშეკრულებაზე უარის თქმის ფორმა</h3>
-            <ul class="newlist">
-                <li>შეკვეთის თარიღი:</li>
-                <li>შეკვეთის მიღების თარიღი:</li>
-                <li>მომხმარებლის სახელი:</li>
-                <li>მომხმარებლის მისამართი:</li>
-                <li>მომხმარებლის ხელმოწერა:</li>
-                <li>ფორმის შევსების თარიღი:</li>
+        <!-- Форма -->
+        <div class="info-section">
+            <h3>
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                ხელშეკრულებაზე უარის თქმის ფორმა
+            </h3>
+            <ul class="info-grid-list">
+                <li>შეკვეთის თარიღი</li>
+                <li>შეკვეთის მიღების თარიღი</li>
+                <li>მომხმარებლის სახელი</li>
+                <li>მომხმარებლის მისამართი</li>
+                <li>მომხმარებლის ხელმოწერა</li>
+                <li>ფორმის შევსების თარიღი</li>
             </ul>
         </div>
 
-        <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
+        <footer class="footer-actions">
+            <a href="#" id="backButton" class="back-link">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                უკან დაბრუნება
+            </a>
+        </footer>
     </div>
 </div>
 
