@@ -1,19 +1,64 @@
-name: Manual Deploy to Cloudflare
+name: Build and Deploy
+
 on:
-  workflow_dispatch: # <-- Запуск только вручную
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:  # ← ручной запуск
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - run: npm install
-      - run: npm run build
-      - uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: true
+
+    - name: Generate product pages
+      run: node generate_pages.js
+
+    - name: Check generated files
+      run: ls -R _products/
+
+    - name: Build Jekyll site
+      run: bundle exec jekyll build
+    
+    - name: Upload artifact for GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+
+  deploy-github:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    # Этот job запускается всегда (при пуше и вручную)
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+
+  deploy-cloudflare:
+    needs: build
+    runs-on: ubuntu-latest
+    # ⚠️ ВАЖНО: этот job запускается ТОЛЬКО при ручном запуске
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+    - name: Deploy to Cloudflare Pages
+      uses: cloudflare/pages-action@v1
+      with:
+        apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        projectName: "nikooganesiani"  # ← замените на имя вашего проекта
+        directory: "_site"  # Jekyll собрал сайт сюда
