@@ -1,36 +1,71 @@
 {
   "products": [
     {
-"id": "tiffanysmartscale",
+      "id": "tiffanysmartscale",
       "sku": "175429",
       "name": "ჭკვიანი სასწორი (Smart Scale)",
       "brand": "Tiffany",
       "price": "39₾",
       "oldPrice": "54₾",
-      "images": ["/img/products/scale.webp", "/img/products/scale_side.webp", "/img/products/scale_box.webp"],
-      "categories": ["smarthome", "selfcare"],
+      "images": [
+        "/img/products/scale.webp",
+        "/img/products/scale_side.webp",
+        "/img/products/scale_box.webp"
+      ],
+      "categories": [
+        "smarthome",
+        "selfcare"
+      ],
       "description": "თქვენი სხეულის ანალიზი, 17 მაჩვენებელი, 180კგ დატვირთვა.",
       "warranty": "12 თვე",
       "specs": {
-        "ტიპი": "ჭკვიანი სასწორი", "მაქსიმალური წონა": "180 კგ", "კავშირი": "Bluetooth", "ელემენტის ტიპი": "AAA", "აპლიკაცია": "iOS / Android"
+        "ტიპი": "ჭკვიანი სასწორი",
+        "მაქსიმალური წონა": "180 კგ",
+        "კავშირი": "Bluetooth",
+        "ელემენტის ტიპი": "AAA",
+        "აპლიკაცია": "iOS / Android"
+      }
     },
     {
-      "id": "/",
+      "id": "grillsokany",
+      "sku": "182940",
       "name": "გრილი-ტოსტერი Sokany",
+      "brand": "Sokany",
       "price": "49₾",
-      "image": "/img/products/grillsokany.webp",
-      "categories": ["kitchen"],
+      "oldPrice": "",
+      "images": [
+        "/img/products/grillsokany.webp"
+      ],
+      "categories": [
+        "kitchen"
+      ],
       "description": "750ვტ, მიმწვრობის საწინააღმდეგო ზედაპირი, თერმოიზოლირებული სახელური.",
-      "warranty": "გარანტია: 12 თვე"
+      "warranty": "12 თვე",
+      "specs": {
+        "სიმძლავრე": "750ვტ",
+        "ზედაპირი": "მიმწვრობის საწინააღმდეგო"
+      }
     },
     {
-      "id": "/",
+      "id": "kettlehauzer",
+      "sku": "193021",
       "name": "ელექტრო ჩაიდანი Hauzer",
+      "brand": "Hauzer",
       "price": "89₾",
-      "image": "/img/products/kettlehauzer1.webp",
-      "categories": ["kitchen"],
+      "oldPrice": "",
+      "images": [
+        "/img/products/kettlehauzer1.webp"
+      ],
+      "categories": [
+        "kitchen"
+      ],
       "description": "გერმანული ბრენდი Hauzer. 2.0ლ, 2500ვტ, ტემპერატურის ინდიკატორი და კონტროლი, სითბოს შენარჩუნების რეჟიმი და ავტომატური გათიშვა.",
-      "warranty": "გარანტია: 24 თვე"
+      "warranty": "24 თვე",
+      "specs": {
+        "მოცულობა": "2.0ლ",
+        "სიმძლავრე": "2500ვტ",
+        "ავტომატური გათიშვა": "დიახ"
+      }
     }
   ]
 }
