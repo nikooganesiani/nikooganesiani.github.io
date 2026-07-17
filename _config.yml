@@ -23,7 +23,7 @@ exclude:
 collections:
   products:
     output: true
-    permalink: /products/:title/
+    permalink: /catalog/:title
 
 # Настройки по умолчанию для товаров
 defaults:
