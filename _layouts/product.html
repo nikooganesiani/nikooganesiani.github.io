@@ -5,52 +5,44 @@ layout: default
 <style>
     .product-view-container { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
 
-    /* Хлебные крошки и SKU (Артикул) */
-    .top-meta-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; font-size: 0.85rem; color: #64748b; }
-    .breadcrumbs { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; }
+    /* Хлебные крошки (теперь они одни в строке) */
+    .top-navigation { margin-bottom: 1rem; font-size: 0.85rem; color: #64748b; }
+    .breadcrumbs { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; }
     .breadcrumbs a { text-decoration: none; color: #1e293b; font-weight: 500; }
-    .sku-box { font-weight: 400; }
-    .sku-box b { color: #0f172a; font-weight: 600; }
 
-    /* Сетка в стиле Alta.ge */
     .product-grid { display: grid; grid-template-columns: 1fr 450px; gap: 2rem; align-items: start; }
 
-    /* Галерея и Скидка */
+    /* Галерея */
     .gallery-section { position: relative; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; }
-    
     .sale-badge-red { position: absolute; top: 1rem; left: 1rem; background: #dc2626; color: white; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-weight: 700; font-size: 0.75rem; z-index: 5; }
-
     .main-image-view { width: 100%; height: 450px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
     .main-image-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
-
-    .thumbs-list { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.5rem 0; }
+    .thumb-strip { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.5rem 0; }
     .thumb-card { width: 65px; height: 65px; border: 2px solid #f1f5f9; border-radius: 0.6rem; cursor: pointer; padding: 4px; background: white; flex-shrink: 0; transition: 0.2s; }
     .thumb-card.active { border-color: #2563eb; }
     .thumb-card img { width: 100%; height: 100%; object-fit: contain; }
 
     /* Инфо-блок */
-    .product-title-h1 { font-size: 1.6rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; line-height: 1.3; }
-    .brand-line { margin-bottom: 1.5rem; font-size: 0.9rem; color: #64748b; }
+    .product-title-h1 { font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; line-height: 1.2; }
+    
+    /* SKU перемещен сюда */
+    .sku-under-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.5rem; display: block; }
+    .sku-under-title b { color: #475569; }
+
+    .brand-line { margin-bottom: 1.5rem; font-size: 0.95rem; color: #64748b; }
     .brand-line b { color: #2563eb; }
 
-    /* Карточка цены (Sticky) */
+    /* Карточка цены */
     .sticky-buy-box { background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.8rem; box-shadow: 0 4px 20px rgba(0,0,0,0.03); position: sticky; top: 100px; }
-    
     .price-wrapper { margin-bottom: 1.5rem; }
     .old-price-line { font-size: 1.1rem; color: #94a3b8; text-decoration: line-through; margin-bottom: 0.2rem; }
-    .current-price-line { font-size: 2.4rem; font-weight: 800; color: #2563eb; display: flex; align-items: baseline; }
-    .gel-symbol { font-size: 1.4rem; margin-left: 3px; }
+    .current-price-line { font-size: 2.5rem; font-weight: 800; color: #2563eb; display: flex; align-items: baseline; }
+    .gel-symbol { font-size: 1.5rem; margin-left: 3px; }
 
-    /* Ваша кнопка заказа */
-    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.8rem; font-size: 1.15rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
+    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.2rem; border-radius: 0.8rem; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.6rem; }
     .btn-alta-order:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2); }
 
-    .delivery-status { margin-top: 1.5rem; border-top: 1px solid #f1f5f9; padding-top: 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; font-size: 0.85rem; }
-    .status-row { display: flex; justify-content: space-between; }
-    .status-label { color: #64748b; }
-    .status-value { font-weight: 600; color: #1e293b; }
-
-    /* Спецификации (Характеристики) */
+    /* Спецификации */
     .spec-section-box { margin-top: 3rem; background: white; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 2rem; }
     .spec-item-row { display: flex; padding: 0.9rem 0; border-bottom: 1px dashed #e2e8f0; }
     .spec-item-row:last-child { border-bottom: none; }
@@ -61,49 +53,50 @@ layout: default
         .product-grid { grid-template-columns: 1fr; }
         .sticky-buy-box { position: static; }
         .main-image-view { height: 320px; }
+        .product-title-h1 { font-size: 1.5rem; }
     }
 </style>
 
 <div class="product-view-container">
-    <!-- ВЕРХНЯЯ ИНФО-ПАНЕЛЬ -->
-    <div class="top-meta-bar">
+    <!-- НАВИГАЦИЯ (BREADCRUMBS) -->
+    <div class="top-navigation">
         <ul class="breadcrumbs">
             <li><a href="/">მთავარი</a></li>
             <span>/</span>
             <li><a href="/">კატალოგი</a></li>
             <span>/</span>
-            <li style="color: #94a3b8">{{ page.name | truncate: 25 }}</li>
+            <li style="color: #94a3b8">{{ page.name | truncate: 35 }}</li>
         </ul>
-        <div class="sku-box">კოდი: <b>{{ page.sku }}</b></div>
     </div>
 
     <div class="product-grid">
-        <!-- ЛЕВАЯ КОЛОНКА: ГАЛЕРЕЯ -->
+        <!-- ГАЛЕРЕЯ -->
         <div class="gallery-section">
             {% if page.oldPrice != "" and page.oldPrice != nil %}
             <div class="sale-badge-red">ფასდაკლება</div>
             {% endif %}
 
             <div class="main-image-view">
-                <!-- Берем первое изображение из массива -->
                 <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}">
             </div>
 
-            <!-- Показываем карусель только если фото > 1 -->
             {% if page.images.size > 1 %}
-            <div class="thumbs-list">
+            <div class="thumb-strip">
                 {% for img in page.images %}
                 <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="updateGallery('{{ img }}', this)">
-                    <img src="{{ img }}" alt="Product Image">
+                    <img src="{{ img }}" alt="Photo">
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
         </div>
 
-        <!-- ПРАВАЯ КОЛОНКА: КАРТОЧКА ПОКУПКИ -->
+        <!-- ИНФО-БЛОК -->
         <div class="product-info-section">
             <h1 class="product-title-h1">{{ page.name }}</h1>
+            
+            <!-- SKU ТЕПЕРЬ ТУТ -->
+            <span class="sku-under-title">კოდი: <b>{{ page.sku }}</b></span>
             
             <div class="brand-line">
                 ბრენდი: <b>{{ page.brand }}</b>
@@ -119,31 +112,29 @@ layout: default
                     </div>
                 </div>
 
-                <!-- ВАША ОРИГИНАЛЬНАЯ ФУНКЦИЯ -->
                 <button class="btn-alta-order" onclick="handleBuyClick()">
                     🛒 ყიდვა
                 </button>
 
-                <div class="delivery-status">
-                    <div class="status-row">
-                        <span class="status-label">🛡️ გარანტია:</span>
-                        <span class="status-value">{{ page.warranty }}</span>
+                <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; font-size: 0.85rem; border-top: 1px solid #f1f5f9; padding-top: 1.2rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">🛡️ გარანტია:</span>
+                        <span style="font-weight: 600;">{{ page.warranty }}</span>
                     </div>
-                    <div class="status-row">
-                        <span class="status-label">🚚 მიწოდება:</span>
-                        <span class="status-value" style="color: #16a34a;">უფასო</span>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #64748b;">🚚 მიწოდება:</span>
+                        <span style="font-weight: 600; color: #16a34a;">უფასო</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- БЛОК ХАРАКТЕРИСТИК -->
+    <!-- ХАРАКТЕРИСТИКИ И ДЕТАЛЬНОЕ ОПИСАНИЕ -->
     <div class="spec-section-box">
         <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; font-weight: 700;">სპეციფიკაციები</h2>
         
         <div class="spec-list-container">
-            <!-- Динамический вывод всех строк из JSON -->
             {% for spec in page.specs %}
             <div class="spec-item-row">
                 <div class="spec-name-label">{{ spec[0] }}</div>
@@ -152,38 +143,32 @@ layout: default
             {% endfor %}
         </div>
 
-        <div style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
-            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #0f172a;">პროდუქტის აღწერა</h3>
-            <div style="line-height: 1.6; color: #475569; font-size: 0.95rem;">
-                {{ page.description }}
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
+            <h3 style="font-size: 1.2rem; margin-bottom: 1.2rem; color: #0f172a; font-weight: 700;">პროდუქტის აღწერა</h3>
+            <div style="line-height: 1.8; color: #475569; font-size: 1rem; white-space: pre-line;">
+                <!-- ИСПОЛЬЗУЕМ ДЕТАЛЬНОЕ ОПИСАНИЕ -->
+                {{ page.longDescription }}
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Функция смены основного фото в галерее
     function updateGallery(imgSrc, element) {
         document.getElementById('mainProductImage').src = imgSrc;
         document.querySelectorAll('.thumb-card').forEach(card => card.classList.remove('active'));
         element.classList.add('active');
     }
 
-    // ВАША ИДЕАЛЬНАЯ ФУНКЦИЯ ЗАКАЗА (с минимальной правкой под массив картинок)
     function handleBuyClick() {
         const product = {
             id: "{{ page.id }}",
             name: "{{ page.name }}",
             price: "{{ page.price }}",
-            // Берем первое фото из массива картинок для превью в заказе
             image: "{{ page.images[0] }}"
         };
-        
-        // Вызываем вашу глобальную функцию из default.html
         if (typeof window.openOrderForm === 'function') {
             window.openOrderForm(product);
-        } else {
-            alert('შეკვეთის ფორმა მიუწვდომელია');
         }
     }
 </script>
