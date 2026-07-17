@@ -1,11 +1,11 @@
 ---
-layout: default
+layout: product
 ---
 
 <style>
     .product-view-container { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
 
-    /* Хлебные крошки (теперь они одни в строке) */
+    /* Хлебные крошки */
     .top-navigation { margin-bottom: 1rem; font-size: 0.85rem; color: #64748b; }
     .breadcrumbs { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; }
     .breadcrumbs a { text-decoration: none; color: #1e293b; font-weight: 500; }
@@ -15,8 +15,8 @@ layout: default
     /* Галерея */
     .gallery-section { position: relative; background: white; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; align-items: center; }
     .sale-badge-red { position: absolute; top: 1rem; left: 1rem; background: #dc2626; color: white; padding: 0.4rem 0.8rem; border-radius: 0.5rem; font-weight: 700; font-size: 0.75rem; z-index: 5; }
-    .main-image-view { width: 100%; height: 450px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; }
-    .main-image-view img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .main-image-view { width: 100%; height: 450px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; cursor: grab; }
+    .main-image-view img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
     .thumb-strip { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.5rem 0; }
     .thumb-card { width: 65px; height: 65px; border: 2px solid #f1f5f9; border-radius: 0.6rem; cursor: pointer; padding: 4px; background: white; flex-shrink: 0; transition: 0.2s; }
     .thumb-card.active { border-color: #2563eb; }
@@ -24,11 +24,8 @@ layout: default
 
     /* Инфо-блок */
     .product-title-h1 { font-size: 1.8rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; line-height: 1.2; }
-    
-    /* SKU перемещен сюда */
     .sku-under-title { font-size: 0.85rem; color: #94a3b8; margin-bottom: 1.5rem; display: block; }
     .sku-under-title b { color: #475569; }
-
     .brand-line { margin-bottom: 1.5rem; font-size: 0.95rem; color: #64748b; }
     .brand-line b { color: #2563eb; }
 
@@ -58,34 +55,39 @@ layout: default
     .gallery-section { touch-action: pan-y; }
 </style>
 
-<div class="top-navigation">
-    <ul class="breadcrumbs">
-        <li><a href="/">მთავარი</a></li>
-        <span>/</span>
-        <li><a href="/">კატალოგი</a></li>
-        <span>/</span>
-        <li>
-            {% assign first_cat = page.categories | first %}
-            <a href="/?category={{ first_cat }}">
-                {% for cat_id in page.categories %}
-                    {% case cat_id %}
-                        {% when 'smarthome' %}ჭკვიანი სახლი
-                        {% when 'kitchen' %}სამზარეულო
-                        {% when 'homecare' %}სახლის მოვლა
-                        {% when 'selfcare' %}თავის მოვლა
-                        {% when 'building' %}სამშენებლო ტექნიკა
-                        {% when 'computer' %}კომპიუტერული ტექნიკა
-                        {% else %}{{ cat_id }}
-                    {% endcase %}
-                    {% unless forloop.last %} და {% endunless %}
-                {% endfor %}
-            </a>
-        </li>
-        <span>/</span>
-        <li style="color: #94a3b8">{{ page.name | truncate: 35 }}</li>
-    </ul>
-</div>
+<!-- ГЛАВНЫЙ КОНТЕЙНЕР (Исправлено: добавлен открывающий тег) -->
+<div class="product-view-container">
 
+    <!-- НАВИГАЦИЯ -->
+    <div class="top-navigation">
+        <ul class="breadcrumbs">
+            <li><a href="/">მთავარი</a></li>
+            <span>/</span>
+            <li><a href="/">კატალოგი</a></li>
+            <span>/</span>
+            <li>
+                {% assign first_cat = page.categories | first %}
+                <a href="/?category={{ first_cat }}">
+                    {% for cat_id in page.categories %}
+                        {% case cat_id %}
+                            {% when 'smarthome' %}ჭკვიანი სახლი
+                            {% when 'kitchen' %}სამზარეულო
+                            {% when 'homecare' %}სახლის მოვლა
+                            {% when 'selfcare' %}თავის მოვლა
+                            {% when 'building' %}სამშენებლო ტექნიკა
+                            {% when 'computer' %}კომპიუტერული ტექნიკა
+                            {% else %}{{ cat_id }}
+                        {% endcase %}
+                        {% unless forloop.last %} და {% endunless %}
+                    {% endfor %}
+                </a>
+            </li>
+            <span>/</span>
+            <li style="color: #94a3b8">{{ page.name | truncate: 35 }}</li>
+        </ul>
+    </div>
+
+    <!-- СЕТКА ТОВАРА -->
     <div class="product-grid">
         <!-- ГАЛЕРЕЯ -->
         <div class="gallery-section">
@@ -93,11 +95,11 @@ layout: default
             <div class="sale-badge-red">ფასდაკლება</div>
             {% endif %}
 
-<div class="main-image-view" 
-     ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
-     ontouchend="handleProductSwipe(event)">
-    <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}">
-</div>
+            <div class="main-image-view" 
+                 ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
+                 ontouchend="handleProductSwipe(event)">
+                <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}">
+            </div>
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip">
@@ -113,8 +115,6 @@ layout: default
         <!-- ИНФО-БЛОК -->
         <div class="product-info-section">
             <h1 class="product-title-h1">{{ page.name }}</h1>
-            
-            <!-- SKU ТЕПЕРЬ ТУТ -->
             <span class="sku-under-title">კოდი: <b>{{ page.sku }}</b></span>
             
             <div class="brand-line">
@@ -149,7 +149,7 @@ layout: default
         </div>
     </div>
 
-    <!-- ХАРАКТЕРИСТИКИ И ДЕТАЛЬНОЕ ОПИСАНИЕ -->
+    <!-- ХАРАКТЕРИСТИКИ -->
     <div class="spec-section-box">
         <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; font-weight: 700;">სპეციფიკაციები</h2>
         
@@ -165,17 +165,16 @@ layout: default
         <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
             <h3 style="font-size: 1.2rem; margin-bottom: 1.2rem; color: #0f172a; font-weight: 700;">პროდუქტის აღწერა</h3>
             <div style="line-height: 1.8; color: #475569; font-size: 1rem; white-space: pre-line;">
-                <!-- ИСПОЛЬЗУЕМ ДЕТАЛЬНОЕ ОПИСАНИЕ -->
                 {{ page.longDescription }}
             </div>
         </div>
     </div>
-</div>
+
+</div> <!-- КОНЕЦ ГЛАВНОГО КОНТЕЙНЕРА -->
 
 <script>
     let pTouchStartX = 0;
 
-    // Автоматический расчет процента для страницы товара при загрузке
     document.addEventListener('DOMContentLoaded', function() {
         const oldPriceStr = "{{ page.oldPrice }}";
         const priceStr = "{{ page.price }}";
@@ -205,7 +204,6 @@ layout: default
             if (nextIdx >= imgs.length) nextIdx = 0;
             if (nextIdx < 0) nextIdx = imgs.length - 1;
             
-            // Находим и кликаем соответствующую миниатюру для синхронизации
             const thumbs = document.querySelectorAll('.thumb-card');
             if (thumbs[nextIdx]) thumbs[nextIdx].click();
         }
