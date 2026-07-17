@@ -823,7 +823,8 @@ title: "მთავარი"
 container.innerHTML = filtered.map(product => `
     <div class="product-card">
         <a href="/${product.id}/" style="text-decoration: none; color: inherit; display: block;">
-            <img class="product-image" src="${product.image}" alt="${product.name}"
+            <!-- ИСПРАВЛЕНО: берем первую картинку из массива -->
+            <img class="product-image" src="${product.images ? product.images[0] : '/img/no-image.png'}" alt="${product.name}"
                  onerror="this.src='https://via.placeholder.com/280x220?text=📱'">
         </a>
         <div class="product-info">
