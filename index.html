@@ -828,7 +828,8 @@ title: "მთავარი"
     // ============================================
 
     let currentCategory = 'all';
-    
+    let touchStartX = 0; // Для отслеживания начала свайпа
+
     const container = document.getElementById('catalogContainer');
     const minPriceInput = document.getElementById('minPrice');
     const maxPriceInput = document.getElementById('maxPrice');
@@ -837,9 +838,6 @@ title: "მთავარი"
     const scrollTopBtn = document.getElementById('scrollTop');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
-    // ============================================
-    // РЕНДЕР ТОВАРОВ
-    // ============================================
     function renderProducts() {
         const products = window.allProducts || [];
         let filtered = [...products];
@@ -867,14 +865,26 @@ title: "მთავარი"
         container.innerHTML = filtered.map(product => {
             const imgs = product.images || (product.image ? [product.image] : []);
             const hasMultipleImages = imgs.length > 1;
+
+            // АВТО-РАСЧЕТ ПРОЦЕНТА СКИДКИ
+            let discountBadge = '';
+            if (product.oldPrice) {
+                const oldVal = parseInt(product.oldPrice.replace(/[^0-9]/g, ''));
+                const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
+                if (oldVal > newVal) {
+                    const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                    discountBadge = `<div class="sale-badge-red" style="position:absolute; top:12px; left:12px; background:#dc2626; color:white; padding:4px 10px; border-radius:8px; font-size:0.75rem; font-weight:700; z-index:5; box-shadow: 0 4px 10px rgba(220,38,38,0.3);">ფასდაკლება ${percent}%</div>`;
+                }
+            }
             
-            // Предотвращаем ошибки в JSON из-за кавычек
             const productDataAttr = JSON.stringify(product).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
             return `
             <div class="product-card" data-id="${product.id}">
-                <div class="product-image-wrapper">
-                    ${product.oldPrice ? `<div style="position:absolute; top:12px; left:12px; background:#dc2626; color:white; padding:4px 10px; border-radius:8px; font-size:0.75rem; font-weight:700; z-index:5; box-shadow: 0 4px 10px rgba(220,38,38,0.3);">ფასდაკლება</div>` : ''}
+                <div class="product-image-wrapper" 
+                     ontouchstart="touchStartX = event.changedTouches[0].screenX" 
+                     ontouchend="handleSwipe('${product.id}', event)">
+                    ${discountBadge}
                     
                     <a href="/${product.id}/" style="display: block;">
                         <img class="product-image" id="img-${product.id}" src="${imgs[0] || 'https://via.placeholder.com/280x220?text=📱'}" alt="${product.name}"
@@ -910,10 +920,20 @@ title: "მთავარი"
         `}).join('');
     }
 
-    // Переключение картинок в карточке
+    // Обработка свайпа на главной
+    window.handleSwipe = function(productId, event) {
+        let touchEndX = event.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) { // порог 50 пикселей
+            changeCardImg(productId, diff > 0 ? 1 : -1, event);
+        }
+    }
+
     window.changeCardImg = function(productId, direction, event) {
-        event.preventDefault();
-        event.stopPropagation();
+        if(event.type === 'click') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
 
         const product = window.allProducts.find(p => p.id === productId);
         if (!product) return;
@@ -923,7 +943,6 @@ title: "მთავარი"
         const currentFullSrc = imgElement.src;
         
         let currentIndex = imgs.findIndex(path => currentFullSrc.endsWith(path));
-
         if (currentIndex === -1) currentIndex = 0;
 
         let nextIndex = currentIndex + direction;
