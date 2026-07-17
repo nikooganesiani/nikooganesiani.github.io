@@ -55,6 +55,7 @@ layout: default
         .main-image-view { height: 320px; }
         .product-title-h1 { font-size: 1.5rem; }
     }
+    .gallery-section { touch-action: pan-y; }
 </style>
 
 <div class="product-view-container">
@@ -76,9 +77,11 @@ layout: default
             <div class="sale-badge-red">ფასდაკლება</div>
             {% endif %}
 
-            <div class="main-image-view">
-                <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}">
-            </div>
+<div class="main-image-view" 
+     ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
+     ontouchend="handleProductSwipe(event)">
+    <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}">
+</div>
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip">
@@ -154,6 +157,44 @@ layout: default
 </div>
 
 <script>
+    let pTouchStartX = 0;
+
+    // Автоматический расчет процента для страницы товара при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        const oldPriceStr = "{{ page.oldPrice }}";
+        const priceStr = "{{ page.price }}";
+        
+        if (oldPriceStr && oldPriceStr !== "") {
+            const oldVal = parseInt(oldPriceStr.replace(/[^0-9]/g, ''));
+            const newVal = parseInt(priceStr.replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                const badge = document.querySelector('.sale-badge-red');
+                if (badge) badge.textContent = `ფასდაკლება ${percent}%`;
+            }
+        }
+    });
+
+    function handleProductSwipe(event) {
+        let touchEndX = event.changedTouches[0].screenX;
+        const diff = pTouchStartX - touchEndX;
+        const imgs = [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
+        
+        if (Math.abs(diff) > 50 && imgs.length > 1) {
+            const currentImg = document.getElementById('mainProductImage');
+            const currentPath = currentImg.src;
+            let idx = imgs.findIndex(p => currentPath.endsWith(p));
+            
+            let nextIdx = idx + (diff > 0 ? 1 : -1);
+            if (nextIdx >= imgs.length) nextIdx = 0;
+            if (nextIdx < 0) nextIdx = imgs.length - 1;
+            
+            // Находим и кликаем соответствующую миниатюру для синхронизации
+            const thumbs = document.querySelectorAll('.thumb-card');
+            if (thumbs[nextIdx]) thumbs[nextIdx].click();
+        }
+    }
+
     function updateGallery(imgSrc, element) {
         document.getElementById('mainProductImage').src = imgSrc;
         document.querySelectorAll('.thumb-card').forEach(card => card.classList.remove('active'));
@@ -165,7 +206,7 @@ layout: default
             id: "{{ page.id }}",
             name: "{{ page.name }}",
             price: "{{ page.price }}",
-            image: "{{ page.images[0] }}"
+            images: [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
         };
         if (typeof window.openOrderForm === 'function') {
             window.openOrderForm(product);
