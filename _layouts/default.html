@@ -301,12 +301,18 @@
     <!-- ===== МОДАЛКА ДЛЯ ФОРМЫ ЗАКАЗА (ОТДЕЛЬНАЯ) ===== -->
     <div class="modal order-form-modal" id="orderFormModal">
         <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
-            <div style="text-align:center;margin-bottom:1rem;">
-                <div style="font-size:2.5rem;margin-bottom:0.3rem;">📦</div>
-                <div class="product-name-modal" id="formProductName">Товар</div>
-                <img class="product-image-modal" id="formProductImage" src="" alt="Товар">
-                <div class="product-price-modal" id="formProductPrice">0 ₾</div>
-            </div>
+<div style="text-align:center;margin-bottom:1rem;">
+    <div style="font-size:2.5rem;margin-bottom:0.3rem;">📦</div>
+    <div class="product-name-modal" id="formProductName">Товар</div>
+    
+    <!-- Главное фото в модалке -->
+    <img class="product-image-modal" id="formProductImage" src="" alt="Товар">
+    
+    <!-- ДОБАВЛЕНО: Контейнер для карусели в модалке -->
+    <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
+    
+    <div class="product-price-modal" id="formProductPrice">0 ₾</div>
+</div>
             <form id="quickOrderForm">
                 <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required autocomplete="name">
                 <div class="phone-wrapper">
@@ -676,23 +682,51 @@ if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-f
 console.log('✅ WORKER_URL:',window.WORKER_URL);
 
 // ===== МОДАЛКА ФОРМЫ =====
-const orderFormModal=document.getElementById('orderFormModal');
-const closeOrderFormBtn=document.getElementById('closeOrderFormModal');
-const quickForm=document.getElementById('quickOrderForm');
-const quickName=document.getElementById('quickName');
-const quickPhone=document.getElementById('quickPhone');
+const orderFormModal = document.getElementById('orderFormModal');
+const closeOrderFormBtn = document.getElementById('closeOrderFormModal');
+const quickForm = document.getElementById('quickOrderForm');
+const quickName = document.getElementById('quickName');
+const quickPhone = document.getElementById('quickPhone');
 
 // Глобальная функция для открытия формы
 window.openOrderForm = function(product) {
+    // 1. Устанавливаем текст и цену
     document.getElementById('formProductName').textContent = product.name;
-    document.getElementById('formProductImage').src = product.image;
-    document.getElementById('formProductImage').onerror = function() { this.src='https://via.placeholder.com/120?text=📱'; };
     document.getElementById('formProductPrice').textContent = product.price;
+
+    // 2. Логика изображений
+    const mainImg = document.getElementById('formProductImage');
+    const thumbContainer = document.getElementById('modalThumbnails');
+    
+    // Определяем источник картинки (поддерживаем и массив images, и строку image)
+    const imgs = product.images || (product.image ? [product.image] : []);
+    
+    if (imgs.length > 0) {
+        mainImg.src = imgs[0];
+        mainImg.onerror = function() { this.src='https://via.placeholder.com/120?text=📱'; };
+        
+        // Очищаем и строим карусель превью только если картинок больше одной
+        thumbContainer.innerHTML = '';
+        if (imgs.length > 1) {
+            thumbContainer.style.display = 'flex';
+            imgs.forEach(src => {
+                const imgThumb = document.createElement('img');
+                imgThumb.src = src;
+                imgThumb.style = "width: 40px; height: 40px; object-fit: contain; cursor: pointer; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px; background: white;";
+                imgThumb.onclick = function() { mainImg.src = src; };
+                thumbContainer.appendChild(imgThumb);
+            });
+        } else {
+            thumbContainer.style.display = 'none';
+        }
+    }
+
+    // 3. Остальная ваша логика
     quickName.value = '';
     quickPhone.value = '';
     orderFormModal.classList.add('active');
     
-    // Сохраняем продукт для отправки
+    // СТРОГО ВАША ОРИГИНАЛЬНАЯ СТРОКА:
     orderFormModal.dataset.product = JSON.stringify(product);
 };
 
