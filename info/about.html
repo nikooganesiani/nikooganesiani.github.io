@@ -4,229 +4,288 @@ title: "ჩვენს შესახებ"
 ---
 
 <style>
-    /* ===== ТОЛЬКО УНИКАЛЬНЫЕ СТИЛИ ДЛЯ ЭТОЙ СТРАНИЦЫ ===== */
-    
-    /* Убираем переопределение body — оставляем как есть из default.html */
-    
+    :root {
+        --primary-color: #2563eb;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --card-bg: #ffffff;
+        --accent-soft: #f8fafc;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .about-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
     .about-card {
-        max-width: 980px;
-        width: 100%;
-        margin: 0 auto;  /* ← центрируем по горизонтали */
-        background: white;
-        border-radius: 32px;
-        box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.02);
+        background: var(--card-bg);
+        border-radius: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.7);
         overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .about-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 25px 40px -14px rgba(0, 0, 0, 0.15);
-    }
-
+    /* Шапка страницы */
     .card-header {
-        background: white;
-        padding: 32px 36px 16px 36px;
-        border-bottom: 1px solid #e9edf2;
+        padding: 80px 40px 40px;
         text-align: center;
+        background: radial-gradient(circle at top left, #f1f5f9, transparent 400px);
     }
 
     .card-header h1 {
-        font-size: 2rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        background: linear-gradient(135deg, #1a2a3a, #2c3e4e);
-        background-clip: text;
-        -webkit-background-clip: text;
-        color: transparent;
-        margin-bottom: 8px;
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.04em;
+        margin: 0;
     }
 
-    .subtitle {
-        color: rgba(255, 255, 255, 0.85);
-        font-size: 1rem;
-        max-width: 500px;
+    .intro-section {
+        padding: 0 60px 40px;
+        text-align: center;
+    }
+
+    .intro-text {
+        font-size: 1.25rem;
+        color: var(--text-main);
+        line-height: 1.6;
+        max-width: 700px;
         margin: 0 auto;
     }
 
-    .card-content {
-        padding: 32px 40px 40px 40px;
+    .intro-text strong {
+        color: var(--primary-color);
+        font-weight: 700;
     }
 
-    /* Основной текст */
-    .intro-text {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: #2c3f4f;
-        margin-bottom: 36px;
-        text-align: center;
-    }
-
-    /* Преимущества — сеткой */
+    /* Сетка преимуществ */
     .features-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
         gap: 24px;
-        margin: 36px 0 40px 0;
+        padding: 40px 60px;
     }
 
     .feature-item {
-        background: #f8fafd;
-        padding: 24px 20px;
-        border-radius: 24px;
-        text-align: center;
-        transition: all 0.2s;
-        border: 1px solid #eef2f8;
+        background: var(--accent-soft);
+        padding: 32px;
+        border-radius: 32px;
+        border: 1px solid transparent;
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     .feature-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.1);
-        border-color: #dce5ed;
+        background: white;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary-color);
     }
 
     .feature-icon {
-        font-size: 42px;
-        margin-bottom: 16px;
+        width: 54px;
+        height: 54px;
+        background: white;
+        color: var(--primary-color);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.05);
+        transition: var(--transition);
+    }
+
+    .feature-item:hover .feature-icon {
+        background: var(--primary-color);
+        color: white;
+        transform: rotate(-5deg);
     }
 
     .feature-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #1a2a3a;
-        margin-bottom: 10px;
-    }
-
-    .feature-desc {
-        font-size: 0.9rem;
-        color: #5a6e7e;
-        line-height: 1.45;
-    }
-
-    /* Блок с миссией */
-    .mission-block {
-        background: linear-gradient(120deg, #f0f4f9, #fafcff);
-        padding: 28px 32px;
-        border-radius: 24px;
-        margin: 32px 0 16px 0;
-        border-left: 4px solid #3b82f6;
-    }
-
-    .mission-block h3 {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #1e2f3c;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-main);
         margin-bottom: 12px;
     }
 
-    .mission-block p {
-        line-height: 1.55;
-        color: #2c3f4f;
+    .feature-desc {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
     }
 
-    /* Кнопка назад */
-    .back-link {
-        display: inline-flex;
+    /* Блок Миссии */
+    .mission-section {
+        margin: 20px 60px 40px;
+        padding: 40px;
+        background: var(--text-main);
+        border-radius: 32px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mission-section::before {
+        content: "";
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: var(--primary-color);
+        filter: blur(80px);
+        opacity: 0.5;
+    }
+
+    .mission-title {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        background: #f0f4f9;
-        padding: 10px 24px;
-        border-radius: 60px;
-        text-decoration: none;
-        font-weight: 500;
-        color: #1f3a4b;
-        transition: all 0.2s;
-        margin-top: 32px;
-    }
-
-    .back-link:hover {
-        background: #e4eaf1;
-        transform: translateX(-4px);
         gap: 12px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
     }
 
+    .mission-text {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        opacity: 0.9;
+        font-weight: 400;
+    }
+
+    /* Футер и кнопка */
     .card-footer {
-        background: #fafcff;
-        padding: 20px 36px 32px 36px;
-        border-top: 1px solid #eef2f8;
-        font-size: 0.8rem;
-        color: #8a99aa;
+        padding: 0 40px 60px;
         text-align: center;
     }
 
-    @media (max-width: 680px) {
-        .about-card {
-            margin: 0;
-            border-radius: 20px;
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 36px;
+        background: var(--accent-soft);
+        color: var(--text-main);
+        border-radius: 100px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+    .back-link:hover {
+        background: var(--text-main);
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 800px) {
+        .features-grid {
+            grid-template-columns: 1fr;
+            padding: 20px 30px;
         }
-        .card-header {
-            padding: 32px 24px 28px 24px;
+        .intro-section, .mission-section {
+            padding: 30px;
+            margin: 10px 30px;
         }
         .card-header h1 {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
         }
-        .card-content {
-            padding: 24px 24px 32px 24px;
+    }
+
+    @media (max-width: 500px) {
+        .intro-section, .mission-section, .features-grid {
+            padding: 20px;
+            margin: 10px 20px;
         }
-        .features-grid {
-            gap: 16px;
+        .card-header {
+            padding: 50px 20px 30px;
         }
-        .feature-item {
-            padding: 18px 16px;
-        }
-        .mission-block {
-            padding: 20px 22px;
-        }
+    }
+
+    /* Анимация */
+    .feature-item {
+        animation: slideUp 0.6s ease backwards;
+    }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
-<div class="about-card">
-    <div class="card-header">
-        <h1>ჩვენს შესახებ</h1>
-    </div>
+<div class="about-container">
+    <div class="about-card">
+        <header class="card-header">
+            <h1>ჩვენს შესახებ</h1>
+        </header>
 
-    <div class="card-content">
-        <p class="intro-text">
-            <strong>ENKA Electronics</strong> — ჩვენ ვართ თანამედროვე ონლაინ მაღაზია.
-        </p>
+        <div class="intro-section">
+            <p class="intro-text">
+                <strong>ENKA Electronics</strong> — ჩვენ ვართ თანამედროვე ონლაინ მაღაზია.
+            </p>
+        </div>
 
-        <!-- Преимущества сеткой -->
         <div class="features-grid">
-            <div class="feature-item">
-                <div class="feature-icon">🚚</div>
+            <!-- Доставка -->
+            <div class="feature-item" style="animation-delay: 0.1s;">
+                <div class="feature-icon">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm14 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0-2h1.4a.6.6 0 0 0 .6-.6V11l-2-4.35a1 1 0 0 0-.9-.65H15M17 16H7m1-10h6m2 0h1a2 2 0 0 1 2 2v2m-2-4V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v9h1"/></svg>
+                </div>
                 <div class="feature-title">სწრაფი მიწოდება</div>
                 <div class="feature-desc">საქართველოს მასშტაბით — 1–3 სამუშაო დღე. თბილისში — 1-2 სამუშაო დღე.</div>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon">🔧</div>
+
+            <!-- Гарантия -->
+            <div class="feature-item" style="animation-delay: 0.2s;">
+                <div class="feature-icon">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                </div>
                 <div class="feature-title">გარანტია</div>
                 <div class="feature-desc">ყველა ჩვენს ტექნიკაზე.</div>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon">💰</div>
+
+            <!-- Бесплатная доставка -->
+            <div class="feature-item" style="animation-delay: 0.3s;">
+                <div class="feature-icon">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M7 15h.01M11 15h2"/></svg>
+                </div>
                 <div class="feature-title">მიწოდების საფასური</div>
                 <div class="feature-desc">უფასო მიწოდება მთელ საქართველოში.</div>
             </div>
-            <div class="feature-item">
-                <div class="feature-icon">🛡️</div>
+
+            <!-- Проверка -->
+            <div class="feature-item" style="animation-delay: 0.4s;">
+                <div class="feature-icon">
+                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
                 <div class="feature-title">შემოწმებული ტექნიკა</div>
                 <div class="feature-desc">მხოლოდ შემოწმების შემდეგ ვაგზავნით ყოველ ტექნიკას.</div>
             </div>
         </div>
 
-        <!-- Миссия -->
-        <div class="mission-block">
-            <h3>🎯 ჩვენი მიზანი</h3>
-            <p>
+        <section class="mission-section">
+            <div class="mission-title">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/></svg>
+                ჩვენი მიზანი
+            </div>
+            <p class="mission-text">
                 გავხადოთ ტექნიკის ონლაინ შოპინგი მარტივი და ხელმისაწვდომი ყველასთვის. 
                 ENKA Electronics — ეს არ არის მხოლოდ მაღაზია, არამედ გუნდი, რომელიც დაგეხმარებათ აირჩიოთ საუკეთესო მოწყობილობა 
                 თქვენი საჭიროებების მიხედვით. ინოვაცია, საიმედოობა და პატივისცემა ჩვენი მუშაობის საფუძველია.
             </p>
-        </div>
+        </section>
 
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="#" id="backButton" class="back-link">← უკან დაბრუნება</a>
-        </div>
+        <footer class="card-footer">
+            <a href="#" id="backButton" class="back-link">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                უკან დაბრუნება
+            </a>
+        </footer>
     </div>
 </div>
 
