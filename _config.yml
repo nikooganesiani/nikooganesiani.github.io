@@ -23,7 +23,7 @@ exclude:
 collections:
   products:
     output: true
-    permalink: /:path/
+    permalink: /products/:title/
 
 # Настройки по умолчанию для товаров
 defaults:
@@ -44,6 +44,3 @@ sitemap:
 # Локализация
 lang: "ka"
 locale: "ka_GE"
-
-
-include: [_products]
