@@ -12,43 +12,36 @@ const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 const products = catalog.products || [];
 
 products.forEach(product => {
-  // 1. Формируем блок характеристик (specs) для Jekyll
-  let specsYaml = "";
+  let specsYaml = "specs:\n";
   if (product.specs) {
-    specsYaml = "specs:\n";
     Object.entries(product.specs).forEach(([key, value]) => {
-      specsYaml += `  "${key}": "${value}"\n`; // Кавычки важны для корректного YAML
+      specsYaml += `  "${key}": "${value}"\n`;
     });
   }
 
-  // 2. Формируем список изображений
   let imagesYaml = "images:\n";
-  if (Array.isArray(product.images) && product.images.length > 0) {
-    product.images.forEach(img => {
-      imagesYaml += `  - "${img}"\n`;
-    });
-  } else {
-    // Если в JSON только одна старая строка image, превращаем её в массив
-    imagesYaml += `  - "${product.image}"\n`;
-  }
+  const imgs = product.images || [product.image];
+  imgs.forEach(img => {
+    imagesYaml += `  - "${img}"\n`;
+  });
 
-  // 3. Создаем контент файла
+  // УБРАЛИ permalink отсюда, чтобы не было конфликта с _config.yml
   const content = `---
 layout: product
 id: "${product.id}"
 sku: "${product.sku || product.id}"
 name: "${product.name}"
-brand: "${product.brand || 'ENKA'}"
+brand: "${product.brand || 'ENKA Electronics'}"
 price: "${product.price}"
 oldPrice: "${product.oldPrice || ''}"
-categories: ${JSON.stringify(product.categories || [])} 
 ${imagesYaml}
 ${specsYaml}
 description: "${product.description || ''}"
 longDescription: "${product.longDescription || product.description || ''}"
 warranty: "${product.warranty || '12 თვე'}"
-permalink: /${product.id}/
----
-`;
+categories: ${JSON.stringify(product.categories || [])}
+---`;
+
   fs.writeFileSync(path.join(productsDir, `${product.id}.md`), content);
+  console.log(`✅ File ready: ${product.id}.md`);
 });
