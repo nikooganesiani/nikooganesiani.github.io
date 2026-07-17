@@ -1,13 +1,18 @@
 {
   "products": [
     {
-      "id": "tiffanysmartscale",
+"id": "tiffanysmartscale",
+      "sku": "175429",
       "name": "ჭკვიანი სასწორი (Smart Scale)",
+      "brand": "Tiffany",
       "price": "39₾",
-      "image": "/img/products/scale.webp",
+      "oldPrice": "54₾",
+      "images": ["/img/products/scale.webp", "/img/products/scale_side.webp", "/img/products/scale_box.webp"],
       "categories": ["smarthome", "selfcare"],
       "description": "თქვენი სხეულის ანალიზი, 17 მაჩვენებელი, 180კგ დატვირთვა.",
-      "warranty": "გარანტია: 12 თვე"
+      "warranty": "12 თვე",
+      "specs": {
+        "ტიპი": "ჭკვიანი სასწორი", "მაქსიმალური წონა": "180 კგ", "კავშირი": "Bluetooth", "ელემენტის ტიპი": "AAA", "აპლიკაცია": "iOS / Android"
     },
     {
       "id": "/",
