@@ -29,7 +29,7 @@
         .header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.9);backdrop-filter:blur(40px);border-bottom:1px solid #e2e8f0}
         .header-content{max-width:1280px;margin:0 auto;padding:1rem 1.5rem}
         .header-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-        .logo-img{height:30px;width:auto;vertical-align: middle;transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);filter: grayscale(0) brightness(1);view-transition-name: main-logo}
+        .logo-img{height:30px;width:auto;vertical-align: middle;transition: all 1.0s cubic-bezier(0.4, 0, 0.2, 1);filter: grayscale(0) brightness(1);view-transition-name: main-logo}
     .logo:hover .logo-img {
     /* Фильтр превращает любой цвет в синий #2563eb */
     filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%);
@@ -38,6 +38,10 @@
 
 .logo:active .logo-img {
     transform: scale(0.96); /* Эффект нажатия */
+}
+    .logo-returning {
+    filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%) !important;
+    transform: scale(0.96) !important;
 }
         .search-box{position:relative;flex:1;max-width:400px;margin-left:auto}
         .search-box input{width:100%;padding:0.7rem 1rem 0.7rem 2.5rem;border:1px solid #e2e8f0;border-radius:2rem;font-size:0.9rem;background:#f1f5f9}
@@ -1138,6 +1142,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 checkWorkTime();
+    (function() {
+    const logoLink = document.querySelector('.logo');
+    const logoImg = document.querySelector('.logo-img');
+
+    if (!logoLink || !logoImg) return;
+
+    // 1. При клике на логотип запоминаем, что мы уходим со страницы в активном состоянии
+    logoLink.addEventListener('click', (e) => {
+        sessionStorage.setItem('logoTransition', 'true');
+    });
+
+    // 2. Когда загружается НОВАЯ страница
+    window.addEventListener('load', () => {
+        if (sessionStorage.getItem('logoTransition') === 'true') {
+            // Сначала отключаем анимацию перехода, чтобы поставить "синий" мгновенно
+            logoImg.style.transition = 'none';
+            logoImg.classList.add('logo-returning');
+
+            // Чистим флаг
+            sessionStorage.removeItem('logoTransition');
+
+            // Даем браузеру отрисовать один кадр (микро-задержка)
+            requestAnimationFrame(() => {
+                // Возвращаем плавный переход
+                logoImg.style.transition = 'all 0.6s cubic-bezier(0.2, 1, 0.2, 1)';
+                // Убираем класс — логотип сам плавно вернется к оригиналу
+                logoImg.classList.remove('logo-returning');
+            });
+        }
+    });
+})();
 </script>
 </body>
 </html>
