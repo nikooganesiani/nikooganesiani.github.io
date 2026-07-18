@@ -32,8 +32,9 @@
     * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
+    /* Убрано центрирование/флекс с main, чтобы не ломать расположение объектов */
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; }
-    main { flex: 1; display: flex; flex-direction: column; }
+    main { flex: 1; }
 
     /* Хедер (Header) */
     .header {
@@ -45,12 +46,11 @@
     .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     
     .logo-img {
-        height: 32px; width: auto; vertical-align: middle; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        height: 32px; width: auto; vertical-align: middle; transition: all 0.3s ease;
         filter: grayscale(0) brightness(1); view-transition-name: main-logo; transform-origin: center;
     }
     .logo:hover .logo-img { filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%); transform: translateY(-2px); }
     .logo:active .logo-img { transform: scale(0.92); }
-    .logo-returning { filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%) !important; transform: scale(0.96) !important; }
 
     /* Поиск */
     .search-box { position: relative; flex: 1; max-width: 420px; margin-left: auto; }
@@ -130,6 +130,42 @@
     .close-modal:hover { background: #fee2e2; color: #ef4444; transform: translateY(-1px); }
     .close-modal:active { transform: scale(0.97); }
 
+    /* ПРЕМИАЛЬНЫЙ ТЕМНЫЙ ДИЗАЙН ДЛЯ МОДАЛКИ СТАТУСА ЗАКАЗА */
+    #trackingModal .modal-content {
+        background: linear-gradient(145deg, #0f172a, #162032);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+    }
+    #trackingModal h3 { color: #ffffff; }
+    #trackingModal .tracking-input-wrapper svg { color: #64748b; }
+    #trackingModal .tracking-input-wrapper input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+    }
+    #trackingModal .tracking-input-wrapper input:focus {
+        border-color: #3b82f6; background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+    }
+    #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
+    #trackingModal .btn-submit { background: #2563eb; color: #ffffff; }
+    #trackingModal .btn-submit:hover { background: #3b82f6; box-shadow: 0 10px 20px -3px rgba(59, 130, 246, 0.3); }
+    #trackingModal .close-modal { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
+    #trackingModal .close-modal:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+    
+    /* Темный таймлайн */
+    .dark-timeline .timeline-line { background: rgba(255,255,255,0.1); }
+    .dark-timeline .timeline-dot-v { background: #1e293b; border-color: rgba(255,255,255,0.1); }
+    .dark-timeline .timeline-step-v.past .timeline-dot-v { background: #475569; border-color: #475569; }
+    .dark-timeline .timeline-step-v.past .timeline-line { background: #475569; }
+    .dark-timeline .timeline-step-v.current .timeline-dot-v { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2); }
+    .dark-timeline .timeline-date-v { color: #64748b; }
+    .dark-timeline .timeline-text-v { color: #94a3b8; }
+    .dark-timeline .timeline-step-v.current .timeline-text-v { color: #ffffff; }
+    .dark-timeline .timeline-step-v.current .timeline-date-v { color: #60a5fa; }
+    
+    .dark-spinner { border-color: rgba(255,255,255,0.1); border-top-color: #3b82f6; }
+
     /* Универсальные инпуты и кнопки */
     .input-field {
         width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 1.2rem;
@@ -148,7 +184,7 @@
     .btn-submit:active { transform: scale(0.96) !important; box-shadow: none; }
     .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none !important; }
 
-    /* Окно Трекинга */
+    /* Окно Трекинга - инпут */
     .tracking-input-wrapper { position: relative; margin-bottom: 1.2rem; }
     .tracking-input-wrapper svg { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
     .tracking-input-wrapper input { margin-bottom: 0; padding-left: 3.2rem; }
@@ -288,7 +324,7 @@
         </div>
     </div>
 
-    <!-- Модалка статуса заказа -->
+    <!-- Модалка статуса заказа (DARK MODE) -->
     <div class="modal" id="trackingModal">
         <div class="modal-content">
             <h3>შეკვეთის სტატუსი</h3>
@@ -298,7 +334,7 @@
             </div>
             <button id="trackingCheckBtn" class="btn-submit">შემოწმება</button>
             <div id="trackingResult" style="margin-top:1.5rem;display:none;"></div>
-            <div id="trackingLoading" style="display:none;text-align:center;margin:1.5rem 0;"><div class="spinner"></div><p style="color: #64748b; font-weight: 600;">იტვირთება...</p></div>
+            <div id="trackingLoading" style="display:none;text-align:center;margin:1.5rem 0;"><div class="spinner dark-spinner"></div><p style="color: #94a3b8; font-weight: 600;">იტვირთება...</p></div>
             <button class="close-modal" id="closeTrackingModal">დახურვა</button>
         </div>
     </div>
@@ -366,14 +402,27 @@
     tp();
     s.oninput=function(){if(this.value.length){if(act){act=0;clearTimeout(to);s.placeholder='';}ic.classList.add('rotated');}else{ic.classList.remove('rotated');if(!act){if(s.placeholder===''){del=0;ci=0;}act=1;tp();}}};
 
-    // Модалка контактов
-    const consultModal=document.getElementById('consultModal');
-    const closeConsultBtn=document.getElementById('closeConsultModal');
-    const consultBtn=document.getElementById('consultBtnHeader');
-    if(consultBtn) consultBtn.onclick=()=>consultModal.classList.add('active');
-    if(closeConsultBtn) closeConsultBtn.onclick=()=>consultModal.classList.remove('active');
+    // Общий обработчик закрытия ВСЕХ модалок при клике вне их области (на фон)
+    window.addEventListener('click', (e) => { 
+        const consultModal = document.getElementById('consultModal');
+        const trackingModal = document.getElementById('trackingModal');
+        const orderFormModal = document.getElementById('orderFormModal');
+        const orderConfirmModal = document.getElementById('orderConfirmModal');
+        
+        if (e.target === consultModal) consultModal.classList.remove('active'); 
+        if (e.target === trackingModal) trackingModal.classList.remove('active');
+        if (e.target === orderFormModal) orderFormModal.classList.remove('active');
+        if (e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
+    });
 
-    // Логика Поиска
+    // Модалка контактов
+    const consultModal = document.getElementById('consultModal');
+    const closeConsultBtn = document.getElementById('closeConsultModal');
+    const consultBtn = document.getElementById('consultBtnHeader');
+    if(consultBtn) consultBtn.onclick = () => consultModal.classList.add('active');
+    if(closeConsultBtn) closeConsultBtn.onclick = () => consultModal.classList.remove('active');
+
+    // Логика Поиска (Добавлена поддержка старой цены)
     (function(){
         let s = document.getElementById('searchInput');
         let ic = document.querySelector('.search-icon');
@@ -393,12 +442,17 @@
 
                 r.innerHTML = f.length ? f.map(p => {
                     let imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
+                    // Если есть старая цена - выводим ее
+                    let oldPriceHtml = p.oldPrice ? `<span style="text-decoration: line-through; color: #94a3b8; font-size: 0.85rem; font-weight: 600;">${p.oldPrice}</span>` : '';
+                    
                     return `
                     <div class="search-result-item" data-id="${p.id}">
                         <img src="${imgUrl}" class="search-result-img" onerror="this.src='/img/no-image.png'">
-                        <div>
-                            <div style="font-size:0.95rem; font-weight:700; color:#0f172a;">${p.name}</div>
-                            <div style="font-weight:800; color:#2563eb; font-size:1rem;">${p.price}</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-size:0.95rem; font-weight:700; color:#0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.name}</div>
+                            <div style="font-weight:900; color:#2563eb; font-size:1.05rem; display: flex; gap: 8px; align-items: baseline;">
+                                ${p.price} ${oldPriceHtml}
+                            </div>
                         </div>
                     </div>`;
                 }).join('') : `<div class="search-result-item" style="flex-direction:column; gap:8px; padding:2.5rem; text-align:center; color:#94a3b8; pointer-events:none;">
@@ -411,13 +465,13 @@
             }).catch(e => console.error(e));
         };
 
-        document.onclick = function(e) { if(!s.contains(e.target) && !r.contains(e.target)) { r.classList.remove('show'); } };
+        document.addEventListener('click', function(e) { if(!s.contains(e.target) && !r.contains(e.target)) { r.classList.remove('show'); } });
     })();
     
     // Крестик очистки поиска
     (function(){let inp=document.getElementById('searchInput');let clr=document.querySelector('.search-clear');if(!inp||!clr)return;inp.addEventListener('input',function(){if(this.value.length>0){clr.classList.add('show');}else{clr.classList.remove('show');}});clr.onclick=function(){inp.value='';inp.focus();clr.classList.remove('show');inp.dispatchEvent(new Event('input'));};})();
 
-    // Логика трекинга (Статус заказа)
+    // Логика трекинга (Статус заказа - DARK MODE)
     const trackingBtn = document.getElementById('trackingBtnHeader');
     const trackingModal = document.getElementById('trackingModal');
     const closeTrackingBtn = document.getElementById('closeTrackingModal');
@@ -470,14 +524,13 @@
             trackingLoading.style.display = 'none'; trackingResult.innerHTML = ''; trackingOrderId.focus();
         });
         closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
-        window.addEventListener('click', (e) => { if (e.target === trackingModal) trackingModal.classList.remove('active'); });
 
         trackingCheckBtn.addEventListener('click', async () => {
             const orderId = trackingOrderId.value.trim();
             if (!orderId) { alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.'); return; }
 
             trackingLoading.style.display = 'block'; trackingResult.style.display = 'none'; trackingResult.innerHTML = '';
-            trackingCheckBtn.disabled = true; trackingCheckBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
+            trackingCheckBtn.disabled = true; trackingCheckBtn.innerHTML = '<div class="spinner dark-spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
 
             try {
                 const response = await fetch(WORKER_URL_TRACKING, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: orderId }) });
@@ -486,7 +539,7 @@
                 trackingLoading.style.display = 'none'; trackingResult.style.display = 'block';
 
                 if (data.error || !data.data || data.data.length === 0) {
-                    trackingResult.innerHTML = `<div class="error"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
+                    trackingResult.innerHTML = `<div class="error" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
                     return;
                 }
 
@@ -532,15 +585,15 @@
                 });
 
                 trackingResult.innerHTML = `
-                    <div style="background: white; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
-                        <p style="font-size: 0.85rem; font-weight: 800; color: #64748b; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || orderId}</p>
+                    <div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);">
+                        <p style="font-size: 0.85rem; font-weight: 800; color: #94a3b8; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || orderId}</p>
                         <div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div>
-                        <div class="timeline-vertical">${timelineHtml}</div>
+                        <div class="timeline-vertical dark-timeline">${timelineHtml}</div>
                     </div>`;
 
             } catch (error) {
                 trackingLoading.style.display = 'none'; trackingResult.style.display = 'block';
-                trackingResult.innerHTML = `<div class="error"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა.</div>`;
+                trackingResult.innerHTML = `<div class="error" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა.</div>`;
             } finally {
                 trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება';
             }
@@ -586,7 +639,6 @@
     };
 
     if(closeOrderFormBtn) closeOrderFormBtn.addEventListener('click', () => orderFormModal.classList.remove('active'));
-    window.addEventListener('click', (e) => { if(e.target === orderFormModal) orderFormModal.classList.remove('active'); });
 
     // Форматирование телефона
     if(quickPhone) {
@@ -646,9 +698,8 @@
     };
 
     if(closeOrderConfirmBtn) closeOrderConfirmBtn.addEventListener('click', () => orderConfirmModal.classList.remove('active'));
-    window.addEventListener('click', (e) => { if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active'); });
 
-    // Универсальный обработчик (Оставляем рабочим для других форм на сайте, если есть)
+    // Универсальный обработчик (Оставляем рабочим для других возможных форм на сайте)
     function formatPhoneInput(input) {
         let value = input.value.replace(/\s/g, '');
         if (value.startsWith('+995')) value = value.substring(4);
@@ -680,21 +731,6 @@
         if (dot && hour >= 10 && hour < 22) dot.classList.add('status-online');
     }
     checkWorkTime();
-
-    // Анимация логотипа (Оставляем как было)
-    (function() {
-        const logoLink = document.querySelector('.logo');
-        const logoImg = document.querySelector('.logo-img');
-        if (!logoLink || !logoImg) return;
-        logoLink.addEventListener('click', () => sessionStorage.setItem('logoTransition', 'true'));
-        window.addEventListener('load', () => {
-            if (sessionStorage.getItem('logoTransition') === 'true') {
-                logoImg.style.transition = 'none'; logoImg.classList.add('logo-returning');
-                sessionStorage.removeItem('logoTransition');
-                requestAnimationFrame(() => { logoImg.style.transition = 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; logoImg.classList.remove('logo-returning'); });
-            }
-        });
-    })();
 </script>
 </body>
 </html>
