@@ -4,7 +4,7 @@ title: "მთავარი"
 ---
 
 <style>
-    /* Все ваши стили остаются без изменений */
+    /* Базовые стили */
     * {
         margin: 0;
         padding: 0;
@@ -15,79 +15,25 @@ title: "მთავარი"
         user-select: none;
     }
 
-    /* Убираем синее выделение у кликабельных элементов */
-    button,
-    .btn-order,
-    .btn-submit,
-    .close-modal,
-    .category-btn,
-    .reset-filters,
-    .select-trigger,
-
-    /* Разрешаем выделение текста в инпутах */
-    input,
-    textarea {
+    button, .btn-order, .btn-submit, .close-modal, .category-btn, .reset-filters, .select-trigger,
+    input, textarea {
         -webkit-user-select: text !important;
         user-select: text !important;
     }
 
-    /* КАСТОМНАЯ ПОЛОСА ПРОКРУТКИ */
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 10px; }
     
-    ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        border-radius: 10px;
-        transition: all 0.2s;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #1d4ed8, #1e40af);
-        cursor: pointer;
-    }
-    
-    * {
-        scrollbar-width: thin;
-        scrollbar-color: #2563eb #f1f5f9;
-    }
-    
-    html {
-        overflow-y: scroll;
-    }
-
-    body {
-        background: #f8fafc;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-    }
-
-    main {
-        flex: 1;
-    }
-    
-    .container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0rem 1.5rem;
-        animation: fadeIn 0.6s ease;
-    }
+    html { overflow-y: scroll; }
+    body { background: #f8fafc; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; }
+    .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
     /* КАТЕГОРИИ */
     .categories-bar {
         max-width: 1280px;
-        margin: 0.4rem auto 0;
-        margin-bottom: 0.4rem;
+        margin: 0.4rem auto 0.4rem;
         padding: 0 1.5rem;
         display: flex;
         justify-content: space-between;
@@ -97,12 +43,7 @@ title: "მთავარი"
         animation: slideDown 0.4s ease;
     }
     
-    .categories {
-        display: flex;
-        gap: 0.6rem;
-        flex-wrap: wrap;
-        padding: 0.3rem 0;
-    }
+    .categories { display: flex; gap: 0.6rem; flex-wrap: wrap; padding: 0.3rem 0; }
     
     .category-btn {
         background: white;
@@ -117,35 +58,11 @@ title: "მთავარი"
         display: flex;
         align-items: center;
         gap: 8px;
-        white-space: nowrap;
-        letter-spacing: 0.3px;
     }
     
-    .category-btn svg {
-        width: 18px;
-        height: 18px;
-        transition: transform 0.3s ease;
-    }
-    
-    .category-btn:hover {
-        background: #f8fafc;
-        border-color: #2563eb;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        color: #2563eb;
-    }
-    
-    .category-btn.active {
-        background: #2563eb;
-        color: white;
-        border-color: #2563eb;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-    }
-    
-    .category-btn.active svg {
-        color: white;
-    }
+    .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
+    .category-btn:hover { background: #f8fafc; border-color: #2563eb; transform: translateY(-2px); color: #2563eb; }
+    .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
 
     /* ФИЛЬТРЫ И СОРТИРОВКА */
     .filters-bar {
@@ -162,12 +79,7 @@ title: "მთავარი"
         animation: slideDown 0.4s ease;
     }
     
-    .filters {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
+    .filters { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
     
     .filter-group {
         display: flex;
@@ -177,32 +89,17 @@ title: "მთავარი"
         padding: 0.5rem 1.2rem;
         border-radius: 2rem;
         border: 1px solid #f1f5f9;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    .filter-group:hover {
-        border-color: #e2e8f0;
+    .filter-group:hover, .filter-group:focus-within {
+        background: white;
+        border-color: #2563eb;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
     }
     
-    .filter-group label {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-    
-    .filter-group input {
-        border: none;
-        background: transparent;
-        padding: 0.2rem;
-        font-size: 0.85rem;
-        font-weight: 700;
-        outline: none;
-        width: 60px;
-        color: #0f172a;
-    }
+    .filter-group label { font-size: 0.85rem; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; }
+    .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
     
     .reset-filters {
         background: #fef2f2;
@@ -213,28 +110,18 @@ title: "მთავარი"
         padding: 0.5rem 1.2rem;
         border-radius: 2rem;
         font-weight: 700;
-        transition: all 0.2s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: none;
         align-items: center;
         gap: 6px;
+        animation: fadeIn 0.3s ease;
     }
     
-    .reset-filters.show {
-        display: flex;
-    }
-    
-    .reset-filters:hover {
-        background: #fee2e2;
-        transform: scale(1.05);
-    }
+    .reset-filters.show { display: flex; }
+    .reset-filters:hover { background: #fee2e2; transform: translateY(-1px); }
 
     /* КАТАЛОГ */
-    .catalog {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 1.8rem;
-        margin-bottom: 2rem;
-    }
+    .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
 
     /* КАРТОЧКА ТОВАРА */
     .product-card {
@@ -251,11 +138,7 @@ title: "მთავარი"
         border: 1px solid #f1f5f9;
     }
     
-    .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        border-color: #e2e8f0;
-    }
+    .product-card:hover { border-color: #e2e8f0; transform: translateY(-4px); box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1); }
     
     .product-image-wrapper {
         position: relative;
@@ -273,21 +156,17 @@ title: "მთავარი"
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
-    .product-card:hover .product-image {
-        transform: scale(1.08);
+    /* ТРЮК: Увеличение только при наведении на кнопку заказа */
+    .product-card:has(.btn-order:hover) .product-image {
+        transform: scale(1.12);
     }
     
-    .product-info {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        background: #ffffff;
-    }
+    .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
+    /* Выравнивание кнопок: Фиксированная высота для названия (2 строки) */
     .product-name {
         font-size: 1.05rem;
         font-weight: 800;
@@ -295,6 +174,11 @@ title: "მთავარი"
         margin-bottom: 0.6rem;
         line-height: 1.4;
         letter-spacing: -0.3px;
+        height: 2.9rem; 
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
     }
     
     .product-description {
@@ -303,31 +187,22 @@ title: "მთავარი"
         line-height: 1.5;
         margin-bottom: 1.2rem;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clamp: 1; /* Сократил до 1 строки для лучшего выравнивания */
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
     
+    /* Выравнивание кнопок: Фиксированная высота для блока цены */
     .product-price-container {
         margin-bottom: 1.2rem;
         display: flex;
         flex-direction: column;
+        height: 3.5rem; 
+        justify-content: flex-end;
     }
 
-    .product-price {
-        font-size: 1.6rem;
-        font-weight: 900;
-        color: #2563eb;
-        letter-spacing: -1px;
-    }
-    
-    .old-price {
-        text-decoration: line-through;
-        color: #94a3b8;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: -2px;
-    }
+    .product-price { font-size: 1.6rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; line-height: 1; }
+    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
 
     .btn-order {
         background: #0f172a;
@@ -343,91 +218,46 @@ title: "მთავარი"
         align-items: center;
         justify-content: center;
         gap: 8px;
+        margin-top: auto; /* Всегда внизу */
     }
     
-    .btn-order:hover {
-        background: #2563eb;
-        transform: scale(1.02);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2);
-    }
+    .btn-order:hover { background: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
 
-    /* СКЕЛЕТОН */
-    .skeleton-card { background: white; border-radius: 2rem; overflow: hidden; border: 1px solid #f1f5f9; }
-    .skeleton-img { height: 240px; background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-    .skeleton-text { padding: 1.5rem; }
-    .skeleton-title { width: 80%; height: 20px; background: #f1f5f9; border-radius: 4px; margin-bottom: 10px; }
-    .skeleton-price { width: 40%; height: 30px; background: #f1f5f9; border-radius: 4px; margin-bottom: 20px; }
-    .skeleton-btn { width: 100%; height: 50px; background: #f1f5f9; border-radius: 1.2rem; }
-
-    /* СТРЕЛКИ СЛАЙДЕРА SVG */
+    /* Стрелки */
     .slider-arrow {
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        top: 50%; transform: translateY(-50%);
         background: rgba(255, 255, 255, 0.9);
-        border: none;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 10;
-        color: #0f172a;
-        transition: all 0.2s;
-        opacity: 0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: none; width: 36px; height: 36px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; transition: all 0.2s;
     }
-
     .product-image-wrapper:hover .slider-arrow { opacity: 1; }
-    .slider-arrow:hover { background: white; color: #2563eb; transform: translateY(-50%) scale(1.1); }
-    .arrow-prev { left: 12px; }
-    .arrow-next { right: 12px; }
+    .slider-arrow:hover { color: #2563eb; transform: translateY(-50%) scale(1.1); background: white; }
+    .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    /* КАСТОМНЫЙ СЕЛЕКТ */
+    /* Кастомный селект */
     .custom-select { position: relative; min-width: 220px; }
     .select-trigger {
-        background: white;
-        border: 1px solid #e2e8f0;
-        padding: 0.7rem 1.2rem;
-        border-radius: 2rem;
-        font-size: 0.85rem;
-        cursor: pointer;
-        font-weight: 700;
-        color: #0f172a;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.2s;
+        background: white; border: 1px solid #e2e8f0;
+        padding: 0.7rem 1.2rem; border-radius: 2rem;
+        font-size: 0.85rem; cursor: pointer; font-weight: 700; color: #0f172a;
+        display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
     }
-    .select-trigger:hover { border-color: #cbd5e1; }
+    .select-trigger:hover { border-color: #2563eb; background: #f8fafc; }
     .select-options {
-        position: absolute;
-        top: calc(100% + 8px);
-        left: 0; right: 0;
-        background: white;
-        border-radius: 1.2rem;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        z-index: 100;
-        display: none;
-        border: 1px solid #f1f5f9;
-        overflow: hidden;
+        position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+        background: white; border-radius: 1.2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        z-index: 100; display: none; border: 1px solid #f1f5f9; overflow: hidden;
+        animation: slideDown 0.2s ease;
     }
     .custom-select.open .select-options { display: block; }
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
     .select-option.selected { color: #2563eb; background: #f0f7ff; }
 
-    @media (max-width: 640px) {
-        .filters-bar { flex-direction: column; align-items: stretch; }
-        .categories-bar { padding: 0 1rem; }
-        .slider-arrow { opacity: 0.9; }
-    }
-
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 </style>
 
 <div class="categories-bar">
@@ -469,9 +299,9 @@ title: "მთავარი"
             <div class="filters">
                 <div class="filter-group">
                     <label>ფასი:</label>
-                    <input type="number" id="minPrice" placeholder="დან">
+                    <input type="number" id="minPrice" placeholder="დან" min="0">
                     <span style="color: #cbd5e1;">—</span>
-                    <input type="number" id="maxPrice" placeholder="მდე">
+                    <input type="number" id="maxPrice" placeholder="მდე" min="0">
                 </div>
                 <button class="reset-filters" id="resetFilters">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
@@ -499,6 +329,7 @@ title: "მთავარი"
         </div>
 
         <div class="catalog" id="catalogContainer">
+            <!-- Скелетоны при загрузке -->
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
@@ -521,10 +352,21 @@ title: "მთავარი"
         const products = window.allProducts || [];
         let filtered = [...products];
         
+        // Показываем/скрываем кнопку сброса
+        if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
+            resetBtn.classList.add('show');
+        } else {
+            resetBtn.classList.remove('show');
+        }
+
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
         
+        // Валидация: убираем минусовые значения
+        if (minPriceInput.value < 0) minPriceInput.value = 0;
+        if (maxPriceInput.value < 0) maxPriceInput.value = 0;
+
         const minPrice = parseInt(minPriceInput.value);
         if (!isNaN(minPrice)) filtered = filtered.filter(p => p.priceValue >= minPrice);
         const maxPrice = parseInt(maxPriceInput.value);
@@ -567,7 +409,7 @@ title: "მთავარი"
                      ontouchend="handleSwipe('${product.id}', event)">
                     ${discountBadge}
                     <a href="product/${product.id}/" style="display:contents;">
-                        <img class="product-image" id="img-${product.id}" src="${imgs[0] || ''}" alt="${product.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23cbd5e1%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%222%22 y=%222%22 width=%2220%22 height=%2220%22 rx=%222.18%22 ry=%222.18%22%3E%3C/rect%3E%3Cline x1=%227%22 y1=%222%22 x2=%227%22 y2=%2222%22%3E%3C/line%3E%3Cline x1=%2217%22 y1=%222%22 x2=%2217%22 y2=%2222%22%3E%3C/line%3E%3Cline x1=%222%22 y1=%2212%22 x2=%2222%22 y2=%2212%22%3E%3C/line%3E%3C/svg%3E'">
+                        <img class="product-image" id="img-${product.id}" src="${imgs[0] || ''}" alt="${product.name}" onerror="this.src='/img/no-image.png'">
                     </a>
                     ${hasMultipleImages ? `
                         <button class="slider-arrow arrow-prev" onclick="changeCardImg('${product.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
@@ -616,9 +458,11 @@ title: "მთავარი"
     sortSelect.addEventListener('change', renderProducts);
     
     resetBtn.addEventListener('click', function() {
-        minPriceInput.value = ''; maxPriceInput.value = ''; sortSelect.value = 'name-asc'; currentCategory = 'all';
-        categoryBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.category === 'all'));
+        minPriceInput.value = ''; 
+        maxPriceInput.value = ''; 
+        sortSelect.value = 'name-asc';
         document.getElementById('selectedValue').textContent = 'სახელი (ა-ჰ)';
+        document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
         renderProducts();
     });
     
@@ -652,6 +496,8 @@ title: "მთავარი"
                 document.getElementById('selectedValue').textContent = option.textContent;
                 sortSelect.value = value;
                 sortSelect.dispatchEvent(new Event('change'));
+                document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
                 customSelect.classList.remove('open');
             });
         });
