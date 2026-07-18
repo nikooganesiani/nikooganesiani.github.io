@@ -35,8 +35,9 @@ title: "მთავარი"
 
     /* КАТЕГОРИИ И БОКОВОЕ МЕНЮ */
     .categories-bar {
-        max-width: 1280px; margin: 0.4rem auto 0.4rem; padding: 0 1.5rem;
+        max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;
         display: flex; align-items: center; gap: 1rem; animation: slideDown 0.4s ease;
+        position: relative; z-index: 20; /* Фикс: поднимаем блок над фильтрами */
     }
 
     .menu-btn {
@@ -59,9 +60,9 @@ title: "მთავარი"
     }
 
     .categories { 
-        display: flex; gap: 0.6rem; flex-wrap: nowrap; padding: 0.3rem 0; 
+        display: flex; gap: 0.6rem; flex-wrap: nowrap; 
+        padding: 1.2rem 0; /* Фикс: увеличенный паддинг не дает обрезать тень от активной кнопки */
         overflow-x: auto; scroll-behavior: smooth;
-        /* Скрытие скроллбара для горизонтального меню */
         -ms-overflow-style: none; scrollbar-width: none;
     }
     .categories::-webkit-scrollbar { display: none; }
@@ -71,28 +72,32 @@ title: "მთავარი"
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b;
         display: flex; align-items: center; gap: 8px; outline: none;
-        white-space: nowrap; flex-shrink: 0; /* Не даем тексту съезжать */
+        white-space: nowrap; flex-shrink: 0;
     }
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
     .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; }
     .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
     .category-btn:active { transform: scale(0.96); }
 
-    /* ОВЕРЛЕЙ И САЙДБАР МЕНЮ */
+    /* ОВЕРЛЕЙ И СОВРЕМЕННОЕ ПЛАВАЮЩЕЕ САЙДБАР МЕНЮ */
     .full-menu-overlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(3px);
-        z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
+        z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.4s ease;
     }
     .full-menu-overlay.active { opacity: 1; visibility: visible; }
     
     .full-menu-sidebar {
-        position: fixed; top: 0; left: -320px; width: 320px; max-width: 85vw; height: 100%;
-        background: #ffffff; z-index: 9999; box-shadow: 20px 0 25px -5px rgba(0,0,0,0.1);
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: fixed; top: 1rem; left: 1rem; width: 320px; max-width: calc(100vw - 2rem); height: calc(100vh - 2rem);
+        background: #ffffff; z-index: 9999; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        border-radius: 1.5rem;
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
         display: flex; flex-direction: column; overflow: hidden;
+        transform: translateX(-120%) scale(0.95); opacity: 0; pointer-events: none;
     }
-    .full-menu-sidebar.active { transform: translateX(320px); }
+    .full-menu-sidebar.active { 
+        transform: translateX(0) scale(1); opacity: 1; pointer-events: auto; 
+    }
     
     .sidebar-header {
         padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;
@@ -127,7 +132,7 @@ title: "მთავარი"
     /* ФИЛЬТРЫ */
     .filters-bar {
         display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
-        margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
+        margin-top: -0.2rem; margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
         position: relative; z-index: 10;
     }
@@ -142,7 +147,7 @@ title: "მთავარი"
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 50px; color: #0f172a; text-align: center; }
     
-    /* КНОПКА СБРОСА - КРУГЛАЯ (В КОНЦЕ) */
+    /* КНОПКА СБРОСА */
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
         display: flex; align-items: center; justify-content: center;
@@ -214,7 +219,6 @@ title: "მთავარი"
     .btn-order:hover { background: #2563eb; }
     .btn-order:active { transform: scale(0.96); }
 
-    /* СТРЕЛКИ СЛАЙДЕРА - ПОЛНАЯ ИНТЕРАКТИВНОСТЬ */
     .slider-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
         background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 38px; height: 38px;
@@ -263,8 +267,11 @@ title: "მთავარი"
         .reset-filters.show { height: 36px; width: 36px; }
     }
 
+    /* АНИМАЦИИ */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes emptyPop { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 </style>
 
 <div class="categories-bar">
@@ -346,7 +353,7 @@ title: "მთავარი"
     </div>
 </main>
 
-<!-- Overlay и Боковое меню -->
+<!-- Overlay и Плавающее Боковое меню -->
 <div class="full-menu-overlay" id="menuOverlay">
     <div class="full-menu-sidebar" id="menuSidebar">
         <div class="sidebar-header">
@@ -472,7 +479,6 @@ title: "მთავარი"
                 const mainBtn = document.querySelector(`.category-btn[data-category="${cat}"]`);
                 if (mainBtn) {
                     mainBtn.click();
-                    // Скроллим основную панель к выбранной категории
                     mainBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }
             }
@@ -508,9 +514,12 @@ title: "მთავარი"
         
         if (filtered.length === 0) {
             container.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+                <div style="grid-column:1/-1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3; animation: floatIcon 3s ease-in-out infinite;">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
+                    </svg>
                     <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
+                    <div style="font-size:0.95rem; font-weight:500; color:#94a3b8; margin-top:0.5rem;">სცადეთ სხვა ფილტრი ან კატეგორია</div>
                 </div>`;
             return;
         }
