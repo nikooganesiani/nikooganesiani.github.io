@@ -7,17 +7,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="view-transition" content="same-origin">
     <title>{% if page.title %}{{ page.title }} – ENKA Electronics{% else %}ENKA Electronics{% endif %}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 <style>
-    /* Отключаем стандартное мерцание всей страницы */
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-        animation-duration: 0.4s;
-    }
-
     /* Глобальные настройки (App-Feel) */
     * {
         margin: 0; padding: 0; box-sizing: border-box;
@@ -32,7 +25,6 @@
     * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
-    /* Убрано центрирование содержимого main */
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; }
     main { flex: 1; } 
 
@@ -45,29 +37,47 @@
     .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
     .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     
+    /* ПРЕМИАЛЬНЫЙ КРУГЛЫЙ ЛОГОТИП */
     .logo-img {
-        height: 32px; width: auto; vertical-align: middle; 
-        filter: grayscale(0) brightness(1); view-transition-name: main-logo; transform-origin: center;
-        transition: all 0.3s ease;
+        height: 44px; width: 44px; /* Круглый размер */
+        border-radius: 50%; /* Идеальный круг */
+        object-fit: cover;
+        vertical-align: middle; 
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08); /* Легкая тень */
+        background: #ffffff;
     }
-    .logo:hover .logo-img { filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%); transform: translateY(-2px); }
-    .logo:active .logo-img { transform: scale(0.92); }
+    .logo:hover .logo-img { 
+        transform: translateY(-2px) scale(1.05); 
+        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.15); /* Тень усиливается при парении */
+    }
+    .logo:active .logo-img { 
+        transform: scale(0.95); 
+        box-shadow: 0 2px 5px -2px rgba(0,0,0,0.1); 
+    }
 
     /* Поиск */
     .search-box { position: relative; flex: 1; max-width: 420px; margin-left: auto; }
     .search-box input {
-        width: 100%; padding: 0.8rem 1.2rem 0.8rem 2.8rem;
+        width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem;
         border: 1px solid transparent; border-radius: 2rem; font-size: 0.95rem; font-weight: 500;
         background: #f1f5f9; color: #0f172a; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         outline: none;
     }
     .search-box input:focus { background: white; border-color: #2563eb; box-shadow: 0 4px 15px rgba(37,99,235,0.08); }
     .search-box input::placeholder { color: #94a3b8; font-weight: 500; }
+    
+    /* Анимация Лупы в поиске */
     .search-icon {
-        position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-        width: 18px; height: 18px; color: #64748b; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%);
+        width: 18px; height: 18px; color: #94a3b8; pointer-events: none; 
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .search-icon.rotated { transform: translateY(-50%) rotate(90deg); color: #2563eb; }
+    .search-icon.active { 
+        color: #2563eb; 
+        transform: translateY(-50%) scale(1.15) rotate(-3deg); /* Легкий наклон и зум */
+        filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); /* Премиальное свечение */
+    }
 
     /* Кнопки в хедере (ПРЕМИАЛЬНЫЕ) */
     .header-right { display: flex; align-items: center; gap: 0.8rem; }
@@ -142,13 +152,10 @@
     #trackingModal h3 { color: #ffffff; }
     #trackingModal .tracking-input-wrapper svg { color: #64748b; }
     #trackingModal .tracking-input-wrapper input {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #ffffff;
+        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff;
     }
     #trackingModal .tracking-input-wrapper input:focus {
-        border-color: #3b82f6; background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        border-color: #3b82f6; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
     }
     #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
     
@@ -278,6 +285,9 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .error { color: #ef4444; background: #fef2f2; padding: 1rem; border-radius: 1.2rem; margin: 10px 0; font-weight: 600; font-size: 0.9rem; text-align: center; border: 1px solid #fee2e2; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
+    /* Скрытие логотипа в футере */
+    footer .logo, footer .logo-img, footer img[src*="logo"] { display: none !important; }
+
     /* Футер */
     footer { text-align: center; padding: 2.5rem 1.5rem; margin-top: auto; background: white; border-top: 1px solid #f1f5f9; }
     .footer-content { max-width: 1280px; margin: 0 auto; }
@@ -329,7 +339,7 @@
                 </a>
                 <a href="mailto:enka.electronics.ge@gmail.com" class="contact-item">
                     <div class="contact-icon-box" style="color: #ea4335; background: #fee2e2;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
-                    <div><div class="contact-label">ელ. ფოსტა</div><div class="contact-value">ელ. ფოსტის მიწერა</div></div>
+                    <div><div class="contact-label">ელ. ფოსტა</div><div class="contact-value" style="font-size: 0.95rem;">enka.electronics.ge<br>@gmail.com</div></div>
                 </a>
             </div>
             <button class="close-modal" id="closeConsultModal">დახურვა</button>
@@ -405,12 +415,32 @@
     </div>
 
 <script>
+    // Замена старой иконки поиска на премиальную SVG-лупу
+    document.addEventListener("DOMContentLoaded", () => {
+        const oldIcon = document.querySelector('.search-icon');
+        if (oldIcon && oldIcon.tagName === 'IMG') {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("class", "search-icon");
+            svg.setAttribute("width", "18");
+            svg.setAttribute("height", "18");
+            svg.setAttribute("viewBox", "0 0 24 24");
+            svg.setAttribute("fill", "none");
+            svg.setAttribute("stroke", "currentColor");
+            svg.setAttribute("stroke-width", "2.5");
+            svg.setAttribute("stroke-linecap", "round");
+            svg.setAttribute("stroke-linejoin", "round");
+            svg.innerHTML = '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>';
+            oldIcon.parentNode.replaceChild(svg, oldIcon);
+        }
+    });
+
     // Управление плавным открытием/закрытием модалок
     window.openAppModal = function(id) {
         const m = document.getElementById(id);
         if(!m) return;
         m.style.display = 'flex';
-        m.offsetHeight; // force reflow
+        m.offsetHeight; // Принудительная отрисовка для запуска анимации
         m.classList.add('active');
         document.body.style.overflow = 'hidden';
     };
@@ -420,7 +450,7 @@
         if(!m) return;
         m.classList.remove('active');
         document.body.style.overflow = '';
-        setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); // 400ms = время CSS-анимации
+        setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); // Ожидание окончания fadeOut
     };
 
     // Закрытие всех модалок при клике на прозрачный фон
@@ -430,15 +460,36 @@
         }
     });
 
-    // Анимация плейсхолдера поиска со случайного слова
+    // Анимация плейсхолдера поиска (Начинается всегда со случайного слова)
     const s = document.getElementById('searchInput');
     const ic = document.querySelector('.search-icon');
     const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
-    // Выбираем случайное слово при инициализации
     let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
-    const tp=()=>{if(!s||!act)return;let cw=w[wi];if(del){ci--;s.placeholder=cw.substring(0,ci);if(ci===0){del=0;wi=(wi+1)%w.length;to=setTimeout(tp,500);}else to=setTimeout(tp,30);}else{ci++;s.placeholder=cw.substring(0,ci);if(ci===cw.length){del=1;to=setTimeout(tp,2500);}else to=setTimeout(tp,80);}};
+    
+    const tp = () => {
+        if(!s||!act) return;
+        let cw = w[wi];
+        if(del){
+            ci--; s.placeholder = cw.substring(0,ci);
+            if(ci===0){ del=0; wi=(wi+1)%w.length; to=setTimeout(tp,500); } else to=setTimeout(tp,30);
+        } else {
+            ci++; s.placeholder = cw.substring(0,ci);
+            if(ci===cw.length){ del=1; to=setTimeout(tp,2500); } else to=setTimeout(tp,80);
+        }
+    };
     tp();
-    s.oninput=function(){if(this.value.length){if(act){act=0;clearTimeout(to);s.placeholder='';}ic.classList.add('rotated');}else{ic.classList.remove('rotated');if(!act){if(s.placeholder===''){del=0;ci=0;}act=1;tp();}}};
+
+    s.oninput = function() {
+        if(this.value.length){
+            if(act){ act=0; clearTimeout(to); s.placeholder=''; }
+            const dynIcon = document.querySelector('.search-icon');
+            if(dynIcon) dynIcon.classList.add('active');
+        } else {
+            const dynIcon = document.querySelector('.search-icon');
+            if(dynIcon) dynIcon.classList.remove('active');
+            if(!act){ if(s.placeholder===''){del=0; ci=0;} act=1; tp(); }
+        }
+    };
 
     // Модалка контактов
     const closeConsultBtn = document.getElementById('closeConsultModal');
@@ -449,16 +500,13 @@
     // Логика Поиска (со старой ценой)
     (function(){
         let s = document.getElementById('searchInput');
-        let ic = document.querySelector('.search-icon');
         let r = document.createElement('div');
         if(!s) return;
         r.className = 'search-results';
         s.parentNode.appendChild(r);
 
-        s.oninput = function() {
+        s.addEventListener('input', function() {
             let q = this.value.trim();
-            if(q.length > 0) { ic && ic.classList.add('rotated'); } else { ic && ic.classList.remove('rotated'); }
-
             if(!q) { r.innerHTML = ''; r.classList.remove('show'); return; }
 
             fetch('/catalog.json').then(res => res.json()).then(d => {
@@ -466,7 +514,6 @@
 
                 r.innerHTML = f.length ? f.map(p => {
                     let imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
-                    // Добавляем старую цену, если она есть
                     let oldPriceHtml = p.oldPrice ? `<span style="text-decoration: line-through; color: #94a3b8; font-size: 0.85rem; font-weight: 600;">${p.oldPrice}</span>` : '';
                     
                     return `
@@ -487,7 +534,7 @@
                 r.classList.add('show');
                 document.querySelectorAll('.search-result-item[data-id]').forEach(el => { el.onclick = () => { location.href = '/product/' + el.dataset.id.toLowerCase() + '/'; }; });
             }).catch(e => console.error(e));
-        };
+        });
 
         document.addEventListener('click', function(e) { if(!s.contains(e.target) && !r.contains(e.target)) { r.classList.remove('show'); } });
     })();
@@ -762,34 +809,6 @@
         if (dot && hour >= 10 && hour < 22) dot.classList.add('status-online');
     }
     checkWorkTime();
-
-    // Анимация логотипа (Сохранение нажатого состояния при переходе по страницам)
-    (function() {
-        const logoLink = document.querySelector('.logo');
-        if (!logoLink) return;
-        logoLink.addEventListener('click', () => sessionStorage.setItem('logoTransition', 'true'));
-        window.addEventListener('load', () => {
-            if (sessionStorage.getItem('logoTransition') === 'true') {
-                const logoImg = document.querySelector('.logo-img');
-                if (logoImg) {
-                    // Стартуем в "зажатом" и "активном" состоянии
-                    logoImg.style.transition = 'none';
-                    logoImg.style.transform = 'scale(0.92)';
-                    logoImg.style.filter = 'invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%)';
-                    
-                    // Плавно отпускаем пружинку
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            logoImg.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
-                            logoImg.style.transform = 'scale(1) translateY(0)';
-                            logoImg.style.filter = 'grayscale(0) brightness(1)';
-                        });
-                    });
-                }
-                sessionStorage.removeItem('logoTransition');
-            }
-        });
-    })();
 </script>
 </body>
 </html>
