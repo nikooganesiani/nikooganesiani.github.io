@@ -11,6 +11,12 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 <style>
+    /* Отключаем стандартное мерцание всей страницы */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.4s;
+    }
+
     /* Глобальные настройки (App-Feel) */
     * {
         margin: 0; padding: 0; box-sizing: border-box;
@@ -18,76 +24,77 @@
         -webkit-tap-highlight-color: transparent;
     }
     
+    /* 1. ПРЕМИАЛЬНЫЙ СУПЕР-СКРОЛЛБАР (macOS Style) */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+    ::-webkit-scrollbar-thumb { 
+        background: rgba(148, 163, 184, 0.4); 
+        border-radius: 10px; 
+        border: 2px solid transparent; 
+        background-clip: padding-box; 
+        transition: background 0.3s;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.7); border: 2px solid transparent; background-clip: padding-box; }
+    * { scrollbar-width: thin; scrollbar-color: rgba(148, 163, 184, 0.5) transparent; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; }
     main { flex: 1; } 
 
-    /* Хедер (Header) */
+    /* ========================================= */
+    /* ХЕДЕР (УМНЫЙ АДАПТИВ)                     */
+    /* ========================================= */
     .header {
         position: sticky; top: 0; z-index: 100;
         background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(226, 232, 240, 0.6); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
     }
-    .header-content { max-width: 1280px; margin: 0 auto; padding: 1rem 1.5rem; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
+    .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; }
     
-    /* ПРЕМИАЛЬНЫЙ КРУГЛЫЙ ЛОГОТИП */
+    /* ЛЕВАЯ ЧАСТЬ: Логотип и Навигация */
+    .header-left { display: flex; align-items: center; gap: 1.2rem; }
+    
     .logo-img {
-        height: 44px; width: 44px; /* Круглый размер */
-        border-radius: 50%; /* Идеальный круг */
-        object-fit: cover;
-        vertical-align: middle; 
+        height: 44px; width: 44px; border-radius: 50%; object-fit: cover; vertical-align: middle; 
         transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08); /* Легкая тень */
-        background: #ffffff;
+        box-shadow: 0 4px 10px -2px rgba(0,0,0,0.08); background: #ffffff;
     }
-    .logo:hover .logo-img { 
-        transform: translateY(-2px) scale(1.05); 
-        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.15); /* Тень усиливается при парении */
-    }
-    .logo:active .logo-img { 
-        transform: scale(0.95); 
-        box-shadow: 0 2px 5px -2px rgba(0,0,0,0.1); 
-    }
+    .logo:hover .logo-img { transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 16px -4px rgba(0,0,0,0.15); }
+    .logo:active .logo-img { transform: scale(0.95); box-shadow: 0 2px 5px -2px rgba(0,0,0,0.1); }
 
-    /* Поиск */
-    .search-box { position: relative; flex: 1; max-width: 420px; margin-left: auto; }
+    .nav-btn-header { 
+        display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; 
+        padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #0f172a; cursor: pointer; 
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03); outline: none; 
+    }
+    .nav-btn-header:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); }
+    .nav-btn-header:active { transform: scale(0.96); }
+    .nav-burger-icon { width: 20px; height: 20px; }
+
+    /* ЦЕНТР: Поиск */
+    .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; }
+    .search-box { position: relative; width: 100%; }
     .search-box input {
         width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem;
         border: 1px solid transparent; border-radius: 2rem; font-size: 0.95rem; font-weight: 500;
-        background: #f1f5f9; color: #0f172a; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        outline: none;
+        background: #f1f5f9; color: #0f172a; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
     }
     .search-box input:focus { background: white; border-color: #2563eb; box-shadow: 0 4px 15px rgba(37,99,235,0.08); }
     .search-box input::placeholder { color: #94a3b8; font-weight: 500; }
     
-    /* Анимация Лупы в поиске */
-    .search-icon {
-        position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%);
-        width: 18px; height: 18px; color: #94a3b8; pointer-events: none; 
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .search-icon.active { 
-        color: #2563eb; 
-        transform: translateY(-50%) scale(1.15) rotate(-3deg); /* Легкий наклон и зум */
-        filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); /* Премиальное свечение */
-    }
+    .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #94a3b8; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); }
 
-    /* Кнопки в хедере (ПРЕМИАЛЬНЫЕ) */
+    /* ПРАВАЯ ЧАСТЬ: Кнопки */
     .header-right { display: flex; align-items: center; gap: 0.8rem; }
+    .desktop-actions { display: flex; gap: 0.8rem; }
     
     .tracking-btn-header {
         background: #ffffff; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem;
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
-        display: flex; align-items: center; gap: 6px; outline: none;
-        box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03);
+        display: flex; align-items: center; justify-content: center; gap: 6px; outline: none; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03);
     }
     .tracking-btn-header:hover { border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); }
     .tracking-btn-header:active { transform: scale(0.96); }
@@ -95,11 +102,17 @@
     .consult-btn-header {
         background: #ffffff; color: #d97706; border: 1px solid #fde68a; padding: 0.6rem 1.2rem;
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
-        box-shadow: 0 2px 8px -2px rgba(245, 158, 11, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; outline: none; box-shadow: 0 2px 8px -2px rgba(245, 158, 11, 0.05);
     }
     .consult-btn-header:hover { border-color: #fcd34d; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.15); }
     .consult-btn-header:active { transform: scale(0.96); }
+
+    /* ЭЛЕМЕНТЫ МОБИЛЬНОГО ПОИСКА */
+    .mobile-search-toggle { display: none; background: transparent; border: none; padding: 8px; color: #0f172a; margin-right: -8px; cursor: pointer; outline: none; }
+    .mobile-search-toggle svg { width: 22px; height: 22px; }
+    .close-search-btn { display: none; background: transparent; border: none; color: #64748b; padding: 8px; margin-left: -8px; cursor: pointer; outline: none; }
+    .close-search-btn svg { width: 24px; height: 24px; }
+    .mobile-actions-row { display: none; }
 
     /* Выпадающий список поиска */
     .search-results {
@@ -109,15 +122,50 @@
         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); max-height: 400px; overflow-y: auto; padding: 0.5rem;
     }
     .search-results.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-    .search-result-item {
-        display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer;
-        border-radius: 1rem; border-bottom: none; transition: all 0.2s;
-    }
+    .search-result-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer; border-radius: 1rem; transition: all 0.2s; }
     .search-result-item:hover { background: #f8fafc; transform: translateX(4px); }
     .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: white; border: 1px solid #f1f5f9; padding: 2px; }
     .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
     .search-clear.show { display: block; }
     .search-clear:hover { color: #ef4444; }
+
+    /* АДАПТИВ ХЕДЕРА */
+    @media (max-width: 860px) {
+        .nav-btn-text { display: none; }
+        .nav-btn-header { padding: 0.6rem; border-radius: 50%; }
+    }
+    @media (max-width: 640px) {
+        .header-content { padding: 0.8rem 1rem; }
+        .header-main-layout { gap: 0; }
+        .header-left { flex: 1; justify-content: flex-start; }
+        
+        /* Иконка меню слева */
+        .nav-btn-header { background: transparent; border: none; box-shadow: none; padding: 8px; margin-left: -8px; }
+        .nav-btn-header:hover { background: rgba(0,0,0,0.05); transform: none; box-shadow: none; }
+        
+        /* Круглый Логотип по центру */
+        .logo { position: absolute; left: 50%; transform: translateX(-50%); }
+        .logo:hover .logo-img { transform: scale(1.05); } /* убираем translateY для центр.позиции */
+        
+        /* Скрытие ПК элементов */
+        .desktop-actions { display: none; }
+        .mobile-search-toggle { display: block; }
+        
+        /* Вторая строка с кнопками для мобильных */
+        .mobile-actions-row { display: flex; width: 100%; gap: 0.6rem; margin-top: 1rem; }
+        .mobile-actions-row button { flex: 1; justify-content: center; }
+
+        /* Всплывающий мобильный поиск поверх хедера */
+        .header-center { 
+            position: absolute; top: 0; left: -1rem; right: -1rem; height: 100%; 
+            background: rgba(255, 255, 255, 0.98); z-index: 20; 
+            display: flex; align-items: center; padding: 0 1rem; gap: 10px;
+            opacity: 0; pointer-events: none; transform: translateY(-5px) scale(0.98);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .header-center.active { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        .close-search-btn { display: block; }
+    }
 
     /* Модальные окна (БЕЛЫЙ BLUR + АНИМАЦИИ) */
     .modal, .consult-modal {
@@ -143,6 +191,23 @@
     .close-modal:hover { background: #fee2e2; color: #ef4444; transform: translateY(-1px); }
     .close-modal:active { transform: scale(0.97); }
 
+    /* Карточки Навигации (Категорий) */
+    .nav-cat-card {
+        display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+        padding: 1.2rem 0.5rem; background: #f8fafc; border: 1px solid #f1f5f9;
+        border-radius: 1.5rem; text-decoration: none; color: #1e293b; font-weight: 700; font-size: 0.85rem;
+        text-align: center; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); outline: none;
+    }
+    .nav-cat-card:hover { background: white; border-color: #2563eb; transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(37,99,235,0.15); color: #2563eb; }
+    .nav-cat-card:active { transform: scale(0.95); }
+    .nav-cat-icon {
+        width: 44px; height: 44px; background: white; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: #64748b; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: all 0.3s;
+    }
+    .nav-cat-card:hover .nav-cat-icon { background: #2563eb; color: white; }
+    .nav-cat-icon svg { width: 22px; height: 22px; }
+
     /* ПРЕМИАЛЬНЫЙ ТЕМНЫЙ ДИЗАЙН ДЛЯ МОДАЛКИ СТАТУСА ЗАКАЗА */
     #trackingModal .modal-content {
         background: linear-gradient(145deg, #0f172a, #162032);
@@ -151,23 +216,13 @@
     }
     #trackingModal h3 { color: #ffffff; }
     #trackingModal .tracking-input-wrapper svg { color: #64748b; }
-    #trackingModal .tracking-input-wrapper input {
-        background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff;
-    }
-    #trackingModal .tracking-input-wrapper input:focus {
-        border-color: #3b82f6; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-    }
+    #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; }
+    #trackingModal .tracking-input-wrapper input:focus { border-color: #3b82f6; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
     #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
-    
-    /* Новая белая кнопка в трекинге */
-    #trackingModal .btn-submit { 
-        background: #ffffff; color: #0f172a; border: 1px solid rgba(255,255,255,0.8);
-        box-shadow: 0 4px 15px rgba(255,255,255,0.1); 
-    }
+    #trackingModal .btn-submit { background: #ffffff; color: #0f172a; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 15px rgba(255,255,255,0.1); }
     #trackingModal .btn-submit:hover { background: #f8fafc; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,255,255,0.25); }
     #trackingModal .btn-submit:active { transform: scale(0.96) !important; box-shadow: none; }
-    
-    #trackingModal .close-modal { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
+    #trackingModal .close-modal { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border-color: transparent; }
     #trackingModal .close-modal:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
     
     /* Темный таймлайн */
@@ -213,10 +268,7 @@
         transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .contact-item:hover { border-color: #2563eb; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.1); transform: translateY(-2px); }
-    .contact-icon-box {
-        width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;
-        background: #f8fafc; border-radius: 1.2rem; color: #2563eb; flex-shrink: 0; transition: 0.3s;
-    }
+    .contact-icon-box { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: #f8fafc; border-radius: 1.2rem; color: #2563eb; flex-shrink: 0; transition: 0.3s; }
     .contact-item:hover .contact-icon-box { background: #eff6ff; }
     .contact-label { font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
     .contact-value { font-weight: 800; font-size: 1.05rem; color: #0f172a; }
@@ -226,17 +278,11 @@
         background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem;
         border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    .order-form-modal .product-image-modal { 
-        max-width: 130px; max-height: 130px; object-fit: contain; margin-bottom: 0.5rem; 
-        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); transition: opacity 0.3s ease; 
-    }
+    .order-form-modal .product-image-modal { max-width: 130px; max-height: 130px; object-fit: contain; margin-bottom: 0.5rem; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); transition: opacity 0.3s ease; }
     .order-form-modal .product-name-modal { font-size: 1.1rem; font-weight: 800; color: #1e293b; line-height: 1.3; }
     .order-form-modal .product-price-modal { font-size: 1.8rem; font-weight: 900; color: #2563eb; margin-top: 0.5rem; letter-spacing: -0.5px; }
     
-    .phone-wrapper {
-        display: flex; align-items: center; background: #f8fafc; border-radius: 1.2rem;
-        border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden;
-    }
+    .phone-wrapper { display: flex; align-items: center; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; }
     .phone-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     .phone-prefix { padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; user-select: none; }
     .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
@@ -246,7 +292,6 @@
     .order-confirm-circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; animation: statusPulse 2s infinite; }
     .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3); z-index: 2; }
     .order-confirm-check-svg { width: 30px; height: 30px; color: white; stroke-width: 4; }
-    
     .order-confirm-details { background: white; border-radius: 1.5rem; padding: 1.2rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
     .order-confirm-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px dashed #f1f5f9; }
     .order-confirm-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -296,17 +341,6 @@
     .footer-links a { background: #f8fafc; color: #64748b; font-weight: 600; text-decoration: none; font-size: 0.8rem; padding: 0.6rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s; }
     .footer-links a:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
 
-    /* Адаптив */
-    @media (max-width: 640px) {
-        .header-top { flex-direction: column; text-align: center; gap: 1.2rem; }
-        .search-box { max-width: 100%; width: 100%; margin-left: 0; }
-        .header-right { justify-content: space-between; width: 100%; }
-        .tracking-btn-header, .consult-btn-header { flex: 1; justify-content: center; padding: 0.8rem; }
-        .footer-links { flex-direction: column; align-items: stretch; }
-        .footer-links a { text-align: center; }
-        .modal-content { padding: 1.8rem; border-radius: 1.8rem; }
-    }
-
     .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
     @keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
     .status-online { background: #22c55e !important; animation: statusPulse 2s infinite; }
@@ -314,11 +348,95 @@
 </head>
 <body>
     {% include meta-pixel.html %}
-    {% include header.html %}
+    
+    <!-- КАСТОМНЫЙ ХЕДЕР ПРЯМО ЗДЕСЬ (Заменяет {% include header.html %}) -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-main-layout">
+                <!-- ЛЕВАЯ ЧАСТЬ: Лого и Навигация -->
+                <div class="header-left">
+                    <a href="/" class="logo">
+                        <img src="/logohead.webp" alt="ENKA Electronics" class="logo-img">
+                    </a>
+                    <button class="nav-btn-header" id="navBtnHeader" title="კატალოგი">
+                        <svg class="nav-burger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                        <span class="nav-btn-text">ნავიგაცია</span>
+                    </button>
+                </div>
+                
+                <!-- ЦЕНТРАЛЬНАЯ ЧАСТЬ: Поиск (Скрывается на мобильных до клика) -->
+                <div class="header-center" id="mobileSearchWrapper">
+                    <div class="search-box">
+                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="searchInput" placeholder="ძიება...">
+                        <span class="search-clear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                    </div>
+                    <!-- Кнопка закрытия поиска (Только на мобильных) -->
+                    <button class="close-search-btn" id="closeSearchBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+                
+                <!-- ПРАВАЯ ЧАСТЬ: Действия -->
+                <div class="header-right">
+                    <div class="desktop-actions">
+                        <button class="tracking-btn-header" id="trackingBtnHeader">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                            სტატუსი
+                        </button>
+                        <button class="consult-btn-header" id="consultBtnHeader">კონსულტაცია</button>
+                    </div>
+                    <!-- Кнопка открытия поиска на мобильных -->
+                    <button class="mobile-search-toggle" id="mobileSearchToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+                </div>
+            </div>
+            
+            <!-- Строка действий для мобильных (Под логотипом) -->
+            <div class="mobile-actions-row">
+                <button class="tracking-btn-header" id="trackingBtnMobile">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    სტატუსი
+                </button>
+                <button class="consult-btn-header" id="consultBtnMobile">კონსულტაცია</button>
+            </div>
+        </div>
+    </header>
     
     <main>{{ content }}</main>
     
     {% include footer.html %}
+
+    <!-- Модалка НАВИГАЦИИ -->
+    <div class="modal" id="navModal">
+        <div class="modal-content">
+            <h3>კატალოგი</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <a href="/?category=smarthome" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg></div>
+                    ჭკვიანი სახლი
+                </a>
+                <a href="/?category=kitchen" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg></div>
+                    სამზარეულო
+                </a>
+                <a href="/?category=homecare" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg></div>
+                    სახლის მოვლა
+                </a>
+                <a href="/?category=selfcare" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></div>
+                    თავის მოვლა
+                </a>
+                <a href="/?category=building" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg></div>
+                    მშენებლობა
+                </a>
+                <a href="/?category=computer" class="nav-cat-card">
+                    <div class="nav-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg></div>
+                    კომპიუტერები
+                </a>
+            </div>
+            <button class="close-modal" id="closeNavModal">დახურვა</button>
+        </div>
+    </div>
 
     <!-- Модалка консультации -->
     <div class="consult-modal" id="consultModal">
@@ -415,32 +533,30 @@
     </div>
 
 <script>
-    // Замена старой иконки поиска на премиальную SVG-лупу
-    document.addEventListener("DOMContentLoaded", () => {
-        const oldIcon = document.querySelector('.search-icon');
-        if (oldIcon && oldIcon.tagName === 'IMG') {
-            const svgNS = "http://www.w3.org/2000/svg";
-            const svg = document.createElementNS(svgNS, "svg");
-            svg.setAttribute("class", "search-icon");
-            svg.setAttribute("width", "18");
-            svg.setAttribute("height", "18");
-            svg.setAttribute("viewBox", "0 0 24 24");
-            svg.setAttribute("fill", "none");
-            svg.setAttribute("stroke", "currentColor");
-            svg.setAttribute("stroke-width", "2.5");
-            svg.setAttribute("stroke-linecap", "round");
-            svg.setAttribute("stroke-linejoin", "round");
-            svg.innerHTML = '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>';
-            oldIcon.parentNode.replaceChild(svg, oldIcon);
-        }
-    });
+    // Управление мобильным поиском
+    const mobileSearchToggle = document.getElementById('mobileSearchToggle');
+    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    const mobileSearchWrapper = document.getElementById('mobileSearchWrapper');
+    const searchInput = document.getElementById('searchInput');
+
+    if (mobileSearchToggle && closeSearchBtn && mobileSearchWrapper) {
+        mobileSearchToggle.addEventListener('click', () => {
+            mobileSearchWrapper.classList.add('active');
+            setTimeout(() => searchInput.focus(), 100);
+        });
+        closeSearchBtn.addEventListener('click', () => {
+            mobileSearchWrapper.classList.remove('active');
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input')); // Очистка результатов
+        });
+    }
 
     // Управление плавным открытием/закрытием модалок
     window.openAppModal = function(id) {
         const m = document.getElementById(id);
         if(!m) return;
         m.style.display = 'flex';
-        m.offsetHeight; // Принудительная отрисовка для запуска анимации
+        m.offsetHeight; // Принудительная отрисовка
         m.classList.add('active');
         document.body.style.overflow = 'hidden';
     };
@@ -450,17 +566,31 @@
         if(!m) return;
         m.classList.remove('active');
         document.body.style.overflow = '';
-        setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); // Ожидание окончания fadeOut
+        setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
     };
 
-    // Закрытие всех модалок при клике на прозрачный фон
+    // Закрытие модалок при клике на прозрачный фон
     window.addEventListener('click', (e) => { 
         if (e.target.classList.contains('modal') || e.target.classList.contains('consult-modal')) {
             window.closeAppModal(e.target);
         }
     });
 
-    // Анимация плейсхолдера поиска (Начинается всегда со случайного слова)
+    // Модалка НАВИГАЦИИ
+    const navBtnHeader = document.getElementById('navBtnHeader');
+    const closeNavModal = document.getElementById('closeNavModal');
+    if(navBtnHeader) navBtnHeader.onclick = () => window.openAppModal('navModal');
+    if(closeNavModal) closeNavModal.onclick = () => window.closeAppModal('navModal');
+
+    // Модалка КОНСУЛЬТАЦИИ (Две кнопки: ПК и Мобильная)
+    const consultBtnHeader = document.getElementById('consultBtnHeader');
+    const consultBtnMobile = document.getElementById('consultBtnMobile');
+    const closeConsultModal = document.getElementById('closeConsultModal');
+    if(consultBtnHeader) consultBtnHeader.onclick = () => window.openAppModal('consultModal');
+    if(consultBtnMobile) consultBtnMobile.onclick = () => window.openAppModal('consultModal');
+    if(closeConsultModal) closeConsultModal.onclick = () => window.closeAppModal('consultModal');
+
+    // Анимация плейсхолдера поиска (Начинается со случайного слова)
     const s = document.getElementById('searchInput');
     const ic = document.querySelector('.search-icon');
     const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
@@ -490,12 +620,6 @@
             if(!act){ if(s.placeholder===''){del=0; ci=0;} act=1; tp(); }
         }
     };
-
-    // Модалка контактов
-    const closeConsultBtn = document.getElementById('closeConsultModal');
-    const consultBtn = document.getElementById('consultBtnHeader');
-    if(consultBtn) consultBtn.onclick = () => window.openAppModal('consultModal');
-    if(closeConsultBtn) closeConsultBtn.onclick = () => window.closeAppModal('consultModal');
 
     // Логика Поиска (со старой ценой)
     (function(){
@@ -542,8 +666,9 @@
     // Крестик очистки поиска
     (function(){let inp=document.getElementById('searchInput');let clr=document.querySelector('.search-clear');if(!inp||!clr)return;inp.addEventListener('input',function(){if(this.value.length>0){clr.classList.add('show');}else{clr.classList.remove('show');}});clr.onclick=function(){inp.value='';inp.focus();clr.classList.remove('show');inp.dispatchEvent(new Event('input'));};})();
 
-    // Логика трекинга
-    const trackingBtn = document.getElementById('trackingBtnHeader');
+    // Логика трекинга (Статус заказа)
+    const trackingBtnHeader = document.getElementById('trackingBtnHeader');
+    const trackingBtnMobile = document.getElementById('trackingBtnMobile');
     const closeTrackingBtn = document.getElementById('closeTrackingModal');
     const trackingOrderId = document.getElementById('trackingOrderId');
     const trackingCheckBtn = document.getElementById('trackingCheckBtn');
@@ -587,14 +712,17 @@
         return `<span class="status-badge ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
     }
 
-    if (trackingBtn && closeTrackingBtn) {
-        trackingBtn.addEventListener('click', () => {
-            window.openAppModal('trackingModal'); 
-            trackingOrderId.value = ''; trackingResult.style.display = 'none';
-            trackingLoading.style.display = 'none'; trackingResult.innerHTML = ''; trackingOrderId.focus();
-        });
-        closeTrackingBtn.addEventListener('click', () => window.closeAppModal('trackingModal'));
+    const openTracking = () => {
+        window.openAppModal('trackingModal'); 
+        trackingOrderId.value = ''; trackingResult.style.display = 'none';
+        trackingLoading.style.display = 'none'; trackingResult.innerHTML = ''; trackingOrderId.focus();
+    };
 
+    if (trackingBtnHeader) trackingBtnHeader.addEventListener('click', openTracking);
+    if (trackingBtnMobile) trackingBtnMobile.addEventListener('click', openTracking);
+    if (closeTrackingBtn) closeTrackingBtn.addEventListener('click', () => window.closeAppModal('trackingModal'));
+
+    if (trackingCheckBtn) {
         trackingCheckBtn.addEventListener('click', async () => {
             const orderId = trackingOrderId.value.trim();
             if (!orderId) { alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.'); return; }
@@ -668,7 +796,7 @@
                 trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება';
             }
         });
-        trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
+        if(trackingOrderId) trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
     }
 
     // URL Воркера заказов
@@ -693,7 +821,8 @@
                 thumbContainer.style.display = 'flex';
                 imgs.forEach(src => {
                     const imgThumb = document.createElement('img'); imgThumb.src = src;
-                    imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 12px; padding: 4px; background: white; transition: 0.2s;";
+                    imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 12px; padding: 4px; background: white; transition: 0.2s; flex-shrink: 0;";
+                    
                     // Плавно меняем главное фото при клике + скроллим миниатюру по центру
                     imgThumb.onclick = function() { 
                         mainImg.style.opacity = '0.5';
