@@ -33,23 +33,96 @@ title: "მთავარი"
     main { flex: 1; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* КАТЕГОРИИ */
+    /* КАТЕГОРИИ И БОКОВОЕ МЕНЮ */
     .categories-bar {
         max-width: 1280px; margin: 0.4rem auto 0.4rem; padding: 0 1.5rem;
-        display: flex; justify-content: space-between; align-items: center;
-        flex-wrap: wrap; gap: 1rem; animation: slideDown 0.4s ease;
+        display: flex; align-items: center; gap: 1rem; animation: slideDown 0.4s ease;
     }
-    .categories { display: flex; gap: 0.6rem; flex-wrap: wrap; padding: 0.3rem 0; }
+
+    .menu-btn {
+        background: white; border: 1px solid #e2e8f0; width: 44px; height: 44px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #0f172a;
+        flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); z-index: 5;
+    }
+    .menu-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-1px); box-shadow: 0 6px 12px -2px rgba(37,99,235,0.15); }
+    .menu-btn:active { transform: scale(0.92); }
+
+    .categories-wrapper {
+        position: relative; flex: 1; min-width: 0; display: flex; align-items: center;
+    }
+
+    .categories-fade {
+        position: absolute; right: 0; top: 0; bottom: 0; width: 50px;
+        background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%);
+        pointer-events: none; z-index: 2;
+    }
+
+    .categories { 
+        display: flex; gap: 0.6rem; flex-wrap: nowrap; padding: 0.3rem 0; 
+        overflow-x: auto; scroll-behavior: smooth;
+        /* Скрытие скроллбара для горизонтального меню */
+        -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+
     .category-btn {
         background: white; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem;
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b;
         display: flex; align-items: center; gap: 8px; outline: none;
+        white-space: nowrap; flex-shrink: 0; /* Не даем тексту съезжать */
     }
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
     .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; }
     .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
     .category-btn:active { transform: scale(0.96); }
+
+    /* ОВЕРЛЕЙ И САЙДБАР МЕНЮ */
+    .full-menu-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(3px);
+        z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    }
+    .full-menu-overlay.active { opacity: 1; visibility: visible; }
+    
+    .full-menu-sidebar {
+        position: fixed; top: 0; left: -320px; width: 320px; max-width: 85vw; height: 100%;
+        background: #ffffff; z-index: 9999; box-shadow: 20px 0 25px -5px rgba(0,0,0,0.1);
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: flex; flex-direction: column; overflow: hidden;
+    }
+    .full-menu-sidebar.active { transform: translateX(320px); }
+    
+    .sidebar-header {
+        padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;
+        border-bottom: 1px solid #f1f5f9; background: #f8fafc;
+    }
+    .sidebar-title { font-size: 1.2rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; }
+    .close-menu-btn {
+        background: white; border: 1px solid #e2e8f0; width: 36px; height: 36px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; cursor: pointer;
+        color: #64748b; transition: all 0.3s;
+    }
+    .close-menu-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; transform: rotate(90deg); }
+    
+    .sidebar-content {
+        flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    .sidebar-category-title {
+        font-weight: 800; color: #1e293b; font-size: 0.95rem; margin-bottom: 0.8rem;
+        display: flex; align-items: center; gap: 10px; cursor: pointer; transition: color 0.2s;
+    }
+    .sidebar-category-title:hover { color: #2563eb; }
+    .sidebar-category-title svg { width: 20px; height: 20px; color: #64748b; }
+    
+    .sidebar-subcategories { display: flex; flex-direction: column; gap: 0.6rem; padding-left: 30px; }
+    .sidebar-sub-btn {
+        background: none; border: none; text-align: left; cursor: pointer;
+        color: #64748b; font-weight: 600; font-size: 0.85rem; padding: 0.4rem 0;
+        transition: all 0.2s; position: relative;
+    }
+    .sidebar-sub-btn:hover { color: #2563eb; padding-left: 6px; }
 
     /* ФИЛЬТРЫ */
     .filters-bar {
@@ -176,7 +249,7 @@ title: "მთავარი"
     .select-option:hover { background: #f8fafc; color: #2563eb; }
 
     @media (min-width: 641px) {
-        .filters { margin-right: auto; } /* Магия для разделения групп на ПК */
+        .filters { margin-right: auto; }
     }
 
     @media (max-width: 640px) {
@@ -195,35 +268,41 @@ title: "მთავარი"
 </style>
 
 <div class="categories-bar">
-    <div class="categories" id="categoriesContainer">
-        <button class="category-btn active" data-category="all">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            ყველაფერი
-        </button>
-        <button class="category-btn" data-category="smarthome">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg>
-            ჭკვიანი სახლი
-        </button>
-        <button class="category-btn" data-category="kitchen">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
-            სამზარეულო
-        </button>
-        <button class="category-btn" data-category="homecare">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg>
-            სახლის მოვლა
-        </button>
-        <button class="category-btn" data-category="selfcare">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
-            თავის მოვლა
-        </button>        
-        <button class="category-btn" data-category="building">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg>
-            მშენებლობა
-        </button>  
-        <button class="category-btn" data-category="computer">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            კომპიუტერები
-        </button>  
+    <button class="menu-btn" id="openMenuBtn" title="კატეგორიები">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+    </button>
+    <div class="categories-wrapper">
+        <div class="categories" id="categoriesContainer">
+            <button class="category-btn active" data-category="all">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                ყველაფერი
+            </button>
+            <button class="category-btn" data-category="smarthome">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg>
+                ჭკვიანი სახლი
+            </button>
+            <button class="category-btn" data-category="kitchen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                სამზარეულო
+            </button>
+            <button class="category-btn" data-category="homecare">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg>
+                სახლის მოვლა
+            </button>
+            <button class="category-btn" data-category="selfcare">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                თავის მოვლა
+            </button>        
+            <button class="category-btn" data-category="building">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg>
+                მშენებლობა
+            </button>  
+            <button class="category-btn" data-category="computer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                კომპიუტერები
+            </button>  
+        </div>
+        <div class="categories-fade"></div>
     </div>
 </div>
 
@@ -267,6 +346,89 @@ title: "მთავარი"
     </div>
 </main>
 
+<!-- Overlay и Боковое меню -->
+<div class="full-menu-overlay" id="menuOverlay">
+    <div class="full-menu-sidebar" id="menuSidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                კატალოგი
+            </div>
+            <button class="close-menu-btn" id="closeMenuBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="smarthome">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg>
+                    ჭკვიანი სახლი
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="smarthome">სენსორები</button>
+                    <button class="sidebar-sub-btn" data-category="smarthome">განათება</button>
+                    <button class="sidebar-sub-btn" data-category="smarthome">უსაფრთხოება</button>
+                </div>
+            </div>
+            
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="kitchen">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                    სამზარეულო
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="kitchen">ტექნიკა</button>
+                    <button class="sidebar-sub-btn" data-category="kitchen">ჭურჭელი</button>
+                </div>
+            </div>
+
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="homecare">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg>
+                    სახლის მოვლა
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="homecare">მტვერსასრუტები</button>
+                    <button class="sidebar-sub-btn" data-category="homecare">საწმენდი საშუალებები</button>
+                </div>
+            </div>
+
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="selfcare">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                    თავის მოვლა
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="selfcare">თმის მოვლა</button>
+                    <button class="sidebar-sub-btn" data-category="selfcare">სხეულის მოვლა</button>
+                </div>
+            </div>
+            
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="building">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg>
+                    მშენებლობა
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="building">ხელსაწყოები</button>
+                    <button class="sidebar-sub-btn" data-category="building">მასალები</button>
+                </div>
+            </div>
+            
+            <div class="sidebar-category">
+                <div class="sidebar-category-title" data-category="computer">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    კომპიუტერები
+                </div>
+                <div class="sidebar-subcategories">
+                    <button class="sidebar-sub-btn" data-category="computer">ლეპტოპები</button>
+                    <button class="sidebar-sub-btn" data-category="computer">აქსესუარები</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     let currentCategory = 'all';
     let xDown = null;
@@ -278,6 +440,46 @@ title: "მთავარი"
     const resetBtn = document.getElementById('resetFilters');
     const categoryBtns = document.querySelectorAll('.category-btn');
     
+    // Логика меню
+    const openMenuBtn = document.getElementById('openMenuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuSidebar = document.getElementById('menuSidebar');
+
+    function toggleMenu(show) {
+        if (show) {
+            menuOverlay.classList.add('active');
+            menuSidebar.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            menuOverlay.classList.remove('active');
+            menuSidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    openMenuBtn.addEventListener('click', () => toggleMenu(true));
+    closeMenuBtn.addEventListener('click', () => toggleMenu(false));
+    menuOverlay.addEventListener('click', (e) => {
+        if (e.target === menuOverlay) toggleMenu(false);
+    });
+
+    // Обработка кликов внутри бокового меню
+    document.querySelectorAll('.sidebar-sub-btn, .sidebar-category-title').forEach(item => {
+        item.addEventListener('click', function() {
+            const cat = this.dataset.category;
+            if (cat) {
+                const mainBtn = document.querySelector(`.category-btn[data-category="${cat}"]`);
+                if (mainBtn) {
+                    mainBtn.click();
+                    // Скроллим основную панель к выбранной категории
+                    mainBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+            toggleMenu(false);
+        });
+    });
+
     function renderProducts() {
         const products = window.allProducts || [];
         let filtered = [...products];
