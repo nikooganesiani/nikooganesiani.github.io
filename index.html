@@ -56,15 +56,14 @@ title: "მთავარი"
         display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
         margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
-        overflow: hidden; /* Важно для анимации сброса */
+        position: relative; z-index: 10; /* Убрал overflow:hidden чтобы селект работал */
     }
-    .filters { display: flex; align-items: center; }
+    .filters { display: flex; align-items: center; gap: 12px; }
     
     .filter-group {
         display: flex; align-items: center; gap: 0.6rem; background: #f8fafc;
         padding: 0.5rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 2;
     }
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
@@ -72,27 +71,21 @@ title: "მთავარი"
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
         font-size: 0.85rem; border-radius: 2rem; font-weight: 700; 
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        
-        /* Исправленная анимация */
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                    opacity 0.3s ease, 
-                    max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                    margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        
-        max-width: 0; opacity: 0; overflow: hidden; margin-left: 0;
-        height: 38px; white-space: nowrap; pointer-events: none;
+        display: none; align-items: center; justify-content: center; gap: 6px;
+        height: 38px; padding: 0 1.2rem; white-space: nowrap;
     }
     .reset-filters.show { 
-        max-width: 160px; opacity: 1; margin-left: 12px; pointer-events: auto;
-        padding: 0 1.2rem;
+        display: flex;
+        animation: resetPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    .reset-filters svg { 
-        width: 14px; height: 14px; flex-shrink: 0;
-        display: block; /* Убирает лишние отступы снизу */
-    }
-    .reset-filters span { margin-top: 1px; } /* Выравнивание грузинского текста */
+    .reset-filters svg { width: 14px; height: 14px; flex-shrink: 0; display: block; }
+    .reset-filters span { margin-top: 1px; }
     .reset-filters:active { transform: scale(0.92); background: #fee2e2; }
+
+    @keyframes resetPop {
+        0% { opacity: 0; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1); }
+    }
 
     /* КАРТОЧКА ТОВАРА */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
@@ -172,27 +165,16 @@ title: "მთავარი"
 
     @media (max-width: 640px) {
         .filters-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
-        .filters { justify-content: center; width: 100%; flex-direction: column; }
+        .filters { flex-direction: column; width: 100%; gap: 10px; }
         .filter-group { width: 100%; justify-content: center; }
-        .reset-filters.show { 
-            width: 100%; 
-            max-width: 100%;
-            margin-left: 0; 
-            margin-top: 10px;
-            height: 42px; 
-            transform: scale(1);
-        }
+        .reset-filters.show { width: 100%; margin-left: 0; height: 42px; }
         .custom-select { width: 100%; min-width: auto; }
         .slider-arrow { opacity: 0.85; }
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes emptyPop { 
-        0% { opacity: 0; transform: scale(0.9) translateY(30px); } 
-        60% { transform: scale(1.02) translateY(-5px); }
-        100% { opacity: 1; transform: scale(1) translateY(0); } 
-    }
+    @keyframes emptyPop { 0% { opacity: 0; transform: scale(0.95) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 </style>
 
 <div class="categories-bar">
@@ -284,7 +266,6 @@ title: "მთავარი"
         const products = window.allProducts || [];
         let filtered = [...products];
         
-        // Show/Hide reset button
         if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
             resetBtn.classList.add('show');
         } else {
@@ -324,7 +305,7 @@ title: "მთავარი"
                 const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
                 if (oldVal > newVal) {
                     const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 14px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
+                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 12px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
                 }
             }
             
@@ -367,7 +348,6 @@ title: "მთავარი"
         `}).join('');
     }
 
-    // SLIDER LOGIC
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         const track = document.getElementById(`track-${productId}`);
@@ -379,7 +359,6 @@ title: "მთავარი"
         track.style.transform = `translateX(-${currentSlide * 100}%)`;
     };
 
-    // SWIPES
     window.handleTouchStart = (evt) => { xDown = evt.touches[0].clientX; };
     window.handleTouchEnd = (productId, evt) => {
         if (!xDown) return;
