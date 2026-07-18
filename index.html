@@ -64,7 +64,7 @@ title: "მთავარი"
     .category-btn:hover { background: #f8fafc; border-color: #2563eb; transform: translateY(-2px); color: #2563eb; }
     .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
 
-    /* ФИЛЬТРЫ И СОРТИРОВКА */
+    /* ФИЛЬТРЫ */
     .filters-bar {
         display: flex;
         flex-wrap: wrap;
@@ -98,7 +98,6 @@ title: "მთავარი"
         box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
     }
     
-    .filter-group label { font-size: 0.85rem; font-weight: 700; color: #64748b; display: flex; align-items: center; gap: 4px; }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
     
     .reset-filters {
@@ -118,7 +117,6 @@ title: "მთავარი"
     }
     
     .reset-filters.show { display: flex; }
-    .reset-filters:hover { background: #fee2e2; transform: translateY(-1px); }
 
     /* КАТАЛОГ */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
@@ -140,12 +138,26 @@ title: "მთავარი"
     
     .product-card:hover { border-color: #e2e8f0; transform: translateY(-4px); box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1); }
     
+    /* СЛАЙДЕР В КАРТОЧКЕ */
     .product-image-wrapper {
         position: relative;
         width: 100%;
         height: 240px;
         overflow: hidden;
         background: white;
+    }
+
+    .product-images-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .product-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
         padding: 1.5rem;
         display: flex;
         align-items: center;
@@ -156,22 +168,21 @@ title: "მთავარი"
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    /* ТРЮК: Увеличение только при наведении на кнопку заказа */
+    /* МЯГКИЙ ЗУМ ПРИ НАВЕДЕНИИ НА КНОПКУ */
     .product-card:has(.btn-order:hover) .product-image {
-        transform: scale(1.12);
+        transform: scale(1.05);
     }
     
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
-    /* Выравнивание кнопок: Фиксированная высота для названия (2 строки) */
     .product-name {
         font-size: 1.05rem;
         font-weight: 800;
         color: #0f172a;
-        margin-bottom: 0.6rem;
+        margin-bottom: 1rem;
         line-height: 1.4;
         letter-spacing: -0.3px;
         height: 2.9rem; 
@@ -181,28 +192,18 @@ title: "მთავარი"
         -webkit-box-orient: vertical;
     }
     
-    .product-description {
-        font-size: 0.85rem;
-        color: #64748b;
-        line-height: 1.5;
-        margin-bottom: 1.2rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 1; /* Сократил до 1 строки для лучшего выравнивания */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    
-    /* Выравнивание кнопок: Фиксированная высота для блока цены */
+    /* ВЫРАВНИВАНИЕ ЦЕНЫ В ОДНУ СТРОКУ */
     .product-price-container {
         margin-bottom: 1.2rem;
         display: flex;
-        flex-direction: column;
-        height: 3.5rem; 
-        justify-content: flex-end;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 10px;
+        height: 2rem; 
     }
 
-    .product-price { font-size: 1.6rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; line-height: 1; }
-    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+    .product-price { font-size: 1.6rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; }
+    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 1rem; font-weight: 600; }
 
     .btn-order {
         background: #0f172a;
@@ -218,7 +219,7 @@ title: "მთავარი"
         align-items: center;
         justify-content: center;
         gap: 8px;
-        margin-top: auto; /* Всегда внизу */
+        margin-top: auto; 
     }
     
     .btn-order:hover { background: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
@@ -231,6 +232,7 @@ title: "მთავარი"
         border: none; width: 36px; height: 36px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
         cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; transition: all 0.2s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .product-image-wrapper:hover .slider-arrow { opacity: 1; }
     .slider-arrow:hover { color: #2563eb; transform: translateY(-50%) scale(1.1); background: white; }
@@ -244,7 +246,12 @@ title: "მთავარი"
         font-size: 0.85rem; cursor: pointer; font-weight: 700; color: #0f172a;
         display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
     }
-    .select-trigger:hover { border-color: #2563eb; background: #f8fafc; }
+    .select-trigger:hover { border-color: #2563eb; }
+    
+    /* АНИМАЦИЯ СТРЕЛКИ СЕЛЕКТА */
+    .select-arrow-svg { transition: transform 0.3s ease; }
+    .custom-select.open .select-arrow-svg { transform: rotate(180deg); }
+
     .select-options {
         position: absolute; top: calc(100% + 8px); left: 0; right: 0;
         background: white; border-radius: 1.2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
@@ -254,7 +261,6 @@ title: "მთავარი"
     .custom-select.open .select-options { display: block; }
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
-    .select-option.selected { color: #2563eb; background: #f0f7ff; }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -298,7 +304,7 @@ title: "მთავარი"
         <div class="filters-bar">
             <div class="filters">
                 <div class="filter-group">
-                    <label>ფასი:</label>
+                    <label style="color:#64748b; font-weight:700;">ფასი:</label>
                     <input type="number" id="minPrice" placeholder="დან" min="0">
                     <span style="color: #cbd5e1;">—</span>
                     <input type="number" id="maxPrice" placeholder="მდე" min="0">
@@ -311,7 +317,7 @@ title: "მთავარი"
             <div class="custom-select" id="customSortSelect">
                 <div class="select-trigger" id="selectTrigger">
                     <span id="selectedValue">სახელი (ა-ჰ)</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                    <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
                 </div>
                 <div class="select-options" id="selectOptions">
                     <div class="select-option" data-value="name-asc">სახელი (ა-ჰ)</div>
@@ -329,7 +335,6 @@ title: "მთავარი"
         </div>
 
         <div class="catalog" id="catalogContainer">
-            <!-- Скелетоны при загрузке -->
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
             <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"><div class="skeleton-title"></div><div class="skeleton-price"></div><div class="skeleton-btn"></div></div></div>
@@ -352,7 +357,6 @@ title: "მთავარი"
         const products = window.allProducts || [];
         let filtered = [...products];
         
-        // Показываем/скрываем кнопку сброса
         if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
             resetBtn.classList.add('show');
         } else {
@@ -363,7 +367,6 @@ title: "მთავარი"
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
         
-        // Валидация: убираем минусовые значения
         if (minPriceInput.value < 0) minPriceInput.value = 0;
         if (maxPriceInput.value < 0) maxPriceInput.value = 0;
 
@@ -403,24 +406,30 @@ title: "მთავარი"
             const productDataAttr = JSON.stringify(product).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
             return `
-            <div class="product-card">
+            <div class="product-card" data-current-slide="0">
                 <div class="product-image-wrapper" 
-                     ontouchstart="touchStartX = event.changedTouches[0].screenX" 
-                     ontouchend="handleSwipe('${product.id}', event)">
+                     ontouchstart="handleTouchStart(event)" 
+                     ontouchmove="handleTouchMove(event)"
+                     ontouchend="handleTouchEnd('${product.id}', event)">
                     ${discountBadge}
-                    <a href="product/${product.id}/" style="display:contents;">
-                        <img class="product-image" id="img-${product.id}" src="${imgs[0] || ''}" alt="${product.name}" onerror="this.src='/img/no-image.png'">
-                    </a>
+                    <div class="product-images-track" id="track-${product.id}">
+                        ${imgs.map(img => `
+                            <div class="product-slide">
+                                <a href="product/${product.id}/" style="display:contents;">
+                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.src='/img/no-image.png'">
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
                     ${hasMultipleImages ? `
-                        <button class="slider-arrow arrow-prev" onclick="changeCardImg('${product.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-                        <button class="slider-arrow arrow-next" onclick="changeCardImg('${product.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                        <button class="slider-arrow arrow-prev" onclick="changeSlide('${product.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+                        <button class="slider-arrow arrow-next" onclick="changeSlide('${product.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
                     ` : ''}
                 </div>
                 <div class="product-info">
                     <a href="product/${product.id}/" style="text-decoration:none; color:inherit;">
                         <div class="product-name">${product.name}</div>
                     </a>
-                    <div class="product-description">${product.description || 'ელექტრონიკა'}</div>
                     <div class="product-price-container">
                         ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ''}
                         <div class="product-price">${product.price}</div>
@@ -434,23 +443,30 @@ title: "მთავარი"
         `}).join('');
     }
 
-    window.handleSwipe = function(productId, event) {
-        let touchEndX = event.changedTouches[0].screenX;
-        const diff = touchStartX - touchEndX;
-        if (Math.abs(diff) > 50) changeCardImg(productId, diff > 0 ? 1 : -1, event);
-    }
-
-    window.changeCardImg = function(productId, direction, event) {
+    // ЛОГИКА СЛАЙДЕРА
+    window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
-        const product = window.allProducts.find(p => p.id === productId);
-        if (!product) return;
-        const imgs = product.images || [product.image];
-        const imgElement = document.getElementById(`img-${productId}`);
-        const currentSrc = imgElement.src;
-        let currentIndex = imgs.findIndex(path => currentSrc.includes(path));
-        if (currentIndex === -1) currentIndex = 0;
-        let nextIndex = (currentIndex + direction + imgs.length) % imgs.length;
-        imgElement.src = imgs[nextIndex];
+        const card = document.querySelector(`.product-card:has(#track-${productId})`);
+        const track = document.getElementById(`track-${productId}`);
+        const slidesCount = track.children.length;
+        let currentSlide = parseInt(card.getAttribute('data-current-slide'));
+        
+        currentSlide = (currentSlide + direction + slidesCount) % slidesCount;
+        
+        card.setAttribute('data-current-slide', currentSlide);
+        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    };
+
+    // СВАЙПЫ
+    let xDown = null;
+    window.handleTouchStart = function(evt) { xDown = evt.touches[0].clientX; };
+    window.handleTouchMove = function(evt) { if (!xDown) return; };
+    window.handleTouchEnd = function(productId, evt) {
+        if (!xDown) return;
+        let xUp = evt.changedTouches[0].clientX;
+        let xDiff = xDown - xUp;
+        if (Math.abs(xDiff) > 50) { changeSlide(productId, xDiff > 0 ? 1 : -1); }
+        xDown = null;
     };
 
     minPriceInput.addEventListener('input', renderProducts);
@@ -458,9 +474,7 @@ title: "მთავარი"
     sortSelect.addEventListener('change', renderProducts);
     
     resetBtn.addEventListener('click', function() {
-        minPriceInput.value = ''; 
-        maxPriceInput.value = ''; 
-        sortSelect.value = 'name-asc';
+        minPriceInput.value = ''; maxPriceInput.value = ''; sortSelect.value = 'name-asc';
         document.getElementById('selectedValue').textContent = 'სახელი (ა-ჰ)';
         document.querySelectorAll('.select-option').forEach(opt => opt.classList.remove('selected'));
         renderProducts();
