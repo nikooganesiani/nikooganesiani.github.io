@@ -12,7 +12,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 <style>
-    /* Отключаем стандартное мерцание всей страницы, оставляя фокус на элементах */
+    /* Отключаем стандартное мерцание всей страницы */
     ::view-transition-old(root),
     ::view-transition-new(root) {
         animation-duration: 0.4s;
@@ -32,9 +32,9 @@
     * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
-    /* Убрано центрирование/флекс с main, чтобы не ломать расположение объектов */
+    /* Убрано центрирование содержимого main */
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; }
-    main { flex: 1; }
+    main { flex: 1; } 
 
     /* Хедер (Header) */
     .header {
@@ -46,8 +46,9 @@
     .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     
     .logo-img {
-        height: 32px; width: auto; vertical-align: middle; transition: all 0.3s ease;
+        height: 32px; width: auto; vertical-align: middle; 
         filter: grayscale(0) brightness(1); view-transition-name: main-logo; transform-origin: center;
+        transition: all 0.3s ease;
     }
     .logo:hover .logo-img { filter: invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%); transform: translateY(-2px); }
     .logo:active .logo-img { transform: scale(0.92); }
@@ -64,28 +65,30 @@
     .search-box input::placeholder { color: #94a3b8; font-weight: 500; }
     .search-icon {
         position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
-        width: 18px; height: 18px; color: #64748b; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        width: 18px; height: 18px; color: #64748b; pointer-events: none; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .search-icon.rotated { transform: translateY(-50%) rotate(90deg); color: #2563eb; }
 
-    /* Кнопки в хедере */
+    /* Кнопки в хедере (ПРЕМИАЛЬНЫЕ) */
     .header-right { display: flex; align-items: center; gap: 0.8rem; }
     
     .tracking-btn-header {
-        background: #f1f5f9; border: 1px solid transparent; padding: 0.6rem 1.2rem;
+        background: #ffffff; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem;
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #1e293b;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
         display: flex; align-items: center; gap: 6px; outline: none;
+        box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03);
     }
-    .tracking-btn-header:hover { background: #e2e8f0; color: #2563eb; transform: translateY(-1px); }
+    .tracking-btn-header:hover { border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); }
     .tracking-btn-header:active { transform: scale(0.96); }
     
     .consult-btn-header {
-        background: #fef3c7; color: #92400e; border: none; padding: 0.6rem 1.2rem;
+        background: #ffffff; color: #d97706; border: 1px solid #fde68a; padding: 0.6rem 1.2rem;
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
+        box-shadow: 0 2px 8px -2px rgba(245, 158, 11, 0.05);
     }
-    .consult-btn-header:hover { background: #fde68a; transform: translateY(-1px); box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15); }
+    .consult-btn-header:hover { border-color: #fcd34d; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.15); }
     .consult-btn-header:active { transform: scale(0.96); }
 
     /* Выпадающий список поиска */
@@ -106,18 +109,18 @@
     .search-clear.show { display: block; }
     .search-clear:hover { color: #ef4444; }
 
-    /* Модальные окна (Универсальные стили) */
+    /* Модальные окна (БЕЛЫЙ BLUR + АНИМАЦИИ) */
     .modal, .consult-modal {
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; padding: 1rem;
+        background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; padding: 1rem;
     }
-    .modal.active, .consult-modal.active { display: flex; opacity: 1; }
+    .modal.active, .consult-modal.active { opacity: 1; }
     .modal-content {
         background: white; max-width: 420px; width: 100%; border-radius: 2.2rem; padding: 2.2rem;
-        max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        border: 1px solid #f1f5f9;
-        transform: scale(0.95) translateY(10px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e2e8f0;
+        transform: scale(0.9) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .modal.active .modal-content, .consult-modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     .modal-content h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; }
@@ -134,7 +137,7 @@
     #trackingModal .modal-content {
         background: linear-gradient(145deg, #0f172a, #162032);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
     }
     #trackingModal h3 { color: #ffffff; }
     #trackingModal .tracking-input-wrapper svg { color: #64748b; }
@@ -148,8 +151,15 @@
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
     }
     #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
-    #trackingModal .btn-submit { background: #2563eb; color: #ffffff; }
-    #trackingModal .btn-submit:hover { background: #3b82f6; box-shadow: 0 10px 20px -3px rgba(59, 130, 246, 0.3); }
+    
+    /* Новая белая кнопка в трекинге */
+    #trackingModal .btn-submit { 
+        background: #ffffff; color: #0f172a; border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.1); 
+    }
+    #trackingModal .btn-submit:hover { background: #f8fafc; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,255,255,0.25); }
+    #trackingModal .btn-submit:active { transform: scale(0.96) !important; box-shadow: none; }
+    
     #trackingModal .close-modal { background: rgba(255, 255, 255, 0.05); color: #94a3b8; }
     #trackingModal .close-modal:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
     
@@ -163,7 +173,6 @@
     .dark-timeline .timeline-text-v { color: #94a3b8; }
     .dark-timeline .timeline-step-v.current .timeline-text-v { color: #ffffff; }
     .dark-timeline .timeline-step-v.current .timeline-date-v { color: #60a5fa; }
-    
     .dark-spinner { border-color: rgba(255,255,255,0.1); border-top-color: #3b82f6; }
 
     /* Универсальные инпуты и кнопки */
@@ -210,7 +219,10 @@
         background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem;
         border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; text-align: center;
     }
-    .order-form-modal .product-image-modal { max-width: 130px; max-height: 130px; object-fit: contain; margin-bottom: 0.5rem; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); }
+    .order-form-modal .product-image-modal { 
+        max-width: 130px; max-height: 130px; object-fit: contain; margin-bottom: 0.5rem; 
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05)); transition: opacity 0.3s ease; 
+    }
     .order-form-modal .product-name-modal { font-size: 1.1rem; font-weight: 800; color: #1e293b; line-height: 1.3; }
     .order-form-modal .product-price-modal { font-size: 1.8rem; font-weight: 900; color: #2563eb; margin-top: 0.5rem; letter-spacing: -0.5px; }
     
@@ -345,7 +357,7 @@
             <div class="product-card-preview">
                 <img class="product-image-modal" id="formProductImage" src="" alt="პროდუქტი">
                 <div class="product-name-modal" id="formProductName">პროდუქტი</div>
-                <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
+                <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px; scroll-behavior: smooth;"></div>
                 <div class="product-price-modal" id="formProductPrice">0 ₾</div>
             </div>
 
@@ -393,36 +405,48 @@
     </div>
 
 <script>
-    // Анимация плейсхолдера поиска
+    // Управление плавным открытием/закрытием модалок
+    window.openAppModal = function(id) {
+        const m = document.getElementById(id);
+        if(!m) return;
+        m.style.display = 'flex';
+        m.offsetHeight; // force reflow
+        m.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeAppModal = function(id) {
+        const m = typeof id === 'string' ? document.getElementById(id) : id;
+        if(!m) return;
+        m.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); // 400ms = время CSS-анимации
+    };
+
+    // Закрытие всех модалок при клике на прозрачный фон
+    window.addEventListener('click', (e) => { 
+        if (e.target.classList.contains('modal') || e.target.classList.contains('consult-modal')) {
+            window.closeAppModal(e.target);
+        }
+    });
+
+    // Анимация плейсхолдера поиска со случайного слова
     const s = document.getElementById('searchInput');
     const ic = document.querySelector('.search-icon');
     const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
-    let wi=0, ci=0, del=0, to=null, act=1;
+    // Выбираем случайное слово при инициализации
+    let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
     const tp=()=>{if(!s||!act)return;let cw=w[wi];if(del){ci--;s.placeholder=cw.substring(0,ci);if(ci===0){del=0;wi=(wi+1)%w.length;to=setTimeout(tp,500);}else to=setTimeout(tp,30);}else{ci++;s.placeholder=cw.substring(0,ci);if(ci===cw.length){del=1;to=setTimeout(tp,2500);}else to=setTimeout(tp,80);}};
     tp();
     s.oninput=function(){if(this.value.length){if(act){act=0;clearTimeout(to);s.placeholder='';}ic.classList.add('rotated');}else{ic.classList.remove('rotated');if(!act){if(s.placeholder===''){del=0;ci=0;}act=1;tp();}}};
 
-    // Общий обработчик закрытия ВСЕХ модалок при клике вне их области (на фон)
-    window.addEventListener('click', (e) => { 
-        const consultModal = document.getElementById('consultModal');
-        const trackingModal = document.getElementById('trackingModal');
-        const orderFormModal = document.getElementById('orderFormModal');
-        const orderConfirmModal = document.getElementById('orderConfirmModal');
-        
-        if (e.target === consultModal) consultModal.classList.remove('active'); 
-        if (e.target === trackingModal) trackingModal.classList.remove('active');
-        if (e.target === orderFormModal) orderFormModal.classList.remove('active');
-        if (e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
-    });
-
     // Модалка контактов
-    const consultModal = document.getElementById('consultModal');
     const closeConsultBtn = document.getElementById('closeConsultModal');
     const consultBtn = document.getElementById('consultBtnHeader');
-    if(consultBtn) consultBtn.onclick = () => consultModal.classList.add('active');
-    if(closeConsultBtn) closeConsultBtn.onclick = () => consultModal.classList.remove('active');
+    if(consultBtn) consultBtn.onclick = () => window.openAppModal('consultModal');
+    if(closeConsultBtn) closeConsultBtn.onclick = () => window.closeAppModal('consultModal');
 
-    // Логика Поиска (Добавлена поддержка старой цены)
+    // Логика Поиска (со старой ценой)
     (function(){
         let s = document.getElementById('searchInput');
         let ic = document.querySelector('.search-icon');
@@ -442,7 +466,7 @@
 
                 r.innerHTML = f.length ? f.map(p => {
                     let imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
-                    // Если есть старая цена - выводим ее
+                    // Добавляем старую цену, если она есть
                     let oldPriceHtml = p.oldPrice ? `<span style="text-decoration: line-through; color: #94a3b8; font-size: 0.85rem; font-weight: 600;">${p.oldPrice}</span>` : '';
                     
                     return `
@@ -471,9 +495,8 @@
     // Крестик очистки поиска
     (function(){let inp=document.getElementById('searchInput');let clr=document.querySelector('.search-clear');if(!inp||!clr)return;inp.addEventListener('input',function(){if(this.value.length>0){clr.classList.add('show');}else{clr.classList.remove('show');}});clr.onclick=function(){inp.value='';inp.focus();clr.classList.remove('show');inp.dispatchEvent(new Event('input'));};})();
 
-    // Логика трекинга (Статус заказа - DARK MODE)
+    // Логика трекинга
     const trackingBtn = document.getElementById('trackingBtnHeader');
-    const trackingModal = document.getElementById('trackingModal');
     const closeTrackingBtn = document.getElementById('closeTrackingModal');
     const trackingOrderId = document.getElementById('trackingOrderId');
     const trackingCheckBtn = document.getElementById('trackingCheckBtn');
@@ -481,7 +504,6 @@
     const trackingLoading = document.getElementById('trackingLoading');
 
     const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
-
     const statusMap = { 'ასაღები': 'შეკვეთა მზად არის', 'საწყობშია': 'მივიდა საწყობში', 'გატანილია ჩასაბარებლად': 'კურიერი გზაშია', 'ჩაბარებულია': 'ჩაბარებულია' };
     const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
 
@@ -518,12 +540,13 @@
         return `<span class="status-badge ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
     }
 
-    if (trackingBtn && trackingModal && closeTrackingBtn) {
+    if (trackingBtn && closeTrackingBtn) {
         trackingBtn.addEventListener('click', () => {
-            trackingModal.classList.add('active'); trackingOrderId.value = ''; trackingResult.style.display = 'none';
+            window.openAppModal('trackingModal'); 
+            trackingOrderId.value = ''; trackingResult.style.display = 'none';
             trackingLoading.style.display = 'none'; trackingResult.innerHTML = ''; trackingOrderId.focus();
         });
-        closeTrackingBtn.addEventListener('click', () => trackingModal.classList.remove('active'));
+        closeTrackingBtn.addEventListener('click', () => window.closeAppModal('trackingModal'));
 
         trackingCheckBtn.addEventListener('click', async () => {
             const orderId = trackingOrderId.value.trim();
@@ -605,7 +628,6 @@
     if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-form-handler.niko-oganesiani.workers.dev';}
 
     // Модалка Формы Заказа
-    const orderFormModal = document.getElementById('orderFormModal');
     const closeOrderFormBtn = document.getElementById('closeOrderFormModal');
     const quickForm = document.getElementById('quickOrderForm');
     const quickName = document.getElementById('quickName');
@@ -625,7 +647,17 @@
                 imgs.forEach(src => {
                     const imgThumb = document.createElement('img'); imgThumb.src = src;
                     imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 12px; padding: 4px; background: white; transition: 0.2s;";
-                    imgThumb.onclick = function() { mainImg.src = src; Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='#f1f5f9'); imgThumb.style.borderColor='#2563eb'; };
+                    // Плавно меняем главное фото при клике + скроллим миниатюру по центру
+                    imgThumb.onclick = function() { 
+                        mainImg.style.opacity = '0.5';
+                        setTimeout(() => {
+                            mainImg.src = src;
+                            mainImg.style.opacity = '1';
+                        }, 150);
+                        Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='#f1f5f9'); 
+                        imgThumb.style.borderColor='#2563eb'; 
+                        imgThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    };
                     thumbContainer.appendChild(imgThumb);
                 });
                 if(thumbContainer.children.length > 0) thumbContainer.children[0].style.borderColor = '#2563eb';
@@ -634,11 +666,11 @@
             mainImg.src = "/img/no-image.png";
         }
         quickName.value = ''; quickPhone.value = '';
-        orderFormModal.classList.add('active');
-        orderFormModal.dataset.product = JSON.stringify(product);
+        document.getElementById('orderFormModal').dataset.product = JSON.stringify(product);
+        window.openAppModal('orderFormModal');
     };
 
-    if(closeOrderFormBtn) closeOrderFormBtn.addEventListener('click', () => orderFormModal.classList.remove('active'));
+    if(closeOrderFormBtn) closeOrderFormBtn.addEventListener('click', () => window.closeAppModal('orderFormModal'));
 
     // Форматирование телефона
     if(quickPhone) {
@@ -664,7 +696,7 @@
             if(!name) { alert("შეიყვანეთ სახელი."); return; }
             if(phoneRaw.length !== 9) { alert("შეიყვანეთ სწორი ნომერი."); return; }
             
-            const product = JSON.parse(orderFormModal.dataset.product || '{}');
+            const product = JSON.parse(document.getElementById('orderFormModal').dataset.product || '{}');
             const fullPhone = '+995' + phoneRaw;
             const submitBtn = quickForm.querySelector('.btn-submit');
             const originalContent = submitBtn.innerHTML;
@@ -677,8 +709,8 @@
                     body: JSON.stringify({ name: name, phone: fullPhone, product: product.name, price: product.price })
                 });
                 if (response.ok) {
-                    orderFormModal.classList.remove('active');
-                    setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 300);
+                    window.closeAppModal('orderFormModal');
+                    setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 400);
                 }
             } catch(error) { console.error(error); }
             submitBtn.innerHTML = originalContent; submitBtn.disabled = false;
@@ -686,7 +718,6 @@
     }
 
     // Модалка успешного заказа
-    const orderConfirmModal = document.getElementById('orderConfirmModal');
     const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
 
     window.showOrderConfirm = function(data) {
@@ -694,10 +725,10 @@
         document.getElementById('confirmPhone').textContent = data.phone || '-';
         document.getElementById('confirmProduct').textContent = data.product || '-';
         document.getElementById('confirmPrice').textContent = data.price || '-';
-        orderConfirmModal.classList.add('active');
+        window.openAppModal('orderConfirmModal');
     };
 
-    if(closeOrderConfirmBtn) closeOrderConfirmBtn.addEventListener('click', () => orderConfirmModal.classList.remove('active'));
+    if(closeOrderConfirmBtn) closeOrderConfirmBtn.addEventListener('click', () => window.closeAppModal('orderConfirmModal'));
 
     // Универсальный обработчик (Оставляем рабочим для других возможных форм на сайте)
     function formatPhoneInput(input) {
@@ -731,6 +762,34 @@
         if (dot && hour >= 10 && hour < 22) dot.classList.add('status-online');
     }
     checkWorkTime();
+
+    // Анимация логотипа (Сохранение нажатого состояния при переходе по страницам)
+    (function() {
+        const logoLink = document.querySelector('.logo');
+        if (!logoLink) return;
+        logoLink.addEventListener('click', () => sessionStorage.setItem('logoTransition', 'true'));
+        window.addEventListener('load', () => {
+            if (sessionStorage.getItem('logoTransition') === 'true') {
+                const logoImg = document.querySelector('.logo-img');
+                if (logoImg) {
+                    // Стартуем в "зажатом" и "активном" состоянии
+                    logoImg.style.transition = 'none';
+                    logoImg.style.transform = 'scale(0.92)';
+                    logoImg.style.filter = 'invert(31%) sepia(94%) saturate(2258%) hue-rotate(211deg) brightness(95%) contrast(92%)';
+                    
+                    // Плавно отпускаем пружинку
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            logoImg.style.transition = 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                            logoImg.style.transform = 'scale(1) translateY(0)';
+                            logoImg.style.filter = 'grayscale(0) brightness(1)';
+                        });
+                    });
+                }
+                sessionStorage.removeItem('logoTransition');
+            }
+        });
+    })();
 </script>
 </body>
 </html>
