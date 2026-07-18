@@ -51,16 +51,21 @@ title: "მთავარი"
     .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
     .category-btn:active { transform: scale(0.96); }
 
-    /* ФИЛЬТРЫ */
+    /* ФИЛЬТРЫ - НОВАЯ СТРУКТУРА */
     .filters-bar {
-        display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
+        display: flex; flex-direction: column; gap: 1rem;
         margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
         position: relative; z-index: 10;
     }
     
-    /* Контейнер фильтров без gap, чтобы не было пустых отступов */
-    .filters { display: flex; align-items: center; flex-wrap: wrap; }
+    .filters-top-row {
+        display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between;
+    }
+
+    .filters-controls {
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
     
     .filter-group {
         display: flex; align-items: center; gap: 0.6rem; background: #f8fafc;
@@ -70,36 +75,25 @@ title: "მთავარი"
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
     
-    /* КНОПКА СБРОСА - ФИКС КРУГА */
+    /* ФИКС КНОПКИ СБРОСА */
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
         font-size: 0.85rem; border-radius: 2rem; font-weight: 700; 
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        
-        /* Скрытое состояние: полный ноль */
-        height: 0; width: 0; max-width: 0; opacity: 0; margin: 0; padding: 0;
-        overflow: hidden; visibility: hidden; pointer-events: none;
-        
-        transition: 
-            max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            margin 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.2s ease,
-            transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.8);
+        display: none; align-items: center; justify-content: center; gap: 8px;
+        height: 42px; padding: 0 1.5rem; white-space: nowrap;
+        transition: all 0.2s ease;
     }
-    
     .reset-filters.show { 
-        visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1);
-        height: 38px; max-width: 200px; margin-left: 12px; padding: 0 1.2rem;
+        display: flex;
+        animation: resetIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
-    
-    .reset-filters svg { width: 14px; height: 14px; display: block; }
-    .reset-filters span { padding-top: 2px; } /* Выравнивание текста */
+    .reset-filters svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .reset-filters span { line-height: 1; margin-top: 1px; }
+    .reset-filters:active { transform: scale(0.95); background: #fee2e2; }
 
-    .reset-filters:active { 
-        transform: scale(0.92) !important; 
-        background: #fee2e2; 
+    @keyframes resetIn {
+        0% { opacity: 0; transform: scale(0.9) translateY(5px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
     }
 
     /* КАРТОЧКА ТОВАРА */
@@ -120,7 +114,6 @@ title: "მთავარი"
     
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
-    /* ИНТЕРАКТИВНЫЙ БОКС НАЗВАНИЯ */
     .product-name-box {
         background: #f8fafc; border-radius: 1.2rem; padding: 0.8rem 1rem;
         height: 3.8rem; display: flex; align-items: center; margin-bottom: 1.2rem;
@@ -161,7 +154,6 @@ title: "მთავარი"
     .slider-arrow:active { transform: translateY(-50%) scale(0.85); }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    /* СЕЛЕКТ */
     .custom-select { position: relative; min-width: 220px; }
     .select-trigger {
         background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.2rem; border-radius: 2rem;
@@ -180,22 +172,29 @@ title: "მთავარი"
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
 
+    /* МОБИЛЬНАЯ АДАПТАЦИЯ - 2 В РЯД */
     @media (max-width: 640px) {
-        .filters-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
-        .filters { flex-direction: column; width: 100%; gap: 0; }
-        .filter-group { width: 100%; justify-content: center; }
+        .filters-bar { padding: 1rem; }
+        .filters-top-row { gap: 8px; }
+        .filters-controls { width: 100%; gap: 8px; display: flex; flex-wrap: nowrap; }
         
-        /* Исправленная мобильная логика сброса */
-        .reset-filters.show { 
-            width: 100%; max-width: 100%; margin-left: 0; margin-top: 12px; height: 42px; 
+        .filter-group { 
+            flex: 1.2; padding: 0.5rem 0.8rem; justify-content: center; 
+            font-size: 0.75rem; gap: 4px;
         }
-        .custom-select { width: 100%; min-width: auto; }
+        .filter-group label { display: none; } /* Скрываем надпись "ФЕН", оставляем инпуты */
+        .filter-group input { width: 45px; text-align: center; }
+        
+        .custom-select { flex: 1; min-width: 0; }
+        .select-trigger { padding: 0.6rem 0.8rem; font-size: 0.75rem; border-radius: 1rem; }
+        
+        .reset-filters.show { width: 100%; margin-top: 5px; }
         .slider-arrow { opacity: 0.85; }
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes emptyPop { 0% { opacity: 0; transform: scale(0.9) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes emptyPop { 0% { opacity: 0; transform: scale(0.95) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 </style>
 
 <div class="categories-bar">
@@ -234,30 +233,32 @@ title: "მთავარი"
 <main>
     <div class="container">
         <div class="filters-bar">
-            <div class="filters">
-                <div class="filter-group">
-                    <label style="color:#94a3b8; font-weight:800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">ფასი</label>
-                    <input type="number" id="minPrice" placeholder="დან" min="0">
-                    <span style="color: #cbd5e1; font-weight: 300;">|</span>
-                    <input type="number" id="maxPrice" placeholder="მდე" min="0">
-                </div>
-                <button class="reset-filters" id="resetFilters">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                    <span>გასუფთავება</span>
-                </button>
-            </div>
-            <div class="custom-select" id="customSortSelect">
-                <div class="select-trigger" id="selectTrigger">
-                    <span id="selectedValue">სახელი (ა-ჰ)</span>
-                    <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-                </div>
-                <div class="select-options" id="selectOptions">
-                    <div class="select-option" data-value="name-asc">სახელი (ა-ჰ)</div>
-                    <div class="select-option" data-value="name-desc">სახელი (ჰ-ა)</div>
-                    <div class="select-option" data-value="price-asc">ფასი (იაფიდან)</div>
-                    <div class="select-option" data-value="price-desc">ფასი (ძვირიდან)</div>
+            <div class="filters-top-row">
+                <div class="filters-controls">
+                    <div class="filter-group">
+                        <label style="color:#94a3b8; font-weight:800; font-size: 0.75rem; text-transform: uppercase;">ფასი</label>
+                        <input type="number" id="minPrice" placeholder="დან" min="0">
+                        <span style="color: #cbd5e1; font-weight: 300;">|</span>
+                        <input type="number" id="maxPrice" placeholder="მდე" min="0">
+                    </div>
+                    <div class="custom-select" id="customSortSelect">
+                        <div class="select-trigger" id="selectTrigger">
+                            <span id="selectedValue">სახელი (ა-ჰ)</span>
+                            <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                        </div>
+                        <div class="select-options" id="selectOptions">
+                            <div class="select-option" data-value="name-asc">სახელი (ა-ჰ)</div>
+                            <div class="select-option" data-value="name-desc">სახელი (ჰ-ა)</div>
+                            <div class="select-option" data-value="price-asc">ფასი (იაფიდან)</div>
+                            <div class="select-option" data-value="price-desc">ფასი (ძვირიდან)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <button class="reset-filters" id="resetFilters">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                <span>გასუფთავება</span>
+            </button>
             <select id="sortSelect" style="display: none;">
                 <option value="name-asc">სახელი (ა-ჰ)</option>
                 <option value="name-desc">სახელი (ჰ-ა)</option>
@@ -308,7 +309,7 @@ title: "მთავარი"
         
         if (filtered.length === 0) {
             container.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
+                <div style="grid-column:1/-1; text-align:center; padding:6rem 0; color:#94a3b8; animation: emptyPop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
                     <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
                 </div>`;
