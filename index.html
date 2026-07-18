@@ -55,9 +55,7 @@ title: "მთავარი"
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         color: #64748b;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        display: flex; align-items: center; gap: 8px;
     }
     
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
@@ -66,56 +64,27 @@ title: "მთავარი"
 
     /* ФИЛЬТРЫ */
     .filters-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        background: white;
-        padding: 1.2rem;
-        border-radius: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        animation: slideDown 0.4s ease;
+        display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
+        margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
     }
     
     .filters { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
     
     .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-        background: #f8fafc;
-        padding: 0.5rem 1.2rem;
-        border-radius: 2rem;
-        border: 1px solid #f1f5f9;
+        display: flex; align-items: center; gap: 0.6rem; background: #f8fafc;
+        padding: 0.5rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    .filter-group:hover, .filter-group:focus-within {
-        background: white;
-        border-color: #2563eb;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
-    }
-    
+    .filter-group:hover, .filter-group:focus-within { background: white; border-color: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
     
     .reset-filters {
-        background: #fef2f2;
-        border: none;
-        color: #ef4444;
-        cursor: pointer;
-        font-size: 0.8rem;
-        padding: 0.5rem 1.2rem;
-        border-radius: 2rem;
-        font-weight: 700;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: none;
-        align-items: center;
-        gap: 6px;
-        animation: fadeIn 0.3s ease;
+        background: #fef2f2; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem;
+        padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: 700; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: none; align-items: center; gap: 6px; animation: fadeIn 0.3s ease;
     }
-    
     .reset-filters.show { display: flex; }
 
     /* КАТАЛОГ */
@@ -123,140 +92,71 @@ title: "მთავარი"
 
     /* КАРТОЧКА ТОВАРА */
     .product-card {
-        background: white;
-        border-radius: 2rem;
-        overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeUp 0.5s ease forwards;
-        border: 1px solid #f1f5f9;
+        background: white; border-radius: 2rem; overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; flex-direction: column; opacity: 0; transform: translateY(30px);
+        animation: fadeUp 0.5s ease forwards; border: 1px solid #f1f5f9;
     }
-    
     .product-card:hover { border-color: #e2e8f0; transform: translateY(-4px); box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1); }
     
-    /* СЛАЙДЕР В КАРТОЧКЕ */
-    .product-image-wrapper {
-        position: relative;
-        width: 100%;
-        height: 240px;
-        overflow: hidden;
-        background: white;
-    }
-
-    .product-images-track {
-        display: flex;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .product-slide {
-        flex: 0 0 100%;
-        width: 100%;
-        height: 100%;
-        padding: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .product-image {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    /* МЯГКИЙ ЗУМ ПРИ НАВЕДЕНИИ НА КНОПКУ */
-    .product-card:has(.btn-order:hover) .product-image {
-        transform: scale(1.05);
-    }
+    /* СЛАЙДЕР */
+    .product-image-wrapper { position: relative; width: 100%; height: 240px; overflow: hidden; background: white; }
+    .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-slide { flex: 0 0 100%; width: 100%; height: 100%; padding: 1.5rem; display: flex; align-items: center; justify-content: center; }
+    .product-image { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    .product-card:has(.btn-order:hover) .product-image { transform: scale(1.05); }
     
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
+    /* УЛУЧШЕННОЕ ВЫРАВНИВАНИЕ НАЗВАНИЯ */
     .product-name {
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 1rem;
-        line-height: 1.4;
-        letter-spacing: -0.3px;
-        height: 2.9rem; 
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
+        font-size: 1.05rem; font-weight: 800; color: #0f172a;
+        margin-bottom: 1rem; line-height: 1.4; letter-spacing: -0.3px;
+        height: 2.9rem; /* Строго 2 строки */
+        overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        display: flex; align-items: flex-start; /* Убирает пустоту снизу если 1 строка */
     }
     
-    /* ВЫРАВНИВАНИЕ ЦЕНЫ В ОДНУ СТРОКУ */
+    /* ВЫРАВНИВАНИЕ ЦЕНЫ: НОВАЯ (СЛЕВА), СТАРАЯ (СПРАВА) */
     .product-price-container {
-        margin-bottom: 1.2rem;
-        display: flex;
-        flex-direction: row;
-        align-items: baseline;
-        gap: 10px;
-        height: 2rem; 
+        margin-bottom: 1.2rem; display: flex; flex-direction: row; align-items: baseline; gap: 8px; height: 2rem;
     }
-
     .product-price { font-size: 1.6rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; }
-    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 1rem; font-weight: 600; }
+    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.95rem; font-weight: 600; }
 
     .btn-order {
-        background: #0f172a;
-        color: white;
-        border: none;
-        padding: 1rem;
-        border-radius: 1.2rem;
-        cursor: pointer;
-        font-weight: 800;
-        font-size: 1rem;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-top: auto; 
+        background: #0f172a; color: white; border: none; padding: 1rem; border-radius: 1.2rem;
+        cursor: pointer; font-weight: 800; font-size: 1rem; transition: all 0.3s;
+        display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto; 
     }
-    
     .btn-order:hover { background: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
 
-    /* Стрелки */
+    /* СТРЕЛКИ С ЖИВЫМ ОТКЛИКОМ */
     .slider-arrow {
-        position: absolute;
-        top: 50%; transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.9);
-        border: none; width: 36px; height: 36px;
+        position: absolute; top: 50%; transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.9); border: none; width: 36px; height: 36px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; transition: all 0.2s;
+        cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .product-image-wrapper:hover .slider-arrow { opacity: 1; }
-    .slider-arrow:hover { color: #2563eb; transform: translateY(-50%) scale(1.1); background: white; }
+    .slider-arrow:hover { color: #2563eb; transform: translateY(-50%) scale(1.05); background: white; }
+    .slider-arrow:active { transform: translateY(-50%) scale(0.9); } /* Эффект нажатия */
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    /* Кастомный селект */
+    /* СЕЛЕКТ */
     .custom-select { position: relative; min-width: 220px; }
     .select-trigger {
-        background: white; border: 1px solid #e2e8f0;
-        padding: 0.7rem 1.2rem; border-radius: 2rem;
+        background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.2rem; border-radius: 2rem;
         font-size: 0.85rem; cursor: pointer; font-weight: 700; color: #0f172a;
         display: flex; justify-content: space-between; align-items: center; transition: all 0.3s;
     }
-    .select-trigger:hover { border-color: #2563eb; }
-    
-    /* АНИМАЦИЯ СТРЕЛКИ СЕЛЕКТА */
     .select-arrow-svg { transition: transform 0.3s ease; }
     .custom-select.open .select-arrow-svg { transform: rotate(180deg); }
-
     .select-options {
-        position: absolute; top: calc(100% + 8px); left: 0; right: 0;
-        background: white; border-radius: 1.2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        z-index: 100; display: none; border: 1px solid #f1f5f9; overflow: hidden;
-        animation: slideDown 0.2s ease;
+        position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: white;
+        border-radius: 1.2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        z-index: 100; display: none; border: 1px solid #f1f5f9; overflow: hidden; animation: slideDown 0.2s ease;
     }
     .custom-select.open .select-options { display: block; }
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
@@ -344,7 +244,7 @@ title: "მთავარი"
 
 <script>
     let currentCategory = 'all';
-    let touchStartX = 0;
+    let xDown = null;
 
     const container = document.getElementById('catalogContainer');
     const minPriceInput = document.getElementById('minPrice');
@@ -431,8 +331,8 @@ title: "მთავარი"
                         <div class="product-name">${product.name}</div>
                     </a>
                     <div class="product-price-container">
-                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ''}
                         <div class="product-price">${product.price}</div>
+                        ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ''}
                     </div>
                     <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -443,36 +343,31 @@ title: "მთავარი"
         `}).join('');
     }
 
-    // ЛОГИКА СЛАЙДЕРА
+    // СЛАЙДЕР
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
-        const card = document.querySelector(`.product-card:has(#track-${productId})`);
         const track = document.getElementById(`track-${productId}`);
+        const card = track.closest('.product-card');
         const slidesCount = track.children.length;
         let currentSlide = parseInt(card.getAttribute('data-current-slide'));
-        
         currentSlide = (currentSlide + direction + slidesCount) % slidesCount;
-        
         card.setAttribute('data-current-slide', currentSlide);
         track.style.transform = `translateX(-${currentSlide * 100}%)`;
     };
 
     // СВАЙПЫ
-    let xDown = null;
-    window.handleTouchStart = function(evt) { xDown = evt.touches[0].clientX; };
-    window.handleTouchMove = function(evt) { if (!xDown) return; };
-    window.handleTouchEnd = function(productId, evt) {
+    window.handleTouchStart = (evt) => { xDown = evt.touches[0].clientX; };
+    window.handleTouchMove = (evt) => { if (!xDown) return; };
+    window.handleTouchEnd = (productId, evt) => {
         if (!xDown) return;
-        let xUp = evt.changedTouches[0].clientX;
-        let xDiff = xDown - xUp;
-        if (Math.abs(xDiff) > 50) { changeSlide(productId, xDiff > 0 ? 1 : -1); }
+        let xDiff = xDown - evt.changedTouches[0].clientX;
+        if (Math.abs(xDiff) > 50) changeSlide(productId, xDiff > 0 ? 1 : -1);
         xDown = null;
     };
 
     minPriceInput.addEventListener('input', renderProducts);
     maxPriceInput.addEventListener('input', renderProducts);
     sortSelect.addEventListener('change', renderProducts);
-    
     resetBtn.addEventListener('click', function() {
         minPriceInput.value = ''; maxPriceInput.value = ''; sortSelect.value = 'name-asc';
         document.getElementById('selectedValue').textContent = 'სახელი (ა-ჰ)';
@@ -489,15 +384,11 @@ title: "მთავარი"
         });
     });
     
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/catalog.json')
-            .then(res => res.json())
-            .then(data => {
-                window.allProducts = data.products.map(p => ({
-                    ...p, priceValue: parseInt(p.price.replace(/[^0-9]/g, ''))
-                }));
-                renderProducts();
-            });
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/catalog.json').then(res => res.json()).then(data => {
+            window.allProducts = data.products.map(p => ({ ...p, priceValue: parseInt(p.price.replace(/[^0-9]/g, '')) }));
+            renderProducts();
+        });
     });
     
     const customSelect = document.getElementById('customSortSelect');
