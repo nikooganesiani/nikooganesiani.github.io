@@ -6,204 +6,129 @@ title: "მთავარი"
 <style>
     /* Глобальные настройки App-Feel */
     * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+        margin: 0; padding: 0; box-sizing: border-box;
         font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none;
     }
 
-    input, textarea {
-        -webkit-user-select: text;
-        user-select: text;
+    input, textarea { -webkit-user-select: text; user-select: text; }
+    body, button, a, .category-btn, .sub-category-btn, .select-trigger, .product-card, .slider-arrow, .product-name-box {
+        -webkit-user-select: none; user-select: none;
     }
 
-    body, button, a, .category-btn, .select-trigger, .product-card, .slider-arrow, .product-name-box {
-        -webkit-user-select: none;
-        user-select: none;
-    }
-
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 10px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
     body { background: #f8fafc; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
     main { flex: 1; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* КАТЕГОРИИ И БОКОВОЕ МЕНЮ */
+    /* ГЛАВНЫЕ КАТЕГОРИИ */
     .categories-bar {
         max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;
-        display: flex; align-items: center; gap: 1rem; animation: slideDown 0.4s ease;
+        display: flex; align-items: center; animation: slideDown 0.4s ease;
         position: relative; z-index: 20; 
     }
 
-    .menu-btn {
-        background: white; border: 1px solid #e2e8f0; width: 44px; height: 44px;
-        border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #0f172a;
-        flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); z-index: 5;
-    }
-    .menu-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-1px); box-shadow: 0 6px 12px -2px rgba(37,99,235,0.15); }
-    .menu-btn:active { transform: scale(0.92); }
+    .categories-wrapper { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; margin-right: -1.5rem; }
 
-    .categories-wrapper {
-        position: relative; flex: 1; min-width: 0; display: flex; align-items: center;
-        /* Позволяем свайпать вплоть до правой границы экрана на мобилках */
-        margin-right: -1.5rem;
-    }
-
-    /* Градиенты для плавного ухода карточек с обеих сторон */
     .categories-fade-left {
         position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
-        background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%);
-        pointer-events: none; z-index: 2;
+        background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2;
     }
     .categories-fade-right {
         position: absolute; right: 0; top: 0; bottom: 0; width: 48px;
-        background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%);
-        pointer-events: none; z-index: 2;
+        background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2;
     }
 
     .categories { 
-        display: flex; gap: 0.6rem; flex-wrap: nowrap; 
-        /* ФИКС ТЕНЕЙ: Огромный внутренний отступ для отрисовки тени без обрезания */
-        padding: 1.5rem 2.5rem 1.5rem 0.5rem; 
-        /* Отрицательный маржин возвращает визуальную высоту в норму */
-        margin: -1rem 0; 
+        display: flex; gap: 0.8rem; flex-wrap: nowrap; 
+        padding: 1.5rem 2.5rem 1.5rem 0.5rem; margin: -1rem 0; 
         overflow-x: auto; scroll-behavior: smooth;
-        /* Скрываем скроллбар */
         -ms-overflow-style: none; scrollbar-width: none;
     }
     .categories::-webkit-scrollbar { display: none; }
 
     .category-btn {
-        background: white; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem;
-        border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+        background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.4rem;
+        border-radius: 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b;
         display: flex; align-items: center; gap: 8px; outline: none;
-        white-space: nowrap; flex-shrink: 0;
+        white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
-    .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; }
-    .category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+    .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
+    .category-btn.active { background: #0f172a; color: white; border-color: #0f172a; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
     .category-btn:active { transform: scale(0.96); }
 
-    /* ОВЕРЛЕЙ И ЦЕНТРИРОВАННОЕ МОДАЛЬНОЕ МЕНЮ (APP-FEEL) */
-    .full-menu-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px);
-        z-index: 9998; opacity: 0; visibility: hidden; transition: all 0.4s ease;
-    }
-    .full-menu-overlay.active { opacity: 1; visibility: visible; }
-    
-    .full-menu-sidebar {
-        position: fixed; top: 50%; left: 50%; 
-        width: 100%; max-width: 420px; height: auto; max-height: 85vh;
-        background: #ffffff; z-index: 9999; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-        border-radius: 1.5rem;
-        display: flex; flex-direction: column; overflow: hidden;
-        /* Исходное состояние: уменьшено и сдвинуто */
-        transform: translate(-50%, -45%) scale(0.95); opacity: 0; pointer-events: none;
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-    }
-    .full-menu-sidebar.active { 
-        transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; 
+    /* ПОДКАТЕГОРИИ */
+    .subcategories-bar {
+        max-width: 1280px; margin: -0.5rem auto 1rem auto; padding: 0 1.5rem;
+        display: none; align-items: center; animation: slideDownSub 0.3s ease forwards;
+        position: relative; z-index: 15;
     }
     
-    .sidebar-header {
-        padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;
-        border-bottom: 1px solid #f1f5f9; background: #f8fafc;
-    }
-    .sidebar-title { font-size: 1.2rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; }
-    .close-menu-btn {
-        background: white; border: 1px solid #e2e8f0; width: 36px; height: 36px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; cursor: pointer;
-        color: #64748b; transition: all 0.3s;
-    }
-    .close-menu-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; transform: rotate(90deg); }
-    
-    .sidebar-content {
-        flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;
-        /* Убираем скролл-бар в самом меню */
+    .subcategories-wrapper { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; margin-right: -1.5rem; }
+    .subcategories { 
+        display: flex; gap: 0.6rem; flex-wrap: nowrap; 
+        padding: 0.5rem 2.5rem 0.5rem 0.5rem; overflow-x: auto; scroll-behavior: smooth;
         -ms-overflow-style: none; scrollbar-width: none;
     }
-    .sidebar-content::-webkit-scrollbar { display: none; }
+    .subcategories::-webkit-scrollbar { display: none; }
 
-    .sidebar-category-title {
-        font-weight: 800; color: #1e293b; font-size: 0.95rem; margin-bottom: 0.8rem;
-        display: flex; align-items: center; gap: 10px; cursor: pointer; transition: color 0.2s;
+    .sub-category-btn {
+        background: transparent; border: 1px solid #cbd5e1; padding: 0.5rem 1rem;
+        border-radius: 2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
+        white-space: nowrap; flex-shrink: 0; outline: none;
     }
-    .sidebar-category-title:hover { color: #2563eb; }
-    .sidebar-category-title svg { width: 20px; height: 20px; color: #64748b; }
-    
-    .sidebar-subcategories { display: flex; flex-direction: column; gap: 0.6rem; padding-left: 30px; }
-    .sidebar-sub-btn {
-        background: none; border: none; text-align: left; cursor: pointer;
-        color: #64748b; font-weight: 600; font-size: 0.85rem; padding: 0.4rem 0;
-        transition: all 0.2s; position: relative;
-    }
-    .sidebar-sub-btn:hover { color: #2563eb; padding-left: 6px; }
+    .sub-category-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
+    .sub-category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
 
     /* ФИЛЬТРЫ */
     .filters-bar {
         display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
-        margin-top: -0.2rem; margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
-        position: relative; z-index: 10;
+        margin-top: 0.5rem; margin-bottom: 2rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
+        animation: slideDown 0.4s ease; position: relative; z-index: 10;
     }
     
     .filters { display: flex; align-items: center; }
     
     .filter-group {
         display: flex; align-items: center; gap: 0.6rem; background: #f8fafc;
-        padding: 0.5rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9;
+        padding: 0.6rem 1.2rem; border-radius: 2rem; border: 1px solid #e2e8f0;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
-    .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 50px; color: #0f172a; text-align: center; }
+    .filter-group input { border: none; background: transparent; font-size: 0.9rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; text-align: center; }
+    .filter-group input::placeholder { color: #94a3b8; font-weight: 500; }
     
     /* КНОПКА СБРОСА */
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        
-        height: 0; width: 0; opacity: 0; margin: 0; padding: 0;
-        overflow: hidden; visibility: hidden; pointer-events: none;
-        border-radius: 50%;
-        
-        transition: 
-            width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            opacity 0.2s ease,
-            transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.8) rotate(-45deg);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        height: 0; width: 0; opacity: 0; margin: 0; padding: 0; overflow: hidden; visibility: hidden; pointer-events: none; border-radius: 50%;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform: scale(0.8) rotate(-45deg);
     }
-    
-    .reset-filters.show { 
-        visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1) rotate(0deg);
-        height: 40px; width: 40px; margin-left: 10px;
-    }
-    
-    .reset-filters svg { width: 18px; height: 18px; stroke-width: 3; }
+    .reset-filters.show { visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1) rotate(0deg); height: 42px; width: 42px; margin-left: 10px; }
+    .reset-filters svg { width: 20px; height: 20px; stroke-width: 3; }
     .reset-filters:hover { background: #fee2e2; transform: scale(1.05); }
     .reset-filters:active { transform: scale(0.88) rotate(90deg) !important; background: #fecaca; }
 
     /* КАРТОЧКА ТОВАРА */
-    .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
+    .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 3rem; }
     .product-card {
         background: white; border-radius: 2.2rem; overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex; flex-direction: column; opacity: 0; transform: translateY(30px);
         animation: fadeUp 0.5s ease forwards; border: 1px solid #f1f5f9; height: 100%;
     }
     .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }
     
-    .product-image-wrapper { position: relative; width: 100%; height: 240px; overflow: hidden; background: white; }
+    .product-image-wrapper { position: relative; width: 100%; height: 260px; overflow: hidden; background: white; }
     .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
     .product-slide { flex: 0 0 100%; width: 100%; height: 100%; padding: 1.5rem; display: flex; align-items: center; justify-content: center; }
     .product-image { max-width: 100%; max-height: 100%; object-fit: contain; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -211,39 +136,36 @@ title: "მთავარი"
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
     .product-name-box {
-        background: #f8fafc; border-radius: 1.2rem; padding: 0.8rem 1rem;
-        height: 3.8rem; display: flex; align-items: center; margin-bottom: 1.2rem;
-        border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        cursor: pointer;
+        background: #f8fafc; border-radius: 1.2rem; padding: 1rem 1.2rem;
+        height: 4.2rem; display: flex; align-items: center; margin-bottom: 1.2rem;
+        border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
     }
-    .product-name-box:hover { background: #f1f5f9; border-color: #2563eb; transform: translateY(-2px); }
-    .product-name-box:active { transform: scale(0.96) !important; background: #e2e8f0; }
+    .product-name-box:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-2px); }
+    .product-name-box:active { transform: scale(0.96) !important; }
 
     .product-name {
-        font-size: 1rem; font-weight: 800; color: #1e293b; line-height: 1.3; letter-spacing: -0.2px;
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-        overflow: hidden; text-overflow: ellipsis;
+        font-size: 1.05rem; font-weight: 800; color: #0f172a; line-height: 1.3; letter-spacing: -0.2px;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
     }
     
     .product-price-container { display: flex; flex-direction: row; align-items: baseline; gap: 10px; margin-bottom: 1.2rem; padding: 0 0.5rem; }
-    .product-price { font-size: 1.6rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; }
-    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 0.95rem; font-weight: 600; }
+    .product-price { font-size: 1.8rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; }
+    .old-price { text-decoration: line-through; color: #94a3b8; font-size: 1rem; font-weight: 700; }
 
     .btn-order {
-        background: #0f172a; color: white; border: none; padding: 1rem; border-radius: 1.2rem;
-        cursor: pointer; font-weight: 800; font-size: 1rem; transition: all 0.3s;
+        background: #0f172a; color: white; border: none; padding: 1.1rem; border-radius: 1.2rem;
+        cursor: pointer; font-weight: 800; font-size: 1.05rem; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         display: flex; align-items: center; justify-content: center; gap: 8px; outline: none;
     }
-    .btn-order:hover { background: #2563eb; }
-    .btn-order:active { transform: scale(0.96); }
+    .btn-order:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.2); }
+    .btn-order:active { transform: scale(0.96); box-shadow: none; }
 
     .slider-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 38px; height: 38px;
+        background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 40px; height: 40px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center;
         cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; outline: none;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
     .product-image-wrapper:hover .slider-arrow { opacity: 1; }
     .slider-arrow:hover { color: #2563eb; background: white; transform: translateY(-50%) scale(1.1); }
@@ -253,50 +175,49 @@ title: "მთავარი"
     /* СЕЛЕКТ */
     .custom-select { position: relative; min-width: 200px; }
     .select-trigger {
-        background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.2rem; border-radius: 2rem;
-        font-size: 0.85rem; cursor: pointer; font-weight: 700; color: #0f172a;
+        background: white; border: 1px solid #e2e8f0; padding: 0.8rem 1.4rem; border-radius: 2rem;
+        font-size: 0.9rem; cursor: pointer; font-weight: 700; color: #0f172a;
         display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; outline: none;
     }
-    .select-trigger:hover { border-color: #2563eb; }
+    .select-trigger:hover { border-color: #cbd5e1; }
     .select-trigger:active { transform: scale(0.98); }
     .select-arrow-svg { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .custom-select.open .select-arrow-svg { transform: rotate(180deg); }
     .select-options {
         position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: white;
-        border-radius: 1.2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        border-radius: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         z-index: 100; display: none; border: 1px solid #f1f5f9; overflow: hidden; animation: slideDown 0.3s ease;
     }
     .custom-select.open .select-options { display: block; }
-    .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
-    .select-option:hover { background: #f8fafc; color: #2563eb; }
+    .select-option { padding: 1rem 1.4rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #475569; }
+    .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; }
 
     @media (min-width: 641px) {
         .filters { margin-right: auto; }
     }
 
     @media (max-width: 640px) {
-        .filters-bar { flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.5rem; padding: 0.8rem; justify-content: space-between; }
+        .filters-bar { flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.5rem; padding: 0.8rem; justify-content: space-between; border-radius: 1rem; }
         .filters { flex: 0 1 auto; display: flex; align-items: center; min-width: 0; }
-        .filter-group { padding: 0.5rem 0.6rem; min-width: 0; gap: 0.4rem; }
-        .filter-group input { width: 35px; font-size: 0.8rem; }
+        .filter-group { padding: 0.5rem 0.8rem; min-width: 0; gap: 0.4rem; }
+        .filter-group input { width: 40px; font-size: 0.85rem; }
         .filter-group label { font-size: 0.65rem !important; }
         .custom-select { flex: 1 1 auto; min-width: 100px; }
-        .select-trigger { padding: 0.7rem 0.8rem; font-size: 0.8rem; }
-        .reset-filters.show { height: 36px; width: 36px; }
-        .categories-wrapper { margin-right: -0.5rem; }
+        .select-trigger { padding: 0.7rem 1rem; font-size: 0.85rem; }
+        .reset-filters.show { height: 38px; width: 38px; }
+        .categories-wrapper, .subcategories-wrapper { margin-right: -0.5rem; }
     }
 
     /* АНИМАЦИИ */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideDownSub { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); display: flex; } }
     @keyframes emptyPop { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 </style>
 
+<!-- СТРОКА ГЛАВНЫХ КАТЕГОРИЙ -->
 <div class="categories-bar">
-    <button class="menu-btn" id="openMenuBtn" title="კატეგორიები">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
-    </button>
     <div class="categories-wrapper">
         <div class="categories-fade-left"></div>
         <div class="categories" id="categoriesContainer">
@@ -313,7 +234,7 @@ title: "მთავარი"
                 სამზარეულო
             </button>
             <button class="category-btn" data-category="homecare">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><circle cx="12" cy="14" r="4"></circle><line x1="12" y1="6" x2="12.01" y2="6"></line><line x1="16" y1="6" x2="16.01" y2="6"></line></svg>
                 სახლის მოვლა
             </button>
             <button class="category-btn" data-category="selfcare">
@@ -321,7 +242,7 @@ title: "მთავარი"
                 თავის მოვლა
             </button>        
             <button class="category-btn" data-category="building">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"></path><path d="M17.64 15 22 10.64"></path><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16 4.6V3.86c0-.84-.33-1.65-.93-2.25L13.82.36l-3.53 3.53a3.2 3.2 0 0 0-.94 2.25v.86l-2.73 2.73"></path></svg>
                 მშენებლობა
             </button>  
             <button class="category-btn" data-category="computer">
@@ -333,8 +254,20 @@ title: "მთავარი"
     </div>
 </div>
 
+<!-- СТРОКА ПОДКАТЕГОРИЙ (Появляется динамически) -->
+<div class="subcategories-bar" id="subcategoriesBar">
+    <div class="subcategories-wrapper">
+        <div class="categories-fade-left"></div>
+        <div class="subcategories" id="subcategoriesContainer">
+            <!-- Кнопки подкатегорий будут сгенерированы через JS -->
+        </div>
+        <div class="categories-fade-right"></div>
+    </div>
+</div>
+
 <main>
     <div class="container">
+        <!-- ФИЛЬТРЫ -->
         <div class="filters-bar">
             <div class="filters">
                 <div class="filter-group">
@@ -347,7 +280,7 @@ title: "მთავარი"
             <div class="custom-select" id="customSortSelect">
                 <div class="select-trigger" id="selectTrigger">
                     <span id="selectedValue">დალაგება</span>
-                    <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                    <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
                 </div>
                 <div class="select-options" id="selectOptions">
                     <div class="select-option" data-value="name-asc">ყველა</div>
@@ -369,143 +302,119 @@ title: "მთავარი"
             </select>
         </div>
 
+        <!-- КАТАЛОГ -->
         <div class="catalog" id="catalogContainer"></div>
     </div>
 </main>
 
-<!-- Overlay и Центрированное Модальное меню (App-Feel) -->
-<div class="full-menu-overlay" id="menuOverlay">
-    <div class="full-menu-sidebar" id="menuSidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                კატალოგი
-            </div>
-            <button class="close-menu-btn" id="closeMenuBtn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
-        </div>
-        <div class="sidebar-content">
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="smarthome">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg>
-                    ჭკვიანი სახლი
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="smarthome">სენსორები</button>
-                    <button class="sidebar-sub-btn" data-category="smarthome">განათება</button>
-                    <button class="sidebar-sub-btn" data-category="smarthome">უსაფრთხოება</button>
-                </div>
-            </div>
-            
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="kitchen">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
-                    სამზარეულო
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="kitchen">ტექნიკა</button>
-                    <button class="sidebar-sub-btn" data-category="kitchen">ჭურჭელი</button>
-                </div>
-            </div>
-
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="homecare">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 21 1.9-1.9a1 1 0 0 0 0-1.4l-1.4-1.4a1 1 0 0 0-1.4 0L.3 18.2a1 1 0 0 0 0 1.4l1.3 1.3a1 1 0 0 0 1.4 0Z"></path><path d="m9 15 3 3"></path><path d="m15 9 3 3"></path><path d="m21 3-3 3"></path></svg>
-                    სახლის მოვლა
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="homecare">მტვერსასრუტები</button>
-                    <button class="sidebar-sub-btn" data-category="homecare">საწმენდი საშუალებები</button>
-                </div>
-            </div>
-
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="selfcare">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
-                    თავის მოვლა
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="selfcare">თმის მოვლა</button>
-                    <button class="sidebar-sub-btn" data-category="selfcare">სხეულის მოვლა</button>
-                </div>
-            </div>
-            
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="building">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a2 2 0 0 1-2.83-2.83l-3.77 3.77Z"></path><path d="m19.13 5.04-10.5 10.5a2 2 0 0 0-.57 1.23l-.78 3.93a1 1 0 0 0 1.17 1.17l3.93-.78a2 2 0 0 0 1.23-.57l10.5-10.5Z"></path><path d="m18 13-1.37-1.37"></path></svg>
-                    მშენებლობა
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="building">ხელსაწყოები</button>
-                    <button class="sidebar-sub-btn" data-category="building">მასალები</button>
-                </div>
-            </div>
-            
-            <div class="sidebar-category">
-                <div class="sidebar-category-title" data-category="computer">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                    კომპიუტერები
-                </div>
-                <div class="sidebar-subcategories">
-                    <button class="sidebar-sub-btn" data-category="computer">ლეპტოპები</button>
-                    <button class="sidebar-sub-btn" data-category="computer">აქსესუარები</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
+    // ==========================================
+    // БАЗА ДАННЫХ КАТЕГОРИЙ И ПОДКАТЕГОРИЙ
+    // ==========================================
+    const catalogStructure = {
+        smarthome: {
+            title: "ჭკვიანი სახლი",
+            subs: [
+                { id: "sensors", name: "სენსორები" },
+                { id: "lighting", name: "განათება" },
+                { id: "security", name: "უსაფრთხოება" },
+                { id: "scale", name: "ჭკვიანი სასწორები" }
+            ]
+        },
+        kitchen: {
+            title: "სამზარეულო",
+            subs: [
+                { id: "grill", name: "გრილები და ტოსტერები" },
+                { id: "kettle", name: "ელექტრო ჩაიდნები" },
+                { id: "blender", name: "ბლენდერები" },
+                { id: "coffee", name: "ყავის აპარატები" },
+                { id: "oven", name: "ღუმელები" }
+            ]
+        },
+        homecare: {
+            title: "სახლის მოვლა",
+            subs: [
+                { id: "vacuum", name: "მტვერსასრუტები" },
+                { id: "cleaning", name: "საწმენდი საშუალებები" },
+                { id: "iron", name: "უთოები" }
+            ]
+        },
+        selfcare: {
+            title: "თავის მოვლა",
+            subs: [
+                { id: "hair", name: "თმის მოვლა" },
+                { id: "body", name: "სხეულის მოვლა" },
+                { id: "scale", name: "სასწორები" }
+            ]
+        },
+        building: {
+            title: "მშენებლობა",
+            subs: [
+                { id: "tools", name: "ხელსაწყოები" },
+                { id: "materials", name: "სამშენებლო მასალები" },
+                { id: "laser", name: "ლაზერული აპარატები" }
+            ]
+        },
+        computer: {
+            title: "კომპიუტერები",
+            subs: [
+                { id: "laptop", name: "ლეპტოპები" },
+                { id: "accessories", name: "აქსესუარები" },
+                { id: "network", name: "ქსელური მოწყობილობები" }
+            ]
+        }
+    };
+
     let currentCategory = 'all';
+    let currentSubcategory = 'all';
     let xDown = null;
 
     const container = document.getElementById('catalogContainer');
+    const subcategoriesBar = document.getElementById('subcategoriesBar');
+    const subcategoriesContainer = document.getElementById('subcategoriesContainer');
+    
     const minPriceInput = document.getElementById('minPrice');
     const maxPriceInput = document.getElementById('maxPrice');
     const sortSelect = document.getElementById('sortSelect');
     const resetBtn = document.getElementById('resetFilters');
     const categoryBtns = document.querySelectorAll('.category-btn');
-    
-    // Логика меню
-    const openMenuBtn = document.getElementById('openMenuBtn');
-    const closeMenuBtn = document.getElementById('closeMenuBtn');
-    const menuOverlay = document.getElementById('menuOverlay');
-    const menuSidebar = document.getElementById('menuSidebar');
 
-    function toggleMenu(show) {
-        if (show) {
-            menuOverlay.classList.add('active');
-            menuSidebar.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        } else {
-            menuOverlay.classList.remove('active');
-            menuSidebar.classList.remove('active');
-            document.body.style.overflow = '';
+    // ==========================================
+    // ЛОГИКА ОТРИСОВКИ ПОДКАТЕГОРИЙ
+    // ==========================================
+    function renderSubcategories(catId) {
+        if (catId === 'all' || !catalogStructure[catId] || catalogStructure[catId].subs.length === 0) {
+            subcategoriesBar.style.display = 'none';
+            currentSubcategory = 'all';
+            return;
         }
+
+        let html = `<button class="sub-category-btn active" data-sub="all">ყველა</button>`;
+        catalogStructure[catId].subs.forEach(sub => {
+            html += `<button class="sub-category-btn" data-sub="${sub.id}">${sub.name}</button>`;
+        });
+        
+        subcategoriesContainer.innerHTML = html;
+        subcategoriesBar.style.display = 'flex';
+        subcategoriesContainer.scrollLeft = 0; // Сбрасываем скролл в начало
+
+        // Слушатели кликов по подкатегориям
+        subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSubcategory = btn.dataset.sub;
+                
+                // Центрируем выбранную подкатегорию
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                renderProducts();
+            });
+        });
     }
 
-    openMenuBtn.addEventListener('click', () => toggleMenu(true));
-    closeMenuBtn.addEventListener('click', () => toggleMenu(false));
-    menuOverlay.addEventListener('click', (e) => {
-        if (e.target === menuOverlay) toggleMenu(false);
-    });
-
-    // Обработка кликов внутри бокового меню
-    document.querySelectorAll('.sidebar-sub-btn, .sidebar-category-title').forEach(item => {
-        item.addEventListener('click', function() {
-            const cat = this.dataset.category;
-            if (cat) {
-                const mainBtn = document.querySelector(`.category-btn[data-category="${cat}"]`);
-                if (mainBtn) {
-                    mainBtn.click();
-                    mainBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                }
-            }
-            toggleMenu(false);
-        });
-    });
-
+    // ==========================================
+    // ЛОГИКА ОТРИСОВКИ КАТАЛОГА (ФИЛЬТРАЦИЯ)
+    // ==========================================
     function renderProducts() {
         const products = window.allProducts || [];
         let filtered = [...products];
@@ -519,19 +428,28 @@ title: "მთავარი"
             resetBtn.classList.remove('show');
         }
 
+        // Фильтр по Главной категории
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
         
+        // Фильтр по Подкатегории
+        if (currentSubcategory !== 'all') {
+            filtered = filtered.filter(p => p.subcategories && p.subcategories.includes(currentSubcategory));
+        }
+        
+        // Фильтр по цене
         if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
         if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
         
+        // Сортировка
         const sortBy = sortSelect.value;
         if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
         if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
         if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
         
+        // Если ничего не найдено
         if (filtered.length === 0) {
             container.innerHTML = `
                 <div style="grid-column:1/-1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">
@@ -544,16 +462,18 @@ title: "მთავარი"
             return;
         }
         
+        // Отрисовка карточек
         container.innerHTML = filtered.map(product => {
             const imgs = product.images || (product.image ? [product.image] : []);
             const hasMultipleImages = imgs.length > 1;
             let discountBadge = '';
+            
             if (product.oldPrice) {
                 const oldVal = parseInt(product.oldPrice.replace(/[^0-9]/g, ''));
                 const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
                 if (oldVal > newVal) {
                     const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 12px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
+                    discountBadge = `<div style="position:absolute; top:16px; left:16px; background:#ef4444; color:white; padding:6px 12px; border-radius:12px; font-size:0.8rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
                 }
             }
             
@@ -596,6 +516,9 @@ title: "მთავარი"
         `}).join('');
     }
 
+    // ==========================================
+    // СЛАЙДЕР ИЗОБРАЖЕНИЙ (СВАЙП)
+    // ==========================================
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         const track = document.getElementById(`track-${productId}`);
@@ -615,24 +538,42 @@ title: "მთავარი"
         xDown = null;
     };
 
-    // Логика цен: строгая перекрестная проверка
+    // ==========================================
+    // ЛОГИКА ИНТЕРФЕЙСА (КЛИКИ И URL)
+    // ==========================================
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Переключаем визуал главных кнопок
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Задаем категории
+            currentCategory = btn.dataset.category;
+            currentSubcategory = 'all'; // Сбрасываем подкатегорию
+            
+            // Перерисовываем строку подкатегорий
+            renderSubcategories(currentCategory);
+            
+            // Перерисовываем товары
+            renderProducts();
+            
+            // Плавный скролл к кнопке
+            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        });
+    });
+
+    // Обработчики цен
     minPriceInput.addEventListener('change', () => {
         if (minPriceInput.value < 0) minPriceInput.value = 0;
-        let min = parseInt(minPriceInput.value);
-        let max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max) && min > max) {
-            maxPriceInput.value = min;
-        }
+        let min = parseInt(minPriceInput.value), max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max) && min > max) maxPriceInput.value = min;
         renderProducts();
     });
     
     maxPriceInput.addEventListener('change', () => {
         if (maxPriceInput.value < 0) maxPriceInput.value = 0;
-        let min = parseInt(minPriceInput.value);
-        let max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max) && max < min) {
-            minPriceInput.value = max;
-        }
+        let min = parseInt(minPriceInput.value), max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max) && max < min) minPriceInput.value = max;
         renderProducts();
     });
 
@@ -647,22 +588,7 @@ title: "მთავარი"
         renderProducts();
     });
     
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentCategory = btn.dataset.category;
-            renderProducts();
-        });
-    });
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/catalog.json').then(res => res.json()).then(data => {
-            window.allProducts = data.products.map(p => ({ ...p, priceValue: parseInt(p.price.replace(/[^0-9]/g, '')) }));
-            renderProducts();
-        });
-    });
-    
+    // Кастомный селект сортировки
     const customSelect = document.getElementById('customSortSelect');
     const selectTrigger = document.getElementById('selectTrigger');
     if (selectTrigger) {
@@ -678,4 +604,52 @@ title: "მთავარი"
         });
         document.addEventListener('click', () => customSelect.classList.remove('open'));
     }
+
+    // ==========================================
+    // ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/catalog.json').then(res => res.json()).then(data => {
+            // Подготавливаем базу товаров
+            window.allProducts = data.products.map(p => ({ 
+                ...p, 
+                priceValue: parseInt(p.price.replace(/[^0-9]/g, '')) 
+            }));
+            
+            // Читаем параметры из URL (например: /?category=kitchen&sub=grill)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlCat = urlParams.get('category');
+            const urlSub = urlParams.get('sub');
+
+            if (urlCat) {
+                const targetBtn = document.querySelector(`.category-btn[data-category="${urlCat}"]`);
+                if (targetBtn) {
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    targetBtn.classList.add('active');
+                    currentCategory = urlCat;
+                    
+                    // Центрируем кнопку
+                    setTimeout(() => targetBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }), 100);
+                }
+            }
+
+            // Отрисовываем подкатегории в зависимости от Главной
+            renderSubcategories(currentCategory);
+
+            // Если в URL была указана еще и подкатегория
+            if (urlSub && currentCategory !== 'all') {
+                const targetSubBtn = subcategoriesContainer.querySelector(`.sub-category-btn[data-sub="${urlSub}"]`);
+                if (targetSubBtn) {
+                    subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
+                    targetSubBtn.classList.add('active');
+                    currentSubcategory = urlSub;
+                    
+                    setTimeout(() => targetSubBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }), 200);
+                }
+            }
+
+            // Финальный рендер товаров
+            renderProducts();
+        });
+    });
 </script>
