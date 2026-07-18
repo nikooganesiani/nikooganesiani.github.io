@@ -53,7 +53,7 @@ title: "მთავარი"
 
     /* ФИЛЬТРЫ */
     .filters-bar {
-        display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
+        display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
         margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
         position: relative; z-index: 10;
@@ -69,7 +69,7 @@ title: "მთავარი"
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 50px; color: #0f172a; text-align: center; }
     
-    /* КНОПКА СБРОСА - КРУГЛАЯ (СПРАВА) */
+    /* КНОПКА СБРОСА - КРУГЛАЯ (В КОНЦЕ) */
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
         display: flex; align-items: center; justify-content: center;
@@ -82,7 +82,7 @@ title: "მთავარი"
         transition: 
             width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
             height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-            margin 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+            margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
             opacity 0.2s ease,
             transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         transform: scale(0.8) rotate(-45deg);
@@ -90,15 +90,12 @@ title: "მთავარი"
     
     .reset-filters.show { 
         visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1) rotate(0deg);
-        height: 40px; width: 40px; margin-left: 0;
+        height: 40px; width: 40px; margin-left: 10px;
     }
     
     .reset-filters svg { width: 18px; height: 18px; stroke-width: 3; }
-    .reset-filters:hover { background: #fee2e2; transform: scale(1.05) rotate(15deg); }
-    .reset-filters:active { 
-        transform: scale(0.9) rotate(90deg) !important; 
-        background: #fecaca; 
-    }
+    .reset-filters:hover { background: #fee2e2; transform: scale(1.05); }
+    .reset-filters:active { transform: scale(0.88) rotate(90deg) !important; background: #fecaca; }
 
     /* КАРТОЧКА ТОВАРА */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
@@ -144,7 +141,7 @@ title: "მთავარი"
     .btn-order:hover { background: #2563eb; }
     .btn-order:active { transform: scale(0.96); }
 
-    /* СТРЕЛКИ СЛАЙДЕРА */
+    /* СТРЕЛКИ СЛАЙДЕРА - ПОЛНАЯ ИНТЕРАКТИВНОСТЬ */
     .slider-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
         background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 38px; height: 38px;
@@ -155,7 +152,7 @@ title: "მთავარი"
     }
     .product-image-wrapper:hover .slider-arrow { opacity: 1; }
     .slider-arrow:hover { color: #2563eb; background: white; transform: translateY(-50%) scale(1.1); }
-    .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f8fafc; }
+    .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f1f5f9; }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
     /* СЕЛЕКТ */
@@ -178,6 +175,10 @@ title: "მთავარი"
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
 
+    @media (min-width: 641px) {
+        .filters { margin-right: auto; } /* Магия для разделения групп на ПК */
+    }
+
     @media (max-width: 640px) {
         .filters-bar { flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.5rem; padding: 0.8rem; justify-content: space-between; }
         .filters { flex: 0 1 auto; display: flex; align-items: center; min-width: 0; }
@@ -186,7 +187,7 @@ title: "მთავარი"
         .filter-group label { font-size: 0.65rem !important; }
         .custom-select { flex: 1 1 auto; min-width: 100px; }
         .select-trigger { padding: 0.7rem 0.8rem; font-size: 0.8rem; }
-        .reset-filters.show { height: 36px; width: 36px; margin-left: 0; }
+        .reset-filters.show { height: 36px; width: 36px; }
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -383,19 +384,23 @@ title: "მთავარი"
         xDown = null;
     };
 
-    // Логика цен: перекрестная проверка
+    // Логика цен: строгая перекрестная проверка
     minPriceInput.addEventListener('change', () => {
         if (minPriceInput.value < 0) minPriceInput.value = 0;
-        if (maxPriceInput.value !== '' && parseInt(minPriceInput.value) > parseInt(maxPriceInput.value)) {
-            maxPriceInput.value = minPriceInput.value;
+        let min = parseInt(minPriceInput.value);
+        let max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max) && min > max) {
+            maxPriceInput.value = min;
         }
         renderProducts();
     });
     
     maxPriceInput.addEventListener('change', () => {
         if (maxPriceInput.value < 0) maxPriceInput.value = 0;
-        if (minPriceInput.value !== '' && parseInt(maxPriceInput.value) < parseInt(minPriceInput.value)) {
-            minPriceInput.value = maxPriceInput.value;
+        let min = parseInt(minPriceInput.value);
+        let max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max) && max < min) {
+            minPriceInput.value = max;
         }
         renderProducts();
     });
