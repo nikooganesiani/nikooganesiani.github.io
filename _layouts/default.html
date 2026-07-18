@@ -1,3 +1,5 @@
+--- START OF FILE Paste July 18, 2026 - 11:24AM ---
+
 ---
 # Этот блок обязателен для Jekyll, можно оставить пустым
 ---
@@ -52,35 +54,35 @@
         .consult-btn-header{background:#fef3c7;color:#92400e;border:none;padding:0.5rem 1rem;border-radius:2rem;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s}
         .consult-btn-header:hover{background:#fde68a;transform:scale(1.02)}
 
-        .modal,.consult-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:center}
-        .modal.active,.consult-modal.active{display:flex}
-        .modal-content{background:white;max-width:450px;width:90%;border-radius:1.5rem;padding:1.8rem;max-height:90vh;overflow-y:auto}
-        .modal-content h3{font-size:1.5rem;margin-bottom:0.5rem;text-align:center}
-        .close-modal{background:#e2e8f0;border:none;padding:0.7rem;width:100%;border-radius:1rem;cursor:pointer;margin-top:1rem;font-weight:500}
-        .close-modal:hover{background:#cbd5e1}
-        .contacts-list{display:flex;flex-direction:column;gap:1rem;margin:1.5rem 0}
-        .contact-item{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:#f1f5f9;border-radius:1rem;text-decoration:none;color:#1e293b;transition:all 0.2s}
-        .contact-item:hover{background:#e2e8f0;transform:translateX(5px)}
-        .contact-icon{font-size:1.5rem}
-        .contact-label{font-size:0.7rem;color:#64748b}
-        .contact-value{font-weight:600;font-size:1rem}
-        .input-field{width:100%;padding:0.9rem;border:2px solid #e2e8f0;border-radius:1rem;font-size:1rem;margin-bottom:1rem;transition:all 0.2s;}
-        .input-field:focus{outline:none;border-color:#2563eb;}
-        .btn-submit{background:#2563eb;color:white;border:none;padding:0.9rem;width:100%;border-radius:1rem;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
-        .btn-submit:hover{background:#1d4ed8;}
+        .modal,.consult-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15, 23, 42, 0.6);backdrop-filter: blur(8px);z-index:1000;justify-content:center;align-items:center;opacity:0;transition:opacity 0.3s ease;}
+        .modal.active,.consult-modal.active{display:flex;opacity:1;}
+        .modal-content{background:white;max-width:450px;width:90%;border-radius:2rem;padding:2rem;max-height:90vh;overflow-y:auto;box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);transform: scale(0.95);transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);}
+        .modal.active .modal-content, .consult-modal.active .modal-content{transform: scale(1);}
+        .modal-content h3{font-size:1.5rem;font-weight: 800;color: #0f172a;margin-bottom:1.5rem;text-align:center;letter-spacing: -0.5px;}
+        .close-modal{background:#f1f5f9;border:none;padding:0.8rem;width:100%;border-radius:1.2rem;cursor:pointer;margin-top:1rem;font-weight:600;color: #64748b;transition:all 0.2s}
+        .close-modal:hover{background:#e2e8f0;color: #1e293b;}
+        .contacts-list{display:flex;flex-direction:column;gap:0.8rem;margin:1.5rem 0}
+        .contact-item{display:flex;align-items:center;gap:1.2rem;padding:1rem;background:#f8fafc;border: 1px solid #f1f5f9;border-radius:1.2rem;text-decoration:none;color:#1e293b;transition:all 0.3s cubic-bezier(0.4, 0, 0.2, 1)}
+        .contact-item:hover{background:white;border-color: #2563eb;box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);transform: translateY(-2px)}
+        .contact-icon-box{width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:white;border-radius:1rem;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);color: #2563eb;flex-shrink: 0;}
+        .contact-label{font-size:0.75rem;font-weight: 600;color:#64748b;text-transform: uppercase;letter-spacing: 0.5px;margin-bottom: 2px;}
+        .contact-value{font-weight:700;font-size:1rem;color: #0f172a;}
+        .input-field{width:100%;padding:1rem 1.2rem;border:2px solid #f1f5f9;border-radius:1.2rem;font-size:1rem;margin-bottom:1rem;transition:all 0.2s;background: #f8fafc;}
+        .input-field:focus{outline:none;border-color:#2563eb;background: white;box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);}
+        .btn-submit{background:#2563eb;color:white;border:none;padding:1.1rem;width:100%;border-radius:1.2rem;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);}
+        .btn-submit:hover{background:#1d4ed8;transform: translateY(-1px);box-shadow: 0 12px 20px -3px rgba(37, 99, 235, 0.4);}
         .btn-submit:disabled{opacity:0.6;cursor:not-allowed;}
-        .spinner{border:4px solid #f3f3f3;border-top:4px solid #2563eb;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 1rem;}
+        .spinner{border:4px solid rgba(37, 99, 235, 0.1);border-top:4px solid #2563eb;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 1rem;}
         @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-        .error{color:#721c24;background:#f8d7da;padding:15px;border-radius:5px;margin:10px 0;}
+        .error{color:#991b1b;background:#fef2f2;padding:1rem;border-radius:1rem;margin:10px 0;font-weight: 500;text-align: center;border: 1px solid #fee2e2;}
 
-        /* ===== СТАТУС-БЕЙДЖИ ДЛЯ ТРЕКИНГА (ДОБАВЛЕНО) ===== */
-        .status-badge{display:inline-block;padding:10px 28px;border-radius:50px;font-weight:700;font-size:1rem;letter-spacing:0.3px;box-shadow:0 4px 15px rgba(0,0,0,0.08);transition:all 0.3s ease;backdrop-filter:blur(4px)}
-        .status-badge-delivered{background:linear-gradient(135deg,#10b981,#059669);color:white;box-shadow:0 4px 20px rgba(16,185,129,0.35)}
-        .status-badge-processing{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;box-shadow:0 4px 20px rgba(245,158,11,0.35)}
-        .status-badge-shipping{background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;box-shadow:0 4px 20px rgba(59,130,246,0.35);animation:pulse-shipping 2s ease-in-out infinite}
-        @keyframes pulse-shipping{0%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}50%{box-shadow:0 4px 30px rgba(59,130,246,0.55)}100%{box-shadow:0 4px 20px rgba(59,130,246,0.35)}}
-        .status-badge-unknown{background:linear-gradient(135deg,#9ca3af,#6b7280);color:white;box-shadow:0 4px 20px rgba(156,163,175,0.3)}
-        @media(max-width:640px){.status-badge{padding:8px 20px;font-size:0.85rem;border-radius:40px}}
+        /* ===== СТАТУС-БЕЙДЖИ ДЛЯ ТРЕКИНГА (ОБНОВЛЕНО) ===== */
+        .status-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:12px 24px;border-radius:50px;font-weight:700;font-size:0.95rem;letter-spacing:0.3px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);transition:all 0.3s ease;border: 1px solid rgba(255,255,255,0.2)}
+        .status-badge-delivered{background:linear-gradient(135deg,#10b981,#059669);color:white;}
+        .status-badge-processing{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;}
+        .status-badge-shipping{background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;animation:pulse-shipping 2s ease-in-out infinite}
+        @keyframes pulse-shipping{0%{transform: scale(1)}50%{transform: scale(1.03)}100%{transform: scale(1)}}
+        .status-badge-unknown{background:linear-gradient(135deg,#9ca3af,#6b7280);color:white;}
 
         footer{text-align:center;padding:2rem 1.5rem;margin-top:2rem;background:white;border-top:1px solid #e2edf2}
         .footer-content{max-width:1280px;margin:0 auto}
@@ -101,190 +103,138 @@
         .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
         .tracking-btn-header{background:#e0e7ff;border:none;padding:0.5rem 1.2rem;border-radius:2rem;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;color:#1e3a8a;display:flex;align-items:center;gap:0.4rem;}
         .tracking-btn-header:hover{background:#c7d2fe;transform:scale(1.02);}
-        .timeline-vertical{display:flex;flex-direction:column;gap:0.9rem;margin:0.5rem 0 0 0;padding:0;}
-        .timeline-step-v{display:flex;align-items:flex-start;gap:0.8rem;padding:0;margin:0;}
-        .timeline-dot-v{width:10px;height:10px;border-radius:50%;flex-shrink:0;background:white;border:2.5px solid #cbd5e1;transition:all 0.3s ease;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin:0;margin-top:1px;}
-        .timeline-step-v.past .timeline-dot-v{background:#94a3b8;border-color:#94a3b8;box-shadow:0 1px 3px rgba(148,163,184,0.3);}
-        .timeline-step-v.current .timeline-dot-v{background:#2563eb;border-color:#2563eb;animation:breathe 2s ease-in-out infinite;}
-        @keyframes breathe{0%{box-shadow:0 0 0 0 rgba(37,99,235,0.5)}50%{box-shadow:0 0 0 8px rgba(37,99,235,0.15)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
-        .timeline-step-v.future .timeline-dot-v{background:white;border-color:#cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.03);}
-        .timeline-content-v{flex:1;min-width:0;padding:0;margin:0;display:flex;flex-direction:column;gap:0.1rem;min-height:2.8rem;justify-content:flex-start;}
-        .timeline-date-v{font-size:0.65rem;color:#94a3b8;font-weight:500;line-height:1.2;margin:0;padding:0;min-height:1rem;}
-        .timeline-text-v{font-size:0.8rem;font-weight:500;line-height:1.3;color:#1e293b;margin:0;padding:0;transition:color 0.3s;}
-        .timeline-step-v.past .timeline-text-v{color:#94a3b8;font-weight:400;}
-        .timeline-step-v.past .timeline-date-v{color:#cbd5e1;}
-        .timeline-step-v.current .timeline-text-v{color:#1e40af;font-weight:700;}
+        
+        /* TIMELINE V2 */
+        .timeline-vertical{display:flex;flex-direction:column;gap:0;margin:0.5rem 0;padding:0 0.5rem;}
+        .timeline-step-v{display:flex;align-items:stretch;gap:1.2rem;position: relative;}
+        .timeline-indicator{display: flex;flex-direction: column;align-items: center;width: 14px;}
+        .timeline-dot-v{width:14px;height:14px;border-radius:50%;flex-shrink:0;background:white;border:3px solid #e2e8f0;transition:all 0.3s ease;z-index: 2;}
+        .timeline-line{width: 2px;flex-grow: 1;background: #f1f5f9;margin: 4px 0;}
+        .timeline-step-v:last-child .timeline-line {display: none;}
+        
+        .timeline-step-v.past .timeline-dot-v{background:#94a3b8;border-color:#94a3b8;}
+        .timeline-step-v.past .timeline-line{background:#94a3b8;}
+        .timeline-step-v.current .timeline-dot-v{background:#2563eb;border-color:#2563eb;box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.15);}
+        
+        .timeline-content-v{flex:1;padding-bottom: 1.5rem;}
+        .timeline-date-v{font-size:0.75rem;color:#94a3b8;font-weight:600;margin-bottom: 2px;}
+        .timeline-text-v{font-size:0.9rem;font-weight:600;color:#334155;}
+        .timeline-step-v.current .timeline-text-v{color:#0f172a;font-weight: 800;}
         .timeline-step-v.current .timeline-date-v{color:#2563eb;}
-        .timeline-step-v.future .timeline-text-v{color:#94a3b8;font-weight:400;}
-        .timeline-step-v.future .timeline-date-v{color:#cbd5e1;}
-        @media(max-width:640px){.timeline-dot-v{width:20px;height:20px;border-width:2px;margin-top:1px}.timeline-text-v{font-size:0.75rem}.timeline-date-v{font-size:0.6rem}.timeline-step-v{gap:0.6rem}.timeline-vertical{gap:0.7rem}.timeline-content-v{min-height:2.4rem}}
 
         /* ===== СТИЛИ ДЛЯ ФОРМЫ ЗАКАЗА ===== */
+        .order-form-modal .product-card-preview {
+            background: #f8fafc;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #f1f5f9;
+        }
         .order-form-modal .product-image-modal {
-            max-width: 120px;
-            max-height: 120px;
+            max-width: 140px;
+            max-height: 140px;
             object-fit: contain;
-            border-radius: 0.5rem;
-            margin: 0.5rem auto;
+            border-radius: 1rem;
+            margin: 0 auto;
             display: block;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.08));
         }
         .order-form-modal .product-price-modal {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
             color: #2563eb;
             text-align: center;
-            margin: 0.3rem 0 0.8rem 0;
+            margin-top: 1rem;
         }
         .order-form-modal .product-name-modal {
             font-size: 1.1rem;
-            font-weight: 600;
-            color: #0f172a;
+            font-weight: 700;
+            color: #1e293b;
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
         }
         .phone-wrapper {
             position: relative;
             display: flex;
             align-items: center;
             background: #ffffff;
-            border-radius: 1rem;
-            border: 2px solid #e2e8f0;
+            border-radius: 1.2rem;
+            border: 2px solid #f1f5f9;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 1rem;
             overflow: hidden;
         }
         .phone-wrapper:focus-within {
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
         .phone-prefix {
-            padding: 0.9rem 0 0.9rem 0.3rem;
+            padding: 1rem 0.8rem;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #1e293b;
-            background: #f1f5f9;
-            border-right: 2px solid #e2e8f0;
+            background: #f8fafc;
+            border-right: 2px solid #f1f5f9;
             user-select: none;
-            white-space: nowrap;
-            min-width: 50px;
         }
         .phone-input {
             border: none !important;
-            padding: 0.9rem 1rem !important;
+            padding: 1rem !important;
             margin-bottom: 0 !important;
             border-radius: 0 !important;
             flex: 1;
-            min-width: 0;
-        }
-        .phone-input:focus {
-            outline: none;
-            box-shadow: none !important;
-        }
-        .phone-wrapper .input-field {
-            border: none !important;
-            box-shadow: none !important;
-        }
-        .phone-wrapper.invalid {
-            border-color: #ff6b6b;
-            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
-        }
-        .phone-wrapper.valid {
-            border-color: #51cf66;
-            box-shadow: 0 0 0 3px rgba(81, 207, 102, 0.1);
+            background: transparent !important;
         }
 
         /* ===== АНИМАЦИИ ДЛЯ ПОДТВЕРЖДЕНИЯ ===== */
         .order-confirm-icon-wrapper {
             position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1rem;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .order-confirm-circle {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            background: conic-gradient(from 0deg, #16a34a, #22c55e, #16a34a);
-            animation: rotateCircle 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-        }
-        .order-confirm-inner {
-            position: absolute;
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: white;
+            background: #f0fdf4;
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: popInner 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.4s both;
         }
-        .order-confirm-check {
-            position: relative;
-            width: 32px;
-            height: 32px;
-        }
-        .order-confirm-check::before {
-            content: '';
-            position: absolute;
-            left: 2px;
-            top: 8px;
-            width: 26px;
-            height: 8px;
-            border-left: 4px solid #16a34a;
-            border-bottom: 4px solid #16a34a;
-            transform: rotate(-45deg) scale(0);
-            animation: drawCheck 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.8s forwards;
-        }
-        .order-confirm-particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        .particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
+        .order-confirm-inner {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            background: #16a34a;
-            opacity: 0;
+            background: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
-        .particle:nth-child(1){top:-8px;left:50%;animation:particle1 0.8s ease-out 0.3s forwards}
-        .particle:nth-child(2){top:20%;right:-10px;animation:particle2 0.8s ease-out 0.35s forwards}
-        .particle:nth-child(3){bottom:-8px;left:50%;animation:particle3 0.8s ease-out 0.4s forwards}
-        .particle:nth-child(4){top:20%;left:-10px;animation:particle4 0.8s ease-out 0.45s forwards}
-        .particle:nth-child(5){top:-5px;right:0px;animation:particle5 0.8s ease-out 0.5s forwards}
-        .particle:nth-child(6){bottom:-5px;left:0px;animation:particle6 0.8s ease-out 0.55s forwards}
-        @keyframes rotateCircle{0%{transform:rotate(0deg) scale(0.3);opacity:0}50%{transform:rotate(180deg) scale(1.1);opacity:1}100%{transform:rotate(360deg) scale(1);opacity:1}}
-        @keyframes popInner{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
-        @keyframes drawCheck{0%{transform:rotate(-45deg) scale(0)}100%{transform:rotate(-45deg) scale(1)}}
-        @keyframes particle1{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(0,-30px) scale(0)}}
-        @keyframes particle2{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(20px,-20px) scale(0)}}
-        @keyframes particle3{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(0,30px) scale(0)}}
-        @keyframes particle4{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(-20px,-20px) scale(0)}}
-        @keyframes particle5{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(15px,-25px) scale(0)}}
-        @keyframes particle6{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(-15px,25px) scale(0)}}
-        .order-confirm-title{font-size:1.8rem;margin-bottom:0.5rem;text-align:center;color:#16a34a;animation:fadeUpText 0.6s ease 0.6s both}
-        @keyframes fadeUpText{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-        .order-confirm-details{background:#f0fdf4;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;animation:fadeInDetails 0.6s ease 0.5s both}
-        @keyframes fadeInDetails{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
-        .order-confirm-row{display:flex;justify-content:space-between;margin-bottom:0.5rem;padding:0.4rem 0;border-bottom:1px solid #e5f4e8}
-        .order-confirm-row:last-child{border-bottom:none;margin-bottom:0}
-        .order-confirm-label{color:#64748b;font-weight:500}
-        .order-confirm-value{font-weight:600;color:#0f172a}
-        .order-confirm-divider{border-top:2px dashed #bbf7d0;margin:0.8rem 0;padding-top:0.8rem}
-        .order-confirm-price{font-weight:700;font-size:1.3rem;color:#16a34a}
-        .order-confirm-message{text-align:center;color:#475569;font-size:0.95rem;margin-bottom:1rem;animation:fadeUpText 0.6s ease 0.7s both}
-        .order-confirm-btn{background:#16a34a;color:white;border:none;padding:0.9rem;width:100%;border-radius:1rem;cursor:pointer;font-weight:600;font-size:1.1rem;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);animation:fadeUpText 0.6s ease 0.8s both}
-        .order-confirm-btn:hover{background:#15803d;transform:translateY(-2px);box-shadow:0 8px 25px rgba(22,163,74,0.3)}
-        .order-confirm-btn:active{transform:scale(0.95)}
+        .order-confirm-check-svg {
+            width: 35px;
+            height: 35px;
+            color: white;
+            stroke-width: 4;
+        }
+        
+        .order-confirm-title{font-size:1.8rem;font-weight: 800;margin-bottom:0.5rem;text-align:center;color:#0f172a;}
+        .order-confirm-details{background:#f8fafc;border-radius:1.5rem;padding:1.5rem;margin-bottom:1.5rem;border: 1px dashed #e2e8f0;}
+        .order-confirm-row{display:flex;justify-content:space-between;margin-bottom:0.6rem;padding-bottom: 0.6rem;border-bottom:1px solid #f1f5f9}
+        .order-confirm-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom: 0;}
+        .order-confirm-label{color:#64748b;font-weight:600;font-size: 0.9rem;}
+        .order-confirm-value{font-weight:700;color:#0f172a;font-size: 0.95rem;}
+        .order-confirm-price{font-weight:800;font-size:1.4rem;color:#2563eb}
+        .order-confirm-message{text-align:center;color:#64748b;font-size:0.95rem;margin-bottom:1.5rem;line-height: 1.5;}
+        
     @keyframes statusPulse {
     0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-    70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 .status-online {
@@ -304,10 +254,22 @@
         <div class="modal-content">
             <h3>ჩვენი კონტაქტები</h3>
             <div class="contacts-list">
-                <a href="tel:+995551178990" class="contact-item"><span class="contact-icon">📞</span><div><div class="contact-label">ტელეფონი</div><div class="contact-value">+995 551 17 89 90</div></div></a>
-                <a href="https://wa.me/995551178990" class="contact-item"><span class="contact-icon">💚</span><div><div class="contact-label">WhatsApp</div><div class="contact-value">+995 551 17 89 90</div></div></a>
-                <a href="https://www.facebook.com/enkaelectronics" class="contact-item"><span class="contact-icon">📘</span><div><div class="contact-label">Facebook</div><div class="contact-value">ENKA Electronics</div></div></a>
-                <a href="mailto:enka.electronics.ge@gmail.com" class="contact-item"><span class="contact-icon">✉️</span><div><div class="contact-label">ელ. ფოსტა</div><div class="contact-value">enka.electronics.ge@gmail.com</div></div></a>
+                <a href="tel:+995551178990" class="contact-item">
+                    <div class="contact-icon-box"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div>
+                    <div><div class="contact-label">ტელეფონი</div><div class="contact-value">+995 551 17 89 90</div></div>
+                </a>
+                <a href="https://wa.me/995551178990" class="contact-item">
+                    <div class="contact-icon-box" style="color: #25d366;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div>
+                    <div><div class="contact-label">WhatsApp</div><div class="contact-value">+995 551 17 89 90</div></div>
+                </a>
+                <a href="https://www.facebook.com/enkaelectronics" class="contact-item">
+                    <div class="contact-icon-box" style="color: #1877f2;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></div>
+                    <div><div class="contact-label">Facebook</div><div class="contact-value">ENKA Electronics</div></div>
+                </a>
+                <a href="mailto:enka.electronics.ge@gmail.com" class="contact-item">
+                    <div class="contact-icon-box" style="color: #ea4335;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
+                    <div><div class="contact-label">ელ. ფოსტა</div><div class="contact-value">enka.ge@gmail.com</div></div>
+                </a>
             </div>
             <button class="close-modal" id="closeConsultModal">დახურვა</button>
         </div>
@@ -317,65 +279,69 @@
     <div class="modal" id="trackingModal">
         <div class="modal-content">
             <h3>შეკვეთის სტატუსი</h3>
-            <input type="text" id="trackingOrderId" class="input-field" placeholder="TNENKAElectronics...">
+            <div style="position: relative; margin-bottom: 1rem;">
+                <input type="text" id="trackingOrderId" class="input-field" placeholder="TNENKAElectronics..." style="margin-bottom: 0; padding-left: 3rem;">
+                <div style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #94a3b8;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                </div>
+            </div>
             <button id="trackingCheckBtn" class="btn-submit">შემოწმება</button>
             <div id="trackingResult" style="margin-top:1.5rem;display:none;"></div>
-            <div id="trackingLoading" style="display:none;text-align:center;margin:1rem 0;"><div class="spinner"></div><p>⏳ იტვირთება...</p></div>
+            <div id="trackingLoading" style="display:none;text-align:center;margin:1rem 0;"><div class="spinner"></div><p style="color: #64748b; font-weight: 500;">⏳ იტვირთება...</p></div>
             <button class="close-modal" id="closeTrackingModal">დახურვა</button>
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА ДЛЯ ФОРМЫ ЗАКАЗА (ОТДЕЛЬНАЯ) ===== -->
+    <!-- ===== МОДАЛКА ДЛЯ ФОРМЫ ЗАКАЗА ===== -->
     <div class="modal order-form-modal" id="orderFormModal">
-        <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
-<div style="text-align:center;margin-bottom:1rem;">
-    <div style="font-size:2.5rem;margin-bottom:0.3rem;">📦</div>
-    <div class="product-name-modal" id="formProductName">Товар</div>
-    
-    <!-- Главное фото в модалке -->
-    <img class="product-image-modal" id="formProductImage" src="" alt="Товар">
-    
-    <!-- ДОБАВЛЕНО: Контейнер для карусели в модалке -->
-    <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
-    
-    <div class="product-price-modal" id="formProductPrice">0 ₾</div>
-</div>
+        <div class="modal-content">
+            <div class="product-card-preview">
+                <img class="product-image-modal" id="formProductImage" src="" alt="Товар">
+                <div class="product-name-modal" id="formProductName">Товар</div>
+                <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
+                <div class="product-price-modal" id="formProductPrice">0 ₾</div>
+            </div>
+
             <form id="quickOrderForm">
-                <input type="text" id="quickName" class="input-field" placeholder="👤 თქვენი სახელი" required autocomplete="name">
+                <input type="text" id="quickName" class="input-field" placeholder="თქვენი სახელი" required autocomplete="name">
                 <div class="phone-wrapper">
                     <span class="phone-prefix">+995</span>
                     <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="off">
                 </div>
-                <button type="submit" class="btn-submit" style="background:#2563eb;color:white;border:none;padding:0.9rem;width:100%;border-radius:1rem;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.2s;">
-                    👉 შეკვეთა
+                <button type="submit" class="btn-submit">
+                    გაფორმება
                 </button>
-                <div style="margin-top:0.8rem;font-size:0.75rem;color:#64748b;text-align:center;">📞 მენეჯერი დაგიკავშირდებათ</div>
+                <div style="margin-top:1rem;font-size:0.8rem;color:#64748b;text-align:center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    მენეჯერი დაგიკავშირდებათ მალე
+                </div>
             </form>
-            <button class="close-modal" id="closeOrderFormModal" style="background:#e2e8f0;border:none;padding:0.7rem;width:100%;border-radius:1rem;cursor:pointer;margin-top:1rem;font-weight:500;transition:all 0.2s;">დახურვა</button>
+            <button class="close-modal" id="closeOrderFormModal">დახურვა</button>
         </div>
     </div>
 
-    <!-- ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ (ОТДЕЛЬНАЯ) ===== -->
+    <!-- ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ ===== -->
     <div class="modal" id="orderConfirmModal">
-        <div class="modal-content" style="max-width:450px;width:90%;padding:2rem;">
+        <div class="modal-content">
             <div class="order-confirm-icon-wrapper">
-                <div class="order-confirm-circle"></div>
-                <div class="order-confirm-inner"><div class="order-confirm-check"></div></div>
-                <div class="order-confirm-particles">
-                    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
-                    <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+                <div class="order-confirm-circle">
+                    <div class="order-confirm-inner">
+                        <svg class="order-confirm-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
                 </div>
             </div>
             <h3 class="order-confirm-title">შეკვეთა მიღებულია!</h3>
+            <p class="order-confirm-message">მადლობა ნდობისთვის. ჩვენი მენეჯერი დაგიკავშირდებათ უახლოეს დროში დეტალების დასაზუსტებლად.</p>
+            
             <div class="order-confirm-details">
-                <div class="order-confirm-row"><span class="order-confirm-label">თქვენი სახელი:</span><span class="order-confirm-value" id="confirmName">-</span></div>
+                <div class="order-confirm-row"><span class="order-confirm-label">მყიდველი:</span><span class="order-confirm-value" id="confirmName">-</span></div>
                 <div class="order-confirm-row"><span class="order-confirm-label">ტელეფონი:</span><span class="order-confirm-value" id="confirmPhone">-</span></div>
                 <div class="order-confirm-row"><span class="order-confirm-label">პროდუქტი:</span><span class="order-confirm-value" id="confirmProduct">-</span></div>
-                <div class="order-confirm-divider"></div>
-                <div class="order-confirm-row"><span class="order-confirm-label">თანხა:</span><span class="order-confirm-price" id="confirmPrice">-</span></div>
+                <div style="height: 1px; background: #e2e8f0; margin: 0.8rem 0;"></div>
+                <div class="order-confirm-row"><span class="order-confirm-label">ჯამური თანხა:</span><span class="order-confirm-price" id="confirmPrice">-</span></div>
             </div>
-            <p class="order-confirm-message">📞 გთხოვთ გადაამოწმოთ თქვენი ტელეფონის ნომერი. მალე დაგიკავშირდებით</p>
-            <button class="order-confirm-btn" id="closeOrderConfirmModal">დახურვა</button>
+            
+            <button class="btn-submit" id="closeOrderConfirmModal" style="background: #0f172a; box-shadow: none;">დახურვა</button>
         </div>
     </div>
 
@@ -397,7 +363,7 @@
     if(consultBtn) consultBtn.onclick=()=>consultModal.classList.add('active');
     if(closeConsultBtn) closeConsultBtn.onclick=()=>consultModal.classList.remove('active');
 
-// ===== ПОИСК (ИСПРАВЛЕННЫЙ) =====
+// ===== ПОИСК =====
     (function(){
         let s = document.getElementById('searchInput');
         let ic = document.querySelector('.search-icon');
@@ -427,7 +393,6 @@
                 );
 
                 r.innerHTML = f.length ? f.map(p => {
-                    // ИСПРАВЛЕНИЕ ТУТ: Проверяем наличие массива images или строки image
                     let imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
                     
                     return `
@@ -442,10 +407,8 @@
 
                 r.classList.add('show');
 
-                // Исправляем путь перехода, чтобы он вел на /product/id/
                 document.querySelectorAll('.search-result-item[data-id]').forEach(el => {
                     el.onclick = () => {
-                        // Используем принудительный нижний регистр для безопасности
                         const safeId = el.dataset.id.toLowerCase();
                         location.href = '/product/' + safeId + '/';
                     };
@@ -471,10 +434,8 @@ const trackingCheckBtn = document.getElementById('trackingCheckBtn');
 const trackingResult = document.getElementById('trackingResult');
 const trackingLoading = document.getElementById('trackingLoading');
 
-// URL вашего Worker
 const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
 
-// Маппинг статусов (публичная информация)
 const statusMap = {
     'ასაღები': 'შეკვეთა მზად არის ასაღებად',
     'საწყობშია': 'შეკვეთა მივიდა საწყობში',
@@ -482,7 +443,6 @@ const statusMap = {
     'ჩაბარებულია': 'შეკვეთა ჩაბარებულია'
 };
 
-// Порядок статусов
 const statusOrder = [
     'ასაღები',
     'საწყობშია',
@@ -490,7 +450,6 @@ const statusOrder = [
     'ჩაბარებულია'
 ];
 
-// ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ПЕРЕНЕСЕНЫ ВВЕРХ) =====
 function parseGeorgianDate(dateStr) {
     if (!dateStr) return null;
     try {
@@ -517,35 +476,27 @@ function parseGeorgianDate(dateStr) {
 }
 
 function getStatusBadge(statusName) {
+    const iconBox = (svg) => `<span style="display:inline-flex;margin-right:8px;">${svg}</span>`;
+    const icons = {
+        box: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>',
+        truck: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>',
+        check: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+        clock: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+    };
+
     if (!statusName) {
-        return `<span class="status-badge status-unknown">📦 უცნობი</span>`;
+        return `<span class="status-badge status-badge-unknown">${iconBox(icons.box)} უცნობი</span>`;
     }
 
     const badgeMap = {
-        'ჩაბარებულია': {
-            class: 'status-badge-delivered',
-            text: '✅ ჩაბარებულია'
-        },
-        'ასაღები': {
-            class: 'status-badge-processing',
-            text: '⏳ მზად არის ასაღებად'
-        },
-        'საწყობშია': {
-            class: 'status-badge-processing',
-            text: '⏳ საწყობშია'
-        },
-        'გატანილია ჩასაბარებლად': {
-            class: 'status-badge-shipping',
-            text: '🚚 მიემართება მისამართზე'
-        }
+        'ჩაბარებულია': { class: 'status-badge-delivered', icon: icons.check, text: 'ჩაბარებულია' },
+        'ასაღები': { class: 'status-badge-processing', icon: icons.clock, text: 'მზად არის' },
+        'საწყობშია': { class: 'status-badge-processing', icon: icons.box, text: 'საწყობშია' },
+        'გატანილია ჩასაბარებლად': { class: 'status-badge-shipping', icon: icons.truck, text: 'გზაშია' }
     };
 
-    const badge = badgeMap[statusName] || {
-        class: 'status-badge-unknown',
-        text: '📦 ' + statusName
-    };
-
-    return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
+    const badge = badgeMap[statusName] || { class: 'status-badge-unknown', icon: icons.box, text: statusName };
+    return `<span class="status-badge ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
 }
 
 if (trackingBtn && trackingModal && closeTrackingBtn) {
@@ -583,190 +534,92 @@ if (trackingBtn && trackingModal && closeTrackingBtn) {
                 body: JSON.stringify({ order_id: orderId })
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const data = await response.json();
             trackingLoading.style.display = 'none';
             trackingResult.style.display = 'block';
 
-            if (data.error) {
-                trackingResult.innerHTML = `<div class="error">❌ ${data.message || 'შეკვეთა ვერ მოიძებნა'}</div>`;
-                return;
-            }
-
-            if (!data.data || data.data.length === 0) {
+            if (data.error || !data.data || data.data.length === 0) {
                 trackingResult.innerHTML = `<div class="error">❌ შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
                 return;
             }
 
             const order = data.data[0];
             const currentStatus = order.statusName;
-
-            // === СОЗДАЕМ СОБЫТИЯ ===
             const trackingEvents = [];
-
-            // 1. Статус создания с датой
             const addDate = parseGeorgianDate(order.formatted_add_date);
-            if (addDate) {
-                trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
-            }
+            if (addDate) trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
 
-            // 2. Если статус "საწყობშია" или выше - добавляем его
             if (currentStatus === 'საწყობშია' || currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
-                }
-                if (!eventDate) {
-                    eventDate = new Date();
-                }
-                trackingEvents.push({
-                    status: 'საწყობშია',
-                    created_at: eventDate.toISOString()
-                });
+                let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                trackingEvents.push({ status: 'საწყობშია', created_at: d.toISOString() });
             }
 
-            // 3. Если статус "გატანილია ჩასაბარებლად" или "ჩაბარებულია" - добавляем "გატანილია ჩასაბარებლად"
             if (currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
-                }
-                if (!eventDate) {
-                    eventDate = new Date();
-                }
-                trackingEvents.push({
-                    status: 'გატანილია ჩასაბარებლად',
-                    created_at: eventDate.toISOString()
-                });
+                let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                trackingEvents.push({ status: 'გატანილია ჩასაბარებლად', created_at: d.toISOString() });
             }
 
-            // 4. Добавляем текущий статус
             if (currentStatus && !trackingEvents.some(ev => ev.status === currentStatus)) {
-                let eventDate = null;
-                if (order.delivery_date) {
-                    const parsed = new Date(order.delivery_date);
-                    if (!isNaN(parsed)) {
-                        parsed.setHours(0, 0, 0, 0);
-                        eventDate = parsed;
-                    }
-                }
-                if (!eventDate) {
-                    eventDate = new Date();
-                }
-                trackingEvents.push({
-                    status: currentStatus,
-                    created_at: eventDate.toISOString()
-                });
+                let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                trackingEvents.push({ status: currentStatus, created_at: d.toISOString() });
             }
 
-            // Сортируем по порядку статусов
-            trackingEvents.sort((a, b) => {
-                return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-            });
-
-            // Последний статус - самый продвинутый
+            trackingEvents.sort((a, b) => statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status));
             const lastStatus = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].status : null;
-
-            // Карта дат
             const statusDateMap = {};
-            trackingEvents.forEach(ev => {
-                statusDateMap[ev.status] = ev.created_at;
-            });
+            trackingEvents.forEach(ev => statusDateMap[ev.status] = ev.created_at);
 
-            // === ГЕНЕРИРУЕМ ТАЙМЛАЙН ===
             let timelineHtml = '';
             statusOrder.forEach((status) => {
                 const hasEvent = statusDateMap[status] !== undefined;
                 const isPast = hasEvent && status !== lastStatus;
                 const isCurrent = status === lastStatus;
-                const isFuture = !hasEvent;
-
                 let stepClass = 'future';
                 if (isPast) stepClass = 'past';
                 else if (isCurrent) stepClass = 'current';
 
                 const translated = statusMap[status] || status;
-                const textWithoutEmoji = translated.replace(/^\p{Emoji}\s*/u, '');
-
-                let dateStr = '—';
-                if (hasEvent) {
-                    const date = new Date(statusDateMap[status]);
-                    if (status === 'ასაღები') {
-                        dateStr = date.toLocaleString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric',
-                            hour: '2-digit', minute: '2-digit'
-                        });
-                    } else {
-                        dateStr = date.toLocaleDateString('ru-RU', {
-                            day: '2-digit', month: '2-digit', year: 'numeric'
-                        });
-                    }
-                }
+                let dateStr = hasEvent ? new Date(statusDateMap[status]).toLocaleDateString('ru-RU') : '—';
 
                 timelineHtml += `
                     <div class="timeline-step-v ${stepClass}">
-                        <div class="timeline-dot-v"></div>
+                        <div class="timeline-indicator"><div class="timeline-dot-v"></div><div class="timeline-line"></div></div>
                         <div class="timeline-content-v">
                             <div class="timeline-date-v">${dateStr}</div>
-                            <div class="timeline-text-v">${textWithoutEmoji}</div>
+                            <div class="timeline-text-v">${translated}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
 
-            // === ДИЗАЙНЕРСКИЙ СТАТУС-БЕЙДЖ ===
             const statusBadge = getStatusBadge(currentStatus);
-
-            // === ФОРМИРУЕМ РЕЗУЛЬТАТ ===
             const trackingCode = order.tracking_code || orderId;
 
-            const timelineContainer = `
-                <div style="background: white; padding: 1rem; border-radius: 1rem;">
-                    <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">
-                        📦 შეკვეთა #${trackingCode}
+            trackingResult.innerHTML = `
+                <div style="background: #f8fafc; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid #f1f5f9;">
+                    <p style="font-size: 0.9rem; font-weight: 700; color: #64748b; margin-bottom: 0.5rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">
+                        შეკვეთა #${trackingCode}
                     </p>
-                    <div style="text-align: center; margin: 0.8rem 0 1.5rem 0;">
-                        ${statusBadge}
-                    </div>
-                    <hr style="border: none; height: 1px; background: linear-gradient(to right, transparent, #d8dee6, transparent); margin: 1.5rem 0;">
-                    <div class="timeline-vertical">
-                        ${timelineHtml}
-                    </div>
-                </div>
-            `;
-
-            trackingResult.innerHTML = timelineContainer;
+                    <div style="text-align: center; margin: 1rem 0 2rem 0;">${statusBadge}</div>
+                    <div class="timeline-vertical">${timelineHtml}</div>
+                </div>`;
 
         } catch (error) {
             trackingLoading.style.display = 'none';
             trackingResult.style.display = 'block';
             trackingResult.innerHTML = `<div class="error">❌ სერვერთან კავშირის შეცდომა.</div>`;
-            console.error('Tracking error:', error);
         } finally {
             trackingCheckBtn.disabled = false;
             trackingCheckBtn.textContent = 'შემოწმება';
         }
     });
 
-    trackingOrderId.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') trackingCheckBtn.click();
-    });
+    trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
 }
 
 // ===== WORKER_URL =====
 if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-form-handler.niko-oganesiani.workers.dev';}
-console.log('✅ WORKER_URL:',window.WORKER_URL);
 
 // ===== МОДАЛКА ФОРМЫ =====
 const orderFormModal = document.getElementById('orderFormModal');
@@ -775,57 +628,35 @@ const quickForm = document.getElementById('quickOrderForm');
 const quickName = document.getElementById('quickName');
 const quickPhone = document.getElementById('quickPhone');
 
-// Глобальная функция для открытия формы
 window.openOrderForm = function(product) {
-    // 1. Устанавливаем текст и цену
     document.getElementById('formProductName').textContent = product.name;
     document.getElementById('formProductPrice').textContent = product.price;
-
-    // 2. Логика изображений
     const mainImg = document.getElementById('formProductImage');
     const thumbContainer = document.getElementById('modalThumbnails');
-    
-    // Определяем источник картинки (поддерживаем и массив images, и строку image)
     const imgs = product.images || (product.image ? [product.image] : []);
     
     if (imgs.length > 0) {
         mainImg.src = imgs[0];
-        mainImg.onerror = function() { this.src='https://via.placeholder.com/120?text=📱'; };
-        
-        // Очищаем и строим карусель превью только если картинок больше одной
         thumbContainer.innerHTML = '';
         if (imgs.length > 1) {
             thumbContainer.style.display = 'flex';
             imgs.forEach(src => {
                 const imgThumb = document.createElement('img');
                 imgThumb.src = src;
-                imgThumb.style = "width: 40px; height: 40px; object-fit: contain; cursor: pointer; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px; background: white;";
+                imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 10px; padding: 2px; background: white;";
                 imgThumb.onclick = function() { mainImg.src = src; };
                 thumbContainer.appendChild(imgThumb);
             });
-        } else {
-            thumbContainer.style.display = 'none';
-        }
+        } else { thumbContainer.style.display = 'none'; }
     }
-
-    // 3. Остальная ваша логика
     quickName.value = '';
     quickPhone.value = '';
     orderFormModal.classList.add('active');
-    
-    // СТРОГО ВАША ОРИГИНАЛЬНАЯ СТРОКА:
     orderFormModal.dataset.product = JSON.stringify(product);
 };
 
-// Закрытие формы
-if(closeOrderFormBtn) {
-    closeOrderFormBtn.addEventListener('click', function() {
-        orderFormModal.classList.remove('active');
-    });
-}
-window.addEventListener('click', function(e) {
-    if(e.target === orderFormModal) orderFormModal.classList.remove('active');
-});
+if(closeOrderFormBtn) closeOrderFormBtn.addEventListener('click', () => orderFormModal.classList.remove('active'));
+window.addEventListener('click', (e) => { if(e.target === orderFormModal) orderFormModal.classList.remove('active'); });
 
 // ===== ФОРМАТИРОВАНИЕ ТЕЛЕФОНА =====
 if(quickPhone) {
@@ -842,69 +673,37 @@ if(quickPhone) {
     });
 }
 
-// ===== ОТПРАВКА ЗАКАЗА (из модалки на главной) =====
+// ===== ОТПРАВКА ЗАКАЗА =====
 if (quickForm) {
     quickForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
         const name = quickName.value.trim();
         const phoneRaw = quickPhone.value.replace(/\s/g, '');
-        
-        if(!name) { alert("⚠️ გთხოვთ, შეიყვანოთ სახელი."); quickName.focus(); return; }
-        if(!phoneRaw || phoneRaw.length !== 9 || !/^\d+$/.test(phoneRaw)) {
-            alert("⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი)");
-            quickPhone.focus();
-            return;
-        }
+        if(!name) { alert("⚠️ შეიყვანეთ სახელი."); return; }
+        if(phoneRaw.length !== 9) { alert("⚠️ შეიყვანეთ სწორი ნომერი."); return; }
         
         const product = JSON.parse(orderFormModal.dataset.product || '{}');
         const fullPhone = '+995' + phoneRaw;
         const submitBtn = quickForm.querySelector('.btn-submit');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = "⏳ იგზავნება...";
+        submitBtn.textContent = "⏳...";
         submitBtn.disabled = true;
         
         try {
-            const data = {
-                name: name,
-                phone: fullPhone,
-                product: product.name || 'Товар',
-                price: product.price || '0 ₾'
-            };
-            
             const response = await fetch(window.WORKER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+                body: JSON.stringify({ name: name, phone: fullPhone, product: product.name, price: product.price })
             });
-            
             if (response.ok) {
-                // Закрываем форму
                 orderFormModal.classList.remove('active');
-                
-                // Показываем подтверждение
-                setTimeout(function() {
-                    if(typeof window.showOrderConfirm === 'function') {
-                        window.showOrderConfirm({
-                            name: name,
-                            phone: fullPhone,
-                            product: product.name || 'Товар',
-                            price: product.price || '0 ₾'
-                        });
-                    }
-                }, 300);
-            } else {
-                alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
+                setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 300);
             }
-        } catch(error) {
-            console.error('❌ Ошибка:', error);
-            alert('❌ Ошибка сети. Проверьте подключение.');
-        }
-        
-        submitBtn.textContent = originalText;
+        } catch(error) { console.error(error); }
+        submitBtn.textContent = "გაფორმება";
         submitBtn.disabled = false;
     });
 }
+
 // ===== МОДАЛКА ПОДТВЕРЖДЕНИЯ =====
 const orderConfirmModal = document.getElementById('orderConfirmModal');
 const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
@@ -912,103 +711,36 @@ const closeOrderConfirmBtn = document.getElementById('closeOrderConfirmModal');
 window.showOrderConfirm = function(data) {
     document.getElementById('confirmName').textContent = data.name || '-';
     document.getElementById('confirmPhone').textContent = data.phone || '-';
-    document.getElementById('confirmProduct').textContent = data.product || 'Smartscale';
-    let price = data.price || '0';
-    document.getElementById('confirmPrice').textContent = typeof price === 'number' ? price + ' ₾' : price;
-        
-        // Перезапускаем анимации
-        const elements = document.querySelectorAll('.order-confirm-circle, .order-confirm-inner, .order-confirm-check, .order-confirm-title, .order-confirm-details, .order-confirm-message, .order-confirm-btn');
-        elements.forEach(el => {
-            el.style.animation = 'none';
-            void el.offsetWidth;
-            el.style.animation = '';
-        });
-        
-        document.querySelectorAll('.particle').forEach(p => {
-            p.style.animation = 'none';
-            void p.offsetWidth;
-            p.style.animation = '';
-        });
-        
-        orderConfirmModal.classList.add('active');
-    };
+    document.getElementById('confirmProduct').textContent = data.product || '-';
+    document.getElementById('confirmPrice').textContent = data.price || '-';
+    orderConfirmModal.classList.add('active');
+};
 
-if(closeOrderConfirmBtn) {
-    closeOrderConfirmBtn.addEventListener('click', function() {
-        orderConfirmModal.classList.remove('active');
-    });
-}
-window.addEventListener('click', function(e) {
-    if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active');
-});
+if(closeOrderConfirmBtn) closeOrderConfirmBtn.addEventListener('click', () => orderConfirmModal.classList.remove('active'));
+window.addEventListener('click', (e) => { if(e.target === orderConfirmModal) orderConfirmModal.classList.remove('active'); });
 
-// ===== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК ДЛЯ ВСЕХ ФОРМ НА САЙТЕ =====
+// ===== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК ФОРМ =====
 function formatPhoneInput(input) {
-    let value = input.value;
-    value = value.replace(/\s/g, '');
-    if (value.startsWith('+995')) {
-        value = value.substring(4);
-    }
+    let value = input.value.replace(/\s/g, '');
+    if (value.startsWith('+995')) value = value.substring(4);
     value = value.replace(/\D/g, '');
-    if (value.startsWith('995')) {
-        const wrapper = input.closest('.phone-wrapper');
-        if (wrapper) {
-            wrapper.classList.add('invalid');
-            wrapper.classList.remove('valid');
-        }
-        input.value = '';
-        return;
-    }
-    if (value.length > 9) {
-        value = value.slice(0, 9);
-    }
+    if (value.length > 9) value = value.slice(0, 9);
     let formatted = '';
     for (let i = 0; i < value.length; i++) {
         if (i === 3 || i === 5 || i === 7) formatted += ' ';
         formatted += value[i];
     }
     input.value = formatted;
-    const wrapper = input.closest('.phone-wrapper');
-    if (wrapper) {
-        wrapper.classList.remove('valid', 'invalid');
-        if (value.length === 9) {
-            wrapper.classList.add('valid');
-        } else if (value.length > 0) {
-            wrapper.classList.add('invalid');
-        }
-    }
 }
 
 async function processOrder(event, nameId, phoneId) {
     event.preventDefault();
-
     const name = document.getElementById(nameId).value.trim();
     const phoneInput = document.getElementById(phoneId);
-    let phone = phoneInput.value.trim();
-
-    phone = phone.replace(/\s/g, '');
-
-    if (phone.startsWith('+995')) {
-        phone = phone.substring(4);
-    }
-
-    if (!name) {
-        alert("⚠️ გთხოვთ, შეიყვანოთ სახელი.");
-        return false;
-    }
-
-    if (!phone || phone.length !== 9 || !/^\d+$/.test(phone) || phone.startsWith('0') || phone.startsWith('995')) {
-        let errorMsg = "⚠️ გთხოვთ, შეიყვანოთ სწორი ტელეფონის ნომერი (9 ციფრი, მაგ: 555123456)";
-        phoneInput.value = '';
-        if (phone.startsWith('995')) {
-            errorMsg = "⚠️ გთხოვთ, შეიყვანოთ ნომერი 995-ის გარეშე (მაგ: 555123456)";
-        } else if (phone.startsWith('0')) {
-            errorMsg = "⚠️ ტელეფონის ნომერი არ უნდა იწყებოდეს 0-ით";
-        }
-        alert(errorMsg);
-        phoneInput.focus();
-        return false;
-    }
+    let phone = phoneInput.value.replace(/\s/g, '');
+    if (phone.startsWith('+995')) phone = phone.substring(4);
+    
+    if (!name || phone.length !== 9) { alert("შეავსეთ ველები სწორად"); return false; }
 
     const fullPhone = '+995' + phone;
     const form = event.target;
@@ -1020,10 +752,7 @@ async function processOrder(event, nameId, phoneId) {
     const productId = data.product_id;
     const productName = data.product;
     const productPrice = parseFloat(data.price);
-
-    const submitBtn = event.target.querySelector('.btn, button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = "⏳ იგზავნება...";
+    const submitBtn = form.querySelector('.btn, button[type="submit"]');
     submitBtn.disabled = true;
 
     try {
@@ -1033,146 +762,58 @@ async function processOrder(event, nameId, phoneId) {
             body: JSON.stringify(data)
         });
 
-if (response.ok) {
-// ===== META PIXEL + CAPI (без таймаута) =====
-const eventId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
-
-try {
-    // 1. Отправляем через пиксель
-if (typeof fbq !== 'undefined') {
-    fbq('track', 'Purchase', {
-        content_ids: [productId],
-        value: productPrice,
-        currency: 'GEL',       // ← ВОЗВРАЩАЕМ СЮДА
-        content_name: productName
-    }, { 
-        eventID: eventId      // ← Оставляем только это
-    });
-    console.log('✅ Meta Pixel: Purchase sent, eventID:', eventId);
-}
-    
-    // 2. Отправляем через CAPI
-    if (typeof window.sendCapiEvent === 'function') {
-        window.sendCapiEvent('Purchase', {
-            value: productPrice,
-            currency: 'GEL',
-            content_ids: [productId],
-            content_name: productName
-        }, eventId);
-        console.log('✅ CAPI: Purchase sent, eventID:', eventId);
-    } else {
-        console.warn('⚠️ sendCapiEvent не найдена. Проверьте подключение capi.js');
-    }
-    
-} catch(e) {
-    console.warn('❌ Ошибка отправки:', e);
-}
-// ===== END META PIXEL + CAPI =====
-
-    if (typeof window.showOrderConfirm === 'function') {
-        window.showOrderConfirm({
-            name: name,
-            phone: fullPhone,
-            product: productName || 'Товар',
-            price: productPrice || 0
-        });
-    } else {
-        alert(`✨ მადლობა, ${name}! თქვენი შეკვეთა მიღებულია.`);
-    }
-
-    document.getElementById(nameId).value = "";
-    document.getElementById(phoneId).value = "";
-    
-    const wrapper = document.getElementById(phoneId).closest('.phone-wrapper');
-    if (wrapper) {
-        wrapper.classList.remove('valid', 'invalid');
-    }
-} else {
-    const errorText = await response.text();
-    console.error('❌ Ошибка от Cloudflare:', response.status, errorText);
-    alert('❌ Ошибка при отправке заказа. Попробуйте позже.');
-}
-    } catch (error) {
-        console.error('❌ Ошибка сети:', error);
-        alert('❌ Ошибка сети. Проверьте подключение.');
-    }
-
-    submitBtn.textContent = originalText;
+        if (response.ok) {
+            const eventId = Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Purchase', { content_ids: [productId], value: productPrice, currency: 'GEL', content_name: productName }, { eventID: eventId });
+            }
+            if (typeof window.sendCapiEvent === 'function') {
+                window.sendCapiEvent('Purchase', { value: productPrice, currency: 'GEL', content_ids: [productId], content_name: productName }, eventId);
+            }
+            if (window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: productName, price: productPrice + ' ₾' });
+            form.reset();
+        }
+    } catch (error) { console.error(error); }
     submitBtn.disabled = false;
 }
 
-// Автоматическое подключение всех форм с классом .order-form
 document.addEventListener('DOMContentLoaded', function() {
-    const orderForms = document.querySelectorAll('.order-form');
-    
-    orderForms.forEach(form => {
+    document.querySelectorAll('.order-form').forEach(form => {
         const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
         const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
-        
         if (nameInput && phoneInput) {
-            if (!nameInput.id) {
-                nameInput.id = 'name_' + Math.random().toString(36).substr(2, 9);
-            }
-            if (!phoneInput.id) {
-                phoneInput.id = 'phone_' + Math.random().toString(36).substr(2, 9);
-            }
-            
-            phoneInput.addEventListener('input', function() {
-                formatPhoneInput(this);
-            });
-            phoneInput.addEventListener('change', function() {
-                formatPhoneInput(this);
-            });
-            
-            form.addEventListener('submit', function(e) {
-                processOrder(e, nameInput.id, phoneInput.id);
-            });
+            if (!nameInput.id) nameInput.id = 'n' + Math.random().toString(36).substr(2, 5);
+            if (!phoneInput.id) phoneInput.id = 'p' + Math.random().toString(36).substr(2, 5);
+            phoneInput.addEventListener('input', function() { formatPhoneInput(this); });
+            form.addEventListener('submit', function(e) { processOrder(e, nameInput.id, phoneInput.id); });
         }
     });
-    
-    console.log('✅ Универсальная система заказов готова!');
 });
 
-    // Рабочие часы в модалке консультации
     function checkWorkTime() {
-    const hour = new Date().getHours();
-    const dot = document.getElementById('workStatusDot');
-    if (dot && hour >= 10 && hour < 22) { // Работаем с 10:00 до 22:00
-        dot.classList.add('status-online');
+        const hour = new Date().getHours();
+        const dot = document.getElementById('workStatusDot');
+        if (dot && hour >= 10 && hour < 22) dot.classList.add('status-online');
     }
-}
-checkWorkTime();
+    checkWorkTime();
+
     (function() {
-    const logoLink = document.querySelector('.logo');
-    const logoImg = document.querySelector('.logo-img');
-
-    if (!logoLink || !logoImg) return;
-
-    // 1. При клике на логотип запоминаем, что мы уходим со страницы в активном состоянии
-    logoLink.addEventListener('click', (e) => {
-        sessionStorage.setItem('logoTransition', 'true');
-    });
-
-    // 2. Когда загружается НОВАЯ страница
-    window.addEventListener('load', () => {
-        if (sessionStorage.getItem('logoTransition') === 'true') {
-            // Сначала отключаем анимацию перехода, чтобы поставить "синий" мгновенно
-            logoImg.style.transition = 'none';
-            logoImg.classList.add('logo-returning');
-
-            // Чистим флаг
-            sessionStorage.removeItem('logoTransition');
-
-            // Даем браузеру отрисовать один кадр (микро-задержка)
-            requestAnimationFrame(() => {
-                // Возвращаем плавный переход
-                logoImg.style.transition = 'all 0.6s cubic-bezier(0.2, 1, 0.2, 1)';
-                // Убираем класс — логотип сам плавно вернется к оригиналу
-                logoImg.classList.remove('logo-returning');
-            });
-        }
-    });
-})();
+        const logoLink = document.querySelector('.logo');
+        const logoImg = document.querySelector('.logo-img');
+        if (!logoLink || !logoImg) return;
+        logoLink.addEventListener('click', () => sessionStorage.setItem('logoTransition', 'true'));
+        window.addEventListener('load', () => {
+            if (sessionStorage.getItem('logoTransition') === 'true') {
+                logoImg.style.transition = 'none';
+                logoImg.classList.add('logo-returning');
+                sessionStorage.removeItem('logoTransition');
+                requestAnimationFrame(() => {
+                    logoImg.style.transition = 'all 0.6s cubic-bezier(0.2, 1, 0.2, 1)';
+                    logoImg.classList.remove('logo-returning');
+                });
+            }
+        });
+    })();
 </script>
 </body>
 </html>
