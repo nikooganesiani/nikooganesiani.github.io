@@ -67,13 +67,14 @@ title: "მთავარი"
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
-    .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
+    .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 50px; color: #0f172a; text-align: center; }
     
     /* КНОПКА СБРОСА - КРУГЛАЯ */
     .reset-filters {
         background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
         display: flex; align-items: center; justify-content: center;
         
+        /* Состояние круга */
         height: 0; width: 0; opacity: 0; margin: 0; padding: 0;
         overflow: hidden; visibility: hidden; pointer-events: none;
         border-radius: 50%;
@@ -84,16 +85,20 @@ title: "მთავარი"
             margin 0.4s cubic-bezier(0.4, 0, 0.2, 1),
             opacity 0.2s ease,
             transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        transform: scale(0.8);
+        transform: scale(0.8) rotate(-45deg);
     }
     
     .reset-filters.show { 
-        visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1);
-        height: 38px; width: 38px; margin-left: 12px;
+        visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1) rotate(0deg);
+        height: 40px; width: 40px; margin-left: 10px;
     }
     
-    .reset-filters svg { width: 18px; height: 18px; stroke-width: 3px; }
-    .reset-filters:active { transform: scale(0.9) !important; background: #fee2e2; }
+    .reset-filters svg { width: 18px; height: 18px; stroke-width: 3; }
+
+    .reset-filters:active { 
+        transform: scale(0.9) rotate(90deg) !important; 
+        background: #fee2e2; 
+    }
 
     /* КАРТОЧКА ТОВАРА */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
@@ -151,7 +156,7 @@ title: "მთავარი"
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
     /* СЕЛЕКТ */
-    .custom-select { position: relative; min-width: 220px; }
+    .custom-select { position: relative; min-width: 200px; }
     .select-trigger {
         background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.2rem; border-radius: 2rem;
         font-size: 0.85rem; cursor: pointer; font-weight: 700; color: #0f172a;
@@ -169,25 +174,15 @@ title: "მთავარი"
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
 
-    /* MOBILE ALIGNMENT FIX */
     @media (max-width: 640px) {
-        .filters-bar { 
-            flex-direction: row; 
-            flex-wrap: nowrap; 
-            align-items: center; 
-            gap: 0.5rem; 
-            padding: 0.8rem;
-        }
-        .filters { flex: 1; min-width: 0; }
-        .filter-group { width: 100%; padding: 0.5rem 0.8rem; gap: 0.4rem; }
-        .filter-group input { width: 45px; font-size: 0.8rem; }
-        .filter-group label { font-size: 0.65rem; }
-        
-        .custom-select { flex: 1; min-width: 0; }
-        .select-trigger { padding: 0.6rem 0.8rem; font-size: 0.8rem; border-radius: 2rem; }
-        
-        .reset-filters.show { margin-left: 4px; height: 36px; width: 36px; flex-shrink: 0; }
-        .slider-arrow { opacity: 0.85; }
+        .filters-bar { flex-direction: row; align-items: center; flex-wrap: nowrap; gap: 0.5rem; padding: 0.8rem; }
+        .filters { flex: 1; display: flex; align-items: center; min-width: 0; }
+        .filter-group { flex: 1; padding: 0.5rem 0.6rem; min-width: 0; gap: 0.4rem; }
+        .filter-group input { width: 35px; font-size: 0.8rem; }
+        .filter-group label { font-size: 0.65rem !important; }
+        .custom-select { flex: 1; min-width: 100px; }
+        .select-trigger { padding: 0.7rem 0.8rem; font-size: 0.8rem; }
+        .reset-filters.show { height: 36px; width: 36px; margin-left: 4px; }
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -247,7 +242,7 @@ title: "მთავარი"
                     <svg class="select-arrow-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
                 </div>
                 <div class="select-options" id="selectOptions">
-                    <div class="select-option" data-value="all">ყველა</div>
+                    <div class="select-option" data-value="name-asc">ყველა</div>
                     <div class="select-option" data-value="price-desc">კლებადობით</div>
                     <div class="select-option" data-value="price-asc">ზრდადობით</div>
                     <div class="select-option" data-value="name-asc">A-Z</div>
@@ -255,7 +250,7 @@ title: "მთავარი"
                 </div>
             </div>
             <select id="sortSelect" style="display: none;">
-                <option value="all">ყველა</option>
+                <option value="name-asc">ყველა</option>
                 <option value="price-desc">კლებადობით</option>
                 <option value="price-asc">ზრდადობით</option>
                 <option value="name-asc">A-Z</option>
@@ -282,8 +277,20 @@ title: "მთავარი"
         const products = window.allProducts || [];
         let filtered = [...products];
         
-        // Показ кнопки сброса
-        if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'all' || currentCategory !== 'all') {
+        // Логика цен: защита от минуса и перекрестная проверка
+        let minVal = parseInt(minPriceInput.value);
+        let maxVal = parseInt(maxPriceInput.value);
+
+        if (minVal < 0) { minVal = 0; minPriceInput.value = 0; }
+        if (maxVal < 0) { maxVal = 0; maxPriceInput.value = 0; }
+        
+        // Если оба заполнены и min > max, визуально не блокируем ввод (UX), но фильтрация выдаст пустоту.
+        // Но для профессионального фильтра добавим корректировку:
+        if (!isNaN(minVal) && !isNaN(maxVal) && minVal > maxVal) {
+            // Оставляем как есть, фильтр просто не найдет товары.
+        }
+
+        if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
             resetBtn.classList.add('show');
         } else {
             resetBtn.classList.remove('show');
@@ -293,9 +300,7 @@ title: "მთავარი"
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
         
-        const minVal = parseInt(minPriceInput.value);
         if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
-        const maxVal = parseInt(maxPriceInput.value);
         if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
         
         const sortBy = sortSelect.value;
@@ -306,9 +311,9 @@ title: "მთავარი"
         
         if (filtered.length === 0) {
             container.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:5rem 0; color:#94a3b8;">
+                <div style="grid-column:1/-1; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
-                    <div style="font-size:1.4rem; font-weight:800; color:#64748b;">ვერაფერი მოიძებნა</div>
+                    <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
                 </div>`;
             return;
         }
@@ -322,7 +327,7 @@ title: "მთავარი"
                 const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
                 if (oldVal > newVal) {
                     const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 12px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5;">-${percent}%</div>`;
+                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 12px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
                 }
             }
             
@@ -330,7 +335,9 @@ title: "მთავარი"
 
             return `
             <div class="product-card" data-current-slide="0">
-                <div class="product-image-wrapper" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd('${product.id}', event)">
+                <div class="product-image-wrapper" 
+                     ontouchstart="handleTouchStart(event)" 
+                     ontouchend="handleTouchEnd('${product.id}', event)">
                     ${discountBadge}
                     <div class="product-images-track" id="track-${product.id}">
                         ${imgs.map(img => `
@@ -363,28 +370,6 @@ title: "მთავარი"
         `}).join('');
     }
 
-    // ЛОГИКА ЦЕН (ПРОФЕССИОНАЛЬНАЯ ВАЛИДАЦИЯ)
-    function validatePriceInputs() {
-        let min = parseInt(minPriceInput.value);
-        let max = parseInt(maxPriceInput.value);
-
-        if (min < 0) minPriceInput.value = 0;
-        if (max < 0) maxPriceInput.value = 0;
-
-        if (!isNaN(min) && !isNaN(max) && min > max) {
-            // Если вводим в поле "ОТ", и оно больше "ДО" - подтягиваем "ДО"
-            if (document.activeElement === minPriceInput) {
-                maxPriceInput.value = min;
-            } else {
-                minPriceInput.value = max;
-            }
-        }
-        renderProducts();
-    }
-
-    minPriceInput.addEventListener('input', validatePriceInputs);
-    maxPriceInput.addEventListener('input', validatePriceInputs);
-
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         const track = document.getElementById(`track-${productId}`);
@@ -404,18 +389,14 @@ title: "მთავარი"
         xDown = null;
     };
 
+    minPriceInput.addEventListener('input', renderProducts);
+    maxPriceInput.addEventListener('input', renderProducts);
     sortSelect.addEventListener('change', renderProducts);
     
     resetBtn.addEventListener('click', function() {
-        minPriceInput.value = ''; 
-        maxPriceInput.value = ''; 
-        sortSelect.value = 'all';
+        minPriceInput.value = ''; maxPriceInput.value = ''; 
+        sortSelect.value = 'name-asc';
         document.getElementById('selectedValue').textContent = 'დალაგება';
-        currentCategory = 'all';
-        categoryBtns.forEach(b => {
-            b.classList.remove('active');
-            if(b.dataset.category === 'all') b.classList.add('active');
-        });
         renderProducts();
     });
     
@@ -442,7 +423,7 @@ title: "მთავარი"
         document.querySelectorAll('.select-option').forEach(option => {
             option.addEventListener('click', () => {
                 const value = option.dataset.value;
-                document.getElementById('selectedValue').textContent = (value === 'all') ? 'დალაგება' : option.textContent;
+                document.getElementById('selectedValue').textContent = option.textContent;
                 sortSelect.value = value;
                 sortSelect.dispatchEvent(new Event('change'));
                 customSelect.classList.remove('open');
