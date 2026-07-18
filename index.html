@@ -56,27 +56,43 @@ title: "მთავარი"
         display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center;
         margin-bottom: 1.5rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); animation: slideDown 0.4s ease;
+        overflow: hidden; /* Важно для анимации сброса */
     }
-    .filters { display: flex; align-items: center; flex-wrap: wrap; }
+    .filters { display: flex; align-items: center; }
     
     .filter-group {
         display: flex; align-items: center; gap: 0.6rem; background: #f8fafc;
         padding: 0.5rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2;
     }
     .filter-group:focus-within { border-color: #2563eb; background: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08); }
     .filter-group input { border: none; background: transparent; padding: 0.2rem; font-size: 0.85rem; font-weight: 700; outline: none; width: 60px; color: #0f172a; }
     
     .reset-filters {
-        background: #fef2f2; border: none; color: #ef4444; cursor: pointer; font-size: 0.8rem;
-        border-radius: 2rem; font-weight: 700; display: flex; align-items: center; 
-        justify-content: center; gap: 6px;
-        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        opacity: 0; visibility: hidden; transform: scale(0.9);
-        height: 0; margin-top: 0; overflow: hidden; width: 0;
+        background: #fef2f2; border: none; color: #ef4444; cursor: pointer; 
+        font-size: 0.85rem; border-radius: 2rem; font-weight: 700; 
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+        
+        /* Исправленная анимация */
+        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                    opacity 0.3s ease, 
+                    max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        max-width: 0; opacity: 0; overflow: hidden; margin-left: 0;
+        height: 38px; white-space: nowrap; pointer-events: none;
     }
-    .reset-filters.show { opacity: 1; visibility: visible; transform: scale(1); height: 38px; width: 140px; margin-left: 12px; }
-    .reset-filters:active { transform: scale(0.94); background: #fee2e2; }
+    .reset-filters.show { 
+        max-width: 160px; opacity: 1; margin-left: 12px; pointer-events: auto;
+        padding: 0 1.2rem;
+    }
+    .reset-filters svg { 
+        width: 14px; height: 14px; flex-shrink: 0;
+        display: block; /* Убирает лишние отступы снизу */
+    }
+    .reset-filters span { margin-top: 1px; } /* Выравнивание грузинского текста */
+    .reset-filters:active { transform: scale(0.92); background: #fee2e2; }
 
     /* КАРТОЧКА ТОВАРА */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
@@ -96,7 +112,6 @@ title: "მთავარი"
     
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
-    /* ИНТЕРАКТИВНЫЙ БОКС НАЗВАНИЯ */
     .product-name-box {
         background: #f8fafc; border-radius: 1.2rem; padding: 0.8rem 1rem;
         height: 3.8rem; display: flex; align-items: center; margin-bottom: 1.2rem;
@@ -124,7 +139,6 @@ title: "მთავარი"
     .btn-order:hover { background: #2563eb; }
     .btn-order:active { transform: scale(0.96); }
 
-    /* СТРЕЛКИ СЛАЙДЕРА */
     .slider-arrow {
         position: absolute; top: 50%; transform: translateY(-50%);
         background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 38px; height: 38px;
@@ -138,7 +152,6 @@ title: "მთავარი"
     .slider-arrow:active { transform: translateY(-50%) scale(0.85); }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    /* СОРТИРОВКА */
     .custom-select { position: relative; min-width: 220px; }
     .select-trigger {
         background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.2rem; border-radius: 2rem;
@@ -157,27 +170,29 @@ title: "მთავარი"
     .select-option { padding: 0.8rem 1.2rem; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #64748b; }
     .select-option:hover { background: #f8fafc; color: #2563eb; }
 
-    /* МОБИЛЬНАЯ АДАПТАЦИЯ (ИСПРАВЛЕНО) */
     @media (max-width: 640px) {
         .filters-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
         .filters { justify-content: center; width: 100%; flex-direction: column; }
         .filter-group { width: 100%; justify-content: center; }
-        
-        /* Исправление анимации сброса для мобильных */
         .reset-filters.show { 
             width: 100%; 
+            max-width: 100%;
             margin-left: 0; 
-            margin-top: 12px; /* Вертикальный отступ */
+            margin-top: 10px;
             height: 42px; 
+            transform: scale(1);
         }
-        
         .custom-select { width: 100%; min-width: auto; }
         .slider-arrow { opacity: 0.85; }
     }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes emptyPop { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes emptyPop { 
+        0% { opacity: 0; transform: scale(0.9) translateY(30px); } 
+        60% { transform: scale(1.02) translateY(-5px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); } 
+    }
 </style>
 
 <div class="categories-bar">
@@ -225,7 +240,7 @@ title: "მთავარი"
                 </div>
                 <button class="reset-filters" id="resetFilters">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-                    გასუფთავება
+                    <span>გასუფთავება</span>
                 </button>
             </div>
             <div class="custom-select" id="customSortSelect">
@@ -249,7 +264,7 @@ title: "მთავარი"
         </div>
 
         <div class="catalog" id="catalogContainer">
-            <!-- Скелетоны будут здесь -->
+            <!-- Content will be injected here -->
         </div>
     </div>
 </main>
@@ -269,7 +284,7 @@ title: "მთავარი"
         const products = window.allProducts || [];
         let filtered = [...products];
         
-        // Логика кнопки сброса
+        // Show/Hide reset button
         if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
             resetBtn.classList.add('show');
         } else {
@@ -293,8 +308,8 @@ title: "მთავარი"
         
         if (filtered.length === 0) {
             container.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
+                <div style="grid-column:1/-1; text-align:center; padding:6rem 0; color:#94a3b8; animation: emptyPop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/></svg>
                     <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
                 </div>`;
             return;
@@ -309,7 +324,7 @@ title: "მთავარი"
                 const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
                 if (oldVal > newVal) {
                     const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 12px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
+                    discountBadge = `<div style="position:absolute; top:18px; left:18px; background:#ef4444; color:white; padding:6px 14px; border-radius:14px; font-size:0.75rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
                 }
             }
             
@@ -336,9 +351,9 @@ title: "მთავარი"
                     ` : ''}
                 </div>
                 <div class="product-info">
-                    <a href="product/${product.id}/" style="text-decoration:none; color:inherit;">
-                        <div class="product-name-box"><div class="product-name">${product.name}</div></div>
-                    </a>
+                    <div class="product-name-box" onclick="location.href='product/${product.id}/'">
+                        <div class="product-name">${product.name}</div>
+                    </div>
                     <div class="product-price-container">
                         <div class="product-price">${product.price}</div>
                         ${product.oldPrice ? `<span class="old-price">${product.oldPrice}</span>` : ''}
@@ -352,6 +367,7 @@ title: "მთავარი"
         `}).join('');
     }
 
+    // SLIDER LOGIC
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         const track = document.getElementById(`track-${productId}`);
@@ -363,6 +379,7 @@ title: "მთავარი"
         track.style.transform = `translateX(-${currentSlide * 100}%)`;
     };
 
+    // SWIPES
     window.handleTouchStart = (evt) => { xDown = evt.touches[0].clientX; };
     window.handleTouchEnd = (productId, evt) => {
         if (!xDown) return;
