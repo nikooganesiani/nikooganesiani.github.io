@@ -149,10 +149,21 @@
         border-width: 3px;
     }
 
-    /* ТОНКИЙ СКРОЛЛ ДЛЯ ВЫПАДАЮЩИХ СПИСКОВ И МОДАЛОК */
-    .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 6px; }
+/* ТОНКИЙ СКРОЛЛ ДЛЯ ВЫПАДАЮЩИХ СПИСКОВ И МОДАЛОК */
+    .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { 
+        width: 6px; 
+    }
+    .search-results::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { 
+        background: transparent; /* Убираем белую полосу, делаем фон прозрачным */
+        margin: 10px 0; /* Делаем небольшие отступы сверху и снизу, чтобы скролл не бился в скругленные углы */
+    }
     .search-results::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { 
-        background: rgba(148,163,184,0.3); border-radius: 10px; border: none; 
+        background: rgba(148,163,184,0.3); 
+        border-radius: 10px; 
+        border: none; 
+    }
+    .search-results::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { 
+        background: rgba(148,163,184,0.6); /* Добавляем интерактивности: ползунок темнеет при наведении */
     }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
