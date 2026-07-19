@@ -151,18 +151,16 @@
 
 /* ТОНКИЙ СКРОЛЛ ДЛЯ ВЫПАДАЮЩИХ СПИСКОВ И МОДАЛОК */
     .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { 
-        width: 14px; /* Делаем область шире, чтобы вместить отступы */
+        width: 16px; /* Делаем общую область чуть шире */
     }
     .search-results::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { 
         background: transparent; 
-        margin: 25px 0; /* Не даем ползунку заезжать в зону скругления углов */
+        margin: 25px 0; 
     }
     .search-results::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { 
         background-color: rgba(148,163,184,0.4); 
-        border-radius: 10px; 
-        /* Трюк: прозрачная рамка работает как margin, отталкивая ползунок от краев */
-        border: 4px solid transparent; 
-        border-right: 6px solid transparent; /* Справа отступ еще больше, чтобы 100% убрать его с радиуса */
+        border-radius: 20px; /* Увеличиваем радиус с запасом для идеального овала */
+        border: 5px solid transparent; /* ОДИНАКОВАЯ рамка со всех сторон (возвращает идеальную форму) */
         background-clip: padding-box; 
     }
     .search-results::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { 
