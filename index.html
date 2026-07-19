@@ -35,14 +35,12 @@ title: "მთავარი"
         .cat-arrow.visible { display: flex; } 
     }
 
-    .categories, .subcategories { 
+.categories, .subcategories { 
         display: flex; gap: 0.8rem; flex-wrap: nowrap; 
         padding: 1.5rem 0.5rem; margin: -1rem 0; 
         overflow-x: auto; scroll-behavior: smooth;
         -ms-overflow-style: none; scrollbar-width: none;
-        cursor: grab; /* Курсор перетаскивания */
     }
-    .categories:active, .subcategories:active { cursor: grabbing; scroll-behavior: auto; }
     .categories::-webkit-scrollbar, .subcategories::-webkit-scrollbar { display: none; }
 
     .category-btn {
@@ -321,21 +319,10 @@ title: "მთავარი"
     // ==========================================
     // ЛОГИКА DRAG-TO-SCROLL И СТРЕЛОК
     // ==========================================
-    function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
+function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         const slider = document.getElementById(containerId);
         const leftBtn = document.getElementById(leftArrowId);
         const rightBtn = document.getElementById(rightArrowId);
-        let isDown = false; let startX; let scrollLeft;
-
-        slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-        slider.addEventListener('mouseleave', () => { isDown = false; });
-        slider.addEventListener('mouseup', () => { isDown = false; });
-        slider.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2;
-            slider.scrollLeft = scrollLeft - walk;
-            updateArrows();
-        });
 
         const updateArrows = () => {
             if(slider.scrollWidth > slider.clientWidth) {
