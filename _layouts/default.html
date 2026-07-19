@@ -102,12 +102,16 @@
 /* ==========================================
        ПРЕМИАЛЬНЫЙ СУПЕР-СКРОЛЛБАР ДЛЯ СТРАНИЦЫ
        ========================================== */
-    html {
-        scrollbar-width: thin;
-        scrollbar-color: #cbd5e1 #f8fafc; /* Ползунок и трек для Firefox */
+
+    /* Только для Firefox (скрыто от Chrome/Edge/Safari, чтобы не ломать WebKit) */
+    @-moz-document url-prefix() {
+        html {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f8fafc;
+        }
     }
 
-    /* Принудительное применение к главному окну и всем блокам */
+    /* Принудительное применение к главному окну и всем блокам для Chrome, Edge, Safari */
     ::-webkit-scrollbar,
     html::-webkit-scrollbar,
     body::-webkit-scrollbar {
@@ -118,7 +122,7 @@
     ::-webkit-scrollbar-track,
     html::-webkit-scrollbar-track,
     body::-webkit-scrollbar-track {
-        background-color: #f8fafc; /* Цвет фона body, чтобы скролл сливался со страницей */
+        background-color: #f8fafc; /* Цвет фона body */
     }
 
     ::-webkit-scrollbar-thumb,
