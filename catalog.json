@@ -29,12 +29,13 @@
       }
     },
     {
-      "id": "tiffanysmartscale4",
+      "id": "tiffanysmartscalemaragiamoitsura",
       "sku": "175425",
-      "name": "ჭკვიანი სასწორი (Smart Scale)",
+      "name": "ჭკვიანი სასწორი მარაგი ამოიწურა",
       "brand": "Tiffany",
       "price": "39₾",
       "oldPrice": "54₾",
+      "stockStatus": "out_of_stock",
       "images": [
         "/img/products/scale.webp",
         "/img/products/scale1.webp",
@@ -57,7 +58,7 @@
       }
     },
     {
-      "id": "tiffanysmartscale106",
+      "id": "tiffanysmartscaleმარაგშია",
       "sku": "175423",
       "name": "ჭკვიანი სასწორი (Smart Scale)",
       "brand": "Tiffany",
@@ -85,10 +86,11 @@
       }
     },
     {
-      "id": "tiffanysmartscale105",
+      "id": "tiffanysmartscaleმალე",
       "sku": "175421",
       "name": "ჭკვიანი სასწორი (Smart Scale)",
       "brand": "Tiffany",
+      "stockStatus": "soon",
       "price": "39₾",
       "oldPrice": "54₾",
       "images": [
