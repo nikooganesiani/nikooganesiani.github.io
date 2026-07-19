@@ -15,48 +15,42 @@ title: "მთავარი"
     body, button, a, .category-btn, .sub-category-btn, .select-trigger, .product-card, .slider-arrow, .product-name-box {
         -webkit-user-select: none; user-select: none;
     }
-
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.4); border-radius: 10px; border: 2px solid transparent; background-clip: padding-box; }
     
-    html { overflow-y: scroll; scroll-behavior: smooth; }
-    body { background: #f8fafc; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
-    main { flex: 1; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* ГЛАВНЫЕ КАТЕГОРИИ */
-    .categories-bar {
-        max-width: 1280px; margin: 0 auto; padding: 0 1.5rem;
-        display: flex; align-items: center; animation: slideDown 0.4s ease;
-        position: relative; z-index: 20; 
+    /* ГЛАВНЫЕ КАТЕГОРИИ И ПОДКАТЕГОРИИ (Drag-to-Scroll + Arrows) */
+    .cat-nav-section { max-width: 1280px; margin: 0 auto; position: relative; z-index: 20; }
+    .cat-scroll-container { display: flex; align-items: center; position: relative; padding: 0 1.5rem; }
+    
+    .categories-fade-left { position: absolute; left: 1.5rem; top: 0; bottom: 0; width: 32px; background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
+    .categories-fade-right { position: absolute; right: 1.5rem; top: 0; bottom: 0; width: 48px; background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
+
+    /* Стрелки ПК-скролла */
+    .cat-arrow { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #475569; transition: all 0.2s; }
+    .cat-arrow:hover { background: #f1f5f9; color: #2563eb; }
+    .cat-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .cat-arrow-left { left: 0; } .cat-arrow-right { right: 0; }
+
+    @media (min-width: 1024px) {
+        .cat-arrow.visible { display: flex; } 
     }
 
-    .categories-wrapper { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; margin-right: -1.5rem; }
-
-    .categories-fade-left {
-        position: absolute; left: 0; top: 0; bottom: 0; width: 32px;
-        background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2;
-    }
-    .categories-fade-right {
-        position: absolute; right: 0; top: 0; bottom: 0; width: 48px;
-        background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2;
-    }
-
-    .categories { 
+    .categories, .subcategories { 
         display: flex; gap: 0.8rem; flex-wrap: nowrap; 
-        padding: 1.5rem 2.5rem 1.5rem 0.5rem; margin: -1rem 0; 
+        padding: 1.5rem 0.5rem; margin: -1rem 0; 
         overflow-x: auto; scroll-behavior: smooth;
         -ms-overflow-style: none; scrollbar-width: none;
+        cursor: grab; /* Курсор перетаскивания */
     }
-    .categories::-webkit-scrollbar { display: none; }
+    .categories:active, .subcategories:active { cursor: grabbing; scroll-behavior: auto; }
+    .categories::-webkit-scrollbar, .subcategories::-webkit-scrollbar { display: none; }
 
     .category-btn {
         background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.4rem;
         border-radius: 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b;
         display: flex; align-items: center; gap: 8px; outline: none;
-        white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; z-index: 10;
     }
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
     .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
@@ -64,28 +58,17 @@ title: "მთავარი"
     .category-btn:active { transform: scale(0.96); }
 
     /* ПОДКАТЕГОРИИ */
-    .subcategories-bar {
-        max-width: 1280px; margin: -0.5rem auto 1rem auto; padding: 0 1.5rem;
-        display: none; align-items: center; animation: slideDownSub 0.3s ease forwards;
-        position: relative; z-index: 15;
-    }
-    
-    .subcategories-wrapper { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; margin-right: -1.5rem; }
-    .subcategories { 
-        display: flex; gap: 0.6rem; flex-wrap: nowrap; 
-        padding: 0.5rem 2.5rem 0.5rem 0.5rem; overflow-x: auto; scroll-behavior: smooth;
-        -ms-overflow-style: none; scrollbar-width: none;
-    }
-    .subcategories::-webkit-scrollbar { display: none; }
-
+    .subcat-nav-section { max-width: 1280px; margin: -0.5rem auto 1rem auto; display: none; position: relative; z-index: 15; }
+    .subcategories { padding: 0.5rem 0.5rem; }
     .sub-category-btn {
         background: transparent; border: 1px solid #cbd5e1; padding: 0.5rem 1rem;
         border-radius: 2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
-        white-space: nowrap; flex-shrink: 0; outline: none;
+        white-space: nowrap; flex-shrink: 0; outline: none; position: relative; z-index: 10;
     }
     .sub-category-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
     .sub-category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+    .sub-category-btn:active { transform: scale(0.95); }
 
     /* ФИЛЬТРЫ */
     .filters-bar {
@@ -205,7 +188,9 @@ title: "მთავარი"
         .custom-select { flex: 1 1 auto; min-width: 100px; }
         .select-trigger { padding: 0.7rem 1rem; font-size: 0.85rem; }
         .reset-filters.show { height: 38px; width: 38px; }
-        .categories-wrapper, .subcategories-wrapper { margin-right: -0.5rem; }
+        
+        .cat-scroll-container, .subcat-nav-section { padding: 0 1rem; margin-right: -0.5rem; margin-left: -0.5rem; }
+        .categories-fade-left { left: 1rem; } .categories-fade-right { right: 1rem; }
     }
 
     /* АНИМАЦИИ */
@@ -217,8 +202,10 @@ title: "მთავარი"
 </style>
 
 <!-- СТРОКА ГЛАВНЫХ КАТЕГОРИЙ -->
-<div class="categories-bar">
-    <div class="categories-wrapper">
+<div class="cat-nav-section">
+    <div class="cat-scroll-container">
+        <button class="cat-arrow cat-arrow-left" id="catArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
+        
         <div class="categories-fade-left"></div>
         <div class="categories" id="categoriesContainer">
             <button class="category-btn active" data-category="all">
@@ -242,7 +229,7 @@ title: "მთავარი"
                 თავის მოვლა
             </button>        
             <button class="category-btn" data-category="building">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0a2.12 2.12 0 0 1 0-3L12 9"></path><path d="M17.64 15 22 10.64"></path><path d="m20.91 11.7-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16 4.6V3.86c0-.84-.33-1.65-.93-2.25L13.82.36l-3.53 3.53a3.2 3.2 0 0 0-.94 2.25v.86l-2.73 2.73"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M12 2a7 7 0 0 0-7 7v4h14V9a7 7 0 0 0-7-7z"/><path d="M12 9v13"/></svg>
                 მშენებლობა
             </button>  
             <button class="category-btn" data-category="computer">
@@ -251,17 +238,23 @@ title: "მთავარი"
             </button>  
         </div>
         <div class="categories-fade-right"></div>
+        
+        <button class="cat-arrow cat-arrow-right" id="catArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
     </div>
 </div>
 
 <!-- СТРОКА ПОДКАТЕГОРИЙ (Появляется динамически) -->
-<div class="subcategories-bar" id="subcategoriesBar">
-    <div class="subcategories-wrapper">
+<div class="subcat-nav-section" id="subcategoriesBar">
+    <div class="cat-scroll-container">
+        <button class="cat-arrow cat-arrow-left" id="subcatArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
+        
         <div class="categories-fade-left"></div>
         <div class="subcategories" id="subcategoriesContainer">
             <!-- Кнопки подкатегорий будут сгенерированы через JS -->
         </div>
         <div class="categories-fade-right"></div>
+
+        <button class="cat-arrow cat-arrow-right" id="subcatArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
     </div>
 </div>
 
@@ -326,6 +319,47 @@ title: "მთავარი"
     const catalogStructure = window.CATALOG_STRUCTURE || {};
 
     // ==========================================
+    // ЛОГИКА DRAG-TO-SCROLL И СТРЕЛОК
+    // ==========================================
+    function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
+        const slider = document.getElementById(containerId);
+        const leftBtn = document.getElementById(leftArrowId);
+        const rightBtn = document.getElementById(rightArrowId);
+        let isDown = false; let startX; let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+        slider.addEventListener('mouseleave', () => { isDown = false; });
+        slider.addEventListener('mouseup', () => { isDown = false; });
+        slider.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2;
+            slider.scrollLeft = scrollLeft - walk;
+            updateArrows();
+        });
+
+        const updateArrows = () => {
+            if(slider.scrollWidth > slider.clientWidth) {
+                leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
+                leftBtn.style.opacity = slider.scrollLeft > 0 ? '1' : '0.3';
+                rightBtn.style.opacity = slider.scrollLeft < (slider.scrollWidth - slider.clientWidth - 5) ? '1' : '0.3';
+            } else {
+                leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
+            }
+        };
+
+        slider.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+        
+        leftBtn.addEventListener('click', () => { slider.scrollBy({ left: -200, behavior: 'smooth' }); });
+        rightBtn.addEventListener('click', () => { slider.scrollBy({ left: 200, behavior: 'smooth' }); });
+        
+        setTimeout(updateArrows, 100);
+        return updateArrows;
+    }
+    const updateCatArrows = setupDragAndArrows('categoriesContainer', 'catArrowLeft', 'catArrowRight');
+    const updateSubCatArrows = setupDragAndArrows('subcategoriesContainer', 'subcatArrowLeft', 'subcatArrowRight');
+
+    // ==========================================
     // ЛОГИКА ОТРИСОВКИ ПОДКАТЕГОРИЙ
     // ==========================================
     function renderSubcategories(catId) {
@@ -341,7 +375,7 @@ title: "მთავარი"
         });
         
         subcategoriesContainer.innerHTML = html;
-        subcategoriesBar.style.display = 'flex';
+        subcategoriesBar.style.display = 'block';
         subcategoriesContainer.scrollLeft = 0; // Сбрасываем скролл в начало
 
         // Слушатели кликов по подкатегориям
@@ -366,6 +400,8 @@ title: "მთავარი"
                 renderProducts();
             });
         });
+        
+        setTimeout(updateSubCatArrows, 50);
     }
 
     // ==========================================
@@ -444,7 +480,7 @@ title: "მთავარი"
                     <div class="product-images-track" id="track-${product.id}">
                         ${imgs.map(img => `
                             <div class="product-slide">
-                                <a href="product/${product.id}/" style="display:contents;">
+                                <a href="/product/${product.id}/" style="display:contents;">
                                     <img class="product-image" src="${img}" alt="${product.name}" onerror="this.src='/img/no-image.png'">
                                 </a>
                             </div>
@@ -456,7 +492,7 @@ title: "მთავარი"
                     ` : ''}
                 </div>
                 <div class="product-info">
-                    <div class="product-name-box" onclick="location.href='product/${product.id}/'">
+                    <div class="product-name-box" onclick="location.href='/product/${product.id}/'">
                         <div class="product-name">${product.name}</div>
                     </div>
                     <div class="product-price-container">
@@ -499,13 +535,23 @@ title: "მთავარი"
     // ==========================================
     categoryBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Переключаем визуал главных кнопок
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            const isClickingSame = btn.classList.contains('active') && btn.dataset.category !== 'all';
             
-            // Задаем категории
-            currentCategory = btn.dataset.category;
-            currentSubcategory = 'all'; // Сбрасываем подкатегорию
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            
+            // Логика "ყველაფერი" и повторного клика
+            if(isClickingSame || btn.dataset.category === 'all') {
+                const allBtn = document.querySelector('.category-btn[data-category="all"]');
+                allBtn.classList.add('active');
+                currentCategory = 'all';
+                currentSubcategory = 'all';
+                subcategoriesBar.style.display = 'none';
+            } else {
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                currentSubcategory = 'all'; // Сбрасываем подкатегорию
+                renderSubcategories(currentCategory);
+            }
 
             // Обновляем URL
             const url = new URL(window.location);
@@ -517,34 +563,36 @@ title: "მთავარი"
             url.searchParams.delete('sub');
             window.history.pushState({}, '', url);
             
-            // Перерисовываем строку подкатегорий
-            renderSubcategories(currentCategory);
-            
             // Перерисовываем товары
             renderProducts();
             
             // Плавный скролл к кнопке
-            btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            if(currentCategory !== 'all') {
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         });
     });
 
-    // Обработчики цен
-    minPriceInput.addEventListener('change', () => {
-        if (minPriceInput.value < 0) minPriceInput.value = 0;
-        let min = parseInt(minPriceInput.value), max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max) && min > max) maxPriceInput.value = min;
+    // Обработчики цен (Моментальная корректировка)
+    const enforcePriceLogic = () => {
+        let min = parseInt(minPriceInput.value);
+        let max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max) && max !== 0) {
+            if (min > max) { minPriceInput.value = max; }
+        }
+        renderProducts();
+    };
+    
+    minPriceInput.addEventListener('input', enforcePriceLogic);
+    maxPriceInput.addEventListener('input', () => {
+        let min = parseInt(minPriceInput.value);
+        let max = parseInt(maxPriceInput.value);
+        if (!isNaN(min) && !isNaN(max)) {
+            if (max < min) { maxPriceInput.value = min; }
+        }
         renderProducts();
     });
     
-    maxPriceInput.addEventListener('change', () => {
-        if (maxPriceInput.value < 0) maxPriceInput.value = 0;
-        let min = parseInt(minPriceInput.value), max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max) && max < min) minPriceInput.value = max;
-        renderProducts();
-    });
-
-    minPriceInput.addEventListener('input', renderProducts);
-    maxPriceInput.addEventListener('input', renderProducts);
     sortSelect.addEventListener('change', renderProducts);
     
     resetBtn.addEventListener('click', function() {
