@@ -407,6 +407,9 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
             resetBtn.classList.remove('show');
         }
 
+        // Исключаем товары, которых нет в наличии
+        filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
+
         // Фильтр по Главной категории
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
