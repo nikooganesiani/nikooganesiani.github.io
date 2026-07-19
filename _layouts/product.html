@@ -44,6 +44,9 @@ layout: default
   {% endcase %}
 {% endcapture %}
 
+<!-- ЛОГИКА ОПРЕДЕЛЕНИЯ СТАТУСА НАЛИЧИЯ (из catalog.json) -->
+{% assign stock = page.stockStatus | default: 'in_stock' %}
+
 <style>
     /* Наследуем базовые настройки App-Feel из общего дизайна */
     .product-view-container { 
@@ -68,8 +71,9 @@ layout: default
     /* Анимации */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-    /* Хлебные крошки (Без названия товара) */
+    /* Хлебные крошки */
     .top-navigation { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     .breadcrumbs { 
         display: flex; gap: 0.6rem; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; align-items: center; 
@@ -101,11 +105,11 @@ layout: default
         pointer-events: none; letter-spacing: 0.5px;
     }
 
+    /* Обновленная галерея для клика (Zoom) */
     .main-image-view { 
         width: 100%; height: 500px; display: flex; align-items: center; justify-content: center; 
-        margin-bottom: 1.5rem; cursor: grab; position: relative; overflow: hidden; border-radius: 1.5rem;
+        margin-bottom: 1.5rem; cursor: zoom-in; position: relative; overflow: hidden; border-radius: 1.5rem;
     }
-    .main-image-view:active { cursor: grabbing; }
     .main-image-view img { 
         max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; 
         transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
@@ -132,8 +136,9 @@ layout: default
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s;
     }
     
+    /* Уменьшенный шрифт заголовка */
     .product-title-h1 { 
-        font-size: 2.2rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px;
+        font-size: 1.8rem; font-weight: 900; color: #1e293b; line-height: 1.3; letter-spacing: -0.5px;
     }
     
     .tags-container { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.5rem; }
@@ -144,6 +149,16 @@ layout: default
     }
     .info-tag b { color: #2563eb; }
 
+    /* СТАТУС НАЛИЧИЯ */
+    .stock-badge {
+        display: inline-flex; align-items: center; gap: 6px; padding: 0.6rem 1.2rem;
+        border-radius: 2rem; font-size: 0.85rem; font-weight: 800; border: 1px solid transparent;
+        margin-bottom: 0.5rem;
+    }
+    .stock-in { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+    .stock-out { background: #fef2f2; color: #ef4444; border-color: #fecaca; }
+    .stock-soon { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+
     /* Карточка покупки (Sticky) */
     .sticky-buy-box { 
         background: white; border: 1px solid #f1f5f9; border-radius: 2.2rem; padding: 2rem; 
@@ -152,11 +167,13 @@ layout: default
     }
     .sticky-buy-box:hover { box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1); }
     
+    /* Уменьшенный шрифт цены */
     .price-wrapper { display: flex; flex-direction: row; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; }
-    .current-price-line { font-size: 3rem; font-weight: 900; color: #2563eb; letter-spacing: -1.5px; display: flex; align-items: baseline; line-height: 1; }
-    .old-price-line { font-size: 1.5rem; color: #94a3b8; text-decoration: line-through; font-weight: 700; }
-    .gel-symbol { font-size: 1.8rem; margin-left: 5px; font-weight: 800; }
+    .current-price-line { font-size: 2.4rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; display: flex; align-items: baseline; line-height: 1; }
+    .old-price-line { font-size: 1.3rem; color: #94a3b8; text-decoration: line-through; font-weight: 700; }
+    .gel-symbol { font-size: 1.5rem; margin-left: 5px; font-weight: 800; }
 
+    /* Кнопки покупки */
     .btn-alta-order { 
         width: 100%; background: #0f172a; color: white; border: none; padding: 1.2rem; 
         border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; 
@@ -165,16 +182,31 @@ layout: default
     }
     .btn-alta-order:hover { background: #2563eb; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
     .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
-
-    .features-list { 
-        margin-top: 1.8rem; display: flex; flex-direction: column; gap: 1rem; 
-        border-top: 1px solid #f1f5f9; padding-top: 1.8rem; 
+    
+    .btn-out-of-stock {
+        background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-size: 0.95rem;
     }
-    .feature-item { display: flex; align-items: center; justify-content: space-between; font-size: 0.95rem; }
-    .feature-label { color: #64748b; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-    .feature-label svg { color: #94a3b8; }
-    .feature-value { font-weight: 800; color: #0f172a; }
-    .feature-value.green { color: #16a34a; background: #f0fdf4; padding: 0.3rem 0.8rem; border-radius: 1rem; font-size: 0.85rem; }
+    .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+    /* ПРЕМИАЛЬНЫЕ КАРТОЧКИ ГАРАНТИИ И ДОСТАВКИ */
+    .benefits-grid { 
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; 
+        border-top: 1px dashed #f1f5f9; padding-top: 1.5rem;
+    }
+    .benefit-card {
+        background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.2rem;
+        padding: 1rem; display: flex; align-items: center; gap: 12px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .benefit-card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.03); background: white; }
+    .benefit-icon { 
+        width: 38px; height: 38px; background: white; border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; 
+        color: #2563eb; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0;
+    }
+    .benefit-info { display: flex; flex-direction: column; }
+    .benefit-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;}
+    .benefit-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
 
     /* Характеристики и Описание */
     .content-section-box { 
@@ -202,31 +234,92 @@ layout: default
         white-space: pre-line; margin-top: 1rem;
     }
 
-    /* БЛОК ПОХОЖИЕ ТОВАРЫ (DRAG TO SCROLL) */
+    /* БЛОК ПОХОЖИЕ ТОВАРЫ (Стрелки + Элегантный скролл) */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
+    
+    .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
+    
+    /* Градиенты для элегантного обрезания по краям */
+    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
+    
+    /* Стрелки похожих товаров */
+    .sim-arrow { 
+        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
+        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #0f172a; 
+        transition: all 0.3s; outline: none; 
+    }
+    .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); }
+    .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .sim-arrow-left { left: 5px; } .sim-arrow-right { right: 5px; }
+    
+    @media (min-width: 1024px) {
+        .sim-arrow.visible { display: flex; } 
+    }
+
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding-bottom: 1.5rem; margin-top: 1.5rem;
-        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; cursor: grab;
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 1.5rem; margin: -1rem -1.5rem;
+        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
-    .similar-scroll-container:active { cursor: grabbing; scroll-behavior: auto; }
-    .similar-card { flex: 0 0 280px; background: white; border-radius: 1.5rem; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); transition: 0.3s; display: flex; flex-direction: column; user-select: none; }
-    .similar-card:hover { transform: translateY(-4px); border-color: #cbd5e1; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.08); }
+    
+    .similar-card { 
+        flex: 0 0 280px; background: white; border-radius: 1.8rem; overflow: hidden; 
+        border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); 
+        transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; user-select: none; position: relative; height: 100%;
+    }
+    .similar-card:hover { transform: translateY(-5px); border-color: #e2e8f0; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.08); }
     .similar-card:active { transform: scale(0.96); box-shadow: none; }
     .similar-card img { pointer-events: none; }
+
+    /* МОДАЛЬНОЕ ОКНО ИЗОБРАЖЕНИЙ (Zoommer Style) */
+    .image-zoom-modal {
+        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        z-index: 100000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;
+    }
+    .image-zoom-modal.active { opacity: 1; display: flex; }
+    
+    .zoom-img-container {
+        position: relative; width: 90vw; height: 80vh; display: flex; justify-content: center; align-items: center;
+        animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .zoom-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; pointer-events: none; }
+    
+    .zoom-close {
+        position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 44px; height: 44px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        color: #64748b; transition: all 0.3s; z-index: 100001;
+    }
+    .zoom-close:hover { background: #fee2e2; color: #ef4444; transform: scale(1.1); }
+    
+    .zoom-arrow {
+        position: absolute; top: 50%; transform: translateY(-50%); background: white; border: 1px solid #e2e8f0;
+        width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: #0f172a; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.08); z-index: 100001;
+    }
+    .zoom-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); }
+    .zoom-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .zoom-prev { left: 20px; } .zoom-next { right: 20px; }
 
     @media (max-width: 1024px) {
         .product-grid { grid-template-columns: 1fr; gap: 1.5rem; }
         .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; }
         .main-image-view { height: 350px; }
-        .product-title-h1 { font-size: 1.8rem; }
+        .product-title-h1 { font-size: 1.6rem; }
+        .current-price-line { font-size: 2.2rem; }
         .content-section-box { padding: 1.5rem; border-radius: 1.5rem; }
         .gallery-section { border-radius: 1.5rem; padding: 1rem; }
         .breadcrumbs { padding: 0.6rem 1rem; border-radius: 1.2rem; }
+        .zoom-arrow { width: 40px; height: 40px; }
+        .zoom-prev { left: 10px; } .zoom-next { right: 10px; }
+        .sim-fade-left { left: 1.5rem; } .sim-fade-right { right: 1.5rem; }
     }
     @media (max-width: 640px) {
         .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
         .spec-value-text { text-align: left; }
+        .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
     }
 </style>
 
@@ -268,7 +361,9 @@ layout: default
             <div class="sale-badge-red" id="saleBadge">ფასდაკლება</div>
             {% endif %}
 
+            <!-- Добавлено событие onclick для открытия модалки (Zoom) -->
             <div class="main-image-view" 
+                 onclick="openImageZoom()"
                  ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
                  ontouchend="handleProductSwipe(event)">
                 <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}" onerror="this.src='/img/no-image.png'" draggable="false">
@@ -288,6 +383,26 @@ layout: default
         <!-- ИНФО-БЛОК -->
         <div class="product-info-section">
             <div>
+                <!-- Блок наличия -->
+                <div>
+                    {% if stock == 'in_stock' %}
+                    <div class="stock-badge stock-in">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        მარაგშია
+                    </div>
+                    {% elsif stock == 'out_of_stock' %}
+                    <div class="stock-badge stock-out">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                        მარაგი ამოიწურა
+                    </div>
+                    {% elsif stock == 'soon' %}
+                    <div class="stock-badge stock-soon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        მალე იქნება მარაგში
+                    </div>
+                    {% endif %}
+                </div>
+
                 <div class="tags-container">
                     <div class="info-tag">კოდი: <b>{{ page.sku }}</b></div>
                     <div class="info-tag">ბრენდი: <b>{{ page.brand }}</b></div>
@@ -305,25 +420,38 @@ layout: default
                     {% endif %}
                 </div>
 
+                <!-- Логика кнопки заказа в зависимости от наличия -->
+                {% if stock == 'out_of_stock' %}
+                <button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    მარაგი ამოიწურა, იხილეთ მსგავსი
+                </button>
+                {% else %}
                 <button class="btn-alta-order" onclick="handleBuyClick()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     შეკვეთა
                 </button>
+                {% endif %}
 
-                <div class="features-list">
-                    <div class="feature-item">
-                        <span class="feature-label">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            გარანტია:
-                        </span>
-                        <span class="feature-value">{{ page.warranty }}</span>
+                <!-- Новые карточки Гарантии и Доставки -->
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        </div>
+                        <div class="benefit-info">
+                            <span class="benefit-label">მიწოდება</span>
+                            <span class="benefit-val" style="color:#16a34a;">უფასო</span>
+                        </div>
                     </div>
-                    <div class="feature-item">
-                        <span class="feature-label">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                            მიწოდება:
-                        </span>
-                        <span class="feature-value green">უფასო</span>
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                        </div>
+                        <div class="benefit-info">
+                            <span class="benefit-label">გარანტია</span>
+                            <span class="benefit-val">{{ page.warranty }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -358,15 +486,39 @@ layout: default
     <!-- БЛОК ПОХОЖИХ ТОВАРОВ -->
     <div class="similar-products-section">
         <h2 class="section-title" style="font-size: 1.8rem;">მსგავსი პროდუქტები</h2>
-        <div class="similar-scroll-container" id="similarScroll">
-            <!-- Заполняется через JS -->
+        
+        <div class="similar-nav-section">
+            <button class="sim-arrow sim-arrow-left" id="simArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            
+            <div class="sim-fade-left"></div>
+            <div class="similar-scroll-container" id="similarScroll">
+                <!-- Заполняется через JS -->
+            </div>
+            <div class="sim-fade-right"></div>
+            
+            <button class="sim-arrow sim-arrow-right" id="simArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
+</div>
 
+<!-- МОДАЛЬНОЕ ОКНО ZOOM (ИЗОБРАЖЕНИЯ) -->
+<div class="image-zoom-modal" id="imageZoomModal">
+    <button class="zoom-close" onclick="closeImageZoom()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+    <button class="zoom-arrow zoom-prev" onclick="changeZoomImg(-1)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+    
+    <div class="zoom-img-container">
+        <img id="zoomImageLarge" src="" alt="Zoom Image">
+    </div>
+    
+    <button class="zoom-arrow zoom-next" onclick="changeZoomImg(1)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
 
 <script>
     let pTouchStartX = 0;
+    
+    // Глобальные переменные для модалки изображений
+    let currentZoomIndex = 0;
+    const allProductImages = [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
 
     // Инициализация страницы товара
     document.addEventListener('DOMContentLoaded', function() {
@@ -390,65 +542,134 @@ layout: default
             const currentSub = "{{ first_sub }}";
             const currentCat = "{{ first_cat }}";
             
-            // Сначала ищем товары из той же подкатегории
-            let similar = data.products.filter(p => p.id !== currentId && p.subcategories && p.subcategories.includes(currentSub));
+            // Фильтруем: Убираем текущий товар И убираем товары которых нет в наличии (out_of_stock)
+            let similar = data.products.filter(p => p.id !== currentId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub));
             
             // Если их мало, добиваем из главной категории
             if(similar.length < 30) {
-                const more = data.products.filter(p => p.id !== currentId && p.categories && p.categories.includes(currentCat) && !similar.includes(p));
+                const more = data.products.filter(p => p.id !== currentId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !similar.includes(p));
                 similar = similar.concat(more);
             }
             
-            // Ограничиваем до 30 штук
             similar = similar.slice(0, 30);
             
             if(similar.length > 0) {
                 document.getElementById('similarScroll').innerHTML = similar.map(p => {
                     const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
+                    
+                    // Логика бейджа скидки и старой цены для похожих товаров
+                    let discountBadgeHtml = '';
+                    let priceHtml = `<div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${p.price}</div>`;
+                    
+                    if (p.oldPrice) {
+                        const oldV = parseInt(p.oldPrice.replace(/[^0-9]/g, ''));
+                        const newV = parseInt(p.price.replace(/[^0-9]/g, ''));
+                        if (oldV > newV) {
+                            const pct = Math.round(((oldV - newV) / oldV) * 100);
+                            discountBadgeHtml = `<div class="sale-badge-red" style="top:12px; left:12px; font-size:0.75rem; padding:6px 10px;">-${pct}%</div>`;
+                            
+                            priceHtml = `
+                                <div style="display:flex; align-items:baseline; gap:8px;">
+                                    <div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${p.price}</div>
+                                    <div style="text-decoration:line-through; color:#94a3b8; font-size:1rem; font-weight:700;">${p.oldPrice}</div>
+                                </div>
+                            `;
+                        }
+                    }
+
                     return `
                     <div class="similar-card" onclick="location.href='/product/${p.id}/'">
-                        <div style="height:200px; padding:1.5rem; display:flex; align-items:center; justify-content:center;">
+                        ${discountBadgeHtml}
+                        <div style="height:210px; padding:1.5rem; display:flex; align-items:center; justify-content:center; background:white;">
                             <img src="${imgUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.src='/img/no-image.png'" draggable="false">
                         </div>
-                        <div style="padding:1.2rem; display:flex; flex-direction:column; flex:1;">
-                            <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:0.5rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.name}</div>
-                            <div style="font-weight:900; color:#2563eb; font-size:1.4rem; margin-top:auto;">${p.price}</div>
+                        <div style="padding:1.2rem; display:flex; flex-direction:column; flex:1; background:#f8fafc; border-top:1px solid #f1f5f9;">
+                            <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:0.8rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3;">${p.name}</div>
+                            <div style="margin-top:auto;">${priceHtml}</div>
                         </div>
                     </div>`;
                 }).join('');
 
-                // Инициализация Drag-to-Scroll для похожих товаров
+                // 3. Логика стрелок для похожих товаров (заменяет драг-энд-дроп для ПК)
                 const slider = document.getElementById('similarScroll');
-                let isDown = false; let startX; let scrollLeft;
-                slider.addEventListener('mousedown', (e) => { isDown = true; startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
-                slider.addEventListener('mouseleave', () => { isDown = false; });
-                slider.addEventListener('mouseup', () => { isDown = false; });
-                slider.addEventListener('mousemove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2;
-                    slider.scrollLeft = scrollLeft - walk;
-                });
+                const leftBtn = document.getElementById('simArrowLeft');
+                const rightBtn = document.getElementById('simArrowRight');
+
+                const updateArrows = () => {
+                    if(slider.scrollWidth > slider.clientWidth) {
+                        leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
+                        leftBtn.style.opacity = slider.scrollLeft > 0 ? '1' : '0.3';
+                        rightBtn.style.opacity = slider.scrollLeft < (slider.scrollWidth - slider.clientWidth - 5) ? '1' : '0.3';
+                    } else {
+                        leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
+                    }
+                };
+
+                slider.addEventListener('scroll', updateArrows);
+                window.addEventListener('resize', updateArrows);
+                
+                leftBtn.addEventListener('click', () => { slider.scrollBy({ left: -295, behavior: 'smooth' }); });
+                rightBtn.addEventListener('click', () => { slider.scrollBy({ left: 295, behavior: 'smooth' }); });
+                
+                setTimeout(updateArrows, 150);
+
             } else {
-                // Скрываем блок, если ничего не нашлось
                 document.querySelector('.similar-products-section').style.display = 'none';
             }
         });
+    });
+
+    // ZOOM ИЗОБРАЖЕНИЙ (Zoommer style)
+    function openImageZoom() {
+        const modal = document.getElementById('imageZoomModal');
+        const largeImg = document.getElementById('zoomImageLarge');
+        const currentMainSrc = document.getElementById('mainProductImage').src;
+        
+        currentZoomIndex = allProductImages.findIndex(src => currentMainSrc.endsWith(src));
+        if (currentZoomIndex === -1) currentZoomIndex = 0;
+        
+        largeImg.src = allProductImages[currentZoomIndex] || currentMainSrc;
+        
+        modal.style.display = 'flex';
+        modal.offsetHeight; // Принудительный рендер для CSS анимации
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeImageZoom() {
+        const modal = document.getElementById('imageZoomModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+    
+    function changeZoomImg(direction) {
+        if (allProductImages.length <= 1) return;
+        currentZoomIndex += direction;
+        if (currentZoomIndex >= allProductImages.length) currentZoomIndex = 0;
+        if (currentZoomIndex < 0) currentZoomIndex = allProductImages.length - 1;
+        document.getElementById('zoomImageLarge').src = allProductImages[currentZoomIndex];
+    }
+
+    // Закрытие модалки при клике вне картинки
+    document.getElementById('imageZoomModal').addEventListener('click', (e) => {
+        if (e.target.classList.contains('image-zoom-modal') || e.target.classList.contains('zoom-img-container')) {
+            closeImageZoom();
+        }
     });
 
     // Свайп галереи на мобильных устройствах
     function handleProductSwipe(event) {
         let touchEndX = event.changedTouches[0].screenX;
         const diff = pTouchStartX - touchEndX;
-        const imgs = [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
-        
-        if (Math.abs(diff) > 50 && imgs.length > 1) {
+        if (Math.abs(diff) > 50 && allProductImages.length > 1) {
             const currentImg = document.getElementById('mainProductImage');
             const currentPath = currentImg.src;
-            let idx = imgs.findIndex(p => currentPath.endsWith(p));
+            let idx = allProductImages.findIndex(p => currentPath.endsWith(p));
             
             let nextIdx = idx + (diff > 0 ? 1 : -1);
-            if (nextIdx >= imgs.length) nextIdx = 0;
-            if (nextIdx < 0) nextIdx = imgs.length - 1;
+            if (nextIdx >= allProductImages.length) nextIdx = 0;
+            if (nextIdx < 0) nextIdx = allProductImages.length - 1;
             
             const thumbs = document.querySelectorAll('.thumb-card');
             if (thumbs[nextIdx]) thumbs[nextIdx].click();
@@ -479,7 +700,7 @@ layout: default
             id: "{{ page.id }}",
             name: "{{ page.name }}",
             price: "{{ page.price }}",
-            images: [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
+            images: allProductImages
         };
         if (typeof window.openOrderForm === 'function') {
             window.openOrderForm(product);
