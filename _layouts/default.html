@@ -741,7 +741,10 @@
         s.addEventListener('input', function() {
             let q = this.value.trim(); if(!q) { r.innerHTML=''; r.classList.remove('show'); return; }
             fetch('/catalog.json').then(res=>res.json()).then(d=>{
-                let f = d.products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())));
+                let f = d.products.filter(p => 
+                    p.stockStatus !== 'out_of_stock' && 
+                    (p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())))
+                );
                 r.innerHTML = f.length ? f.map(p=> {
                     let catText = '';
                     if(p.categories && p.categories[0] && window.CATALOG_STRUCTURE[p.categories[0]]) {
