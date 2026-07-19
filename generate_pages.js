@@ -39,6 +39,7 @@ description: "${product.description || ''}"
 longDescription: "${product.longDescription || product.description || ''}"
 warranty: "${product.warranty || '12 თვე'}"
 categories: ${JSON.stringify(product.categories || [])}
+subcategories: ${JSON.stringify(product.subcategories || [])}
 ---`;
 
   fs.writeFileSync(path.join(productsDir, `${product.id}.md`), content);
