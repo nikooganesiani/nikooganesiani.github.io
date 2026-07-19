@@ -320,6 +320,24 @@ layout: default
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
     }
+     /* Базовая мобильная логика (в стек) */
+.specs-desc-grid { display: flex; flex-direction: column; gap: 3rem; }
+
+/* Логика для ПК (бок о бок) */
+@media (min-width: 1024px) {
+    .specs-desc-grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1.2fr; /* Описание чуть шире характеристик */
+        gap: 5rem; 
+        align-items: start; 
+    }
+    /* Убираем разделители, которые были нужны в мобильной версии */
+    #descColFix { 
+        margin-top: 0 !important; 
+        padding-top: 0 !important; 
+        border-top: none !important; 
+    }
+}
 </style>
 
 <div class="product-view-container">
@@ -432,28 +450,26 @@ layout: default
 
     <!-- ХАРАКТЕРИСТИКИ -->
     <div class="content-section-box">
-        <h2 class="section-title">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-            სპეციფიკაციები
-        </h2>
-        
-        <div class="spec-list-container">
-            {% for spec in page.specs %}
-            <div class="spec-item-row">
-                <div class="spec-name-label">{{ spec[0] }}</div>
-                <div class="spec-value-text">{{ spec[1] }}</div>
+    <div class="specs-desc-grid">
+        <!-- Левая колонка -->
+        <div class="specs-col">
+            <h2 class="section-title">
+                <svg>...</svg> სპეციფიკაციები
+            </h2>
+            <div class="spec-list-container">
+                {% for spec in page.specs %}...{% endfor %}
             </div>
-            {% endfor %}
         </div>
 
-        <div style="margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid #f1f5f9;">
+        <!-- Правая колонка -->
+        <div class="desc-col" id="descColFix">
             <h3 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                პროდუქტის აღწერა
+                <svg>...</svg> პროდუქტის აღწერა
             </h3>
             <div class="desc-text">{{ page.longDescription }}</div>
         </div>
     </div>
+</div>
 
     <!-- БЛОК ПОХОЖИХ ТОВАРОВ -->
     <div class="similar-products-section">
