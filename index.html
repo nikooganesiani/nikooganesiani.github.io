@@ -26,7 +26,7 @@ title: "მთავარი"
     .categories-fade-right { position: absolute; right: 1.5rem; top: 0; bottom: 0; width: 48px; background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
 
     /* Стрелки ПК-скролла */
-    .cat-arrow { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #475569; transition: all 0.2s; }
+    .cat-arrow { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #475569; transition: all 0.2s; outline: none; }
     .cat-arrow:hover { background: #f1f5f9; color: #2563eb; }
     .cat-arrow:active { transform: translateY(-50%) scale(0.9); }
     .cat-arrow-left { left: 0; } .cat-arrow-right { right: 0; }
@@ -58,7 +58,7 @@ title: "მთავარი"
     .category-btn:active { transform: scale(0.96); }
 
     /* ПОДКАТЕГОРИИ */
-    .subcat-nav-section { max-width: 1280px; margin: -0.5rem auto 1rem auto; display: none; position: relative; z-index: 15; }
+    .subcat-nav-section { max-width: 1280px; margin: 0.5rem auto 1rem auto; display: none; position: relative; z-index: 15; }
     .subcategories { padding: 0.5rem 0.5rem; }
     .sub-category-btn {
         background: transparent; border: 1px solid #cbd5e1; padding: 0.5rem 1rem;
@@ -480,8 +480,8 @@ title: "მთავარი"
                     <div class="product-images-track" id="track-${product.id}">
                         ${imgs.map(img => `
                             <div class="product-slide">
-                                <a href="/product/${product.id}/" style="display:contents;">
-                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.src='/img/no-image.png'">
+                                <a href="product/${product.id}/" style="display:contents;" draggable="false">
+                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.src='/img/no-image.png'" draggable="false">
                                 </a>
                             </div>
                         `).join('')}
@@ -492,7 +492,7 @@ title: "მთავარი"
                     ` : ''}
                 </div>
                 <div class="product-info">
-                    <div class="product-name-box" onclick="location.href='/product/${product.id}/'">
+                    <div class="product-name-box" onclick="location.href='product/${product.id}/'">
                         <div class="product-name">${product.name}</div>
                     </div>
                     <div class="product-price-container">
