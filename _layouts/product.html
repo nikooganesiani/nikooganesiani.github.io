@@ -512,11 +512,15 @@ layout: default
             const currentSub = "{{ first_sub }}";
             const currentCat = "{{ first_cat }}";
             
-            // Используем jsonify для 100% безопасной передачи названия товара из Jekyll в JS
-            const currentProductName = {{ page.name | jsonify }}; 
+            // БРОНЕБОЙНЫЙ ПОИСК ТОВАРА (Ищем по SKU или ID из URL)
+            const currentSku = "{{ page.sku }}".trim();
+            const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop(); // Берет ID прямо из адресной строки
             
-            // Находим текущий товар по названию (бронебойный способ)
-            const currentProduct = data.products.find(p => p.name === currentProductName);
+            // Ищем совпадение либо по коду товара (SKU), либо по ID из ссылки
+            const currentProduct = data.products.find(p => 
+                (currentSku !== "" && String(p.sku) === currentSku) || 
+                (urlId !== "" && String(p.id) === urlId)
+            );
             
             // Вытаскиваем настоящий ID для фильтрации похожих товаров
             const actualProductId = currentProduct ? currentProduct.id : null;
@@ -528,7 +532,6 @@ layout: default
             const badgeContainer = document.getElementById('dynamicStockBadge');
             const btnContainer = document.getElementById('dynamicBuyButton');
             
-            // Расширенная проверка: понимает и английские ключи, и грузинский текст напрямую
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
                 if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
                 if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> მარაგი ამოიწურა, იხილეთ მსგავსი</button>`;
