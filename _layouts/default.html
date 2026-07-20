@@ -356,6 +356,14 @@
     #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding-left: 3.2rem; margin-bottom: 0; }
     #trackingModal .tracking-input-wrapper input:focus { border-color: #3b82f6; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
     #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
+    #trackingModal .tracking-input-wrapper input:-webkit-autofill,
+    #trackingModal .tracking-input-wrapper input:-webkit-autofill:hover, 
+    #trackingModal .tracking-input-wrapper input:-webkit-autofill:focus, 
+    #trackingModal .tracking-input-wrapper input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+        -webkit-text-fill-color: #ffffff !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
     #trackingModal .btn-submit { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 4px 15px rgba(37,99,235,0.25); }
     #trackingModal .btn-submit:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); }
 
@@ -387,6 +395,23 @@
     .order-confirm-label { color: #64748b; font-weight: 600; font-size: 0.9rem; }
     .order-confirm-value { font-weight: 800; color: #0f172a; font-size: 0.95rem; text-align: right; max-width: 60%; }
     .order-confirm-price { font-weight: 900; font-size: 1.4rem; color: #2563eb; }
+
+    /* Базовые стили бейджей статусов и таймлайна */
+    .status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; line-height: 1; }
+    .status-badge-delivered { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+    .status-badge-processing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); }
+    .status-badge-shipping { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
+    .status-badge-unknown { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+    .timeline-vertical { display: flex; flex-direction: column; width: 100%; margin-top: 1.5rem; }
+    .timeline-step-v { display: flex; align-items: stretch; min-height: 50px; }
+    .timeline-indicator { display: flex; flex-direction: column; align-items: center; margin-right: 1rem; width: 14px; }
+    .timeline-dot-v { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #e2e8f0; background: white; z-index: 1; flex-shrink: 0; }
+    .timeline-line { width: 2px; background: #e2e8f0; flex-grow: 1; margin-top: 4px; margin-bottom: 4px; }
+    .timeline-step-v:last-child .timeline-line { display: none; }
+    .timeline-content-v { padding-bottom: 1.5rem; display: flex; flex-direction: column; justify-content: flex-start; margin-top: -3px; }
+    .timeline-date-v { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+    .timeline-text-v { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
 
     /* Темный таймлайн */
     .dark-timeline .timeline-line { background: rgba(255,255,255,0.1); }
