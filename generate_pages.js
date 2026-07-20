@@ -23,19 +23,19 @@ async function generatePages() {
             let specsYaml = "specs:\n";
             if (product.specs) {
                 Object.entries(product.specs).forEach(([key, value]) => {
-                    // Используем JSON.stringify для безопасного экранирования кавычек внутри ключей и значений
+                    // Используем JSON.stringify для безопасного экранирования кавычек
                     specsYaml += `  ${JSON.stringify(key)}: ${JSON.stringify(value)}\n`;
                 });
             }
 
             let imagesYaml = "images:\n";
-            // Добавлена проверка на случай, если у товара нет массива images, а есть только image (или вообще нет картинок)
+            // Безопасная проверка наличия картинок
             const imgs = product.images || (product.image ? [product.image] : []);
             imgs.forEach(img => {
                 imagesYaml += `  - ${JSON.stringify(img)}\n`;
             });
 
-            // Убрали ручные кавычки "", теперь JSON.stringify поставит их сам и заэкранирует все переносы строк
+            // Формируем контент без ручных кавычек "", JSON.stringify поставит их сам
             const content = `---
 layout: product
 id: ${JSON.stringify(product.id)}
@@ -49,23 +49,6 @@ ${specsYaml}
 description: ${JSON.stringify(product.description || '')}
 longDescription: ${JSON.stringify(product.longDescription || product.description || '')}
 warranty: ${JSON.stringify(product.warranty || '12 თვე')}
-categories: ${JSON.stringify(product.categories || [])}
-subcategories: ${JSON.stringify(product.subcategories || [])}
----`;
-
-            const content = `---
-layout: product
-id: "${product.id}"
-sku: "${product.sku || product.id}"
-name: "${product.name}"
-brand: "${product.brand || 'ENKA Electronics'}"
-price: "${product.price}"
-oldPrice: "${product.oldPrice || ''}"
-${imagesYaml}
-${specsYaml}
-description: "${product.description || ''}"
-longDescription: "${product.longDescription || product.description || ''}"
-warranty: "${product.warranty || '12 თვე'}"
 categories: ${JSON.stringify(product.categories || [])}
 subcategories: ${JSON.stringify(product.subcategories || [])}
 ---`;
