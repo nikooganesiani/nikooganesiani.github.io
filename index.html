@@ -102,26 +102,23 @@ title: "მთავარი"
     /* КАРТОЧКА ТОВАРА */
     .catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.8rem; margin-bottom: 3rem; }
     .product-card {
-        background: white; 
-        border-radius: 1.5rem; /* Немного более строгий радиус */
-        overflow: hidden; 
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-        transition: all 0.3s ease;
-        display: flex; flex-direction: column;
-        border: 1px solid #f1f5f9;
-        height: 100%;
+        background: white; border-radius: 2.2rem; overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; flex-direction: column; opacity: 0; transform: translateY(30px);
+        animation: fadeUp 0.5s ease forwards; border: 1px solid #f1f5f9; height: 100%;
     }
     .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }
     
     /* Обертка картинки: скругляем и даем белый фон для маскировки разного фона у фото */
     .product-image-wrapper { 
-        position: relative; 
-        width: 100%; 
-        aspect-ratio: 1 / 1; /* Квадрат — идеальная пропорция для карточек */
-        background: #ffffff;
-        overflow: hidden;
+        position: relative; width: 100%; height: 260px; overflow: hidden; 
+        background: #ffffff; /* Принудительный белый фон */
+        border-radius: 2.2rem 2.2rem 0 0; /* Скругление сверху */
+        border-bottom: 1px solid #f1f5f9;
     }
-    
+    .product-image-wrapper img {
+        border-radius: 1.8rem; /* Немного меньше, чем у карточки, чтобы визуально было красиво */
+    }
     .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
     /* Слайд: добавляем небольшой внутренний отступ, чтобы товар "дышал" */
     .product-slide { 
@@ -132,28 +129,18 @@ title: "მთავარი"
 
     /* Картинка: добавляем чуть больше "воздуха" */
     .product-image { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; /* Заполняет всю область, обрезая лишнее, выглядит дороже */
-        transition: transform 0.5s ease;
-    }
-
-    .product-card:hover .product-image {
-        transform: scale(1.05); /* Легкий зум при наведении выглядит профессионально */
+        max-width: 90%; /* Немного уменьшим, чтобы фото не упиралось в края */
+        max-height: 90%; 
+        object-fit: contain; 
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
-    .product-info { 
-        padding: 1.2rem; 
-        display: flex; flex-direction: column; flex: 1; 
-        background: white; 
-    }
+    .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
     .product-name-box {
-        background: transparent; /* Убираем серую плашку */
-        border: none;
-        height: auto; /* Название теперь не ограничено по высоте */
-        padding: 0;
-        margin-bottom: 1rem;
+        background: #f8fafc; border-radius: 1.2rem; padding: 1rem 1.2rem;
+        height: 4.2rem; display: flex; align-items: center; margin-bottom: 1.2rem;
+        border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
     }
     .product-name-box:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-2px); }
     .product-name-box:active { transform: scale(0.96) !important; }
