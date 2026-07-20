@@ -113,11 +113,11 @@ layout: default
     /* Обновленная галерея для клика (Zoom) */
     .main-image-view { 
         width: 100%; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; 
-        margin-bottom: 1.5rem; cursor: zoom-in; position: relative; overflow: hidden; border-radius: 1.5rem;
+        margin-bottom: 1.5rem; cursor: zoom-in; position: relative; overflow: hidden; border-radius: 0.7rem;
     }
     .main-image-view img { 
         max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; 
-        border-radius: 0.5rem; mix-blend-mode: multiply; /* Уменьшено для сохранения пропорций композиции */
+        border-radius: 0.7rem; mix-blend-mode: multiply;
         transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
     
@@ -327,6 +327,8 @@ layout: default
         .current-price-line { font-size: 2.2rem; }
         .content-section-box { padding: 1.5rem; border-radius: 1.5rem; }
         .gallery-section { border-radius: 1.5rem; padding: 1rem; }
+        .main-image-view { border-radius: 0.5rem; }
+        .main-image-view img { border-radius: 0.5rem; }
         .sale-badge-red { top: 1.5rem; left: 1.5rem; } /* Отменяем сдвиг для мобильных, чтобы не заезжал слишком далеко */
         .breadcrumbs { padding: 0.6rem 1rem; border-radius: 1.2rem; }
         .zoom-arrow { width: 40px; height: 40px; }
@@ -381,31 +383,6 @@ layout: default
     .description-container {
         border-top: none; /* Убираем линию на ПК */
         padding-top: 0;   /* Убираем лишний отступ на ПК */
-    }
-}
-  /* ==========================================================
-   ИСПРАВЛЕНИЕ ПРОПОРЦИЙ СКРУГЛЕНИЯ (МОБИЛКА vs ПК)
-   ========================================================== */
-
-/* 1. Мобильные устройства */
-.main-image-view img,
-.main-image-view {
-    border-radius: 1.5rem; /* Синхронизируем радиус с мобильным контейнером галереи */
-}
-
-.thumb-card img {
-    border-radius: 0.8rem;
-}
-
-/* 2. Десктопы / ПК (экраны от 1024px и шире) */
-@media (min-width: 1024px) {
-    .main-image-view img,
-    .main-image-view {
-        border-radius: 1.6rem; /* Плавный концентрический радиус под большой контейнер */
-    }
-    
-    .thumb-card img {
-        border-radius: 0.8rem;
     }
 }
 </style>
