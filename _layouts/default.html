@@ -760,15 +760,16 @@
 
                 r.innerHTML = f.length ? f.map(p => {
                     let catText = '';
-                    // Проверяем ключи как в виде массивов, так и в виде строк (для надежности)
-                    let mainCatId = (p.categories && p.categories.length > 0) ? p.categories[0] : p.category;
-                    let subCatId = (p.subcategories && p.subcategories.length > 0) ? p.subcategories[0] : p.subcategory;
+                    
+                    // Бронебойная проверка: если это настоящий массив - берем 1 элемент, если просто строка - берем строку целиком. 
+                    // Проверяем сразу 3 варианта ключей: subcategories, subcategory, sub
+                    let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
+                    let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
                     
                     if (mainCatId && window.CATALOG_STRUCTURE[mainCatId]) {
                         catText = window.CATALOG_STRUCTURE[mainCatId].title;
                         if (subCatId) {
                             let sub = window.CATALOG_STRUCTURE[mainCatId].subs.find(sb => sb.id === subCatId);
-                            // Меняем точку на > как вы и просили
                             if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">&gt;</span> ${sub.name} `;
                         }
                     }
