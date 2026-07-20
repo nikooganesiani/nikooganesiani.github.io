@@ -541,7 +541,37 @@ layout: default
     
     <button class="zoom-arrow zoom-next" onclick="changeZoomImg(1)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
-
+<!-- Schema.org SEO Разметка для товара -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": {{ page.name | jsonify }},
+  "image": [
+    {% for img in page.images %}
+      {{ img | jsonify }}{% if forloop.last == false %},{% endif %}
+    {% endfor %}
+  ],
+  "description": {{ page.longDescription | default: page.description | strip_html | truncate: 160 | jsonify }},
+  "sku": {{ page.sku | jsonify }},
+  "brand": {
+    "@type": "Brand",
+    "name": {{ page.brand | default: "ENKA Electronics" | jsonify }}
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "https://enkaelectronics.com.ge{{ page.url }}",
+    "priceCurrency": "GEL",
+    "price": "{{ page.price | replace: '₾', '' | replace: ' ', '' | strip }}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "ENKA Electronics"
+    }
+  }
+}
+</script>
 <script>
     let pTouchStartX = 0;
     
