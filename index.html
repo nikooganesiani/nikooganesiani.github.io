@@ -116,38 +116,56 @@ title: "მთავარი"
         border-radius: 2.2rem 2.2rem 0 0; /* Скругление сверху */
         border-bottom: 1px solid #f1f5f9;
     }
+    /* Убираем скругление у img, так как обертка (.product-image-wrapper) сама скроет края */
     .product-image-wrapper img {
-        border-radius: 1.8rem; /* Немного меньше, чем у карточки, чтобы визуально было красиво */
+        border-radius: 0; 
     }
     .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-    /* Слайд: добавляем небольшой внутренний отступ, чтобы товар "дышал" */
+    /* Убираем внутренний отступ у слайда, чтобы изображение шло стык в стык */
     .product-slide { 
         flex: 0 0 100%; width: 100%; height: 100%; 
-        padding: 1.5rem; /* Отступ от краев */
+        padding: 0; 
         display: flex; align-items: center; justify-content: center;
     }
 
-    /* Картинка: добавляем чуть больше "воздуха" */
+    /* Растягиваем картинку на всю область до границ и разделителя */
     .product-image { 
-        max-width: 90%; /* Немного уменьшим, чтобы фото не упиралось в края */
-        max-height: 90%; 
-        object-fit: contain; 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
         transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
     .product-name-box {
-        background: #f8fafc; border-radius: 1.2rem; padding: 1rem 1.2rem;
-        height: 4.2rem; display: flex; align-items: center; margin-bottom: 1.2rem;
-        border: 1px solid #f1f5f9; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer;
+        background: transparent; border: none; padding: 0;
+        height: 3rem; display: flex; align-items: flex-start; margin-bottom: 1rem;
+        transition: opacity 0.2s ease; cursor: pointer;
     }
-    .product-name-box:hover { background: #f1f5f9; border-color: #cbd5e1; transform: translateY(-2px); }
-    .product-name-box:active { transform: scale(0.96) !important; }
+    /* Легкий эффект при наведении без прыжков */
+    .product-name-box:hover { opacity: 0.8; }
+    .product-name-box:active { transform: scale(0.98) !important; }
 
     .product-name {
-        font-size: 1.05rem; font-weight: 800; color: #0f172a; line-height: 1.3; letter-spacing: -0.2px;
+        font-size: 1.1rem; font-weight: 750; color: #0f172a; line-height: 1.4; letter-spacing: -0.2px;
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* Аккуратный и минималистичный бейдж скидки в тон карточке */
+    .discount-badge {
+        position: absolute; 
+        top: 12px; 
+        left: 12px; 
+        background: #ef4444; 
+        color: white; 
+        padding: 4px 10px; 
+        border-radius: 8px; 
+        font-size: 0.8rem; 
+        font-weight: 800; 
+        z-index: 5; 
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); 
+        pointer-events: none;
     }
     
     .product-price-container { display: flex; flex-direction: row; align-items: baseline; gap: 10px; margin-bottom: 1.2rem; padding: 0 0.5rem; }
@@ -478,7 +496,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                 const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
                 if (oldVal > newVal) {
                     const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div style="position:absolute; top:16px; left:16px; background:#ef4444; color:white; padding:6px 12px; border-radius:12px; font-size:0.8rem; font-weight:900; z-index:5; box-shadow:0 8px 20px rgba(239,68,68,0.3); border:1px solid rgba(255,255,255,0.2); pointer-events:none;">-${percent}%</div>`;
+                    discountBadge = `<div class="discount-badge">-${percent}%</div>`;
                 }
             }
             
