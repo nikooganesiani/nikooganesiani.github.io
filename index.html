@@ -610,15 +610,33 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
     }
 
     // ==========================================
-    // ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
-    // ==========================================
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/catalog.json').then(res => res.json()).then(data => {
-            // Подготавливаем базу товаров
-            window.allProducts = data.products.map(p => ({ 
-                ...p, 
-                priceValue: parseInt(p.price.replace(/[^0-9]/g, '')) 
+// ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Вставьте сюда вашу ссылку на catalog.json в Cloudflare
+    const catalogUrl = 'https://ВСТАВЬТЕ_ВАШ_URL_CLOUDFLARE_ЗДЕСЬ/catalog.json';
+
+    fetch(catalogUrl)
+        .then(res => {
+            if (!res.ok) throw new Error(`Ошибка загрузки каталога: ${res.status}`);
+            return res.json();
+        })
+        .then(data => {
+            // Подготавливаем базу товаров с безопасным парсингом цены
+            window.allProducts = data.products.map(p => ({
+                ...p,
+                priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
+
+            // Дальше остается ваш код (Чтение параметров из URL):
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlCat = urlParams.get('category');
+            // ... и так далее ...
+        })
+        .catch(err => {
+            console.error('Не удалось загрузить каталог с Cloudflare:', err);
+            // Тут можно добавить логику вывода сообщения об ошибке на экран для пользователя
+        });
             
             // Читаем параметры из URL
             const urlParams = new URLSearchParams(window.location.search);
