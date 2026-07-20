@@ -609,12 +609,11 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         document.addEventListener('click', () => customSelect.classList.remove('open'));
     }
 
-    // ==========================================
+// ==========================================
 // ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Вставьте сюда вашу ссылку на catalog.json в Cloudflare
-    const catalogUrl = 'https://catalog-api.niko-oganesiani.workers.dev';
+    const catalogUrl = 'https://catalog-api.niko-oganesiani.workers.dev/catalog.json';
 
     fetch(catalogUrl)
         .then(res => {
@@ -628,50 +627,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
 
-            // Дальше остается ваш код (Чтение параметров из URL):
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlCat = urlParams.get('category');
-            // ... и так далее ...
-        })
-        .catch(err => {
-            console.error('Не удалось загрузить каталог с Cloudflare:', err);
-            // Тут можно добавить логику вывода сообщения об ошибке на экран для пользователя
-        });
-            
-            // Читаем параметры из URL
+            // Чтение параметров из URL
             const urlParams = new URLSearchParams(window.location.search);
             const urlCat = urlParams.get('category');
             const urlSub = urlParams.get('sub');
 
-            if (urlCat) {
-                const targetBtn = document.querySelector(`.category-btn[data-category="${urlCat}"]`);
-                if (targetBtn) {
-                    categoryBtns.forEach(b => b.classList.remove('active'));
-                    targetBtn.classList.add('active');
-                    currentCategory = urlCat;
-                    
-                    // Центрируем кнопку
-                    setTimeout(() => targetBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }), 100);
-                }
-            }
-
-            // Отрисовываем подкатегории в зависимости от Главной
-            renderSubcategories(currentCategory);
-
-            // Если в URL была указана еще и подкатегория
-            if (urlSub && currentCategory !== 'all') {
-                const targetSubBtn = subcategoriesContainer.querySelector(`.sub-category-btn[data-sub="${urlSub}"]`);
-                if (targetSubBtn) {
-                    subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
-                    targetSubBtn.classList.add('active');
+            if (urlCat && catalogStructure[urlCat]) {
+                currentCategory = urlCat;
+                categoryBtns.forEach(btn => {
+                    if (btn.dataset.category === urlCat) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                renderSubcategories(urlCat);
+                if (urlSub) {
                     currentSubcategory = urlSub;
-                    
-                    setTimeout(() => targetSubBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }), 200);
+                    setTimeout(() => {
+                        const subBtn = subcategoriesContainer.querySelector(`[data-sub="${urlSub}"]`);
+                        if (subBtn) {
+                            subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
+                            subBtn.classList.add('active');
+                            subBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                        }
+                    }, 50);
                 }
             }
-
-            // Финальный рендер товаров
             renderProducts();
+        })
+        .catch(err => {
+            console.error('Не удалось загрузить каталог с Cloudflare:', err);
         });
-    });
+});
 </script>
