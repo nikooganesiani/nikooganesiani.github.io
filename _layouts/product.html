@@ -559,9 +559,14 @@ layout: default
         }
 
         // 2. Чтение catalog.json (Статус товара + Похожие товары)
-        fetch('/catalog.json').then(r => r.json()).then(data => {
-            const currentSub = "{{ first_sub }}";
-            const currentCat = "{{ first_cat }}";
+fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
+    .then(r => {
+        if (!r.ok) throw new Error('Ошибка загрузки каталога');
+        return r.json();
+    })
+    .then(data => {
+        const currentSub = "{{ first_sub }}";
+        const currentCat = "{{ first_cat }}"
             
             // БРОНЕБОЙНЫЙ ПОИСК ТОВАРА (Ищем по SKU или ID из URL)
             const currentSku = "{{ page.sku }}".trim();
