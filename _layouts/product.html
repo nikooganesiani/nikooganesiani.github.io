@@ -444,7 +444,7 @@ layout: default
                         {{ page.price | replace: '₾', '' }}<span class="gel-symbol">₾</span>
                     </div>
                     {% if page.oldPrice != "" and page.oldPrice != nil %}
-                    <div class="old-price-line">{{ page.oldPrice }}</div>
+                    <div class="old-price-line">{{ page.oldPrice | replace: '₾', '' }}₾</div>
                     {% endif %}
                 </div>
 
@@ -619,7 +619,7 @@ fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
                     
                     // Логика бейджа скидки и старой цены для похожих товаров
                     let discountBadgeHtml = '';
-                    let priceHtml = `<div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${p.price}</div>`;
+                    let priceHtml = `<div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${String(p.price).replace(/₾/g, '')}₾</div>`;
                     
                     if (p.oldPrice) {
                         const oldV = parseInt(p.oldPrice.replace(/[^0-9]/g, ''));
@@ -630,8 +630,8 @@ fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
                             
                             priceHtml = `
                                 <div style="display:flex; align-items:baseline; gap:8px;">
-                                    <div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${p.price}</div>
-                                    <div style="text-decoration:line-through; color:#94a3b8; font-size:1rem; font-weight:700;">${p.oldPrice}</div>
+                                    <div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${String(p.price).replace(/₾/g, '')}₾</div>
+                                    <div style="text-decoration:line-through; color:#94a3b8; font-size:1rem; font-weight:700;">${String(p.oldPrice).replace(/₾/g, '')}₾</div>
                                 </div>
                             `;
                         }
