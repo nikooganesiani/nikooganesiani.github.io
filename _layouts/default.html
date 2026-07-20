@@ -734,33 +734,53 @@
         }
     };
 
-    // Живой поиск с добавлением хлебных крошек
-    (function(){
-        let s = document.getElementById('searchInput'); let r = document.createElement('div'); if(!s) return;
-        r.className = 'search-results'; s.parentNode.appendChild(r);
-        s.addEventListener('input', function() {
-            let q = this.value.trim(); if(!q) { r.innerHTML=''; r.classList.remove('show'); return; }
-            fetch('/catalog.json').then(res=>res.json()).then(d=>{
+// Живой поиск с добавлением хлебных крошек
+(function () {
+    let s = document.getElementById('searchInput');
+    let r = document.createElement('div');
+    if (!s) return;
+    r.className = 'search-results';
+    s.parentNode.appendChild(r);
+
+    s.addEventListener('input', function () {
+        let q = this.value.trim();
+        if (!q) { r.innerHTML = ''; r.classList.remove('show'); return; }
+
+        fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
+            .then(res => {
+                if (!res.ok) throw new Error('Ошибка сети');
+                return res.json();
+            })
+            .then(d => {
                 let f = d.products.filter(p => 
                     p.stockStatus !== 'out_of_stock' && 
-                    (p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase())))
+                    (p.name.toLowerCase().includes(q.toLowerCase()) || 
+                    (p.description && p.description.toLowerCase().includes(q.toLowerCase())))
                 );
-                r.innerHTML = f.length ? f.map(p=> {
+
+                r.innerHTML = f.length ? f.map(p => {
                     let catText = '';
-                    if(p.categories && p.categories[0] && window.CATALOG_STRUCTURE[p.categories[0]]) {
+                    if (p.categories && p.categories[0] && window.CATALOG_STRUCTURE[p.categories[0]]) {
                         catText = window.CATALOG_STRUCTURE[p.categories[0]].title;
-                        if(p.subcategories && p.subcategories[0]) {
+                        if (p.subcategories && p.subcategories[0]) {
                             let sub = window.CATALOG_STRUCTURE[p.categories[0]].subs.find(sb => sb.id === p.subcategories[0]);
-                            if(sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name}`;
+                            if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name} `;
                         }
                     }
-                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images&&p.images.length>0)?p.images[0]:p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px;">${p.price}</div></div></div>`;
+                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px;">${p.price}</div></div></div>`;
                 }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
+                
                 r.classList.add('show');
+            })
+            .catch(err => {
+                console.error('Ошибка поиска по каталогу:', err);
             });
-        });
-        document.addEventListener('click', e => { if(!s.contains(e.target) && !r.contains(e.target)) r.classList.remove('show'); });
-    })();
+    });
+
+    document.addEventListener('click', e => {
+        if (!s.contains(e.target) && !r.contains(e.target)) r.classList.remove('show');
+    });
+})();
     
     // Крестик очистки поиска
     (function(){let inp=document.getElementById('searchInput');let clr=document.querySelector('.search-clear');if(!inp||!clr)return;inp.addEventListener('input',function(){if(this.value.length>0){clr.classList.add('show');}else{clr.classList.remove('show');}});clr.onclick=function(){inp.value='';inp.focus();clr.classList.remove('show');inp.dispatchEvent(new Event('input'));};})();
