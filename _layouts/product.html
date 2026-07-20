@@ -4,7 +4,14 @@ layout: default
 
 <!-- УМНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ КАТЕГОРИИ И ПОДКАТЕГОРИИ ДЛЯ ХЛЕБНЫХ КРОШЕК -->
 {% assign first_cat = page.categories | first %}
+{% if first_cat == nil or first_cat == empty %}
+  {% assign first_cat = page.category | default: page.categories %}
+{% endif %}
+
 {% assign first_sub = page.subcategories | first %}
+{% if first_sub == nil or first_sub == empty %}
+  {% assign first_sub = page.subcategory | default: page.sub | default: page.subcategories %}
+{% endif %}
 
 {% capture cat_name %}
   {% case first_cat %}
