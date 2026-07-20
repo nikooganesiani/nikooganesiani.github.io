@@ -760,21 +760,27 @@
 
                 r.innerHTML = f.length ? f.map(p => {
                     let catText = '';
-                    if (p.categories && p.categories[0] && window.CATALOG_STRUCTURE[p.categories[0]]) {
-                        catText = window.CATALOG_STRUCTURE[p.categories[0]].title;
-                        if (p.subcategories && p.subcategories[0]) {
-                        let sub = window.CATALOG_STRUCTURE[p.categories[0]].subs.find(sb => sb.id === p.subcategories[0]);
-                        if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name} `;
+                    // Проверяем ключи как в виде массивов, так и в виде строк (для надежности)
+                    let mainCatId = (p.categories && p.categories.length > 0) ? p.categories[0] : p.category;
+                    let subCatId = (p.subcategories && p.subcategories.length > 0) ? p.subcategories[0] : p.subcategory;
+                    
+                    if (mainCatId && window.CATALOG_STRUCTURE[mainCatId]) {
+                        catText = window.CATALOG_STRUCTURE[mainCatId].title;
+                        if (subCatId) {
+                            let sub = window.CATALOG_STRUCTURE[mainCatId].subs.find(sb => sb.id === subCatId);
+                            // Меняем точку на > как вы и просили
+                            if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">&gt;</span> ${sub.name} `;
+                        }
                     }
-                }
-                
-                // Проверяем наличие старой цены (учитываем возможные варианты ключа в JSON)
-                let oldPriceValue = p.oldPrice || p.old_price;
-                let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-right:6px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
+                    
+                    // Проверяем наличие старой цены
+                    let oldPriceValue = p.oldPrice || p.old_price;
+                    // Меняем margin-right на margin-left, так как теперь старая цена будет справа
+                    let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-left:8px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
 
-                // Возвращаем обновленный HTML (добавлен flex для ровного выравнивания цен и переменная oldPriceHtml)
-                return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px; display:flex; align-items:center;">${oldPriceHtml}<span>${String(p.price).replace(/₾/g, '')}₾</span></div></div></div>`;
-            }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
+                    // Сначала выводим актуальную цену (p.price), затем старую цену (oldPriceHtml)
+                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px; display:flex; align-items:center;"><span>${String(p.price).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
+                }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
                 
                 r.classList.add('show');
             })
