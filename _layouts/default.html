@@ -767,7 +767,7 @@
                             if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name} `;
                         }
                     }
-                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px;">${p.price}</div></div></div>`;
+                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px;">${String(p.price).replace(/₾/g, '')}₾</div></div></div>`;
                 }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
                 
                 r.classList.add('show');
