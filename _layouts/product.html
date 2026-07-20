@@ -112,7 +112,7 @@ layout: default
 
     /* Обновленная галерея для клика (Zoom) */
     .main-image-view { 
-        width: 100%; height: 500px; display: flex; align-items: center; justify-content: center; 
+        width: 100%; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; 
         margin-bottom: 1.5rem; cursor: zoom-in; position: relative; overflow: hidden; border-radius: 1.5rem;
     }
     .main-image-view img { 
@@ -323,7 +323,6 @@ layout: default
     @media (max-width: 1024px) {
         .product-grid { grid-template-columns: 1fr; gap: 1.5rem; }
         .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; }
-        .main-image-view { height: 350px; }
         .product-title-h1 { font-size: 1.6rem; }
         .current-price-line { font-size: 2.2rem; }
         .content-section-box { padding: 1.5rem; border-radius: 1.5rem; }
