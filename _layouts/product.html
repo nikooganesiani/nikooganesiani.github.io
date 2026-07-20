@@ -175,16 +175,18 @@ layout: default
     /* Уменьшенный шрифт цены */
     .price-wrapper { display: flex; flex-direction: row; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; }
     .current-price-line { font-size: 2.4rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; display: flex; align-items: baseline; line-height: 1; }
-    .old-price-line { font-size: 1.3rem; color: #94a3b8; text-decoration: line-through; font-weight: 700; }
+    .old-price-line { font-size: 1.2rem; color: #64748b; text-decoration: line-through; font-weight: 600; margin-left: 5px; opacity: 0.8; }
     .gel-symbol { font-size: 1.5rem; margin-left: 5px; font-weight: 800; }
 
     /* Кнопки покупки */
     .btn-alta-order { 
-        width: 100%; background: #0f172a; color: white; border: none; padding: 1.2rem; 
+        width: 100%; background: #2563eb; color: white; border: none; padding: 1.2rem; 
         border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; 
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; 
         justify-content: center; gap: 10px; outline: none; user-select: none;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
+    .btn-alta-order:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4); }
     .btn-alta-order:hover { background: #2563eb; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); }
     .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
     
