@@ -763,12 +763,18 @@
                     if (p.categories && p.categories[0] && window.CATALOG_STRUCTURE[p.categories[0]]) {
                         catText = window.CATALOG_STRUCTURE[p.categories[0]].title;
                         if (p.subcategories && p.subcategories[0]) {
-                            let sub = window.CATALOG_STRUCTURE[p.categories[0]].subs.find(sb => sb.id === p.subcategories[0]);
-                            if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name} `;
-                        }
+                        let sub = window.CATALOG_STRUCTURE[p.categories[0]].subs.find(sb => sb.id === p.subcategories[0]);
+                        if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">•</span> ${sub.name} `;
                     }
-                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px;">${String(p.price).replace(/₾/g, '')}₾</div></div></div>`;
-                }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
+                }
+                
+                // Проверяем наличие старой цены (учитываем возможные варианты ключа в JSON)
+                let oldPriceValue = p.oldPrice || p.old_price;
+                let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-right:6px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
+
+                // Возвращаем обновленный HTML (добавлен flex для ровного выравнивания цен и переменная oldPriceHtml)
+                return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px; display:flex; align-items:center;">${oldPriceHtml}<span>${String(p.price).replace(/₾/g, '')}₾</span></div></div></div>`;
+            }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
                 
                 r.classList.add('show');
             })
