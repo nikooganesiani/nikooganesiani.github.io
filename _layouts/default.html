@@ -370,19 +370,56 @@
     /* Универсальные инпуты и кнопки */
     .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 1.2rem; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f8fafc; color: #0f172a; outline: none; }
     .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    .btn-submit { background: #0f172a; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
-    .btn-submit:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.3); }
+    
+    /* Обновленная синяя кнопка */
+    .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
+    .btn-submit:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.4); }
     .btn-submit:active { transform: scale(0.96); box-shadow: none; }
     
     /* Форма Заказа */
     .order-form-modal .product-card-preview { background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .order-form-modal .product-image-modal { max-width: 130px; max-height: 130px; object-fit: contain; margin-bottom: 0.5rem; }
+    
+    /* Обновленное изображение с закруглением, тенью и плавной анимацией */
+    .order-form-modal .product-image-modal { 
+        max-width: 140px; 
+        max-height: 140px; 
+        object-fit: contain; 
+        margin-bottom: 0.8rem;
+        border-radius: 1.2rem; 
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
+        background: white; 
+        padding: 0.5rem;
+        transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+    }
+    
     .order-form-modal .product-name-modal { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
     .order-form-modal .product-price-modal { font-size: 1.8rem; font-weight: 900; color: #2563eb; }
-    .phone-wrapper { display: flex; align-items: center; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; }
+    
+    /* Исправленный Wrapper для телефона (избежание бага с закруглениями при автозаполнении) */
+    .phone-wrapper { display: flex; align-items: stretch; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
     .phone-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-    .phone-prefix { padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; }
-    .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; }
+    .phone-prefix { display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 1.2rem 0 0 1.2rem; }
+    .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 1.2rem 1.2rem 0 !important; }
+
+    /* Ошибки валидации заказа (Кастомные) */
+    .form-error-msg {
+        display: none;
+        color: #ef4444;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1rem;
+        background: #fef2f2;
+        padding: 0.8rem;
+        border-radius: 0.8rem;
+        border: 1px solid #fee2e2;
+        animation: fadeIn 0.3s ease;
+    }
+    .input-error {
+        border-color: #ef4444 !important;
+        background: #fef2f2 !important;
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+    }
 
     /* Окно Успешного Заказа */
     .order-confirm-icon-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
@@ -612,6 +649,7 @@
             </div>
 
             <form id="quickOrderForm">
+                <div id="quickFormError" class="form-error-msg"></div>
                 <input type="text" id="quickName" class="input-field" placeholder="თქვენი სახელი" required autocomplete="name">
                 <div class="phone-wrapper">
                     <span class="phone-prefix">+995</span>
@@ -981,7 +1019,11 @@
 
     window.openOrderForm = function(product) {
         document.getElementById('formProductName').textContent = product.name;
-        document.getElementById('formProductPrice').textContent = product.price;
+        
+        // Гарантированное добавление символа ₾ к цене продукта
+        const rawPrice = String(product.price).replace(/₾/g, '').trim();
+        document.getElementById('formProductPrice').textContent = rawPrice ? `${rawPrice} ₾` : '0 ₾';
+        
         const mainImg = document.getElementById('formProductImage');
         const thumbContainer = document.getElementById('modalThumbnails');
         const imgs = product.images || (product.image ? [product.image] : []);
@@ -995,11 +1037,15 @@
                     imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 12px; padding: 4px; background: white; transition: 0.2s; flex-shrink: 0;";
                     
                     imgThumb.onclick = function() { 
-                        mainImg.style.opacity = '0.5';
+                        // Плавная анимация переключения
+                        mainImg.style.opacity = '0';
+                        mainImg.style.transform = 'scale(0.95)';
                         setTimeout(() => {
                             mainImg.src = src;
                             mainImg.style.opacity = '1';
-                        }, 150);
+                            mainImg.style.transform = 'scale(1)';
+                        }, 250);
+                        
                         Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='#f1f5f9'); 
                         imgThumb.style.borderColor='#2563eb'; 
                         imgThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
@@ -1012,6 +1058,13 @@
             mainImg.src = "/img/no-image.png";
         }
         quickName.value = ''; quickPhone.value = '';
+        
+        // Сбрасываем возможные подсветки ошибок при новом открытии
+        const errorDiv = document.getElementById('quickFormError');
+        if(errorDiv) errorDiv.style.display = 'none';
+        quickName.classList.remove('input-error');
+        if(document.querySelector('.phone-wrapper')) document.querySelector('.phone-wrapper').classList.remove('input-error');
+
         document.getElementById('orderFormModal').dataset.product = JSON.stringify(product);
         window.openAppModal('orderFormModal');
     };
@@ -1039,8 +1092,23 @@
             e.preventDefault();
             const name = quickName.value.trim();
             const phoneRaw = quickPhone.value.replace(/\s/g, '');
-            if(!name) { alert("შეიყვანეთ სახელი."); return; }
-            if(phoneRaw.length !== 9) { alert("შეიყვანეთ სწორი ნომერი."); return; }
+            
+            // Кастомная обработка ошибок (без alert)
+            const errorDiv = document.getElementById('quickFormError');
+            const phoneWrapper = document.querySelector('.phone-wrapper');
+            
+            const showError = (msg, inputEl) => {
+                errorDiv.textContent = msg;
+                errorDiv.style.display = 'block';
+                if (inputEl) inputEl.classList.add('input-error');
+                setTimeout(() => { 
+                    errorDiv.style.display = 'none'; 
+                    if (inputEl) inputEl.classList.remove('input-error');
+                }, 3500);
+            };
+
+            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", quickName); return; }
+            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
             
             const product = JSON.parse(document.getElementById('orderFormModal').dataset.product || '{}');
             const fullPhone = '+995' + phoneRaw;
@@ -1070,7 +1138,11 @@
         document.getElementById('confirmName').textContent = data.name || '-';
         document.getElementById('confirmPhone').textContent = data.phone || '-';
         document.getElementById('confirmProduct').textContent = data.product || '-';
-        document.getElementById('confirmPrice').textContent = data.price || '-';
+        
+        // Гарантированное добавление символа ₾
+        const rawConfirmPrice = String(data.price).replace(/₾/g, '').trim();
+        document.getElementById('confirmPrice').textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
+        
         window.openAppModal('orderConfirmModal');
     };
 
