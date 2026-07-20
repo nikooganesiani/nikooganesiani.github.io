@@ -171,14 +171,11 @@
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
     main { flex: 1; } 
 
-    /* ХЕДЕР С АКЦЕНТНОЙ ПОЛОСКОЙ */
+    /* ХЕДЕР */
     .header {
         position: sticky; top: 0; z-index: 100;
-        background: rgba(255, 255, 255, 0.95); /* Чуть менее прозрачный для солидности */
-        backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid #e2e8f0;
-        /* Акцентная полоска сверху */
-        border-top: 4px solid #2563eb; 
+        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.6); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
     }
     .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
     .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; }
@@ -189,12 +186,11 @@
     .logo:active .logo-img { transform: scale(0.96); }
 
     .nav-btn-header { 
-        display: flex; align-items: center; gap: 8px; background: #eff6ff; /* Светло-синий фон */
-        border: 1px solid #bfdbfe; /* Синяя обводка */
-        padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #2563eb; /* Синий текст */
-        transition: all 0.3s; cursor: pointer;
+        display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; 
+        padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #0f172a; cursor: pointer; 
+        transition: all 0.3s; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03); outline: none; user-select: none;
     }
-    .nav-btn-header:hover { background: #2563eb; color: white; border-color: #1d4ed8; }
+    .nav-btn-header:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); }
     .nav-btn-header:active { transform: scale(0.96); }
     .nav-burger-icon { width: 20px; height: 20px; }
 
@@ -215,11 +211,11 @@
     .desktop-actions { display: flex; gap: 0.8rem; }
     
     .tracking-btn-header {
-        background: #2563eb; color: white; /* Делаем основной кнопкой */
-        border: none; padding: 0.6rem 1.2rem; border-radius: 2rem; 
-        font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s;
+        background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.6rem 1.2rem; border-radius: 2rem; 
+        font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; color: #1d4ed8;
+        display: flex; align-items: center; justify-content: center; gap: 6px; outline: none; box-shadow: 0 2px 8px -2px rgba(37,99,235,0.1); user-select: none;
     }
-    .tracking-btn-header:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .tracking-btn-header:hover { background: #dbeafe; border-color: #93c5fd; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.2); }
     .tracking-btn-header:active { transform: scale(0.95); }
     
     .consult-btn-header {
