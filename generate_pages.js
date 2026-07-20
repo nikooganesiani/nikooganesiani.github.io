@@ -23,15 +23,35 @@ async function generatePages() {
             let specsYaml = "specs:\n";
             if (product.specs) {
                 Object.entries(product.specs).forEach(([key, value]) => {
-                    specsYaml += `  "${key}": "${value}"\n`;
+                    // Используем JSON.stringify для безопасного экранирования кавычек внутри ключей и значений
+                    specsYaml += `  ${JSON.stringify(key)}: ${JSON.stringify(value)}\n`;
                 });
             }
 
             let imagesYaml = "images:\n";
-            const imgs = product.images || [product.image];
+            // Добавлена проверка на случай, если у товара нет массива images, а есть только image (или вообще нет картинок)
+            const imgs = product.images || (product.image ? [product.image] : []);
             imgs.forEach(img => {
-                imagesYaml += `  - "${img}"\n`;
+                imagesYaml += `  - ${JSON.stringify(img)}\n`;
             });
+
+            // Убрали ручные кавычки "", теперь JSON.stringify поставит их сам и заэкранирует все переносы строк
+            const content = `---
+layout: product
+id: ${JSON.stringify(product.id)}
+sku: ${JSON.stringify(product.sku || product.id)}
+name: ${JSON.stringify(product.name)}
+brand: ${JSON.stringify(product.brand || 'ENKA Electronics')}
+price: ${JSON.stringify(product.price)}
+oldPrice: ${JSON.stringify(product.oldPrice || '')}
+${imagesYaml}
+${specsYaml}
+description: ${JSON.stringify(product.description || '')}
+longDescription: ${JSON.stringify(product.longDescription || product.description || '')}
+warranty: ${JSON.stringify(product.warranty || '12 თვე')}
+categories: ${JSON.stringify(product.categories || [])}
+subcategories: ${JSON.stringify(product.subcategories || [])}
+---`;
 
             const content = `---
 layout: product
