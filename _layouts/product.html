@@ -110,16 +110,25 @@ layout: default
         pointer-events: none; letter-spacing: 0.5px;
     }
 
-    /* Обновленная галерея для клика (Zoom) */
+    /* Обновленная галерея для клика (Zoom) и видео */
     .main-image-view { 
         width: 100%; aspect-ratio: 1 / 1; display: flex; align-items: center; justify-content: center; 
-        margin-bottom: 1.5rem; cursor: zoom-in; position: relative; overflow: hidden; border-radius: 0.7rem;
+        margin-bottom: 1.5rem; position: relative; overflow: hidden; border-radius: 0.7rem;
     }
     .main-image-view img { 
-        max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; 
+        max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;
         border-radius: 0.7rem; mix-blend-mode: multiply;
         transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
+    
+    /* Иконка Play поверх миниатюры видео */
+    .video-thumb-icon {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 32px; height: 32px; background: rgba(0,0,0,0.6); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; color: white;
+        backdrop-filter: blur(2px); transition: all 0.3s;
+    }
+    .thumb-card:hover .video-thumb-icon { background: #2563eb; transform: translate(-50%, -50%) scale(1.1); }
     
     .thumb-strip { 
         display: flex; gap: 0.8rem; overflow-x: auto; width: 100%; padding: 0.5rem; 
@@ -425,25 +434,44 @@ layout: default
             <div class="sale-badge-red" id="saleBadge">ფასდაკლება</div>
             {% endif %}
 
-            <!-- Добавлено событие onclick для открытия модалки (Zoom) -->
+            <!-- Главное изображение / Видео -->
             <div class="main-image-view" 
-                 onclick="openImageZoom()"
                  ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
                  ontouchend="handleProductSwipe(event)">
-                <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}" onerror="this.src='/img/no-image.png'" draggable="false">
+                <img id="mainProductImage" src="{{ page.images[0] }}" alt="{{ page.name }}" onerror="this.src='/img/no-image.png'" draggable="false" onclick="openImageZoom()">
+                <iframe id="mainProductVideo" style="display: none; width: 100%; height: 100%; border-radius: 0.7rem;" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
             </div>
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip">
                 {% for img in page.images %}
-                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="updateGallery('{{ img }}', this)">
-                    <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
+                    {% assign is_video = false %}
+                    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                        {% assign is_video = true %}
+                        <!-- Вытягиваем ID видео -->
+                        {% if img contains 'v=' %}
+                            {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
+                        {% else %}
+                            {% assign yt_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                        {% endif %}
+                    {% endif %}
+
+                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="updateGallery('{{ img }}', this, {{ is_video }})">
+                    {% if is_video %}
+                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; overflow: hidden;">
+                            <img src="https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
+                            <div class="video-thumb-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
         </div>
-
         <!-- ИНФО-БЛОК -->
         <div class="product-info-section">
             <div>
@@ -560,8 +588,13 @@ layout: default
   "@type": "Product",
   "name": {{ page.name | jsonify }},
   "image": [
+    {% assign img_count = 0 %}
     {% for img in page.images %}
-      {{ img | jsonify }}{% if forloop.last == false %},{% endif %}
+      {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
+        {% if img_count > 0 %},{% endif %}
+        {{ img | jsonify }}
+        {% assign img_count = img_count | plus: 1 %}
+      {% endunless %}
     {% endfor %}
   ],
   "description": {{ page.longDescription | default: page.description | strip_html | truncate: 160 | jsonify }},
@@ -624,7 +657,12 @@ layout: default
     
     // Глобальные переменные для модалки изображений
     let currentZoomIndex = 0;
-    const allProductImages = [{% for img in page.images %}"{{ img }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
+    const allProductImages = [];
+    {% for img in page.images %}
+        {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
+            allProductImages.push("{{ img }}");
+        {% endunless %}
+    {% endfor %}
 
     // Инициализация страницы товара
     document.addEventListener('DOMContentLoaded', function() {
@@ -806,30 +844,48 @@ fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
     function handleProductSwipe(event) {
         let touchEndX = event.changedTouches[0].screenX;
         const diff = pTouchStartX - touchEndX;
-        if (Math.abs(diff) > 50 && allProductImages.length > 1) {
-            const currentImg = document.getElementById('mainProductImage');
-            const currentPath = currentImg.src;
-            let idx = allProductImages.findIndex(p => currentPath.endsWith(p));
+        const thumbs = document.querySelectorAll('.thumb-card');
+        
+        if (Math.abs(diff) > 50 && thumbs.length > 1) {
+            let idx = Array.from(thumbs).findIndex(t => t.classList.contains('active'));
+            if (idx === -1) idx = 0;
             
             let nextIdx = idx + (diff > 0 ? 1 : -1);
-            if (nextIdx >= allProductImages.length) nextIdx = 0;
-            if (nextIdx < 0) nextIdx = allProductImages.length - 1;
+            if (nextIdx >= thumbs.length) nextIdx = 0;
+            if (nextIdx < 0) nextIdx = thumbs.length - 1;
             
-            const thumbs = document.querySelectorAll('.thumb-card');
-            if (thumbs[nextIdx]) thumbs[nextIdx].click();
+            thumbs[nextIdx].click();
         }
     }
 
-    // Обновление главного изображения по клику на превью
-    function updateGallery(imgSrc, element) {
+    // Обновление главного изображения по клику на превью (с поддержкой видео)
+    function updateGallery(imgSrc, element, isVideo = false) {
         const mainImg = document.getElementById('mainProductImage');
+        const mainVid = document.getElementById('mainProductVideo');
         
-        // Легкая анимация прозрачности при смене фото
-        mainImg.style.opacity = '0.5';
-        setTimeout(() => {
-            mainImg.src = imgSrc;
-            mainImg.style.opacity = '1';
-        }, 150);
+        if (isVideo) {
+            let ytId = '';
+            if (imgSrc.includes('v=')) {
+                ytId = imgSrc.split('v=')[1].split('&')[0];
+            } else if (imgSrc.includes('youtu.be/')) {
+                ytId = imgSrc.split('youtu.be/')[1].split('?')[0];
+            }
+            
+            mainImg.style.display = 'none';
+            mainVid.style.display = 'block';
+            mainVid.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=0';
+        } else {
+            mainVid.style.display = 'none';
+            mainVid.src = ''; // Останавливаем плеер
+            mainImg.style.display = 'block';
+            
+            // Легкая анимация прозрачности при смене фото
+            mainImg.style.opacity = '0.5';
+            setTimeout(() => {
+                mainImg.src = imgSrc;
+                mainImg.style.opacity = '1';
+            }, 150);
+        }
 
         document.querySelectorAll('.thumb-card').forEach(card => card.classList.remove('active'));
         element.classList.add('active');
