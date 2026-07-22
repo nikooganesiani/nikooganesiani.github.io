@@ -851,3 +851,19 @@ fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog.json')
         }
     }
 </script>
+<!-- Meta Pixel ViewContent Event -->
+<script>
+  if (typeof fbq === 'function') {
+    // Берем цену из Jekyll и очищаем её от "₾" и пробелов, чтобы получить чистое число
+    var rawPrice = "{{ page.price }}"; 
+    var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+
+    fbq('track', 'ViewContent', {
+      content_ids: ['{{ page.sku }}'], // Используем SKU, так как вы передаете его при покупке
+      content_name: {{ page.name | jsonify }}, // jsonify безопасно экранирует кавычки в названии
+      content_type: 'product',
+      value: numericPrice,
+      currency: 'GEL'
+    });
+  }
+</script>
