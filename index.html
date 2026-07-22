@@ -394,6 +394,14 @@ title: "მთავარი"
 
         <!-- КАТАЛОГ -->
         <div class="catalog" id="catalogContainer"></div>
+
+        <!-- КНОПКА ПАГИНАЦИИ -->
+        <div id="loadMoreContainer" style="display: none; text-align: center; margin-bottom: 3rem;">
+            <button id="loadMoreBtn" class="category-btn" style="display: inline-flex; margin: 0 auto; justify-content: center; min-width: 200px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                მეტის ნახვა
+            </button>
+        </div>
     </div>
 </main>
 
@@ -401,10 +409,22 @@ title: "მთავარი"
     let currentCategory = 'all';
     let currentSubcategory = 'all';
     let xDown = null;
+    let currentPage = 1;
+    const itemsPerPage = 16;
 
     const container = document.getElementById('catalogContainer');
     const subcategoriesBar = document.getElementById('subcategoriesBar');
-    const subcategoriesContainer = document.getElementById('subcategoriesContainer');
+    
+    // Достаем кнопку пагинации
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            currentPage++;
+            renderProducts(true); // Передаем true, чтобы товары добавились к существующим
+        });
+    }
     
     const minPriceInput = document.getElementById('minPrice');
     const maxPriceInput = document.getElementById('maxPrice');
@@ -490,10 +510,14 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         setTimeout(updateSubCatArrows, 50);
     }
 
-    // ==========================================
+// ==========================================
     // ЛОГИКА ОТРИСОВКИ КАТАЛОГА (ФИЛЬТРАЦИЯ)
     // ==========================================
-    function renderProducts() {
+    function renderProducts(isLoadMore = false) {
+        if (!isLoadMore) {
+            currentPage = 1; // Сбрасываем страницу, если это смена категории или фильтра
+        }
+
         const products = window.allProducts || [];
         let filtered = [...products];
         
@@ -540,17 +564,23 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                     <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
                     <div style="font-size:0.95rem; font-weight:500; color:#94a3b8; margin-top:0.5rem;">სცადეთ სხვა ფილტრი ან კატეგორია</div>
                 </div>`;
+            if (loadMoreContainer) loadMoreContainer.style.display = 'none';
             return;
         }
         
+        // Пагинация массива
+        const startIndex = isLoadMore ? (currentPage - 1) * itemsPerPage : 0;
+        const endIndex = currentPage * itemsPerPage;
+        const paginatedProducts = filtered.slice(startIndex, endIndex);
+
         // Отрисовка карточек
-        container.innerHTML = filtered.map(product => {
+        const html = paginatedProducts.map(product => {
             let imgs = product.images || (product.image ? [product.image] : []);
             
-            // Фильтруем ссылки на YouTube, чтобы они не попадали в галерею главной страницы
+            // Фильтруем ссылки на YouTube
             imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
             
-            // Если после фильтрации картинок вообще не осталось, ставим заглушку
+            // Заглушка
             if (imgs.length === 0) imgs.push('/img/no-image.png');
 
             const hasMultipleImages = imgs.length > 1;
@@ -577,7 +607,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                         ${imgs.map(img => `
                             <div class="product-slide">
                                 <a href="product/${product.id}/" style="display:contents;" draggable="false">
-                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                                    <img class="product-image" src="${img}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
                                 </a>
                             </div>
                         `).join('')}
@@ -602,6 +632,22 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                 </div>
             </div>
         `}).join('');
+
+        // Если это дозагрузка (клик по кнопке), добавляем HTML в конец. Если нет - заменяем полностью.
+        if (isLoadMore) {
+            container.insertAdjacentHTML('beforeend', html);
+        } else {
+            container.innerHTML = html;
+        }
+
+        // Показываем/скрываем кнопку "Загрузить еще", если остались товары
+        if (loadMoreContainer) {
+            if (filtered.length > endIndex) {
+                loadMoreContainer.style.display = 'block';
+            } else {
+                loadMoreContainer.style.display = 'none';
+            }
+        }
     }
 
     // ==========================================
@@ -689,7 +735,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         renderProducts();
     });
     
-    sortSelect.addEventListener('change', renderProducts);
+    sortSelect.addEventListener('change', () => renderProducts());
     
     resetBtn.addEventListener('click', function() {
         minPriceInput.value = ''; maxPriceInput.value = ''; 
