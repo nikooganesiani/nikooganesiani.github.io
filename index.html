@@ -267,7 +267,31 @@ title: "მთავარი"
         /* Скрываем стрелки слайдера на телефонах (они занимают место, а пользователи и так свайпают) */
         .slider-arrow { display: none !important; }
     }
+    /* 1. Скрываем старые градиенты, которые вызывали резкий срез на темных кнопках */
+    .categories-fade-left, .categories-fade-right {
+        display: none !important;
+    }
 
+    /* 2. Поднимаем стрелки навигации на слой выше, чтобы они не перекрывались */
+    .cat-arrow {
+        z-index: 20 !important;
+    }
+
+    /* 3. Применяем умную маску растворения (CSS Mask) к скролл-контейнерам */
+    .categories, .subcategories {
+        /* Сама маска: плавно переходит от полностью прозрачного к видимому */
+        -webkit-mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+        
+        /* Увеличиваем внутренние боковые отступы, чтобы кнопки при старте не попадали в прозрачную зону */
+        padding-left: 36px !important;
+        padding-right: 36px !important;
+        
+        /* Смещаем контейнер влево и вправо (компенсируем padding), чтобы визуально кнопки остались ровно на тех же местах */
+        margin-left: -28px !important;
+        margin-right: -28px !important;
+    }
+    
     /* АНИМАЦИИ */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
