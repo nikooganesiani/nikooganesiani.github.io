@@ -747,13 +747,20 @@
         m.offsetHeight; // Принудительная отрисовка
         m.classList.add('active');
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden'; // Блокируем скролл на <html>
     };
 
     window.closeAppModal = function(id) {
         const m = typeof id === 'string' ? document.getElementById(id) : id;
         if(!m) return;
         m.classList.remove('active');
-        document.body.style.overflow = '';
+        
+        // Разблокируем скролл, только если не осталось других активных модалок
+        if (!document.querySelector('.modal.active, .consult-modal.active')) {
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = ''; // Возвращаем скролл <html>
+        }
+        
         setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
     };
 
