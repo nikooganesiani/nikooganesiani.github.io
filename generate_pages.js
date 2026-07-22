@@ -9,7 +9,7 @@ if (!fs.existsSync(productsDir)) {
 
 async function generatePages() {
     try {
-        console.log('Скачиваем catalog.json с Cloudflare...');
+        console.log('Скачиваем catalog с Cloudflare...');
         const response = await fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog');
         
         if (!response.ok) {
