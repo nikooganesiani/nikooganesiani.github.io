@@ -545,7 +545,14 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         
         // Отрисовка карточек
         container.innerHTML = filtered.map(product => {
-            const imgs = product.images || (product.image ? [product.image] : []);
+            let imgs = product.images || (product.image ? [product.image] : []);
+            
+            // Фильтруем ссылки на YouTube, чтобы они не попадали в галерею главной страницы
+            imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
+            
+            // Если после фильтрации картинок вообще не осталось, ставим заглушку
+            if (imgs.length === 0) imgs.push('/img/no-image.png');
+
             const hasMultipleImages = imgs.length > 1;
             let discountBadge = '';
             
@@ -570,7 +577,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                         ${imgs.map(img => `
                             <div class="product-slide">
                                 <a href="product/${product.id}/" style="display:contents;" draggable="false">
-                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.src='/img/no-image.png'" draggable="false">
+                                    <img class="product-image" src="${img}" alt="${product.name}" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
                                 </a>
                             </div>
                         `).join('')}
