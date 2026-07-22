@@ -268,14 +268,32 @@ title: "მთავარი"
         z-index: 20 !important;
     }
 
-    /* Умная маска растворения (CSS Mask) к скролл-контейнерам */
+    /* 1. Базовая маска для мобильных устройств (компактный фейд у краев экрана) */
     .categories, .subcategories {
-        -webkit-mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
-        mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
-        padding-left: 36px !important;
-        padding-right: 36px !important;
-        margin-left: -28px !important;
-        margin-right: -28px !important;
+        -webkit-mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+    }
+
+    /* 2. Настройки специально для ПК (чтобы кнопки исчезали ровно перед стрелками) */
+    @media (min-width: 1024px) {
+        .categories, .subcategories {
+            -webkit-mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
+            
+            /* Отодвигаем контейнер с кнопками от стрелок */
+            padding-left: 36px !important;
+            padding-right: 36px !important;
+            margin-left: 12px !important;
+            margin-right: 12px !important;
+        }
+        
+        /* Сдвигаем сами стрелки чуть ближе к краям экрана */
+        .cat-arrow-left { left: 4px; }
+        .cat-arrow-right { right: 4px; }
     }
     
     /* АНИМАЦИИ */
