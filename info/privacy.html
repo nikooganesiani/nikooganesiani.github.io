@@ -13,13 +13,13 @@ title: "კონფიდენციალურობის პოლიტ�
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .privacy-container {
+    .legal-container {
         max-width: 850px;
         margin: 40px auto;
         padding: 0 20px;
     }
 
-    .privacy-card {
+    .legal-card {
         background: var(--card-bg);
         border-radius: 40px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
@@ -46,7 +46,7 @@ title: "კონფიდენციალურობის პოლიტ�
     }
 
     /* Стилизация секций политики */
-    .policy-section {
+    .doc-section {
         display: flex;
         gap: 24px;
         padding: 32px;
@@ -58,7 +58,7 @@ title: "კონფიდენციალურობის პოლიტ�
         animation: fadeInUp 0.6s ease backwards;
     }
 
-    .policy-section:hover {
+    .doc-section:hover {
         border-color: var(--primary-color);
         box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.05);
         transform: scale(1.01);
@@ -77,7 +77,7 @@ title: "კონფიდენციალურობის პოლიტ�
         transition: var(--transition);
     }
 
-    .policy-section:hover .section-icon {
+    .doc-section:hover .section-icon {
         background: var(--primary-color);
         color: white;
     }
@@ -130,7 +130,7 @@ title: "კონფიდენციალურობის პოლიტ�
     /* Адаптивность */
     @media (max-width: 650px) {
         .card-header h1 { font-size: 1.8rem; }
-        .policy-section {
+        .doc-section {
             flex-direction: column;
             padding: 24px;
             gap: 16px;
@@ -140,15 +140,15 @@ title: "კონფიდენციალურობის პოლიტ�
     }
 </style>
 
-<div class="privacy-container">
-    <div class="privacy-card">
+<div class="legal-container">
+    <div class="legal-card">
         <header class="card-header">
             <h1>კონფიდენციალურობის პოლიტიკა</h1>
         </header>
 
         <div class="card-content">
             <!-- 1. Данные -->
-            <div class="policy-section" style="animation-delay: 0.1s;">
+            <div class="doc-section" style="animation-delay: 0.1s;">
                 <div class="section-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
@@ -159,7 +159,7 @@ title: "კონფიდენციალურობის პოლიტ�
             </div>
 
             <!-- 2. Использование -->
-            <div class="policy-section" style="animation-delay: 0.2s;">
+            <div class="doc-section" style="animation-delay: 0.2s;">
                 <div class="section-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                 </div>
@@ -170,7 +170,7 @@ title: "კონფიდენციალურობის პოლიტ�
             </div>
 
             <!-- 3. Куки -->
-            <div class="policy-section" style="animation-delay: 0.3s;">
+            <div class="doc-section" style="animation-delay: 0.3s;">
                 <div class="section-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10h-2a8 8 0 11-8-8V2z"/><path d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z"/><circle cx="12" cy="12" r="3"/></svg>
                 </div>
@@ -181,7 +181,7 @@ title: "კონფიდენციალურობის პოლიტ�
             </div>
 
             <!-- 4. Третьи лица -->
-            <div class="policy-section" style="animation-delay: 0.4s;">
+            <div class="doc-section" style="animation-delay: 0.4s;">
                 <div class="section-icon">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
