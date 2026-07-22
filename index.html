@@ -111,9 +111,12 @@ title: "მთავარი"
     
     /* Обертка картинки: скругляем и даем белый фон для маскировки разного фона у фото */
     .product-image-wrapper { 
-        position: relative; width: 100%; height: 260px; overflow: hidden; 
-        background: #ffffff; /* Принудительный белый фон */
-        border-radius: 2.2rem 2.2rem 0 0; /* Скругление сверху */
+        position: relative; width: 100%; 
+        aspect-ratio: 1 / 1; /* Магия: теперь блок всегда будет идеальным квадратом */
+        height: auto; 
+        overflow: hidden; 
+        background: #ffffff; 
+        border-radius: 2.2rem 2.2rem 0 0; 
         border-bottom: 1px solid #f1f5f9;
     }
     /* Убираем скругление у img, так как обертка (.product-image-wrapper) сама скроет края */
@@ -230,6 +233,39 @@ title: "მთავარი"
         
         .cat-scroll-container, .subcat-nav-section { padding: 0 1rem; margin-right: -0.5rem; margin-left: -0.5rem; }
         .categories-fade-left { left: 1rem; } .categories-fade-right { right: 1rem; }
+        /* 2 Товара в ряд на мобильном */
+        .catalog { 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 0.8rem; 
+            margin-bottom: 2rem;
+        }
+
+        /* Адаптация самой карточки под узкий размер */
+        .product-card { border-radius: 1.2rem; }
+        .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
+        .product-info { padding: 0.8rem; }
+        
+        /* Уменьшаем текст названия */
+        .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
+        .product-name { font-size: 0.8rem; line-height: 1.3; }
+
+        /* Компактные ценники (ставим старую цену над новой, чтобы не было тесноты) */
+        .product-price-container { 
+            margin-bottom: 0.8rem; padding: 0; 
+            flex-direction: column; align-items: flex-start; gap: 0px; 
+        }
+        .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
+        .old-price { font-size: 0.75rem; margin-bottom: 2px; }
+
+        /* Уменьшаем кнопку заказа */
+        .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
+        .btn-order svg { width: 16px; height: 16px; }
+
+        /* Уменьшаем бейдж скидки */
+        .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
+
+        /* Скрываем стрелки слайдера на телефонах (они занимают место, а пользователи и так свайпают) */
+        .slider-arrow { display: none !important; }
     }
 
     /* АНИМАЦИИ */
