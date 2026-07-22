@@ -1,5 +1,0 @@
-mkdir _products
-touch _products/.gitkeep
-git add _products/.gitkeep
-git commit -m "Add _products folder"
-git push
