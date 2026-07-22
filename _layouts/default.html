@@ -366,7 +366,21 @@
     }
     #trackingModal .btn-submit { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 4px 15px rgba(37,99,235,0.25); }
     #trackingModal .btn-submit:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); }
-
+    /* Ошибка в трекинге (ТЕМНАЯ ТЕМА) */
+    .tracking-error-msg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        padding: 1rem;
+        border-radius: 1.2rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        animation: fadeIn 0.3s ease;
+    }
     /* Универсальные инпуты и кнопки */
     .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 1.2rem; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f8fafc; color: #0f172a; outline: none; }
     .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
@@ -972,7 +986,7 @@
                 trackingResult.style.display = 'block';
 
                 if (data.error || !data.data || data.data.length === 0) {
-                    trackingResult.innerHTML = `<div class="error" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
+                   trackingResult.innerHTML = `<div class="tracking-error-msg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
                     return;
                 }
 
@@ -1026,7 +1040,7 @@
 
             } catch (error) {
                 trackingResult.style.display = 'block';
-                trackingResult.innerHTML = `<div class="error" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: #fca5a5;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა.</div>`;
+                trackingResult.innerHTML = `<div class="tracking-error-msg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა.</div>`;
             } finally {
                 trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება';
             }
