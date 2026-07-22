@@ -490,6 +490,24 @@
     z-index: 1000;
     transition: box-shadow 0.3s ease;
 }
+    /* ==========================================
+       ИДЕАЛЬНАЯ БЛОКИРОВКА СКРОЛЛА ДЛЯ МОДАЛОК
+       ========================================== */
+    html.modal-open {
+        overflow: hidden !important;
+        /* Добавляем фантомный отступ вместо пропавшего скроллбара */
+        padding-right: var(--sb-width, 0px) !important;
+    }
+
+    /* Запрещаем хедеру пропадать и прыгать вверх */
+    html.modal-open .header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        /* Хедер тоже должен учесть фантомный отступ, чтобы логотип не дернулся */
+        padding-right: var(--sb-width, 0px) !important; 
+    }
 </style>
 </head>
 <body>
@@ -743,11 +761,15 @@
     window.openAppModal = function(id) {
         const m = document.getElementById(id);
         if(!m) return;
+        
+        // Вычисляем точную ширину скроллбара для предотвращения дергания
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.documentElement.style.setProperty('--sb-width', `${scrollbarWidth}px`);
+        document.documentElement.classList.add('modal-open'); // Добавляем CSS-класс блокировки
+        
         m.style.display = 'flex';
         m.offsetHeight; // Принудительная отрисовка
         m.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden'; // Блокируем скролл на <html>
     };
 
     window.closeAppModal = function(id) {
@@ -755,10 +777,9 @@
         if(!m) return;
         m.classList.remove('active');
         
-        // Разблокируем скролл, только если не осталось других активных модалок
+        // Снимаем блокировку, только если не осталось других активных модалок
         if (!document.querySelector('.modal.active, .consult-modal.active')) {
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = ''; // Возвращаем скролл <html>
+            document.documentElement.classList.remove('modal-open');
         }
         
         setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
