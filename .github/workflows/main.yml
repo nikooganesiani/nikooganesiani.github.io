@@ -50,7 +50,7 @@ jobs:
           --data '{"purge_everything":true}'
 
       - name: Upload Build Artifact for Cloudflare
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: site-build
           path: _site/
@@ -62,18 +62,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: site-build
           path: _site/
 
       - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: "nikooganesiani-github-io"
-          directory: "_site"
+          command: pages deploy _site --project-name nikooganesiani-github-io
 
       - name: Purge cache (via curl)
         run: |
