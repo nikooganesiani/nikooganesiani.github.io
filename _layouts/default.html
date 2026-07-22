@@ -1117,12 +1117,38 @@
             submitBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
             submitBtn.disabled = true;
             
-            try {
+try {
+                // 1. Генерируем уникальный Event ID для дедупликации (чтобы Pixel и CAPI не посчитали заказ дважды)
+                const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+                
+                // 2. Очищаем цену (убираем знак лари "₾", пробелы и т.д.), чтобы получить чистое число (например, "1 250 ₾" -> 1250)
+                const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+
                 const response = await fetch(window.WORKER_URL, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, phone: fullPhone, product: product.name, price: product.price })
+                    body: JSON.stringify({ 
+                        name: name, 
+                        phone: fullPhone, 
+                        product: product.name, 
+                        price: product.price,
+                        product_id: product.id, // Передаем ID товара
+                        event_id: eventId       // КРИТИЧЕСКИ ВАЖНО: передаем eventId на ваш воркер для CAPI
+                    })
                 });
+
                 if (response.ok) {
+                    // 3. ОТПРАВЛЯЕМ ИВЕНТ PURCHASE В FACEBOOK PIXEL
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Purchase', {
+                            value: numericPrice,
+                            currency: 'GEL',             // Валюта вашего магазина
+                            content_name: product.name,
+                            content_ids: product.id ? [String(product.id)] : [],
+                            content_type: 'product',
+                            num_items: 1
+                        }, { eventID: eventId });        // КРИТИЧЕСКИ ВАЖНО: 4-й параметр с eventID для дедупликации
+                    }
+
                     window.closeAppModal('orderFormModal');
                     setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 400);
                 }
