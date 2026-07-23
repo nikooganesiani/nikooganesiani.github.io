@@ -681,7 +681,7 @@ layout: default
         }
 
         // 2. Чтение catalog (Статус товара + Похожие товары)
-fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog')
+fetch('https://api.enkaelectronics.com.ge/catalog')
     .then(r => {
         if (!r.ok) throw new Error('Ошибка загрузки каталога');
         return r.json();
