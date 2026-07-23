@@ -10,7 +10,7 @@ if (!fs.existsSync(productsDir)) {
 async function generatePages() {
     try {
         console.log('Скачиваем catalog с Cloudflare...');
-        const response = await fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog');
+        const response = await fetch('https://api.enkaelectronics.com.ge/catalog');
         
         if (!response.ok) {
             throw new Error(`Ошибка загрузки: ${response.status}`);
