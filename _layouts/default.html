@@ -1177,21 +1177,33 @@ try {
                 });
 
                 if (response.ok) {
-                    // 3. ОТПРАВЛЯЕМ ИВЕНТ PURCHASE В FACEBOOK PIXEL
-                    if (typeof fbq === 'function') {
-                        fbq('track', 'Purchase', {
-                            value: numericPrice,
-                            currency: 'GEL',             // Валюта вашего магазина
-                            content_name: product.name,
-                            content_ids: product.id ? [String(product.id)] : [],
-                            content_type: 'product',
-                            num_items: 1
-                        }, { eventID: eventId });        // КРИТИЧЕСКИ ВАЖНО: 4-й параметр с eventID для дедупликации
-                    }
+    // 3. ОТПРАВЛЯЕМ ИВЕНТ PURCHASE В FACEBOOK PIXEL
+    if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', {
+            value: numericPrice,
+            currency: 'GEL',
+            content_name: product.name,
+            content_ids: product.id ? [String(product.id)] : [],
+            content_type: 'product',
+            num_items: 1
+        }, { eventID: eventId });
+    }
 
-                    window.closeAppModal('orderFormModal');
-                    setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 400);
-                }
+    // +++ ДОБАВЛЯЕМ ВЫЗОВ CAPI СЮДА +++
+    if (typeof window.sendCapiEvent === 'function') {
+        window.sendCapiEvent('Purchase', {
+            value: numericPrice,
+            currency: 'GEL',
+            content_name: product.name,
+            content_ids: product.id ? [String(product.id)] : [],
+            content_type: 'product'
+        }, eventId); // <- Передаем тот же самый eventId для дедупликации!
+    }
+    // ++++++++++++++++++++++++++++++++
+
+    window.closeAppModal('orderFormModal');
+    setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 400);
+}
             } catch(error) { console.error(error); }
             submitBtn.innerHTML = originalContent; submitBtn.disabled = false;
         });
