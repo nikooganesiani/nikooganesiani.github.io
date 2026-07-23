@@ -1,6 +1,6 @@
 // capi.js
 // ЗАМЕНИТЕ НА ВАШ РЕАЛЬНЫЙ URL WORKER
-const CAPI_WORKER_URL = 'https://capi.enkaelectronics.com.ge';
+const CAPI_WORKER_URL = 'https://capi.enkaelectronics.com.ge/';
 
 function sendCapiEvent(eventName, customData = {}, eventId = null) {
   const finalEventId = eventId || `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
