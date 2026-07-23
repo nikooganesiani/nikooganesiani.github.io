@@ -858,7 +858,7 @@
         let q = this.value.trim();
         if (!q) { r.innerHTML = ''; r.classList.remove('show'); return; }
 
-        fetch('https://catalog-api.niko-oganesiani.workers.dev/catalog')
+        fetch('https://api.enkaelectronics.com.ge/catalog')
             .then(res => {
                 if (!res.ok) throw new Error('Ошибка сети');
                 return res.json();
