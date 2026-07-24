@@ -3,18 +3,32 @@ layout: default
 ---
 
 <!-- УМНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ КАТЕГОРИИ И ПОДКАТЕГОРИИ ДЛЯ ХЛЕБНЫХ КРОШЕК -->
-{% comment %} Ищем данные категории в общей базе _data/catalog.yml {% endcomment %}
+{% assign first_cat = page.categories | first %}
+{% if first_cat == nil or first_cat == empty %}
+  {% assign first_cat = page.category | default: page.categories %}
+{% endif %}
+{% assign first_cat = first_cat | strip %}
+
+{% assign first_sub = page.subcategories | first %}
+{% if first_sub == nil or first_sub == empty %}
+  {% assign first_sub = page.subcategory | default: page.sub | default: page.subcategories %}
+{% endif %}
+{% assign first_sub = first_sub | strip %}
+
+{% comment %} 2. БЕРЕМ ДАННЫЕ ИЗ БАЗЫ _data/catalog.yml {% endcomment %}
 {% assign cat_data = site.data.catalog[first_cat] %}
 {% assign cat_name = cat_data.title | default: first_cat %}
 
-{% comment %} Ищем название подкатегории {% endcomment %}
+{% comment %} 3. ИЩЕМ НАЗВАНИЕ ПОДКАТЕГОРИИ {% endcomment %}
 {% assign sub_name = first_sub %}
-{% for sub in cat_data.subs %}
-  {% if sub.id == first_sub %}
-    {% assign sub_name = sub.name %}
-    {% break %}
-  {% endif %}
-{% endfor %}
+{% if cat_data and cat_data.subs %}
+  {% for sub in cat_data.subs %}
+    {% if sub.id == first_sub %}
+      {% assign sub_name = sub.name %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
 
 
 <style>
@@ -387,7 +401,7 @@ layout: default
 
 <div class="product-view-container">
 
-    <!-- НАВИГАЦИЯ С ПОДКАТЕГОРИЯМИ (БЕЗ НАЗВАНИЯ ТОВАРА) -->
+    <!-- НАВИГАЦИЯ С ПОДКАТЕГОРИЯМИ (ХЛЕБНЫЕ КРОШКИ) -->
     <div class="top-navigation">
         <ul class="breadcrumbs">
             <li>
@@ -397,20 +411,22 @@ layout: default
                 </a>
             </li>
             
-            <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-            
-            {% if first_sub and first_sub != "" %}
-            <li>
-                <a href="/?category={{ first_cat }}" draggable="false">{{ cat_name | strip }}</a>
-            </li>
-            <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-            <li>
-                <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false">{{ sub_name | strip }}</a>
-            </li>
-            {% else %}
-            <li>
-                <a href="/?category={{ first_cat }}" draggable="false">{{ cat_name | strip }}</a>
-            </li>
+            {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
+                <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
+                
+                {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
+                <li>
+                    <a href="/?category={{ first_cat }}" draggable="false">{{ cat_name | strip }}</a>
+                </li>
+                <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
+                <li>
+                    <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false">{{ sub_name | strip }}</a>
+                </li>
+                {% else %}
+                <li>
+                    <a href="/?category={{ first_cat }}" draggable="false">{{ cat_name | strip }}</a>
+                </li>
+                {% endif %}
             {% endif %}
         </ul>
     </div>
