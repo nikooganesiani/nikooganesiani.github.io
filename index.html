@@ -35,7 +35,7 @@ title: "მთავარი"
 .categories, .subcategories { 
         display: flex; gap: 0.8rem; flex-wrap: nowrap; 
         padding: 1.5rem 0.5rem; margin: -1rem 0; 
-        overflow-x: auto; scroll-behavior: smooth;
+        overflow-x: auto;
         -ms-overflow-style: none; scrollbar-width: none;
     }
     .categories::-webkit-scrollbar, .subcategories::-webkit-scrollbar { display: none; }
@@ -757,6 +757,31 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
 // ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. МОМЕНТАЛЬНАЯ НАСТРОЙКА КАТЕГОРИЙ (до того, как сработает сеть)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCat = urlParams.get('category');
+    const urlSub = urlParams.get('sub');
+
+    if (urlCat && catalogStructure[urlCat]) {
+        currentCategory = urlCat;
+        
+        categoryBtns.forEach(btn => {
+            if (btn.dataset.category === urlCat) {
+                btn.classList.add('active');
+                // Скроллим моментально, без анимации
+                btn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        
+        currentSubcategory = urlSub ? urlSub : 'all';
+        renderSubcategories(urlCat, currentSubcategory);
+    } else {
+        renderSubcategories('all', 'all');
+    }
+
+    // 2. АСИНХРОННАЯ ЗАГРУЗКА ТОВАРОВ
     const catalogUrl = 'https://api.enkaelectronics.com.ge/catalog';
 
     fetch(catalogUrl)
@@ -765,37 +790,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return res.json();
         })
         .then(data => {
-            // Подготавливаем базу товаров с безопасным парсингом цены
             window.allProducts = data.products.map(p => ({
                 ...p,
                 priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
 
-            // Чтение параметров из URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const urlCat = urlParams.get('category');
-            const urlSub = urlParams.get('sub');
-
-            if (urlCat && catalogStructure[urlCat]) {
-                currentCategory = urlCat;
-                categoryBtns.forEach(btn => {
-                    if (btn.dataset.category === urlCat) {
-                        btn.classList.add('active');
-                        // Моментально скроллим главную категорию к центру (без анимации)
-                        btn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-                
-                // Сразу передаем нужную подкатегорию в функцию (без setTimeout)
-                currentSubcategory = urlSub ? urlSub : 'all';
-                renderSubcategories(urlCat, currentSubcategory);
-            } else {
-                // Если параметров нет, просто скрываем подкатегории
-                renderSubcategories('all', 'all');
-            }
-            
+            // Когда товары загрузились — просто их рисуем (категории уже готовы)
             renderProducts();
         })
         .catch(err => {
