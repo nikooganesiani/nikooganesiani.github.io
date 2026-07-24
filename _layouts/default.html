@@ -11,67 +11,9 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 
-    <!-- Глобальная база данных категорий -->
     <script>
-        window.CATALOG_STRUCTURE = {
-            smarthome: {
-                title: "ჭკვიანი სახლი",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3z"></path></svg>',
-                subs: [
-                    { id: "sensors", name: "სენსორები" },
-                    { id: "lighting", name: "განათება" },
-                    { id: "security", name: "უსაფრთხოება" },
-                    { id: "scale", name: "ჭკვიანი სასწორები" }
-                ]
-            },
-            kitchen: {
-                title: "სამზარეულო",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
-                subs: [
-                    { id: "grill", name: "გრილები და ტოსტერები" },
-                    { id: "kettle", name: "ელექტრო ჩაიდნები" },
-                    { id: "blender", name: "ბლენდერები" },
-                    { id: "coffee", name: "ყავის აპარატები" },
-                    { id: "oven", name: "ღუმელები" }
-                ]
-            },
-            homecare: {
-                title: "სახლის მოვლა",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><circle cx="12" cy="14" r="4"></circle><line x1="12" y1="6" x2="12.01" y2="6"></line><line x1="16" y1="6" x2="16.01" y2="6"></line></svg>',
-                subs: [
-                    { id: "vacuum", name: "მტვერსასრუტები" },
-                    { id: "cleaning", name: "საწმენდი საშუალებები" },
-                    { id: "iron", name: "უთოები" }
-                ]
-            },
-            selfcare: {
-                title: "თავის მოვლა",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>',
-                subs: [
-                    { id: "hair", name: "თმის მოვლა" },
-                    { id: "body", name: "სხეულის მოვლა" },
-                    { id: "scale", name: "სასწორები" }
-                ]
-            },
-            building: {
-                title: "მშენებლობა",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22h20"/><path d="M12 2a7 7 0 0 0-7 7v4h14V9a7 7 0 0 0-7-7z"/><path d="M12 9v13"/></svg>',
-                subs: [
-                    { id: "tools", name: "ხელსაწყოები" },
-                    { id: "materials", name: "სამშენებლო მასალები" },
-                    { id: "laser", name: "ლაზერული აპარატები" }
-                ]
-            },
-            computer: {
-                title: "კომპიუტერები",
-                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
-                subs: [
-                    { id: "laptop", name: "ლეპტოპები" },
-                    { id: "accessories", name: "აქსესუარები" },
-                    { id: "network", name: "ქსელური მოწყობილობები" }
-                ]
-            }
-        };
+    // Jekyll автоматически преобразует данные из _data/catalog.yml в JS-объект
+    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
     </script>
 
 <style>
