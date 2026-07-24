@@ -3,53 +3,18 @@ layout: default
 ---
 
 <!-- УМНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ КАТЕГОРИИ И ПОДКАТЕГОРИИ ДЛЯ ХЛЕБНЫХ КРОШЕК -->
-{% assign first_cat = page.categories | first %}
-{% if first_cat == nil or first_cat == empty %}
-  {% assign first_cat = page.category | default: page.categories %}
-{% endif %}
+{% comment %} Ищем данные категории в общей базе _data/catalog.yml {% endcomment %}
+{% assign cat_data = site.data.catalog[first_cat] %}
+{% assign cat_name = cat_data.title | default: first_cat %}
 
-{% assign first_sub = page.subcategories | first %}
-{% if first_sub == nil or first_sub == empty %}
-  {% assign first_sub = page.subcategory | default: page.sub | default: page.subcategories %}
-{% endif %}
-
-{% capture cat_name %}
-  {% case first_cat %}
-    {% when 'smarthome' %}ჭკვიანი სახლი
-    {% when 'kitchen' %}სამზარეულო
-    {% when 'homecare' %}სახლის მოვლა
-    {% when 'selfcare' %}თავის მოვლა
-    {% when 'building' %}მშენებლობა
-    {% when 'computer' %}კომპიუტერები
-    {% else %}{{ first_cat }}
-  {% endcase %}
-{% endcapture %}
-
-{% capture sub_name %}
-  {% case first_sub %}
-    {% when 'sensors' %}სენსორები
-    {% when 'lighting' %}განათება
-    {% when 'security' %}უსაფრთხოება
-    {% when 'scale' %}ჭკვიანი სასწორები
-    {% when 'grill' %}გრილები და ტოსტერები
-    {% when 'kettle' %}ელექტრო ჩაიდნები
-    {% when 'blender' %}ბლენდერები
-    {% when 'coffee' %}ყავის აპარატები
-    {% when 'oven' %}ღუმელები
-    {% when 'vacuum' %}მტვერსასრუტები
-    {% when 'cleaning' %}საწმენდი საშუალებები
-    {% when 'iron' %}უთოები
-    {% when 'hair' %}თმის მოვლა
-    {% when 'body' %}სხეულის მოვლა
-    {% when 'tools' %}ხელსაწყოები
-    {% when 'materials' %}სამშენებლო მასალები
-    {% when 'laser' %}ლაზერული აპარატები
-    {% when 'laptop' %}ლეპტოპები
-    {% when 'accessories' %}აქსესუარები
-    {% when 'network' %}ქსელური მოწყობილობები
-    {% else %}{{ first_sub }}
-  {% endcase %}
-{% endcapture %}
+{% comment %} Ищем название подкатегории {% endcomment %}
+{% assign sub_name = first_sub %}
+{% for sub in cat_data.subs %}
+  {% if sub.id == first_sub %}
+    {% assign sub_name = sub.name %}
+    {% break %}
+  {% endif %}
+{% endfor %}
 
 
 <style>
