@@ -34,13 +34,16 @@ layout: default
 <style>
     /* Наследуем базовые настройки App-Feel из общего дизайна */
     .product-view-container { 
-        max-width: 1280px; 
-        margin: 0 auto; 
-        padding: 1rem 1.5rem 3rem 1.5rem; 
-        animation: fadeIn 0.6s ease;
-        -webkit-user-select: none;
-        user-select: none;
-    }
+    max-width: 1280px; 
+    width: 100%; /* ДОБАВЛЕНО */
+    box-sizing: border-box; /* ДОБАВЛЕНО */
+    margin: 0 auto; 
+    padding: 1rem 1.5rem 3rem 1.5rem; 
+    animation: fadeIn 0.6s ease;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow-x: hidden; /* ДОБАВЛЕНО (обрезает случайные вылеты по бокам) */
+}
 
     .product-view-container p, 
     .product-view-container h1, 
@@ -60,10 +63,13 @@ layout: default
     /* Хлебные крошки */
     .top-navigation { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     .breadcrumbs { 
-        display: flex; gap: 0.6rem; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; align-items: center; 
-        background: white; width: fit-content; padding: 0.8rem 1.5rem; border-radius: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
-    }
+    display: flex; gap: 0.6rem; list-style: none; padding: 0; margin: 0; flex-wrap: wrap; align-items: center; 
+    background: white; 
+    max-width: 100%; /* ИЗМЕНЕНО с width: fit-content */
+    box-sizing: border-box; /* ДОБАВЛЕНО */
+    padding: 0.8rem 1.5rem; border-radius: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
+}
     .breadcrumbs li { display: flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; }
     .breadcrumbs a { text-decoration: none; color: #64748b; transition: color 0.3s ease; display: flex; align-items: center; gap: 6px; outline: none; }
     .breadcrumbs a:hover { color: #2563eb; }
@@ -73,6 +79,11 @@ layout: default
 
     /* Сетка страницы товара */
     .product-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start; }
+/* ДОБАВИТЬ ЭТОТ БЛОК: */
+.product-grid > div,
+.product-details-grid > div {
+    min-width: 0;
+}
 
     /* Блок Галереи */
     .gallery-section { 
@@ -146,7 +157,16 @@ layout: default
         display: flex; align-items: center; gap: 6px;
     }
     .info-tag b { color: #2563eb; }
-
+    /* ПРИНУДИТЕЛЬНЫЙ ПЕРЕНОС ДЛИННЫХ СЛОВ (ЧТОБЫ НЕ РВАЛИ ВЕРСТКУ) */
+.product-title-h1,
+.desc-text,
+.spec-value-text,
+.info-tag b {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
     /* СТАТУС НАЛИЧИЯ */
     .stock-badge {
         display: inline-flex; align-items: center; gap: 6px; padding: 0.6rem 1.2rem;
