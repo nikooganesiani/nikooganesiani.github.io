@@ -452,21 +452,29 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
     // ==========================================
     // ЛОГИКА ОТРИСОВКИ ПОДКАТЕГОРИЙ
     // ==========================================
-    function renderSubcategories(catId) {
+    function renderSubcategories(catId, activeSubId = 'all') {
         if (catId === 'all' || !catalogStructure[catId] || catalogStructure[catId].subs.length === 0) {
             subcategoriesBar.style.display = 'none';
             currentSubcategory = 'all';
             return;
         }
 
-        let html = `<button class="sub-category-btn active" data-sub="all">ყველა</button>`;
+        // Генерируем HTML сразу с нужным активным классом
+        let html = `<button class="sub-category-btn ${activeSubId === 'all' ? 'active' : ''}" data-sub="all">ყველა</button>`;
         catalogStructure[catId].subs.forEach(sub => {
-            html += `<button class="sub-category-btn" data-sub="${sub.id}">${sub.name}</button>`;
+            html += `<button class="sub-category-btn ${activeSubId === sub.id ? 'active' : ''}" data-sub="${sub.id}">${sub.name}</button>`;
         });
         
         subcategoriesContainer.innerHTML = html;
         subcategoriesBar.style.display = 'block';
-        subcategoriesContainer.scrollLeft = 0; // Сбрасываем скролл в начало
+
+        // Моментально центрируем без анимации прокрутки
+        const activeBtn = subcategoriesContainer.querySelector('.active');
+        if (activeBtn) {
+            activeBtn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+        } else {
+            subcategoriesContainer.scrollLeft = 0;
+        }
 
         // Слушатели кликов по подкатегориям
         subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(btn => {
@@ -485,7 +493,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                 }
                 window.history.pushState({}, '', url);
 
-                // Центрируем выбранную подкатегорию
+                // А вот при клике делаем плавный скролл
                 btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 renderProducts();
             });
@@ -676,7 +684,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                 btn.classList.add('active');
                 currentCategory = btn.dataset.category;
                 currentSubcategory = 'all'; // Сбрасываем подкатегорию
-                renderSubcategories(currentCategory);
+                renderSubcategories(currentCategory, 'all');
             }
 
             // Обновляем URL
@@ -773,23 +781,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 categoryBtns.forEach(btn => {
                     if (btn.dataset.category === urlCat) {
                         btn.classList.add('active');
+                        // Моментально скроллим главную категорию к центру (без анимации)
+                        btn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
                     } else {
                         btn.classList.remove('active');
                     }
                 });
-                renderSubcategories(urlCat);
-                if (urlSub) {
-                    currentSubcategory = urlSub;
-                    setTimeout(() => {
-                        const subBtn = subcategoriesContainer.querySelector(`[data-sub="${urlSub}"]`);
-                        if (subBtn) {
-                            subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
-                            subBtn.classList.add('active');
-                            subBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        }
-                    }, 50);
-                }
+                
+                // Сразу передаем нужную подкатегорию в функцию (без setTimeout)
+                currentSubcategory = urlSub ? urlSub : 'all';
+                renderSubcategories(urlCat, currentSubcategory);
+            } else {
+                // Если параметров нет, просто скрываем подкатегории
+                renderSubcategories('all', 'all');
             }
+            
             renderProducts();
         })
         .catch(err => {
