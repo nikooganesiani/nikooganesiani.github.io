@@ -19,6 +19,7 @@ kitchen:
     - { id: "mixer", name: "მიქსერი" }
     - { id: "crepe", name: "ბლინის საცხობი" }
     - { id: "popcorn", name: "პოპკორნის აპარატი" }
+    - { id: "fryer", name: "ფრის აპარატი" }
 
 homecare:
   title: "სახლის მოვლა"
