@@ -7,7 +7,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>{% if page.name %}{{ page.name }} – ENKA Electronics{% elsif page.title %}{{ page.title }} – ENKA Electronics{% else %}ENKA Electronics{% endif %}</title>
+    <title>
+    {%- if page.title -%}
+        {{ page.title }} – ENKA Electronics
+    {%- elsif page.name -%}
+        {%- if page.name contains ".html" or page.name contains ".md" -%}
+            ENKA Electronics
+        {%- else -%}
+            {{ page.name }} – ENKA Electronics
+        {%- endif -%}
+    {%- else -%}
+        ENKA Electronics
+    {%- endif -%}
+    </title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js"></script>
 
