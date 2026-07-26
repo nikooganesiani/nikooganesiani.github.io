@@ -1068,7 +1068,16 @@ try {
 
 </script>
 <script>
-    // --- ГЛОБАЛЬНЫЙ ФИКС ЗАЛИПАНИЯ КНОПОК НА МОБИЛЬНЫХ ---
+    // --- ГЛОБАЛЬНЫЙ ФИКС ЗАЛИПАНИЯ КНОПОК И ВЫДЕЛЕНИЯ НА МОБИЛЬНЫХ ---
+    let _tsX = 0, _tsY = 0;
+    
+    // Запоминаем координаты начала касания
+    document.addEventListener('touchstart', function(e) {
+        _tsX = e.changedTouches[0].screenX;
+        _tsY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    // Блокируем системное меню на кнопках для предотвращения залипания
     window.addEventListener('contextmenu', function(e) {
         if (e.target.closest('button, a, .product-card, .category-btn, .sub-category-btn, .thumb-card, .similar-card')) {
             e.preventDefault(); 
@@ -1076,6 +1085,7 @@ try {
     });
     
     document.addEventListener('touchend', function(e) {
+        // 1. Снимаем фокус с кнопок (залипание анимации :active)
         setTimeout(function() {
             if (document.activeElement && document.activeElement !== document.body) {
                 const tag = document.activeElement.tagName;
@@ -1084,6 +1094,28 @@ try {
                 }
             }
         }, 50);
+
+        // 2. Сброс выделения текста при тапе в пустую область (фикс iOS)
+        let _teX = e.changedTouches[0].screenX;
+        let _teY = e.changedTouches[0].screenY;
+        
+        // Проверяем, что это был простой тап, а не скролл/свайп
+        if (Math.abs(_teX - _tsX) < 10 && Math.abs(_teY - _tsY) < 10) {
+            // Не вмешиваемся, если тапнули по инпуту
+            if (e.target.closest('input, textarea')) return;
+            
+            const sel = window.getSelection();
+            // Если есть выделенный текст
+            if (sel && sel.toString().length > 0) {
+                const style = window.getComputedStyle(e.target);
+                // Проверяем, тапнули ли по "защищенной" от выделения зоне
+                const userSel = style.userSelect || style.getPropertyValue('-webkit-user-select');
+                
+                if (userSel === 'none') {
+                    sel.removeAllRanges(); // Принудительно снимаем синее выделение текста
+                }
+            }
+        }
     }, {passive: true});
 </script>
 </body>
