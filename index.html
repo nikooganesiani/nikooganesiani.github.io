@@ -24,7 +24,7 @@ title: "მთავარი"
 
     /* Стрелки ПК-скролла */
     .cat-arrow { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #475569; transition: all 0.2s; outline: none; }
-    .cat-arrow:hover { background: #f1f5f9; color: #2563eb; }
+    @media (hover: hover) { .cat-arrow:hover { background: #f1f5f9; color: #2563eb; } }
     .cat-arrow:active { transform: translateY(-50%) scale(0.9); }
     .cat-arrow-left { left: 0; } .cat-arrow-right { right: 0; }
 
@@ -32,7 +32,7 @@ title: "მთავარი"
         .cat-arrow.visible { display: flex; } 
     }
 
-.categories, .subcategories { 
+    .categories, .subcategories { 
         display: flex; gap: 0.8rem; flex-wrap: nowrap; 
         padding: 1.5rem 0.5rem; margin: -1rem 0; 
         overflow-x: auto;
@@ -48,7 +48,7 @@ title: "მთავარი"
         white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; z-index: 10;
     }
     .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
-    .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-2px); }
+    @media (hover: hover) { .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-2px); } }
     .category-btn.active { background: #0f172a; color: white; border-color: #0f172a; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
     .category-btn:active { transform: scale(0.96); }
 
@@ -61,7 +61,7 @@ title: "მთავარი"
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
         white-space: nowrap; flex-shrink: 0; outline: none; position: relative; z-index: 10;
     }
-    .sub-category-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
+    @media (hover: hover) { .sub-category-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; } }
     .sub-category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
     .sub-category-btn:active { transform: scale(0.95); }
 
@@ -93,7 +93,7 @@ title: "მთავარი"
     }
     .reset-filters.show { visibility: visible; pointer-events: auto; opacity: 1; transform: scale(1) rotate(0deg); height: 42px; width: 42px; margin-left: 10px; }
     .reset-filters svg { width: 20px; height: 20px; stroke-width: 3; }
-    .reset-filters:hover { background: #fee2e2; transform: scale(1.05); }
+    @media (hover: hover) { .reset-filters:hover { background: #fee2e2; transform: scale(1.05); } }
     .reset-filters:active { transform: scale(0.88) rotate(90deg) !important; background: #fecaca; }
 
     /* КАРТОЧКА ТОВАРА */
@@ -104,35 +104,23 @@ title: "მთავარი"
         display: flex; flex-direction: column; opacity: 0; transform: translateY(30px);
         animation: fadeUp 0.5s ease forwards; border: 1px solid #f1f5f9; height: 100%;
     }
-    .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); }
+    @media (hover: hover) { .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
     
-    /* Обертка картинки: скругляем и даем белый фон для маскировки разного фона у фото */
     .product-image-wrapper { 
         position: relative; width: 100%; 
-        aspect-ratio: 1 / 1; /* Магия: теперь блок всегда будет идеальным квадратом */
-        height: auto; 
-        overflow: hidden; 
-        background: #ffffff; 
+        aspect-ratio: 1 / 1; height: auto; 
+        overflow: hidden; background: #ffffff; 
         border-radius: 2.2rem 2.2rem 0 0; 
         border-bottom: 1px solid #f1f5f9;
     }
-    /* Убираем скругление у img, так как обертка (.product-image-wrapper) сама скроет края */
-    .product-image-wrapper img {
-        border-radius: 0; 
-    }
+    .product-image-wrapper img { border-radius: 0; }
     .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-    /* Убираем внутренний отступ у слайда, чтобы изображение шло стык в стык */
     .product-slide { 
         flex: 0 0 100%; width: 100%; height: 100%; 
-        padding: 0; 
-        display: flex; align-items: center; justify-content: center;
+        padding: 0; display: flex; align-items: center; justify-content: center;
     }
-
-    /* Растягиваем картинку на всю область до границ и разделителя */
     .product-image { 
-        width: 100%; 
-        height: 100%; 
-        object-fit: cover; 
+        width: 100%; height: 100%; object-fit: cover; 
         transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
@@ -143,8 +131,7 @@ title: "მთავარი"
         height: 3rem; display: flex; align-items: flex-start; margin-bottom: 1rem;
         transition: opacity 0.2s ease; cursor: pointer;
     }
-    /* Легкий эффект при наведении без прыжков */
-    .product-name-box:hover { opacity: 0.8; }
+    @media (hover: hover) { .product-name-box:hover { opacity: 0.8; } }
     .product-name-box:active { transform: scale(0.98) !important; }
 
     .product-name {
@@ -152,19 +139,10 @@ title: "მთავარი"
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Аккуратный и минималистичный бейдж скидки в тон карточке */
     .discount-badge {
-        position: absolute; 
-        top: 12px; 
-        left: 12px; 
-        background: #ef4444; 
-        color: white; 
-        padding: 4px 10px; 
-        border-radius: 8px; 
-        font-size: 0.8rem; 
-        font-weight: 800; 
-        z-index: 5; 
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); 
+        position: absolute; top: 12px; left: 12px; background: #ef4444; 
+        color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; 
+        font-weight: 800; z-index: 5; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); 
         pointer-events: none;
     }
     
@@ -178,8 +156,9 @@ title: "მთავარი"
         display: flex; align-items: center; justify-content: center; gap: 8px; outline: none;
         box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
     }
-    .btn-order:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); }
-    .btn-order:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.2); }
+    @media (hover: hover) {
+        .btn-order:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.2); }
+    }
     .btn-order:active { transform: scale(0.96); box-shadow: none; }
 
     .slider-arrow {
@@ -189,8 +168,10 @@ title: "მთავარი"
         cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; outline: none;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .product-image-wrapper:hover .slider-arrow { opacity: 1; }
-    .slider-arrow:hover { color: #2563eb; background: white; transform: translateY(-50%) scale(1.1); }
+    @media (hover: hover) {
+        .product-image-wrapper:hover .slider-arrow { opacity: 1; }
+        .slider-arrow:hover { color: #2563eb; background: white; transform: translateY(-50%) scale(1.1); }
+    }
     .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f1f5f9; }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
@@ -201,7 +182,7 @@ title: "მთავარი"
         font-size: 0.9rem; cursor: pointer; font-weight: 700; color: #0f172a;
         display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; outline: none;
     }
-    .select-trigger:hover { border-color: #cbd5e1; }
+    @media (hover: hover) { .select-trigger:hover { border-color: #cbd5e1; } }
     .select-trigger:active { transform: scale(0.98); }
     .select-arrow-svg { transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .custom-select.open .select-arrow-svg { transform: rotate(180deg); }
@@ -212,7 +193,7 @@ title: "მთავარი"
     }
     .custom-select.open .select-options { display: block; }
     .select-option { padding: 1rem 1.4rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #475569; }
-    .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; }
+    @media (hover: hover) { .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; } }
 
     @media (min-width: 641px) {
         .filters { margin-right: auto; }
@@ -229,72 +210,45 @@ title: "მთავარი"
         .reset-filters.show { height: 38px; width: 38px; }
         
         .cat-scroll-container, .subcat-nav-section { padding: 0 1rem; margin-right: -0.5rem; margin-left: -0.5rem; }
-        /* 2 Товара в ряд на мобильном */
-        .catalog { 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 0.8rem; 
-            margin-bottom: 2rem;
-        }
+        .catalog { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 2rem; }
 
-        /* Адаптация самой карточки под узкий размер */
         .product-card { border-radius: 1.2rem; }
         .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .product-info { padding: 0.8rem; }
         
-        /* Уменьшаем текст названия */
         .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
         .product-name { font-size: 0.8rem; line-height: 1.3; }
 
-        /* Компактные ценники (ставим старую цену над новой, чтобы не было тесноты) */
-        .product-price-container { 
-            margin-bottom: 0.8rem; padding: 0; 
-            flex-direction: column; align-items: flex-start; gap: 0px; 
-        }
+        .product-price-container { margin-bottom: 0.8rem; padding: 0; flex-direction: column; align-items: flex-start; gap: 0px; }
         .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
         .old-price { font-size: 0.75rem; margin-bottom: 2px; }
 
-        /* Уменьшаем кнопку заказа */
         .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
         .btn-order svg { width: 16px; height: 16px; }
 
-        /* Уменьшаем бейдж скидки */
         .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
 
-        /* Скрываем стрелки слайдера на телефонах (они занимают место, а пользователи и так свайпают) */
         .slider-arrow { display: none !important; }
     }
-/* Поднимаем стрелки навигации на слой выше */
-    .cat-arrow {
-        z-index: 20 !important;
-    }
 
-    /* 1. Базовая маска для мобильных устройств (компактный фейд у краев экрана) */
+    .cat-arrow { z-index: 20 !important; }
+
     .categories, .subcategories {
         -webkit-mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
         mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
-        padding-left: 24px !important;
-        padding-right: 24px !important;
-        margin-left: -12px !important;
-        margin-right: -12px !important;
+        padding-left: 24px !important; padding-right: 24px !important; margin-left: -12px !important; margin-right: -12px !important;
     }
 
-    /* 2. Настройки специально для ПК (чтобы кнопки исчезали ровно перед стрелками) */
     @media (min-width: 1024px) {
         .categories, .subcategories {
             -webkit-mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
             mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
-            
-            /* Отодвигаем контейнер с кнопками от стрелок */
-            margin-left: 12px !important;
-            margin-right: 12px !important;
+            margin-left: 12px !important; margin-right: 12px !important;
         }
-        
-        /* Сдвигаем сами стрелки чуть ближе к краям экрана */
         .cat-arrow-left { left: 4px; }
         .cat-arrow-right { right: 4px; }
     }
     
-    /* АНИМАЦИИ */
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDownSub { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); display: flex; } }
