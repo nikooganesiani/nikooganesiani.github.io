@@ -751,16 +751,22 @@
     const statusMap = { 'ასაღები': 'შეკვეთა მზად არის', 'საწყობშია': 'მივიდა საწყობში', 'გატანილია ჩასაბარებლად': 'კურიერი გზაშია', 'ჩაბარებულია': 'ჩაბარებულია' };
     const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
 
+    // Улучшенный и безопасный парсинг дат
     function parseGeorgianDate(dateStr) {
         if (!dateStr) return null;
         try {
-            const parts = dateStr.trim().split(' ');
+            const parts = String(dateStr).trim().split(' ');
             const dateParts = parts[0].split('.');
             if (dateParts.length === 3) {
                 const day = parseInt(dateParts[0]), month = parseInt(dateParts[1]) - 1, year = parseInt(dateParts[2]);
                 let hours = 0, minutes = 0;
-                if (parts.length > 1 && parts[1]) { const timeParts = parts[1].split(':'); if (timeParts.length === 2) { hours = parseInt(timeParts[0]); minutes = parseInt(timeParts[1]); } }
-                return new Date(year, month, day, hours, minutes);
+                if (parts.length > 1 && parts[1]) { 
+                    const timeParts = parts[1].split(':'); 
+                    if (timeParts.length === 2) { hours = parseInt(timeParts[0]); minutes = parseInt(timeParts[1]); } 
+                }
+                const d = new Date(year, month, day, hours, minutes);
+                // Если дата получилась невалидной (Invalid Date) - возвращаем null, чтобы код не упал
+                return isNaN(d.getTime()) ? null : d;
             }
             return null;
         } catch (e) { return null; }
@@ -812,29 +818,39 @@
                 const response = await fetch(WORKER_URL_TRACKING, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: apiOrderId }) });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
+                
                 trackingResult.style.display = 'block';
 
-                if (data.error || !data.data || data.data.length === 0) {
+                // Защита от пустого массива или отсутствующего заказа
+                if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
                    trackingResult.innerHTML = `<div class="tracking-error-msg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
                     return;
                 }
 
                 const order = data.data[0];
-                const currentStatus = order.statusName;
+                const currentStatus = order.statusName || 'უცნობი';
                 const trackingEvents = [];
+                
                 const addDate = parseGeorgianDate(order.formatted_add_date);
                 if (addDate) trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
 
+                // Безопасная проверка даты доставки
+                const safeDate = (dateString) => {
+                    if (!dateString) return new Date();
+                    const d = new Date(dateString);
+                    return isNaN(d.getTime()) ? new Date() : d; // Если дата "каша", ставим текущую
+                };
+
                 if (currentStatus === 'საწყობშია' || currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                    let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                    let d = safeDate(order.delivery_date);
                     trackingEvents.push({ status: 'საწყობშია', created_at: d.toISOString() });
                 }
                 if (currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') {
-                    let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                    let d = safeDate(order.delivery_date);
                     trackingEvents.push({ status: 'გატანილია ჩასაბარებლად', created_at: d.toISOString() });
                 }
                 if (currentStatus && !trackingEvents.some(ev => ev.status === currentStatus)) {
-                    let d = order.delivery_date ? new Date(order.delivery_date) : new Date();
+                    let d = safeDate(order.delivery_date);
                     trackingEvents.push({ status: currentStatus, created_at: d.toISOString() });
                 }
 
@@ -868,12 +884,15 @@
                     </div>`;
 
             } catch (error) {
+                // Если ошибка всё же случится, мы увидим её в консоли
+                console.error('Tracking Parser Error:', error); 
                 trackingResult.style.display = 'block';
-                trackingResult.innerHTML = `<div class="tracking-error-msg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა.</div>`;
+                trackingResult.innerHTML = `<div class="tracking-error-msg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
             } finally {
                 trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება';
             }
         });
+        
         if(trackingOrderId) trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
     }
 
