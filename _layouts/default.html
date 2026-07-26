@@ -17,103 +17,45 @@
     </script>
 
 <style>
-    /* Отключаем стандартное мерцание всей страницы */
-    ::view-transition-old(root),
-    ::view-transition-new(root) { animation-duration: 0.4s; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
 
-    /* ПРОГРЕСС БАР ЗАГРУЗКИ (Alta-style) */
     #topProgressBar {
         position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: #2563eb;
         z-index: 999999; pointer-events: none; transform: scaleX(0); transform-origin: left;
         transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
     }
 
-    /* ЗАПРЕТ ПЕРЕТЯГИВАНИЯ ССЫЛОК И КАРТИНОК */
-    img, a {
-        -webkit-user-drag: none;
-        user-drag: none;
-    }
+    img, a { -webkit-user-drag: none; user-drag: none; }
 
-    /* Глобальные настройки (App-Feel) */
-    * {
-        margin: 0; padding: 0; box-sizing: border-box;
-        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        -webkit-tap-highlight-color: transparent;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    
+    @-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #f8fafc; } }
+
+    ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 14px; height: 14px; }
+    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background-color: #f8fafc; }
+    
+    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
+        background-color: rgba(148, 163, 184, 0.45); border-radius: 10px; border: 4px solid #f8fafc; 
+        background-clip: padding-box; transition: background-color 0.4s ease, border-width 0.4s ease;
     }
     
-/* ==========================================
-       ПРЕМИАЛЬНЫЙ СУПЕР-СКРОЛЛБАР ДЛЯ СТРАНИЦЫ
-       ========================================== */
-
-    /* Только для Firefox (скрыто от Chrome/Edge/Safari, чтобы не ломать WebKit) */
-    @-moz-document url-prefix() {
-        html {
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e1 #f8fafc;
-        }
+    @media (hover: hover) {
+        ::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background-color: rgba(148, 163, 184, 0.85); border-width: 3px; }
+        .search-results::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { background-color: rgba(148,163,184,0.7); }
     }
 
-    /* Принудительное применение к главному окну и всем блокам для Chrome, Edge, Safari */
-    ::-webkit-scrollbar,
-    html::-webkit-scrollbar,
-    body::-webkit-scrollbar {
-        width: 14px;
-        height: 14px;
-    }
+    ::-webkit-scrollbar-thumb:active, html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background-color: rgba(37, 99, 235, 0.95); border-width: 3px; }
 
-    ::-webkit-scrollbar-track,
-    html::-webkit-scrollbar-track,
-    body::-webkit-scrollbar-track {
-        background-color: #f8fafc; /* Цвет фона body */
-    }
-
-::-webkit-scrollbar-thumb,
-    html::-webkit-scrollbar-thumb,
-    body::-webkit-scrollbar-thumb {
-        background-color: rgba(148, 163, 184, 0.45); /* Мягкий полупрозрачный серый */
-        border-radius: 10px;
-        border: 4px solid #f8fafc; 
-        background-clip: padding-box;
-        transition: background-color 0.4s ease, border-width 0.4s ease; /* Задел на будущее для браузеров */
-    }
-
-    ::-webkit-scrollbar-thumb:hover,
-    html::-webkit-scrollbar-thumb:hover,
-    body::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(148, 163, 184, 0.85); /* Плотность цвета увеличивается, скачок визуально мягче */
-        border-width: 3px; 
-    }
-
-    ::-webkit-scrollbar-thumb:active,
-    html::-webkit-scrollbar-thumb:active,
-    body::-webkit-scrollbar-thumb:active {
-        background-color: rgba(37, 99, 235, 0.95); /* Фирменный синий, также слегка прозрачный */
-        border-width: 3px;
-    }
-
-/* ТОНКИЙ СКРОЛЛ ДЛЯ ВЫПАДАЮЩИХ СПИСКОВ И МОДАЛОК */
-    .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { 
-        width: 16px; /* Делаем общую область чуть шире */
-    }
-    .search-results::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { 
-        background: transparent; 
-        margin: 25px 0; 
-    }
+    .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { width: 16px; }
+    .search-results::-webkit-scrollbar-track, .modal-content::-webkit-scrollbar-track { background: transparent; margin: 25px 0; }
     .search-results::-webkit-scrollbar-thumb, .modal-content::-webkit-scrollbar-thumb { 
-        background-color: rgba(148,163,184,0.4); 
-        border-radius: 20px; /* Увеличиваем радиус с запасом для идеального овала */
-        border: 5px solid transparent; /* ОДИНАКОВАЯ рамка со всех сторон (возвращает идеальную форму) */
-        background-clip: padding-box; 
-    }
-    .search-results::-webkit-scrollbar-thumb:hover, .modal-content::-webkit-scrollbar-thumb:hover { 
-        background-color: rgba(148,163,184,0.7); 
+        background-color: rgba(148,163,184,0.4); border-radius: 20px; border: 5px solid transparent; background-clip: padding-box; 
     }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
     main { flex: 1; } 
 
-    /* ХЕДЕР */
     .header {
         position: sticky; top: 0; z-index: 100;
         background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -124,7 +66,7 @@
     
     .header-left { display: flex; align-items: center; gap: 1.2rem; }
     .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); user-select: none; }
-    .logo:hover .logo-img { transform: translateY(-1px); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+    @media (hover: hover) { .logo:hover .logo-img { transform: translateY(-1px); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); } }
     .logo:active .logo-img { transform: scale(0.96); }
 
     .nav-btn-header { 
@@ -132,11 +74,10 @@
         padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #0f172a; cursor: pointer; 
         transition: all 0.3s; box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03); outline: none; user-select: none;
     }
-    .nav-btn-header:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); }
+    @media (hover: hover) { .nav-btn-header:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); } }
     .nav-btn-header:active { transform: scale(0.96); }
     .nav-burger-icon { width: 20px; height: 20px; }
 
-    /* Поиск */
     .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; }
     .search-box { position: relative; width: 100%; }
     .search-box input {
@@ -148,7 +89,6 @@
     .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #94a3b8; pointer-events: none; transition: all 0.4s; }
     .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); }
 
-    /* Правая часть (Обновленная кнопка Статуса) */
     .header-right { display: flex; align-items: center; gap: 0.8rem; }
     .desktop-actions { display: flex; gap: 0.8rem; }
     
@@ -157,7 +97,7 @@
         font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; color: #1d4ed8;
         display: flex; align-items: center; justify-content: center; gap: 6px; outline: none; box-shadow: 0 2px 8px -2px rgba(37,99,235,0.1); user-select: none;
     }
-    .tracking-btn-header:hover { background: #dbeafe; border-color: #93c5fd; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.2); }
+    @media (hover: hover) { .tracking-btn-header:hover { background: #dbeafe; border-color: #93c5fd; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(37,99,235,0.2); } }
     .tracking-btn-header:active { transform: scale(0.95); }
     
     .consult-btn-header {
@@ -165,13 +105,12 @@
         border-radius: 2rem; font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.3s; 
         display: flex; align-items: center; justify-content: center; gap: 6px; outline: none; box-shadow: 0 2px 8px -2px rgba(245, 158, 11, 0.05); user-select: none;
     }
-    .consult-btn-header:hover { border-color: #fcd34d; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.15); }
+    @media (hover: hover) { .consult-btn-header:hover { border-color: #fcd34d; transform: translateY(-1px); box-shadow: 0 4px 12px -2px rgba(245, 158, 11, 0.15); } }
     .consult-btn-header:active { transform: scale(0.95); }
 
     .mobile-search-toggle, .close-search-btn { display: none; background: transparent; border: none; cursor: pointer; outline: none; }
     .mobile-actions-row { display: none; }
 
-    /* Выпадающий список поиска */
     .search-results {
         position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: white;
         border-radius: 1.5rem; box-shadow: 0 15px 40px -5px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;
@@ -180,13 +119,12 @@
     }
     .search-results.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
     .search-result-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer; border-radius: 1rem; transition: all 0.2s; }
-    .search-result-item:hover { background: #f8fafc; transform: translateX(4px); }
+    @media (hover: hover) { .search-result-item:hover { background: #f8fafc; transform: translateX(4px); } }
     .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: white; border: 1px solid #f1f5f9; padding: 2px; }
     .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
     .search-clear.show { display: block; }
     .search-result-cats { font-size: 0.7rem; color: #94a3b8; font-weight: 600; margin-top: 2px; }
 
-    /* АДАПТИВ ХЕДЕРА */
     @media (max-width: 860px) {
         .nav-btn-text { display: none; }
         .nav-btn-header { padding: 0.6rem; border-radius: 50%; }
@@ -216,7 +154,6 @@
         .close-search-btn svg { width: 24px; height: 24px; }
     }
 
-    /* МОДАЛЬНЫЕ ОКНА */
     .modal, .consult-modal {
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -236,13 +173,12 @@
         cursor: pointer; margin-top: 1rem; font-weight: 700; font-size: 0.95rem; color: #64748b;
         transition: all 0.3s; outline: none; user-select: none;
     }
-    .close-modal:hover { background: #fee2e2; color: #ef4444; transform: translateY(-1px); }
+    @media (hover: hover) { .close-modal:hover { background: #fee2e2; color: #ef4444; transform: translateY(-1px); } }
     .close-modal:active { transform: scale(0.96); }
 
-    /* НАВИГАЦИЯ В МОДАЛКЕ (Аккордеон) */
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
     .nav-acc-item { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; overflow: hidden; transition: all 0.3s; }
-    .nav-acc-item:hover { border-color: #cbd5e1; }
+    @media (hover: hover) { .nav-acc-item:hover { border-color: #cbd5e1; } }
     .nav-acc-item.active { background: white; border-color: #2563eb; box-shadow: 0 10px 25px -5px rgba(37,99,235,0.15); }
     
     .nav-acc-header { 
@@ -267,32 +203,27 @@
         text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; 
         padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s; user-select: none;
     }
-    .nav-sub-link:hover { color: white; background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37,99,235,0.2); } }
     .nav-sub-link:active { transform: scale(0.95); }
     
-    /* ТЕМНАЯ ТЕМА ДЛЯ МОДАЛКИ СТАТУСА И КОНСУЛЬТАЦИИ */
     #trackingModal .modal-content, #consultModal .modal-content {
-        background: linear-gradient(145deg, #0f172a, #162032);
-        border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(145deg, #0f172a, #162032); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4);
     }
     #trackingModal h3, #consultModal h3 { color: #ffffff; }
     #trackingModal .close-modal, #consultModal .close-modal { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border-color: transparent; }
-    #trackingModal .close-modal:hover, #consultModal .close-modal:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+    @media (hover: hover) { #trackingModal .close-modal:hover, #consultModal .close-modal:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; } }
 
-    /* Окно Контактов (ТЕМНОЕ) */
     #consultModal .contacts-list { display: flex; flex-direction: column; gap: 0.8rem; margin: 1.5rem 0; }
     #consultModal .contact-item {
         display: flex; align-items: center; gap: 1.2rem; padding: 1rem; background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; text-decoration: none; color: #f8fafc;
-        transition: all 0.3s; user-select: none; outline: none;
+        border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; text-decoration: none; color: #f8fafc; transition: all 0.3s; user-select: none; outline: none;
     }
-    #consultModal .contact-item:hover { border-color: #3b82f6; background: rgba(255,255,255,0.08); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    @media (hover: hover) { #consultModal .contact-item:hover { border-color: #3b82f6; background: rgba(255,255,255,0.08); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); } }
     #consultModal .contact-item:active { transform: scale(0.96); box-shadow: none; }
     #consultModal .contact-icon-box { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05); border-radius: 1.2rem; flex-shrink: 0; transition: 0.3s; }
     #consultModal .contact-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
     #consultModal .contact-value { font-weight: 600; font-size: 1rem; color: #ffffff; }
 
-    /* Окно Трекинга (ТЕМНОЕ) */
     #trackingModal .tracking-input-wrapper { position: relative; margin-bottom: 1.2rem; }
     #trackingModal .tracking-input-wrapper svg { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #64748b; }
     #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding-left: 3.2rem; margin-bottom: 0; }
@@ -307,77 +238,41 @@
         transition: background-color 5000s ease-in-out 0s;
     }
     #trackingModal .btn-submit { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 4px 15px rgba(37,99,235,0.25); }
-    #trackingModal .btn-submit:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); }
-    /* Ошибка в трекинге (ТЕМНАЯ ТЕМА) */
+    @media (hover: hover) { #trackingModal .btn-submit:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37,99,235,0.4); } }
+    
     .tracking-error-msg {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        color: #fca5a5;
-        padding: 1rem;
-        border-radius: 1.2rem;
-        font-size: 0.9rem;
-        font-weight: 600;
-        animation: fadeIn 0.3s ease;
+        display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1rem; border-radius: 1.2rem; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease;
     }
-    /* Универсальные инпуты и кнопки */
     .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 1.2rem; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f8fafc; color: #0f172a; outline: none; }
     .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     
-    /* Обновленная синяя кнопка */
     .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
-    .btn-submit:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.4); }
+    @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.4); } }
     .btn-submit:active { transform: scale(0.96); box-shadow: none; }
     
-    /* Форма Заказа */
     .order-form-modal .product-card-preview { background: #f8fafc; border-radius: 1.5rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; text-align: center; }
     
-    /* Обновленное изображение с закруглением, тенью и плавной анимацией */
     .order-form-modal .product-image-modal { 
-        max-width: 140px; 
-        max-height: 140px; 
-        object-fit: contain; 
-        margin-bottom: 0.8rem;
-        border-radius: 1.2rem; 
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
-        background: white; 
-        padding: 0.5rem;
+        max-width: 140px; max-height: 140px; object-fit: contain; margin-bottom: 0.8rem;
+        border-radius: 1.2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); background: white; padding: 0.5rem;
         transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
     }
     
     .order-form-modal .product-name-modal { font-size: 1.1rem; font-weight: 800; color: #1e293b; }
     .order-form-modal .product-price-modal { font-size: 1.8rem; font-weight: 900; color: #2563eb; }
     
-    /* Исправленный Wrapper для телефона (избежание бага с закруглениями при автозаполнении) */
     .phone-wrapper { display: flex; align-items: stretch; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
     .phone-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     .phone-prefix { display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 1.2rem 0 0 1.2rem; }
     .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 1.2rem 1.2rem 0 !important; }
 
-    /* Ошибки валидации заказа (Кастомные) */
     .form-error-msg {
-        display: none;
-        color: #ef4444;
-        font-size: 0.85rem;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 1rem;
-        background: #fef2f2;
-        padding: 0.8rem;
-        border-radius: 0.8rem;
-        border: 1px solid #fee2e2;
-        animation: fadeIn 0.3s ease;
+        display: none; color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center;
+        margin-bottom: 1rem; background: #fef2f2; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
     }
-    .input-error {
-        border-color: #ef4444 !important;
-        background: #fef2f2 !important;
-        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
-    }
+    .input-error { border-color: #ef4444 !important; background: #fef2f2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important; }
 
-    /* Окно Успешного Заказа */
     .order-confirm-icon-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
     .order-confirm-circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; animation: statusPulse 2s infinite; }
     .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3); z-index: 2; }
@@ -389,7 +284,6 @@
     .order-confirm-value { font-weight: 800; color: #0f172a; font-size: 0.95rem; text-align: right; max-width: 60%; }
     .order-confirm-price { font-weight: 900; font-size: 1.4rem; color: #2563eb; }
 
-    /* Базовые стили бейджей статусов и таймлайна */
     .status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; line-height: 1; }
     .status-badge-delivered { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
     .status-badge-processing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); }
@@ -406,7 +300,6 @@
     .timeline-date-v { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
     .timeline-text-v { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
 
-    /* Темный таймлайн */
     .dark-timeline .timeline-line { background: rgba(255,255,255,0.1); }
     .dark-timeline .timeline-dot-v { background: #1e293b; border-color: rgba(255,255,255,0.1); }
     .dark-timeline .timeline-step-v.past .timeline-dot-v { background: #475569; border-color: #475569; }
@@ -418,7 +311,6 @@
     .dark-timeline .timeline-step-v.current .timeline-date-v { color: #60a5fa; }
     .dark-spinner { border-color: rgba(255,255,255,0.1); border-top-color: #ffffff; }
 
-    /* ФУТЕР (с новыми иконками и информационными ссылками) */
     footer { text-align: center; padding: 2.5rem 1.5rem; margin-top: auto; background: white; border-top: 1px solid #f1f5f9; }
     footer .logo, footer .logo-img, footer img[src*="logo"] { display: none !important; }
     .footer-content { max-width: 1280px; margin: 0 auto; }
@@ -430,7 +322,7 @@
         padding: 0.6rem 1.2rem; border-radius: 2rem; border: 1px solid #f1f5f9; transition: all 0.3s; 
         user-select: none; display: flex; align-items: center; gap: 6px; outline: none;
     }
-    .footer-links a:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+    @media (hover: hover) { .footer-links a:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); } }
     .footer-links a:active { transform: scale(0.95); box-shadow: none; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
@@ -438,30 +330,10 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
     .site-header {
-    background: #ffffff; /* Белый фон для чистоты */
-    border-bottom: 2px solid #eff6ff; /* Очень легкая синяя полоска снизу */
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    transition: box-shadow 0.3s ease;
-}
-    /* ==========================================
-       ИДЕАЛЬНАЯ БЛОКИРОВКА СКРОЛЛА ДЛЯ МОДАЛОК
-       ========================================== */
-    html.modal-open {
-        overflow: hidden !important;
-        /* Фантомный отступ вместо пропавшего скроллбара */
-        padding-right: var(--sb-width, 0px) !important;
+        background: #ffffff; border-bottom: 2px solid #eff6ff; padding: 1rem 0; position: sticky; top: 0; z-index: 1000; transition: box-shadow 0.3s ease;
     }
-
-    /* Хедер остается sticky (сайт больше не будет прыгать вверх). 
-       Фон хедера растягиваем вправо (margin-right), а сам контент 
-       возвращаем на место (padding-right) */
-    html.modal-open .header {
-        margin-right: calc(var(--sb-width, 0px) * -1) !important;
-        padding-right: var(--sb-width, 0px) !important; 
-    }
+    html.modal-open { overflow: hidden !important; padding-right: var(--sb-width, 0px) !important; }
+    html.modal-open .header { margin-right: calc(var(--sb-width, 0px) * -1) !important; padding-right: var(--sb-width, 0px) !important; }
 </style>
 </head>
 <body>
@@ -1194,6 +1066,25 @@ try {
         });
     });
 
+</script>
+<script>
+    // --- ГЛОБАЛЬНЫЙ ФИКС ЗАЛИПАНИЯ КНОПОК НА МОБИЛЬНЫХ ---
+    window.addEventListener('contextmenu', function(e) {
+        if (e.target.closest('button, a, .product-card, .category-btn, .sub-category-btn, .thumb-card, .similar-card')) {
+            e.preventDefault(); 
+        }
+    });
+    
+    document.addEventListener('touchend', function(e) {
+        setTimeout(function() {
+            if (document.activeElement && document.activeElement !== document.body) {
+                const tag = document.activeElement.tagName;
+                if (tag === 'BUTTON' || tag === 'A' || document.activeElement.closest('.product-card, .similar-card, .thumb-card')) {
+                    document.activeElement.blur();
+                }
+            }
+        }, 50);
+    }, {passive: true});
 </script>
 </body>
 </html>
