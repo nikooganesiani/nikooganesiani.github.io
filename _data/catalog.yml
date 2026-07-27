@@ -37,6 +37,7 @@ selfcare:
   subs:
     - { id: "hairdryer", name: "თმის ფენი" }
     - { id: "curlingiron", name: "თმის სახვევი" }
+    - { id: "hairiron", name: "თმის უთო" }
     - { id: "scale", name: "სასწორი" }
 
 building:
