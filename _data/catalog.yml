@@ -12,16 +12,17 @@ kitchen:
   subs:
     - { id: "grill", name: "გრილი და ტოსტერი" }
     - { id: "kettle", name: "მადუღარა და ჩაიდანი" }
+    - { id: "coffee", name: "ყავის აპარატი" }
     - { id: "blender", name: "ბლენდერი" }
     - { id: "chopper", name: "ჩოფერი" }
     - { id: "juicer", name: "წვენსაწური" }
-    - { id: "coffee", name: "ყავის აპარატი" }
     - { id: "oven", name: "ღუმელი" }
     - { id: "mixer", name: "მიქსერი" }
     - { id: "crepe", name: "ბლინის საცხობი" }
-    - { id: "popcorn", name: "პოპკორნის აპარატი" }
-    - { id: "fryer", name: "ფრის აპარატი" }
     - { id: "meatgrinder", name: "ხორცსაკეპი" }
+    - { id: "fryer", name: "ფრის აპარატი" }
+    - { id: "popcorn", name: "პოპკორნის აპარატი" }
+    - { id: "cottoncandy", name: "ბამბის ნაყინის აპარატი" }
 
 homecare:
   title: "სახლის მოვლა"
