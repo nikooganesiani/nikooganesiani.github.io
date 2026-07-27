@@ -17,6 +17,7 @@ kitchen:
     - { id: "chopper", name: "ჩოფერი" }
     - { id: "juicer", name: "წვენსაწური" }
     - { id: "oven", name: "ღუმელი" }
+    - { id: "airfryer", name: "აეროგრილი" }
     - { id: "mixer", name: "მიქსერი" }
     - { id: "crepe", name: "ბლინის საცხობი" }
     - { id: "meatgrinder", name: "ხორცსაკეპი" }
