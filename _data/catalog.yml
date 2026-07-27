@@ -13,6 +13,7 @@ kitchen:
     - { id: "grill", name: "გრილი და ტოსტერი" }
     - { id: "kettle", name: "ელექტრო ჩაიდანი" }
     - { id: "blender", name: "ბლენდერი" }
+    - { id: "chopper", name: "ჩოფერი" }
     - { id: "juicer", name: "წვენსაწური" }
     - { id: "coffee", name: "ყავის აპარატი" }
     - { id: "oven", name: "ღუმელი" }
