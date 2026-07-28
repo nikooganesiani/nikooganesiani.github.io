@@ -22,6 +22,7 @@ kitchen:
     - { id: "crepe", name: "ბლინის საცხობი" }
     - { id: "meatgrinder", name: "ხორცსაკეპი" }
     - { id: "gas", name: "გაზქურა" }
+    - { id: "pan", name: "ტაფა" }
     - { id: "fryer", name: "ფრის აპარატი" }
     - { id: "popcorn", name: "პოპკორნის აპარატი" }
     - { id: "cottoncandy", name: "ბამბის ნაყინის აპარატი" }
