@@ -42,6 +42,7 @@ selfcare:
     - { id: "hairdryer", name: "თმის ფენი" }
     - { id: "curlingiron", name: "თმის სახვევი" }
     - { id: "hairiron", name: "თმის უთო" }
+    - { id: "lintremover", name: "ბეწვის საცლელი" }
     - { id: "scale", name: "სასწორი" }
 
 building:
