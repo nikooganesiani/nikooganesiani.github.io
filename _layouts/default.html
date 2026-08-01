@@ -60,10 +60,8 @@
 
     ::-webkit-scrollbar-thumb:active, html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background-color: rgba(37, 99, 235, 0.95); border-width: 3px; }
 
-    /* Скрытие скроллбара в модалках и поиске, как запрошено */
     .search-results, .modal-content {
-        -ms-overflow-style: none;  /* IE/Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none;  scrollbar-width: none;
     }
     .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar { 
         display: none; 
@@ -81,7 +79,7 @@
     .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
     .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; }
     
-    .header-left { display: flex; align-items: center; gap: 1.2rem; }
+    .header-left { display: flex; align-items: center; gap: 1.2rem; flex: 1; justify-content: flex-start; }
     .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); user-select: none; }
     @media (hover: hover) { .logo:hover .logo-img { transform: translateY(-1px); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); } }
     .logo:active .logo-img { transform: scale(0.96); }
@@ -95,7 +93,7 @@
     .nav-btn-header:active { transform: scale(0.96); }
     .nav-burger-icon { width: 20px; height: 20px; }
 
-    .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; }
+    .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; }
     .search-box { position: relative; width: 100%; }
     .search-box input {
         width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem; border: 1px solid transparent; border-radius: 2rem; 
@@ -106,7 +104,7 @@
     .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #94a3b8; pointer-events: none; transition: all 0.4s; }
     .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); }
 
-    .header-right { display: flex; align-items: center; gap: 0.8rem; }
+    .header-right { display: flex; align-items: center; gap: 0.8rem; flex: 1; justify-content: flex-end; }
     .mobile-search-toggle, .close-search-btn { display: none; background: transparent; border: none; cursor: pointer; outline: none; }
 
     .search-results {
@@ -132,6 +130,7 @@
         .header-content { padding: 0.8rem 1rem; }
         .header-main-layout { gap: 0; }
         .header-left { flex: 1; justify-content: flex-start; }
+        .header-right { flex: initial; }
         .nav-btn-header { background: transparent; border: none; box-shadow: none; padding: 8px; margin-left: -8px; }
         .logo { position: absolute; left: 50%; transform: translateX(-50%); }
         .mobile-search-toggle { display: block; padding: 8px; margin-right: -8px; }
@@ -163,6 +162,22 @@
     .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     .modal-content h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; }
     
+    /* ФИКСАЦИЯ ВЫСОТЫ МОДАЛКИ КАТАЛОГА */
+    #navModal .modal-content {
+        height: 70vh; 
+        min-height: 400px;
+        max-height: 600px;
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 1.5rem;
+    }
+    #navModal h3 { flex-shrink: 0; margin-bottom: 1.5rem; }
+    #dynamicNavAccordion {
+        flex: 1; overflow-y: auto; padding-right: 5px; margin-bottom: 0;
+        -ms-overflow-style: none; scrollbar-width: none;
+    }
+    #dynamicNavAccordion::-webkit-scrollbar { display: none; }
+
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
     .nav-acc-item { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; overflow: hidden; transition: all 0.3s; }
     @media (hover: hover) { .nav-acc-item:hover { border-color: #cbd5e1; } }
@@ -476,7 +491,6 @@
             navContainer.innerHTML = html;
         }
 
-        // Search & Tracking URL Check on Load
         const params = new URLSearchParams(window.location.search);
         
         if (params.has('orderstatus')) {
@@ -501,21 +515,6 @@
                 const clr = document.querySelector('.search-clear');
                 if(clr) clr.classList.add('show');
             }
-
-            fetch('https://api.enkaelectronics.com.ge/catalog')
-                .then(res => res.json())
-                .then(d => {
-                    let count = d.products.filter(p =>
-                        p.stockStatus !== 'out_of_stock' &&
-                        (p.name.toLowerCase().includes(searchQ.toLowerCase()) ||
-                        (p.description && p.description.toLowerCase().includes(searchQ.toLowerCase())))
-                    ).length;
-
-                    const titleHTML = `<div style="max-width: 1280px; margin: 1.5rem auto 0.5rem; padding: 0 1.5rem; font-size: 1.1rem; color: #64748b; font-weight: 600;">ძიებისთვის <span style="color:#0f172a;">"${searchQ}"</span> ნაპოვნია <span style="color:#2563eb;">${count}</span> პროდუქტი.</div>`;
-                    const mainEl = document.querySelector('main');
-                    if(mainEl) mainEl.insertAdjacentHTML('afterbegin', titleHTML);
-                })
-                .catch(err => console.error(err));
         }
     });
 
