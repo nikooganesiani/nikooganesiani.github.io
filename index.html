@@ -12,62 +12,35 @@ title: "მთავარი"
     }
 
     input, textarea { -webkit-user-select: text; user-select: text; }
-    body, button, a, .category-btn, .sub-category-btn, .select-trigger, .product-card, .slider-arrow, .product-name-box {
+    body, button, a, .select-trigger, .product-card, .slider-arrow, .product-name-box {
         -webkit-user-select: none; user-select: none;
     }
     
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* ГЛАВНЫЕ КАТЕГОРИИ И ПОДКАТЕГОРИИ (Drag-to-Scroll + Arrows) */
-    .cat-nav-section { max-width: 1280px; margin: 0 auto; position: relative; z-index: 20; }
-    .cat-scroll-container { display: flex; align-items: center; position: relative; padding: 0 1.5rem; }
-
-    /* Стрелки ПК-скролла */
-    .cat-arrow { display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #475569; transition: all 0.2s; outline: none; }
-    @media (hover: hover) { .cat-arrow:hover { background: #f1f5f9; color: #2563eb; } }
-    .cat-arrow:active { transform: translateY(-50%) scale(0.9); }
-    .cat-arrow-left { left: 0; } .cat-arrow-right { right: 0; }
-
-    @media (min-width: 1024px) {
-        .cat-arrow.visible { display: flex; } 
+    /* Хлебные крошки */
+    .breadcrumbs {
+        margin: 1.5rem 0 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-
-    .categories, .subcategories { 
-        display: flex; gap: 0.8rem; flex-wrap: nowrap; 
-        padding: 1.5rem 0.5rem; margin: -1rem 0; 
-        overflow-x: auto;
-        -ms-overflow-style: none; scrollbar-width: none;
+    .crumb-link {
+        color: #94a3b8; text-decoration: none; transition: 0.2s; cursor: pointer;
     }
-    .categories::-webkit-scrollbar, .subcategories::-webkit-scrollbar { display: none; }
-
-    .category-btn {
-        background: white; border: 1px solid #e2e8f0; padding: 0.7rem 1.4rem;
-        border-radius: 2rem; font-size: 0.9rem; font-weight: 700; cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); color: #64748b;
-        display: flex; align-items: center; gap: 8px; outline: none;
-        white-space: nowrap; flex-shrink: 0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; z-index: 10;
-    }
-    .category-btn svg { width: 18px; height: 18px; transition: transform 0.3s ease; }
-    @media (hover: hover) { .category-btn:hover { background: #f8fafc; border-color: #2563eb; color: #2563eb; transform: translateY(-2px); } }
-    .category-btn.active { background: #0f172a; color: white; border-color: #0f172a; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2); }
-    .category-btn:active { transform: scale(0.96); }
-
-    /* ПОДКАТЕГОРИИ */
-    .subcat-nav-section { max-width: 1280px; margin: 0.5rem auto 1rem auto; display: none; position: relative; z-index: 25; }
-    .subcategories { padding: 0.5rem 0.5rem; }
-    .sub-category-btn {
-        background: transparent; border: 1px solid #cbd5e1; padding: 0.5rem 1rem;
-        border-radius: 2rem; font-size: 0.8rem; font-weight: 700; cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); color: #475569;
-        white-space: nowrap; flex-shrink: 0; outline: none; position: relative; z-index: 10;
-    }
-    @media (hover: hover) { .sub-category-btn:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; } }
-    .sub-category-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
-    .sub-category-btn:active { transform: scale(0.95); }
+    .crumb-link:hover { color: #2563eb; }
+    .crumb-separator { color: #cbd5e1; font-size: 0.8rem; }
+    .crumb-current { color: #0f172a; }
+    .crumb-count { color: #2563eb; margin-left: 0.3rem; }
 
     /* ФИЛЬТРЫ */
     .filters-bar {
-        display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+        display: none; /* Скрыты по умолчанию, включаются через JS */
+        flex-wrap: wrap; gap: 1rem; align-items: center;
         margin-top: 0.5rem; margin-bottom: 2rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
         animation: slideDown 0.4s ease; position: relative; z-index: 30;
@@ -114,16 +87,36 @@ title: "მთავარი"
         border-bottom: 1px solid #f1f5f9;
     }
     .product-image-wrapper img { border-radius: 0; }
-    .product-images-track { display: flex; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+    
+    /* Нативная плавная галерея фотографий */
+    .product-images-track { 
+        display: flex; width: 100%; height: 100%; 
+        overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none;
+    }
+    .product-images-track::-webkit-scrollbar { display: none; }
     .product-slide { 
         flex: 0 0 100%; width: 100%; height: 100%; 
+        scroll-snap-align: start;
         padding: 0; display: flex; align-items: center; justify-content: center;
     }
     .product-image { 
         width: 100%; height: 100%; object-fit: cover; 
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
+    /* Точки карусели */
+    .carousel-dots {
+        position: absolute; bottom: 12px; left: 0; right: 0; 
+        display: flex; justify-content: center; gap: 6px; 
+        z-index: 10; pointer-events: none;
+    }
+    .dot {
+        width: 7px; height: 7px; border-radius: 50%; 
+        background: rgba(15, 23, 42, 0.25); 
+        backdrop-filter: blur(2px); transition: all 0.3s ease;
+    }
+    .dot.active { background: #2563eb; transform: scale(1.3); }
+
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
     
     .product-name-box {
@@ -209,7 +202,6 @@ title: "მთავარი"
         .select-trigger { padding: 0.7rem 1rem; font-size: 0.85rem; }
         .reset-filters.show { height: 38px; width: 38px; }
         
-        .cat-scroll-container, .subcat-nav-section { padding: 0 1rem; margin-right: -0.5rem; margin-left: -0.5rem; }
         .catalog { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 2rem; }
 
         .product-card { border-radius: 1.2rem; }
@@ -230,73 +222,21 @@ title: "მთავარი"
 
         .slider-arrow { display: none !important; }
     }
-
-    .cat-arrow { z-index: 20 !important; }
-
-    .categories, .subcategories {
-        -webkit-mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
-        mask-image: linear-gradient(to right, transparent 0px, black 24px, black calc(100% - 24px), transparent 100%);
-        padding-left: 24px !important; padding-right: 24px !important; margin-left: -12px !important; margin-right: -12px !important;
-    }
-
-    @media (min-width: 1024px) {
-        .categories, .subcategories {
-            -webkit-mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
-            mask-image: linear-gradient(to right, transparent 0px, black 32px, black calc(100% - 32px), transparent 100%);
-            margin-left: 12px !important; margin-right: 12px !important;
-        }
-        .cat-arrow-left { left: 4px; }
-        .cat-arrow-right { right: 4px; }
-    }
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes slideDownSub { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); display: flex; } }
     @keyframes emptyPop { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
     @keyframes floatIcon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 </style>
 
-<!-- СТРОКА ГЛАВНЫХ КАТЕГОРИЙ -->
-<div class="cat-nav-section">
-    <div class="cat-scroll-container">
-        <button class="cat-arrow cat-arrow-left" id="catArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
-        
-        <div class="categories" id="categoriesContainer">
-    <button class="category-btn active" data-category="all">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-        ყველაფერი
-    </button>
-    
-    <!-- Автоматическая генерация категорий из _data/catalog.yml -->
-    {% for category in site.data.catalog %}
-    <button class="category-btn" data-category="{{ category[0] }}">
-        {{ category[1].icon }}
-        {{ category[1].title }}
-    </button>
-    {% endfor %}
-</div>
-        
-        <button class="cat-arrow cat-arrow-right" id="catArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
-    </div>
-</div>
-
-<!-- СТРОКА ПОДКАТЕГОРИЙ (Появляется динамически) -->
-<div class="subcat-nav-section" id="subcategoriesBar">
-    <div class="cat-scroll-container">
-        <button class="cat-arrow cat-arrow-left" id="subcatArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
-        
-        <div class="subcategories" id="subcategoriesContainer">
-            <!-- Кнопки подкатегорий будут сгенерированы через JS -->
-        </div>
-
-        <button class="cat-arrow cat-arrow-right" id="subcatArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
-    </div>
-</div>
-
 <main>
     <div class="container">
+        
+        <!-- ХЛЕБНЫЕ КРОШКИ -->
+        <div id="breadcrumbs" class="breadcrumbs"></div>
+
         <!-- ФИЛЬТРЫ -->
-        <div class="filters-bar">
+        <div class="filters-bar" id="filtersBar">
             <div class="filters">
                 <div class="filter-group">
                     <label for="minPrice" style="color:#94a3b8; font-weight:800; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">ფასი</label>
@@ -335,7 +275,7 @@ title: "მთავარი"
 
         <!-- КНОПКА ПАГИНАЦИИ -->
         <div id="loadMoreContainer" style="display: none; text-align: center; margin-bottom: 3rem;">
-            <button id="loadMoreBtn" class="category-btn" style="display: inline-flex; margin: 0 auto; justify-content: center; min-width: 200px;">
+            <button id="loadMoreBtn" class="btn-order" style="display: inline-flex; margin: 0 auto; justify-content: center; min-width: 200px; background: white; border: 1px solid #e2e8f0; color: #0f172a; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 მეტის ნახვა
             </button>
@@ -344,23 +284,23 @@ title: "მთავარი"
 </main>
 
 <script>
-    let currentCategory = 'all';
-    let currentSubcategory = 'all';
-    let xDown = null;
     let currentPage = 1;
     const itemsPerPage = 16;
+    
+    // Получаем параметры из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQ = urlParams.get('search');
+    const currentCategory = urlParams.get('category') || 'all';
+    const currentSubcategory = urlParams.get('sub') || 'all';
 
     const container = document.getElementById('catalogContainer');
-    const subcategoriesBar = document.getElementById('subcategoriesBar');
-    
-    // Достаем кнопку пагинации
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
     
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', () => {
             currentPage++;
-            renderProducts(true); // Передаем true, чтобы товары добавились к существующим
+            renderProducts(true);
         });
     }
     
@@ -368,101 +308,14 @@ title: "მთავარი"
     const maxPriceInput = document.getElementById('maxPrice');
     const sortSelect = document.getElementById('sortSelect');
     const resetBtn = document.getElementById('resetFilters');
-    const categoryBtns = document.querySelectorAll('button[data-category]');
 
-    // Получаем базу категорий из глобальной переменной (из default.html)
     const catalogStructure = window.CATALOG_STRUCTURE || {};
 
     // ==========================================
-    // ЛОГИКА DRAG-TO-SCROLL И СТРЕЛОК
-    // ==========================================
-function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
-        const slider = document.getElementById(containerId);
-        const leftBtn = document.getElementById(leftArrowId);
-        const rightBtn = document.getElementById(rightArrowId);
-
-        const updateArrows = () => {
-            if(slider.scrollWidth > slider.clientWidth) {
-                leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
-                leftBtn.style.opacity = slider.scrollLeft > 0 ? '1' : '0.3';
-                rightBtn.style.opacity = slider.scrollLeft < (slider.scrollWidth - slider.clientWidth - 5) ? '1' : '0.3';
-            } else {
-                leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
-            }
-        };
-
-        slider.addEventListener('scroll', updateArrows);
-        window.addEventListener('resize', updateArrows);
-        
-        leftBtn.addEventListener('click', () => { slider.scrollBy({ left: -200, behavior: 'smooth' }); });
-        rightBtn.addEventListener('click', () => { slider.scrollBy({ left: 200, behavior: 'smooth' }); });
-        
-        setTimeout(updateArrows, 100);
-        return updateArrows;
-    }
-    const updateCatArrows = setupDragAndArrows('categoriesContainer', 'catArrowLeft', 'catArrowRight');
-    const updateSubCatArrows = setupDragAndArrows('subcategoriesContainer', 'subcatArrowLeft', 'subcatArrowRight');
-
-    // ==========================================
-    // ЛОГИКА ОТРИСОВКИ ПОДКАТЕГОРИЙ
-    // ==========================================
-    function renderSubcategories(catId, activeSubId = 'all') {
-        if (catId === 'all' || !catalogStructure[catId] || catalogStructure[catId].subs.length === 0) {
-            subcategoriesBar.style.display = 'none';
-            currentSubcategory = 'all';
-            return;
-        }
-
-        // Генерируем HTML сразу с нужным активным классом
-        let html = `<button class="sub-category-btn ${activeSubId === 'all' ? 'active' : ''}" data-sub="all">ყველა</button>`;
-        catalogStructure[catId].subs.forEach(sub => {
-            html += `<button class="sub-category-btn ${activeSubId === sub.id ? 'active' : ''}" data-sub="${sub.id}">${sub.name}</button>`;
-        });
-        
-        subcategoriesContainer.innerHTML = html;
-        subcategoriesBar.style.display = 'block';
-
-        // Моментально центрируем без анимации прокрутки
-        const activeBtn = subcategoriesContainer.querySelector('.active');
-        if (activeBtn) {
-            activeBtn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-        } else {
-            subcategoriesContainer.scrollLeft = 0;
-        }
-
-        // Слушатели кликов по подкатегориям
-        subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                subcategoriesContainer.querySelectorAll('.sub-category-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentSubcategory = btn.dataset.sub;
-                
-                // Обновляем URL (без перезагрузки страницы)
-                const url = new URL(window.location);
-                url.searchParams.set('category', currentCategory);
-                if(currentSubcategory !== 'all') {
-                    url.searchParams.set('sub', currentSubcategory);
-                } else {
-                    url.searchParams.delete('sub');
-                }
-                window.history.pushState({}, '', url);
-
-                // А вот при клике делаем плавный скролл
-                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                renderProducts();
-            });
-        });
-        
-        setTimeout(updateSubCatArrows, 50);
-    }
-
-// ==========================================
     // ЛОГИКА ОТРИСОВКИ КАТАЛОГА (ФИЛЬТРАЦИЯ)
     // ==========================================
     function renderProducts(isLoadMore = false) {
-        if (!isLoadMore) {
-            currentPage = 1; // Сбрасываем страницу, если это смена категории или фильтра
-        }
+        if (!isLoadMore) currentPage = 1;
 
         const products = window.allProducts || [];
         let filtered = [...products];
@@ -479,40 +332,79 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         // Исключаем товары, которых нет в наличии
         filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
 
-        // Фильтр по Главной категории
+        // 1. Полноценный Поиск
+        if (searchQ) {
+            const sq = searchQ.toLowerCase();
+            filtered = filtered.filter(p => 
+                p.name.toLowerCase().includes(sq) || 
+                (p.description && p.description.toLowerCase().includes(sq))
+            );
+        }
+
+        // 2. Фильтр по Категориям
         if (currentCategory !== 'all') {
             filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
         }
-        
-        // Фильтр по Подкатегории
         if (currentSubcategory !== 'all') {
             filtered = filtered.filter(p => p.subcategories && p.subcategories.includes(currentSubcategory));
         }
         
-        // Фильтр по цене
+        // 3. Фильтр по Цене
         if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
         if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
         
-        // Сортировка
+        // 4. Сортировка
         const sortBy = sortSelect.value;
         if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
         if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
         if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
+
+        // Хлебные крошки и панель фильтров
+        const breadcrumbsEl = document.getElementById('breadcrumbs');
+        const filtersBar = document.getElementById('filtersBar');
         
-        // Если ничего не найдено
+        if (currentCategory === 'all' && !searchQ) {
+            breadcrumbsEl.style.display = 'none';
+            filtersBar.style.display = 'none';
+        } else {
+            breadcrumbsEl.style.display = 'flex';
+            filtersBar.style.display = 'flex';
+            
+            let crumbs = `<a href="/" class="crumb-link">მთავარი</a>`;
+            if (searchQ) {
+                crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">ძიება: "${searchQ}"</span>`;
+                crumbs += `<span class="crumb-count">(${filtered.length} ნაპოვნია)</span>`;
+            } else {
+                const catName = catalogStructure[currentCategory]?.title || currentCategory;
+                crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">${catName}</span>`;
+                if (currentSubcategory !== 'all') {
+                    const subObj = catalogStructure[currentCategory]?.subs.find(s => s.id === currentSubcategory);
+                    const subName = subObj ? subObj.name : currentSubcategory;
+                    crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">${subName}</span>`;
+                }
+            }
+            breadcrumbsEl.innerHTML = crumbs;
+        }
+        
+        // Если ничего не найдено (Предотвращение повторной анимации)
         if (filtered.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column:1/-1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3; animation: floatIcon 3s ease-in-out infinite;">
-                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
-                    </svg>
-                    <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
-                    <div style="font-size:0.95rem; font-weight:500; color:#94a3b8; margin-top:0.5rem;">სცადეთ სხვა ფილტრი ან კატეგორია</div>
-                </div>`;
-            if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+            if (container.dataset.empty !== "true") {
+                container.innerHTML = `
+                    <div style="grid-column:1/-1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:5rem 0; color:#94a3b8; animation: emptyPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.5rem; opacity:0.3; animation: floatIcon 3s ease-in-out infinite;">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
+                        </svg>
+                        <div style="font-size:1.4rem; font-weight:800; color:#64748b; letter-spacing:-0.5px;">ვერაფერი მოიძებნა</div>
+                        <div style="font-size:0.95rem; font-weight:500; color:#94a3b8; margin-top:0.5rem;">სცადეთ სხვა პარამეტრები ან ძიება</div>
+                    </div>`;
+                container.dataset.empty = "true";
+                if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+            }
             return;
         }
+        
+        container.dataset.empty = "false";
         
         // Пагинация массива
         const startIndex = isLoadMore ? (currentPage - 1) * itemsPerPage : 0;
@@ -525,8 +417,6 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
             
             // Фильтруем ссылки на YouTube
             imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
-            
-            // Заглушка
             if (imgs.length === 0) imgs.push('/img/no-image.png');
 
             const hasMultipleImages = imgs.length > 1;
@@ -542,14 +432,19 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
             }
             
             const productDataAttr = JSON.stringify(product).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+            
+            let dotsHtml = '';
+            if (hasMultipleImages) {
+                dotsHtml = `<div class="carousel-dots" id="dots-${product.id}">
+                    ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
+                </div>`;
+            }
 
             return `
-            <div class="product-card" data-current-slide="0">
-                <div class="product-image-wrapper" 
-                     ontouchstart="handleTouchStart(event)" 
-                     ontouchend="handleTouchEnd('${product.id}', event)">
+            <div class="product-card">
+                <div class="product-image-wrapper">
                     ${discountBadge}
-                    <div class="product-images-track" id="track-${product.id}">
+                    <div class="product-images-track" id="track-${product.id}" onscroll="updateDots('${product.id}', this)">
                         ${imgs.map(img => `
                             <div class="product-slide">
                                 <a href="product/${product.id}/" style="display:contents;" draggable="false">
@@ -558,6 +453,7 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
                             </div>
                         `).join('')}
                     </div>
+                    ${dotsHtml}
                     ${hasMultipleImages ? `
                         <button class="slider-arrow arrow-prev" onclick="changeSlide('${product.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
                         <button class="slider-arrow arrow-next" onclick="changeSlide('${product.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
@@ -579,14 +475,12 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
             </div>
         `}).join('');
 
-        // Если это дозагрузка (клик по кнопке), добавляем HTML в конец. Если нет - заменяем полностью.
         if (isLoadMore) {
             container.insertAdjacentHTML('beforeend', html);
         } else {
             container.innerHTML = html;
         }
 
-        // Показываем/скрываем кнопку "Загрузить еще", если остались товары
         if (loadMoreContainer) {
             if (filtered.length > endIndex) {
                 loadMoreContainer.style.display = 'block';
@@ -597,71 +491,27 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
     }
 
     // ==========================================
-    // СЛАЙДЕР ИЗОБРАЖЕНИЙ (СВАЙП)
+    // СЛАЙДЕР ИЗОБРАЖЕНИЙ (ТОЧКИ + КНОПКИ)
     // ==========================================
+    window.updateDots = function(productId, trackEl) {
+        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+        const dots = document.querySelectorAll(`#dots-${productId} .dot`);
+        dots.forEach((d, i) => {
+            if (i === index) d.classList.add('active');
+            else d.classList.remove('active');
+        });
+    };
+
     window.changeSlide = function(productId, direction, event) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         const track = document.getElementById(`track-${productId}`);
-        const card = track.closest('.product-card');
-        const slidesCount = track.children.length;
-        let currentSlide = parseInt(card.getAttribute('data-current-slide'));
-        currentSlide = (currentSlide + direction + slidesCount) % slidesCount;
-        card.setAttribute('data-current-slide', currentSlide);
-        track.style.transform = `translateX(-${currentSlide * 100}%)`;
-    };
-
-    window.handleTouchStart = (evt) => { xDown = evt.touches[0].clientX; };
-    window.handleTouchEnd = (productId, evt) => {
-        if (!xDown) return;
-        let xDiff = xDown - evt.changedTouches[0].clientX;
-        if (Math.abs(xDiff) > 50) changeSlide(productId, xDiff > 0 ? 1 : -1);
-        xDown = null;
+        const slideWidth = track.clientWidth;
+        track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     };
 
     // ==========================================
-    // ЛОГИКА ИНТЕРФЕЙСА (КЛИКИ И URL)
+    // ЛОГИКА ФИЛЬТРОВ И ЦЕН
     // ==========================================
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const isClickingSame = btn.classList.contains('active') && btn.dataset.category !== 'all';
-            
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            
-            // Логика "ყველაფერი" и повторного клика
-            if(isClickingSame || btn.dataset.category === 'all') {
-                const allBtn = document.querySelector('.category-btn[data-category="all"]');
-                allBtn.classList.add('active');
-                currentCategory = 'all';
-                currentSubcategory = 'all';
-                subcategoriesBar.style.display = 'none';
-            } else {
-                btn.classList.add('active');
-                currentCategory = btn.dataset.category;
-                currentSubcategory = 'all'; // Сбрасываем подкатегорию
-                renderSubcategories(currentCategory, 'all');
-            }
-
-            // Обновляем URL
-            const url = new URL(window.location);
-            if(currentCategory !== 'all') {
-                url.searchParams.set('category', currentCategory);
-            } else {
-                url.searchParams.delete('category');
-            }
-            url.searchParams.delete('sub');
-            window.history.pushState({}, '', url);
-            
-            // Перерисовываем товары
-            renderProducts();
-            
-            // Плавный скролл к кнопке
-            if(currentCategory !== 'all') {
-                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            }
-        });
-    });
-
-    // Обработчики цен (Моментальная корректировка)
     const enforcePriceLogic = () => {
         let min = parseInt(minPriceInput.value);
         let max = parseInt(maxPriceInput.value);
@@ -690,7 +540,6 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
         renderProducts();
     });
     
-    // Кастомный селект сортировки
     const customSelect = document.getElementById('customSortSelect');
     const selectTrigger = document.getElementById('selectTrigger');
     if (selectTrigger) {
@@ -708,34 +557,9 @@ function setupDragAndArrows(containerId, leftArrowId, rightArrowId) {
     }
 
 // ==========================================
-// ИНИЦИАЛИЗАЦИЯ И ПАРСИНГ URL
+// ИНИЦИАЛИЗАЦИЯ
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. МОМЕНТАЛЬНАЯ НАСТРОЙКА КАТЕГОРИЙ (до того, как сработает сеть)
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlCat = urlParams.get('category');
-    const urlSub = urlParams.get('sub');
-
-    if (urlCat && catalogStructure[urlCat]) {
-        currentCategory = urlCat;
-        
-        categoryBtns.forEach(btn => {
-            if (btn.dataset.category === urlCat) {
-                btn.classList.add('active');
-                // Скроллим моментально, без анимации
-                btn.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        
-        currentSubcategory = urlSub ? urlSub : 'all';
-        renderSubcategories(urlCat, currentSubcategory);
-    } else {
-        renderSubcategories('all', 'all');
-    }
-
-    // 2. АСИНХРОННАЯ ЗАГРУЗКА ТОВАРОВ
     const catalogUrl = 'https://api.enkaelectronics.com.ge/catalog';
 
     fetch(catalogUrl)
@@ -748,12 +572,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 ...p,
                 priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
-
-            // Когда товары загрузились — просто их рисуем (категории уже готовы)
             renderProducts();
         })
         .catch(err => {
-            console.error('Не удалось загрузить каталог с Cloudflare:', err);
+            console.error('Не удалось загрузить каталог:', err);
         });
 });
 </script>
