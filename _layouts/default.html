@@ -162,7 +162,7 @@
     .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     .modal-content h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; }
     
-    /* ФИКСАЦИЯ ВЫСОТЫ МОДАЛКИ КАТАЛОГА */
+    /* ФИКСАЦИЯ ВЫСОТЫ МОДАЛКИ КАТАЛОГА И ФЕЙД */
     #navModal .modal-content {
         height: 70vh; 
         min-height: 400px;
@@ -171,15 +171,24 @@
         flex-direction: column;
         padding-bottom: 1.5rem;
     }
-    #navModal h3 { flex-shrink: 0; margin-bottom: 1.5rem; }
+    #navModal h3 { flex-shrink: 0; margin-bottom: 1rem; }
+    
     #dynamicNavAccordion {
-        flex: 1; overflow-y: auto; padding-right: 5px; margin-bottom: 0;
+        flex: 1; overflow-y: auto; padding-right: 5px; 
+        padding-top: 1rem; padding-bottom: 1rem; /* Отступы для зоны фейда */
+        margin-top: -1rem; margin-bottom: -1rem; /* Компенсация отступов */
         -ms-overflow-style: none; scrollbar-width: none;
+        
+        /* Современный нативный фейд сверху и снизу */
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 1rem, black calc(100% - 1rem), transparent);
+        mask-image: linear-gradient(to bottom, transparent, black 1rem, black calc(100% - 1rem), transparent);
     }
     #dynamicNavAccordion::-webkit-scrollbar { display: none; }
 
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
-    .nav-acc-item { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; overflow: hidden; transition: all 0.3s; }
+    
+    /* Добавлен flex-shrink: 0 для фикса бага со сжатием других категорий */
+    .nav-acc-item { flex-shrink: 0; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; overflow: hidden; transition: all 0.3s; }
     @media (hover: hover) { .nav-acc-item:hover { border-color: #cbd5e1; } }
     .nav-acc-item.active { background: white; border-color: #2563eb; box-shadow: 0 10px 25px -5px rgba(37,99,235,0.15); }
     
@@ -396,7 +405,6 @@
 
     <div class="modal" id="navModal">
         <div class="modal-content">
-            <h3>კატალოგი</h3>
             <div class="nav-accordion" id="dynamicNavAccordion"></div>
         </div>
     </div>
