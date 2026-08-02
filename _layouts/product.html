@@ -188,27 +188,40 @@ layout: default
 
     .desc-text { line-height: 1.8; color: #475569; font-size: 1.05rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
-    /* Дизайн скролл-секции (ИСПРАВЛЕННЫЙ ФЕЙД И СНЭППИНГ) */
+    /* Дизайн скролл-секции ИСПРАВЛЕННЫЙ */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
-    .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
     
-    /* Фейды правильного цвета (#f8fafc) */
-    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
-    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
+    .similar-nav-section { 
+        position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; 
+        padding: 0 10px; /* Отступ от краев, чтобы стрелки не вылезали за экран */
+    }
+    
+    .sim-fade-left { 
+        position: absolute; left: 10px; top: 0; bottom: 0; width: 60px; 
+        background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); 
+        pointer-events: none; z-index: 2; border-radius: 2.2rem 0 0 2.2rem;
+    }
+    .sim-fade-right { 
+        position: absolute; right: 10px; top: 0; bottom: 0; width: 60px; 
+        background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); 
+        pointer-events: none; z-index: 2; border-radius: 0 2.2rem 2.2rem 0;
+    }
     
     .sim-arrow { 
-        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
-        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; 
+        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
         cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #0f172a; transition: all 0.3s; outline: none; 
     }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); } }
     .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
-    .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
+    .sim-arrow-left { left: 15px; } .sim-arrow-right { right: 15px; }
     @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
 
     /* Идеальная остановка скролла на товаре (Snap) */
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0; 
+        display: flex; overflow-x: auto; 
+        gap: 1.5rem; padding: 1.5rem 60px; /* Важно: padding 60px чтобы товары не прятались под фейдами в начале/конце */
+        scroll-padding-inline: 60px; /* Важно: выравнивает snap-точку ровно за фейдом */
         scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
         scroll-snap-type: x mandatory;
     }
@@ -292,12 +305,29 @@ layout: default
         .breadcrumbs { padding: 0.6rem 1rem; border-radius: 1.2rem; }
         .zoom-arrow { width: 40px; height: 40px; }
         .zoom-prev { left: 10px; } .zoom-next { right: 10px; }
+
+        /* ОТКЛЮЧЕНИЕ СКРОЛЛА КАРТИНОК В КАРТОЧКЕ ДЛЯ ТЕЛЕФОНОВ (BUG 2) */
+        .similar-scroll-container .product-images-track {
+            overflow-x: hidden !important;
+            scroll-snap-type: none !important;
+            touch-action: pan-y !important; /* Пропускаем свайп родительскому контейнеру */
+        }
+        .similar-scroll-container .carousel-dots {
+            display: none !important;
+        }
+        .similar-scroll-container .slider-arrow {
+            display: none !important;
+        }
     }
     
     @media (max-width: 640px) {
         .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+
+        .similar-nav-section { padding: 0; }
+        .similar-scroll-container { padding: 1rem 1.5rem; scroll-padding-inline: 1.5rem; gap: 1rem; }
+        .sim-fade-left, .sim-fade-right { display: none; } /* Убираем фейды на телефонах для чистого свайпа */
 
         .similar-scroll-container .product-card { flex: 0 0 240px; border-radius: 1.2rem; }
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
@@ -310,7 +340,6 @@ layout: default
         .similar-scroll-container .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
         .similar-scroll-container .btn-order svg { width: 16px; height: 16px; }
         .similar-scroll-container .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
-        .similar-scroll-container .slider-arrow { display: none !important; }
     }
 
     .specs-desc-grid { display: flex; flex-direction: column; gap: 3rem; }
@@ -703,11 +732,24 @@ layout: default
 
         const updateArrows = () => {
             if(scroll.scrollWidth > scroll.clientWidth) {
-                leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
-                leftBtn.style.opacity = scroll.scrollLeft > 0 ? '1' : '0.3';
-                rightBtn.style.opacity = scroll.scrollLeft < (scroll.scrollWidth - scroll.clientWidth - 5) ? '1' : '0.3';
+                leftBtn.classList.add('visible'); 
+                rightBtn.classList.add('visible');
+                
+                // Управляем прозрачностью и кликабельностью чтобы не было багов с попыткой клика в край
+                if (scroll.scrollLeft > 10) {
+                    leftBtn.style.opacity = '1'; leftBtn.style.pointerEvents = 'auto';
+                } else {
+                    leftBtn.style.opacity = '0.3'; leftBtn.style.pointerEvents = 'none';
+                }
+                
+                if (scroll.scrollLeft < (scroll.scrollWidth - scroll.clientWidth - 10)) {
+                    rightBtn.style.opacity = '1'; rightBtn.style.pointerEvents = 'auto';
+                } else {
+                    rightBtn.style.opacity = '0.3'; rightBtn.style.pointerEvents = 'none';
+                }
             } else {
-                leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
+                leftBtn.classList.remove('visible'); 
+                rightBtn.classList.remove('visible');
             }
         };
         
@@ -725,7 +767,12 @@ layout: default
 
         leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
         rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
-        setTimeout(updateArrows, 150);
+        
+        // requestAnimationFrame гарантирует, что блок (который изначально display: none) 
+        // уже отрендерился и получил размеры до запуска функции, что решает проблему 2го блока
+        requestAnimationFrame(() => {
+            setTimeout(updateArrows, 150);
+        });
     };
 
     document.addEventListener('DOMContentLoaded', function() {
