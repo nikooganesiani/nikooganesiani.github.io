@@ -224,7 +224,7 @@ layout: default
     /* Фейды */
     .sim-fade {
     position: absolute; top: 0; bottom: 0; width: 80px; 
-    pointer-events: none; z-index: 5; transition: opacity 0.15s ease;
+    pointer-events: none; z-index: 5; transition: opacity 0.3s ease;
     opacity: 0; /* Изначально прозрачный */
     }
     .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
@@ -733,7 +733,7 @@ layout: default
         track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     };
 
-    /* Идеальная система Карусели (с фейдом только при активном скролле) */
+    /* Идеальная система Карусели (фейд без моргания) */
 window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId, fadeRightId) {
     const scroll = document.getElementById(scrollId);
     const leftBtn = document.getElementById(leftBtnId);
@@ -743,17 +743,17 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId
 
     if(!scroll) return;
 
-    let scrollTimeout; // Таймер для отслеживания остановки
+    let scrollTimeout;
+    let isActivelyScrolling = false; // Запоминаем состояние, чтобы не мигать
 
-    // Функция обновления (принимает параметр: происходит ли скролл прямо сейчас)
-    const updateUI = (isActivelyScrolling = false) => {
+    const updateUI = (scrolling) => {
         const maxScrollLeft = scroll.scrollWidth - scroll.clientWidth;
         const currentScroll = scroll.scrollLeft;
 
         const isAtStart = currentScroll <= 5;
         const isAtEnd = currentScroll >= (maxScrollLeft - 5);
 
-        // Если контент не влезает в контейнер (нет нужды в карусели)
+        // Если контент не влезает (карусель не нужна)
         if (scroll.scrollWidth <= scroll.clientWidth + 5) {
             if (leftBtn) leftBtn.style.display = 'none';
             if (rightBtn) rightBtn.style.display = 'none';
@@ -762,35 +762,40 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId
             return;
         }
 
-        // Стрелки остаются видимыми, если есть куда крутить
+        // Кнопки по бокам
         if (leftBtn) leftBtn.style.display = isAtStart ? 'none' : 'flex';
         if (rightBtn) rightBtn.style.display = isAtEnd ? 'none' : 'flex';
 
-        // Фейды показываются ТОЛЬКО если мы не в тупике И прямо сейчас крутим карусель
-        if (fadeLeft) fadeLeft.style.opacity = (!isAtStart && isActivelyScrolling) ? '1' : '0';
-        if (fadeRight) fadeRight.style.opacity = (!isAtEnd && isActivelyScrolling) ? '1' : '0';
+        // Логика фейда
+        if (fadeLeft) fadeLeft.style.opacity = (!isAtStart && scrolling) ? '1' : '0';
+        if (fadeRight) fadeRight.style.opacity = (!isAtEnd && scrolling) ? '1' : '0';
     };
 
-    // Слушаем событие прокрутки
     scroll.addEventListener('scroll', () => {
-        updateUI(true); // Передаем true: пользователь начал/продолжает скроллить
+        // Как только пошло движение - показываем фейд (срабатывает 1 раз)
+        if (!isActivelyScrolling) {
+            isActivelyScrolling = true;
+            updateUI(true);
+        }
 
-        clearTimeout(scrollTimeout); // Сбрасываем старый таймер
+        clearTimeout(scrollTimeout);
 
-        // Засекаем 100мс. Если за это время скролл не повторился — значит он остановился
+        // Ждем 250мс после последнего сдвига. 
+        // Это время перекроет все зависания анимации. Как только она 100% встанет - фейд погаснет.
         scrollTimeout = setTimeout(() => {
-            updateUI(false); // Передаем false: скролл остановился, прячем фейды
-        }, 100); 
+            isActivelyScrolling = false;
+            updateUI(false); 
+        }, 250); 
     }, { passive: true });
     
-    // Инициализация при загрузке (фейды скрыты, стрелки расставлены)
+    // Инициализация при загрузке
     requestAnimationFrame(() => {
         updateUI(false);
         setTimeout(() => updateUI(false), 200); 
     });
     window.addEventListener('resize', () => updateUI(false));
 
-    // Скроллит ровно на 1 карточку (для кнопок на ПК)
+    // Скролл по кнопкам
     const getScrollAmount = () => {
         const card = scroll.querySelector('.product-card');
         if (card) {
