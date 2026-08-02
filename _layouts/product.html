@@ -223,9 +223,15 @@ layout: default
     
     /* Фейды */
     .sim-fade {
-        position: absolute; top: 0; bottom: 0; width: 80px; 
-        pointer-events: none; z-index: 5; transition: opacity 0.4s ease;
-        opacity: 0; /* Управляется JS */
+    display: none; /* Полностью скрываем фейды на ПК */
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 80px; 
+    pointer-events: none; 
+    z-index: 5; 
+    transition: opacity 0.4s ease;
+    opacity: 0; 
     }
     .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
     .sim-fade-right { right: 0; background: linear-gradient(to left, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
@@ -337,7 +343,7 @@ layout: default
             flex: 0 0 calc(50% - 6px); /* Ровно 2 карточки */
             border-radius: 1.2rem;
         }
-        .sim-fade { width: 30px; }
+        .sim-fade { display: block; width: 30px; }
 
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
