@@ -223,15 +223,9 @@ layout: default
     
     /* Фейды */
     .sim-fade {
-    display: none; /* Полностью скрываем фейды на ПК */
-    position: absolute; 
-    top: 0; 
-    bottom: 0; 
-    width: 80px; 
-    pointer-events: none; 
-    z-index: 5; 
-    transition: opacity 0.4s ease;
-    opacity: 0; 
+    position: absolute; top: 0; bottom: 0; width: 80px; 
+    pointer-events: none; z-index: 5; transition: opacity 0.4s ease;
+    opacity: 0; /* Изначально прозрачный */
     }
     .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
     .sim-fade-right { right: 0; background: linear-gradient(to left, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
@@ -343,7 +337,7 @@ layout: default
             flex: 0 0 calc(50% - 6px); /* Ровно 2 карточки */
             border-radius: 1.2rem;
         }
-        .sim-fade { display: block; width: 30px; }
+        .sim-fade { width: 30px; }
 
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
@@ -739,60 +733,76 @@ layout: default
         track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     };
 
-    /* Идеальная система Карусели */
-    window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId, fadeRightId) {
-        const scroll = document.getElementById(scrollId);
-        const leftBtn = document.getElementById(leftBtnId);
-        const rightBtn = document.getElementById(rightBtnId);
-        const fadeLeft = document.getElementById(fadeLeftId);
-        const fadeRight = document.getElementById(fadeRightId);
+    /* Идеальная система Карусели (с фейдом только при активном скролле) */
+window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId, fadeRightId) {
+    const scroll = document.getElementById(scrollId);
+    const leftBtn = document.getElementById(leftBtnId);
+    const rightBtn = document.getElementById(rightBtnId);
+    const fadeLeft = document.getElementById(fadeLeftId);
+    const fadeRight = document.getElementById(fadeRightId);
 
-        if(!scroll) return;
+    if(!scroll) return;
 
-        const updateUI = () => {
-            const maxScrollLeft = scroll.scrollWidth - scroll.clientWidth;
-            const currentScroll = scroll.scrollLeft;
+    let scrollTimeout; // Таймер для отслеживания остановки
 
-            const isAtStart = currentScroll <= 5;
-            const isAtEnd = currentScroll >= (maxScrollLeft - 5);
+    // Функция обновления (принимает параметр: происходит ли скролл прямо сейчас)
+    const updateUI = (isActivelyScrolling = false) => {
+        const maxScrollLeft = scroll.scrollWidth - scroll.clientWidth;
+        const currentScroll = scroll.scrollLeft;
 
-            // Если контент не влезает в контейнер (нет нужды в скролле)
-            if (scroll.scrollWidth <= scroll.clientWidth + 5) {
-                if (leftBtn) leftBtn.style.display = 'none';
-                if (rightBtn) rightBtn.style.display = 'none';
-                if (fadeLeft) fadeLeft.style.opacity = '0';
-                if (fadeRight) fadeRight.style.opacity = '0';
-                return;
-            }
+        const isAtStart = currentScroll <= 5;
+        const isAtEnd = currentScroll >= (maxScrollLeft - 5);
 
-            if (leftBtn) leftBtn.style.display = isAtStart ? 'none' : 'flex';
-            if (fadeLeft) fadeLeft.style.opacity = isAtStart ? '0' : '1';
+        // Если контент не влезает в контейнер (нет нужды в карусели)
+        if (scroll.scrollWidth <= scroll.clientWidth + 5) {
+            if (leftBtn) leftBtn.style.display = 'none';
+            if (rightBtn) rightBtn.style.display = 'none';
+            if (fadeLeft) fadeLeft.style.opacity = '0';
+            if (fadeRight) fadeRight.style.opacity = '0';
+            return;
+        }
 
-            if (rightBtn) rightBtn.style.display = isAtEnd ? 'none' : 'flex';
-            if (fadeRight) fadeRight.style.opacity = isAtEnd ? '0' : '1';
-        };
+        // Стрелки остаются видимыми, если есть куда крутить
+        if (leftBtn) leftBtn.style.display = isAtStart ? 'none' : 'flex';
+        if (rightBtn) rightBtn.style.display = isAtEnd ? 'none' : 'flex';
 
-        scroll.addEventListener('scroll', updateUI, { passive: true });
-        window.addEventListener('resize', updateUI);
-        
-        requestAnimationFrame(() => {
-            updateUI();
-            setTimeout(updateUI, 200); 
-        });
-
-        // Скроллит ровно на 1 карточку
-        const getScrollAmount = () => {
-            const card = scroll.querySelector('.product-card');
-            if (card) {
-                const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap; 
-            }
-            return 300;
-        };
-
-        if(leftBtn) leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
-        if(rightBtn) rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
+        // Фейды показываются ТОЛЬКО если мы не в тупике И прямо сейчас крутим карусель
+        if (fadeLeft) fadeLeft.style.opacity = (!isAtStart && isActivelyScrolling) ? '1' : '0';
+        if (fadeRight) fadeRight.style.opacity = (!isAtEnd && isActivelyScrolling) ? '1' : '0';
     };
+
+    // Слушаем событие прокрутки
+    scroll.addEventListener('scroll', () => {
+        updateUI(true); // Передаем true: пользователь начал/продолжает скроллить
+
+        clearTimeout(scrollTimeout); // Сбрасываем старый таймер
+
+        // Засекаем 400мс. Если за это время скролл не повторился — значит он остановился
+        scrollTimeout = setTimeout(() => {
+            updateUI(false); // Передаем false: скролл остановился, прячем фейды
+        }, 400); 
+    }, { passive: true });
+    
+    // Инициализация при загрузке (фейды скрыты, стрелки расставлены)
+    requestAnimationFrame(() => {
+        updateUI(false);
+        setTimeout(() => updateUI(false), 200); 
+    });
+    window.addEventListener('resize', () => updateUI(false));
+
+    // Скроллит ровно на 1 карточку (для кнопок на ПК)
+    const getScrollAmount = () => {
+        const card = scroll.querySelector('.product-card');
+        if (card) {
+            const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
+            return card.offsetWidth + gap; 
+        }
+        return 300;
+    };
+
+    if(leftBtn) leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
+    if(rightBtn) rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
+};
 
     document.addEventListener('DOMContentLoaded', function() {
         const oldPriceStr = "{{ page.oldPrice }}";
