@@ -2,7 +2,6 @@
 layout: default
 ---
 
-<!-- УМНАЯ ЛОГИКА ОПРЕДЕЛЕНИЯ КАТЕГОРИИ И ПОДКАТЕГОРИИ ДЛЯ ХЛЕБНЫХ КРОШЕК -->
 {% assign first_cat = page.categories | first %}
 {% if first_cat == nil or first_cat == empty %}
   {% assign first_cat = page.category | default: page.categories %}
@@ -15,11 +14,9 @@ layout: default
 {% endif %}
 {% assign first_sub = first_sub | strip %}
 
-{% comment %} 2. БЕРЕМ ДАННЫЕ ИЗ БАЗЫ _data/catalog.yml {% endcomment %}
 {% assign cat_data = site.data.catalog[first_cat] %}
 {% assign cat_name = cat_data.title | default: first_cat %}
 
-{% comment %} 3. ИЩЕМ НАЗВАНИЕ ПОДКАТЕГОРИИ {% endcomment %}
 {% assign sub_name = first_sub %}
 {% if cat_data and cat_data.subs %}
   {% for sub in cat_data.subs %}
@@ -45,6 +42,7 @@ layout: default
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes checkmarkScale { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.3); } 100% { transform: scale(1); opacity: 1; } }
 
     .top-navigation { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     .breadcrumbs { 
@@ -184,11 +182,12 @@ layout: default
 
     .desc-text { line-height: 1.8; color: #475569; font-size: 1.05rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
+    /* Дизайн скролл-секции (Похожие и Недавно просмотренные) */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
     
-    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
-    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(248,250,252,0) 0%, rgba(248,250,252,1) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
     
     .sim-arrow { 
         display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
@@ -197,39 +196,67 @@ layout: default
     }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); } }
     .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
-    .sim-arrow-left { left: 5px; } .sim-arrow-right { right: 5px; }
-    
+    .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
     @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
 
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 1.5rem; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none;
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 0; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
-    
-    .similar-card { 
-        flex: 0 0 280px; background: white; border-radius: 1.8rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); 
-        transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; user-select: none; position: relative; height: 100%;
-        cursor: pointer; overflow: hidden;
-    }
-    @media (hover: hover) { .similar-card:hover { transform: translateY(-5px); border-color: #e2e8f0; box-shadow: 0 15px 25px -5px rgba(0,0,0,0.08); } }
-    .similar-card:active { transform: scale(0.96); box-shadow: none; }
-    .similar-card img { pointer-events: none; }
 
+    /* Переиспользуем стили карточек из Index */
+    .product-card {
+        background: white; border-radius: 2.2rem; overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: 100%;
+    }
+    @media (hover: hover) { .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
+    
+    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; height: auto; overflow: hidden; background: #ffffff; border-radius: 2.2rem 2.2rem 0 0; border-bottom: 1px solid #f1f5f9; }
+    .product-image-wrapper img { border-radius: 0; }
+    
+    .product-images-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; -ms-overflow-style: none; scrollbar-width: none; }
+    .product-images-track::-webkit-scrollbar { display: none; }
+    .product-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; padding: 0; display: flex; align-items: center; justify-content: center; }
+    .product-image { width: 100%; height: 100%; object-fit: cover; }
+    
+    .carousel-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 10; pointer-events: none; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(15, 23, 42, 0.25); backdrop-filter: blur(2px); transition: all 0.3s ease; }
+    .dot.active { background: #2563eb; transform: scale(1.3); }
+
+    .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
+    .product-name-box { background: transparent; border: none; padding: 0; height: 3rem; display: flex; align-items: flex-start; margin-bottom: 1rem; transition: opacity 0.2s ease; cursor: pointer; }
+    @media (hover: hover) { .product-name-box:hover { opacity: 0.8; } }
+    .product-name { font-size: 1.1rem; font-weight: 750; color: #0f172a; line-height: 1.4; letter-spacing: -0.2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+    .discount-badge { position: absolute; top: 12px; left: 12px; background: #ef4444; color: white; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 800; z-index: 5; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); pointer-events: none; }
+    .product-price-container { display: flex; flex-direction: row; align-items: baseline; gap: 10px; margin-bottom: 1.2rem; padding: 0 0.5rem; }
+    .product-price { font-size: 1.8rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; }
+    .old-price { text-decoration: line-through; color: #64748b; font-size: 0.95rem; font-weight: 600; opacity: 0.8; }
+
+    .btn-order { background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 1.2rem; cursor: pointer; font-weight: 800; font-size: 1.05rem; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); }
+    @media (hover: hover) { .btn-order:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); } }
+    .btn-order:active { transform: scale(0.96); box-shadow: none; }
+
+    .slider-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.94); border: 1px solid #f1f5f9; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; color: #0f172a; opacity: 0; outline: none; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    @media (hover: hover) { .product-image-wrapper:hover .slider-arrow { opacity: 1; } .slider-arrow:hover { color: #2563eb; background: white; transform: translateY(-50%) scale(1.1); } }
+    .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f1f5f9; }
+    .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
+
+    .similar-scroll-container .product-card { flex: 0 0 280px; }
+
+    /* Zoom Modal */
     .image-zoom-modal {
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         z-index: 100000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;
     }
     .image-zoom-modal.active { opacity: 1; display: flex; }
-    
     .zoom-img-container { position: relative; width: 90vw; height: 80vh; display: flex; justify-content: center; align-items: center; animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .zoom-img-container img { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; pointer-events: none; border-radius: 0.5rem; mix-blend-mode: multiply; }
-    
     .zoom-close {
         position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 44px; height: 44px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; transition: all 0.3s; z-index: 100001;
     }
     @media (hover: hover) { .zoom-close:hover { background: #fee2e2; color: #ef4444; transform: scale(1.1); } }
-    
     .zoom-arrow {
         position: absolute; top: 50%; transform: translateY(-50%); background: white; border: 1px solid #e2e8f0; width: 50px; height: 50px;
         border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.08); z-index: 100001;
@@ -251,26 +278,32 @@ layout: default
         .breadcrumbs { padding: 0.6rem 1rem; border-radius: 1.2rem; }
         .zoom-arrow { width: 40px; height: 40px; }
         .zoom-prev { left: 10px; } .zoom-next { right: 10px; }
-        .sim-fade-left { left: 0; } .sim-fade-right { right: 0; }
     }
+    
     @media (max-width: 640px) {
         .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
-    }
-    .specs-desc-grid { display: flex; flex-direction: column; gap: 3rem; }
 
-    @media (min-width: 1024px) {
-        .specs-desc-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; }
-        #descColFix { margin-top: 0 !important; padding-top: 0 !important; border-top: none !important; }
+        .similar-scroll-container .product-card { flex: 0 0 220px; border-radius: 1.2rem; }
+        .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
+        .similar-scroll-container .product-info { padding: 0.8rem; }
+        .similar-scroll-container .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
+        .similar-scroll-container .product-name { font-size: 0.85rem; line-height: 1.3; }
+        .similar-scroll-container .product-price-container { margin-bottom: 0.8rem; padding: 0; flex-direction: column; align-items: flex-start; gap: 0px; }
+        .similar-scroll-container .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
+        .similar-scroll-container .old-price { font-size: 0.75rem; margin-bottom: 2px; }
+        .similar-scroll-container .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
+        .similar-scroll-container .btn-order svg { width: 16px; height: 16px; }
+        .similar-scroll-container .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
+        .similar-scroll-container .slider-arrow { display: none !important; }
     }
+
+    .specs-desc-grid { display: flex; flex-direction: column; gap: 3rem; }
+    @media (min-width: 1024px) { .specs-desc-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; } #descColFix { margin-top: 0 !important; padding-top: 0 !important; border-top: none !important; } }
     .product-details-grid { display: flex; flex-direction: column; gap: 3rem; }
     .description-container { border-top: 1px solid #f1f5f9; padding-top: 2.5rem; }
-
-    @media (min-width: 1024px) {
-        .product-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-        .description-container { border-top: none; padding-top: 0; }
-    }
+    @media (min-width: 1024px) { .product-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; } .description-container { border-top: none; padding-top: 0; } }
 
     .btn-share {
         background: white; border: 1px solid #e2e8f0; padding: 0.5rem 1rem;
@@ -279,7 +312,6 @@ layout: default
     }
     @media (hover: hover) { .btn-share:hover { background: #f8fafc; color: #2563eb; border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); } }
     .btn-share:active { transform: translateY(0); box-shadow: none; }
-    
     .share-btn-wrapper { position: relative; }
     
     .copy-alert {
@@ -288,14 +320,11 @@ layout: default
         font-size: 0.75rem; font-weight: 700; white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100;
     }
     .copy-alert.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .copy-alert::after {
-        content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent;
-    }
+    .copy-alert::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 5px; border-style: solid; border-color: #1e293b transparent transparent transparent; }
 </style>
 
 <div class="product-view-container">
 
-    <!-- НАВИГАЦИЯ С ПОДКАТЕГОРИЯМИ (ХЛЕБНЫЕ КРОШКИ) -->
     <div class="top-navigation">
         <ul class="breadcrumbs">
             <li>
@@ -314,11 +343,11 @@ layout: default
                 </li>
                 <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
                 <li>
-                    <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false">{{ sub_name | strip }}</a>
+                    <span class="current">{{ sub_name | strip }}</span>
                 </li>
                 {% else %}
                 <li>
-                    <a href="/?category={{ first_cat }}" draggable="false">{{ cat_name | strip }}</a>
+                    <span class="current">{{ cat_name | strip }}</span>
                 </li>
                 {% endif %}
             {% endif %}
@@ -327,13 +356,11 @@ layout: default
 
     <!-- СЕТКА ТОВАРА -->
     <div class="product-grid">
-        <!-- ГАЛЕРЕЯ -->
         <div class="gallery-section">
             {% if page.oldPrice != "" and page.oldPrice != nil %}
             <div class="sale-badge-red" id="saleBadge">ფასდაკლება</div>
             {% endif %}
 
-            <!-- Главное изображение / Видео -->
             <div class="main-image-view" 
                  ontouchstart="pTouchStartX = event.changedTouches[0].screenX" 
                  ontouchend="handleProductSwipe(event)">
@@ -347,7 +374,6 @@ layout: default
                     {% assign is_video = false %}
                     {% if img contains 'youtube.com' or img contains 'youtu.be' %}
                         {% assign is_video = true %}
-                        <!-- Вытягиваем ID видео -->
                         {% if img contains 'v=' %}
                             {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
                         {% else %}
@@ -371,10 +397,9 @@ layout: default
             </div>
             {% endif %}
         </div>
-        <!-- ИНФО-БЛОК -->
+
         <div class="product-info-section">
             <div>
-                <!-- Блок наличия (Заполняется через JS из catalog) -->
                 <div id="dynamicStockBadge"></div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.5rem;">
@@ -383,7 +408,6 @@ layout: default
                         <div class="info-tag">ბრენდი: <b>{{ page.brand }}</b></div>
                     </div>
                     
-                    <!-- Кнопка Поделиться -->
                     <div class="share-btn-wrapper">
                         <button class="btn-share" onclick="copyProductLink()">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
@@ -406,10 +430,9 @@ layout: default
                     {% endif %}
                 </div>
 
-                <!-- Кнопка заказа (Заполняется через JS из catalog) -->
+                <!-- Форма заказа / Кнопка -->
                 <div id="dynamicBuyButton"></div>
 
-                <!-- Новые карточки Гарантии и Доставки -->
                 <div class="benefits-grid">
                     <div class="benefit-card">
                         <div class="benefit-icon">
@@ -431,7 +454,6 @@ layout: default
                     </div>
                 </div>
 
-                <!-- Карточка способов оплаты (на всю ширину под гарантиями) -->
                 <div class="benefit-card" style="margin-top: 1rem;">
                     <div class="benefit-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
@@ -440,93 +462,87 @@ layout: default
                         <span class="benefit-label">გადახდა</span>
                         <span class="benefit-val">მიღებისას</span>
                     </div>
-                    
-                     <!-- Иконки: Наличные, Visa, Mastercard -->
-<div style="display: flex; gap: 8px; align-items: center;">
-    <!-- Наличные -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="ნაღდი ფული"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
-    
-    <!-- Visa -->
-<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 32 32" title="Visa">
-    <rect width="32" height="32" rx="4" fill="#1a1f71"/>
-    <g transform="translate(2, 7) scale(0.034)">
-        <path d="m293.2 348.73l33.359-195.76h53.358l-33.384 195.76h-53.333zm246.11-191.54c-10.569-3.966-27.135-8.222-47.821-8.222-52.726 0-89.863 26.551-90.181 64.604-0.297 28.129 26.515 43.822 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-0.133 13.123-16.586 19.115-31.924 19.115-21.355 0-32.701-2.967-50.225-10.273l-6.878-3.111-7.487 43.822c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.885 0.199-22.27-14.016-39.215-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.56-16.838 17.446-0.271 30.088 3.534 39.936 7.5l4.781 2.259 7.231-42.427m137.31-4.223h-41.23c-12.772 0-22.332 3.486-27.94 16.234l-79.245 179.4h56.031s9.159-24.121 11.231-29.418c6.123 0 60.555 0.084 68.336 0.084 1.596 6.854 6.492 29.334 6.492 29.334h49.512l-43.187-195.64zm-65.417 126.41c4.414-11.279 21.26-54.724 21.26-54.724-0.314 0.521 4.381-11.334 7.074-18.684l3.606 16.878s10.217 46.729 12.353 56.527h-44.293v3e-3zm-363.3-126.41l-52.239 133.5-5.565-27.129c-9.726-31.274-40.025-65.157-73.898-82.12l47.767 171.2 56.455-0.063 84.004-195.39-56.524-1e-3" fill="#fff"/>
-        <path d="m146.92 152.96h-86.041l-0.682 4.073c66.939 16.204 111.23 55.363 129.62 102.42l-18.709-89.96c-3.229-12.396-12.597-16.096-24.186-16.528" fill="#F2AE14"/>
-    </g>
-</svg>
-    
-    <!-- Mastercard -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 32 32" title="Mastercard">
-        <rect width="32" height="32" rx="4" fill="#000"/>
-        <circle fill="#ea001b" cx="11" cy="16" r="7"/>
-        <circle fill="#f79e1b" cx="21" cy="16" r="7"/>
-        <path fill="#ff5f00" d="M16 19.3a7 7 0 0 0 0-6.6 7 7 0 0 0 0 6.6z"/>
-    </svg>
-</div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="ნაღდი ფული"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 32 32" title="Visa">
+                            <rect width="32" height="32" rx="4" fill="#1a1f71"/>
+                            <g transform="translate(2, 7) scale(0.034)">
+                                <path d="m293.2 348.73l33.359-195.76h53.358l-33.384 195.76h-53.333zm246.11-191.54c-10.569-3.966-27.135-8.222-47.821-8.222-52.726 0-89.863 26.551-90.181 64.604-0.297 28.129 26.515 43.822 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-0.133 13.123-16.586 19.115-31.924 19.115-21.355 0-32.701-2.967-50.225-10.273l-6.878-3.111-7.487 43.822c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.885 0.199-22.27-14.016-39.215-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.56-16.838 17.446-0.271 30.088 3.534 39.936 7.5l4.781 2.259 7.231-42.427m137.31-4.223h-41.23c-12.772 0-22.332 3.486-27.94 16.234l-79.245 179.4h56.031s9.159-24.121 11.231-29.418c6.123 0 60.555 0.084 68.336 0.084 1.596 6.854 6.492 29.334 6.492 29.334h49.512l-43.187-195.64zm-65.417 126.41c4.414-11.279 21.26-54.724 21.26-54.724-0.314 0.521 4.381-11.334 7.074-18.684l3.606 16.878s10.217 46.729 12.353 56.527h-44.293v3e-3zm-363.3-126.41l-52.239 133.5-5.565-27.129c-9.726-31.274-40.025-65.157-73.898-82.12l47.767 171.2 56.455-0.063 84.004-195.39-56.524-1e-3" fill="#fff"/>
+                                <path d="m146.92 152.96h-86.041l-0.682 4.073c66.939 16.204 111.23 55.363 129.62 102.42l-18.709-89.96c-3.229-12.396-12.597-16.096-24.186-16.528" fill="#F2AE14"/>
+                            </g>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 32 32" title="Mastercard">
+                            <rect width="32" height="32" rx="4" fill="#000"/>
+                            <circle fill="#ea001b" cx="11" cy="16" r="7"/>
+                            <circle fill="#f79e1b" cx="21" cy="16" r="7"/>
+                            <path fill="#ff5f00" d="M16 19.3a7 7 0 0 0 0-6.6 7 7 0 0 0 0 6.6z"/>
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-<div class="content-section-box">
-    <div class="product-details-grid">
-        <!-- Левая колонка: Характеристики -->
-        <div class="specs-container">
-            <h2 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-                სპეციფიკაციები
-            </h2>
-            <div class="spec-list-container">
-                {% for spec in page.specs %}
-                <div class="spec-item-row">
-                    <div class="spec-name-label">{{ spec[0] }}</div>
-                    <div class="spec-value-text">{{ spec[1] }}</div>
+    <div class="content-section-box">
+        <div class="product-details-grid">
+            <div class="specs-container">
+                <h2 class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    სპეციფიკაციები
+                </h2>
+                <div class="spec-list-container">
+                    {% for spec in page.specs %}
+                    <div class="spec-item-row">
+                        <div class="spec-name-label">{{ spec[0] }}</div>
+                        <div class="spec-value-text">{{ spec[1] }}</div>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            </div>
+
+            <div class="description-container">
+                <h3 class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    პროდუქტის აღწერა
+                </h3>
+                <div class="desc-text">{{ page.longDescription }}</div>
             </div>
         </div>
-
-        <!-- Правая колонка: Описание -->
-        <div class="description-container">
-            <h3 class="section-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                პროდუქტის აღწერა
-            </h3>
-            <div class="desc-text">{{ page.longDescription }}</div>
-        </div>
     </div>
-</div>
 
     <!-- БЛОК ПОХОЖИХ ТОВАРОВ -->
-    <div class="similar-products-section">
-        <h2 class="section-title" style="font-size: 1.8rem;">მსგავსი პროდუქტები</h2>
-        
+    <div class="similar-products-section" id="similarSection" style="display: none;">
+        <h2 class="section-title">მსგავსი პროდუქტები</h2>
         <div class="similar-nav-section">
             <button class="sim-arrow sim-arrow-left" id="simArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
-            
             <div class="sim-fade-left"></div>
-            <div class="similar-scroll-container" id="similarScroll">
-                <!-- Заполняется через JS -->
-            </div>
+            <div class="similar-scroll-container" id="similarScroll"></div>
             <div class="sim-fade-right"></div>
-            
             <button class="sim-arrow sim-arrow-right" id="simArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
+    
+    <!-- БЛОК НЕДАВНО ПРОСМОТРЕННЫЕ -->
+    <div class="similar-products-section" id="recentlyViewedSection" style="display: none;">
+        <h2 class="section-title">ბოლოს ნანახი</h2>
+        <div class="similar-nav-section">
+            <button class="sim-arrow sim-arrow-left" id="recentArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="sim-fade-left"></div>
+            <div class="similar-scroll-container" id="recentScroll"></div>
+            <div class="sim-fade-right"></div>
+            <button class="sim-arrow sim-arrow-right" id="recentArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+        </div>
+    </div>
 </div>
 
-<!-- МОДАЛЬНОЕ ОКНО ZOOM (ИЗОБРАЖЕНИЯ) -->
 <div class="image-zoom-modal" id="imageZoomModal">
     <button class="zoom-close" onclick="closeImageZoom()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
     <button class="zoom-arrow zoom-prev" onclick="changeZoomImg(-1)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
-    
-    <div class="zoom-img-container">
-        <img id="zoomImageLarge" src="" alt="Zoom Image">
-    </div>
-    
+    <div class="zoom-img-container"><img id="zoomImageLarge" src="" alt="Zoom Image"></div>
     <button class="zoom-arrow zoom-next" onclick="changeZoomImg(1)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
 </div>
-<!-- Schema.org SEO Разметка для товара -->
+
+<!-- Schema.org -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org/",
@@ -555,35 +571,15 @@ layout: default
     "price": "{{ page.price | replace: '₾', '' | replace: ' ', '' | strip }}",
     "itemCondition": "https://schema.org/NewCondition",
     "availability": "https://schema.org/InStock",
-    "seller": {
-      "@type": "Organization",
-      "name": "ENKA Electronics"
-    },
+    "seller": { "@type": "Organization", "name": "ENKA Electronics" },
     "shippingDetails": {
       "@type": "OfferShippingDetails",
-      "shippingRate": {
-        "@type": "MonetaryAmount",
-        "value": "0", 
-        "currency": "GEL"
-      },
-      "shippingDestination": {
-        "@type": "DefinedRegion",
-        "addressCountry": "GE"
-      },
+      "shippingRate": { "@type": "MonetaryAmount", "value": "0", "currency": "GEL" },
+      "shippingDestination": { "@type": "DefinedRegion", "addressCountry": "GE" },
       "deliveryTime": {
         "@type": "ShippingDeliveryTime",
-        "handlingTime": {
-          "@type": "QuantitativeValue",
-          "minValue": 0,
-          "maxValue": 1,
-          "unitCode": "DAY"
-        },
-        "transitTime": {
-          "@type": "QuantitativeValue",
-          "minValue": 1,
-          "maxValue": 5,
-          "unitCode": "DAY"
-        }
+        "handlingTime": { "@type": "QuantitativeValue", "minValue": 0, "maxValue": 1, "unitCode": "DAY" },
+        "transitTime": { "@type": "QuantitativeValue", "minValue": 1, "maxValue": 5, "unitCode": "DAY" }
       }
     },
     "hasMerchantReturnPolicy": {
@@ -597,10 +593,9 @@ layout: default
   }
 }
 </script>
+
 <script>
     let pTouchStartX = 0;
-    
-    // Глобальные переменные для модалки изображений
     let currentZoomIndex = 0;
     const allProductImages = [];
     {% for img in page.images %}
@@ -609,9 +604,154 @@ layout: default
         {% endunless %}
     {% endfor %}
 
-    // Инициализация страницы товара
+    // Глобальные функции для рендера карточек в скролле (Похожие и Недавно просмотренные)
+    window.createProductCardHTML = function(p) {
+        let imgs = p.images || (p.image ? [p.image] : []);
+        imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
+        if (imgs.length === 0) imgs.push('/img/no-image.png');
+        
+        const hasMultipleImages = imgs.length > 1;
+        let discountBadge = '';
+        
+        if (p.oldPrice) {
+            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
+            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                discountBadge = `<div class="discount-badge">-${percent}%</div>`;
+            }
+        }
+        
+        const productDataAttr = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        
+        let dotsHtml = '';
+        if (hasMultipleImages) {
+            dotsHtml = `<div class="carousel-dots" id="dots-${p.id}">
+                ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
+            </div>`;
+        }
+
+        return `
+        <div class="product-card">
+            <div class="product-image-wrapper">
+                ${discountBadge}
+                <div class="product-images-track" id="track-${p.id}" onscroll="updateDots('${p.id}', this)">
+                    ${imgs.map(img => `
+                        <div class="product-slide">
+                            <a href="/product/${p.id}/" style="display:contents;" draggable="false">
+                                <img class="product-image" src="${img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+                ${dotsHtml}
+                ${hasMultipleImages ? `
+                    <button class="slider-arrow arrow-prev" onclick="changeSlide('${p.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+                    <button class="slider-arrow arrow-next" onclick="changeSlide('${p.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                ` : ''}
+            </div>
+            <div class="product-info">
+                <div class="product-name-box" onclick="location.href='/product/${p.id}/'">
+                    <div class="product-name">${p.name}</div>
+                </div>
+                <div class="product-price-container">
+                    <div class="product-price">${String(p.price).replace(/₾/g, '')}₾</div>
+                    ${p.oldPrice ? `<span class="old-price">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
+                </div>
+                <!-- В скролл блоках остается вызов модалки для удобства -->
+                <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    შეკვეთა
+                </button>
+            </div>
+        </div>`;
+    };
+
+    window.updateDots = function(productId, trackEl) {
+        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+        const dots = document.querySelectorAll(`#dots-${productId} .dot`);
+        dots.forEach((d, i) => {
+            if (i === index) d.classList.add('active');
+            else d.classList.remove('active');
+        });
+    };
+
+    window.changeSlide = function(productId, direction, event) {
+        if(event) { event.preventDefault(); event.stopPropagation(); }
+        const track = document.getElementById(`track-${productId}`);
+        const slideWidth = track.clientWidth;
+        track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+    };
+
+    window.initSliderArrows = function(scrollId, leftBtnId, rightBtnId) {
+        const scroll = document.getElementById(scrollId);
+        const leftBtn = document.getElementById(leftBtnId);
+        const rightBtn = document.getElementById(rightBtnId);
+        if(!scroll || !leftBtn || !rightBtn) return;
+
+        const updateArrows = () => {
+            if(scroll.scrollWidth > scroll.clientWidth) {
+                leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
+                leftBtn.style.opacity = scroll.scrollLeft > 0 ? '1' : '0.3';
+                rightBtn.style.opacity = scroll.scrollLeft < (scroll.scrollWidth - scroll.clientWidth - 5) ? '1' : '0.3';
+            } else {
+                leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
+            }
+        };
+        
+        scroll.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+
+        const getScrollAmount = () => {
+            const card = scroll.querySelector('.product-card');
+            if(card) {
+                const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
+                return card.offsetWidth + gap;
+            }
+            return 304;
+        };
+
+        leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
+        rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
+        setTimeout(updateArrows, 150);
+    };
+
+    // Отправка формы сразу со страницы
+    window.handleInlineOrder = function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submitOrderBtn');
+        const icon = document.getElementById('orderBtnIcon');
+        const text = document.getElementById('orderBtnText');
+        const name = document.getElementById('orderName').value;
+        const phone = document.getElementById('orderPhone').value;
+
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.8';
+        text.innerText = 'იგზავნება...';
+        
+        // ЗДЕСЬ ДОЛЖНА БЫТЬ ВАША ЛОГИКА ОТПРАВКИ ЗАКАЗА ЧЕРЕЗ FETCH. 
+        // Сейчас используется таймер-симуляция.
+        setTimeout(() => {
+            btn.style.opacity = '1';
+            btn.style.background = '#16a34a';
+            btn.style.boxShadow = '0 4px 15px rgba(22, 163, 74, 0.4)';
+            
+            icon.outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: checkmarkScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            text.innerText = 'შეკვეთა მიღებულია';
+            
+            // Пиксель Facebook на успешный заказ
+            if (typeof fbq === 'function') {
+                fbq('track', 'Purchase', {
+                    value: parseFloat("{{ page.price }}".replace(/[^\d.]/g, '')) || 0,
+                    currency: 'GEL',
+                    content_ids: ['{{ page.sku }}'],
+                    content_type: 'product'
+                });
+            }
+        }, 800);
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Вычисление бейджа скидки
         const oldPriceStr = "{{ page.oldPrice }}";
         const priceStr = "{{ page.price }}";
         
@@ -625,148 +765,95 @@ layout: default
             }
         }
 
-        // 2. Чтение catalog (Статус товара + Похожие товары)
-fetch('https://api.enkaelectronics.com.ge/catalog')
-    .then(r => {
-        if (!r.ok) throw new Error('Ошибка загрузки каталога');
-        return r.json();
-    })
-    .then(data => {
-        const currentSub = "{{ first_sub }}";
-        const currentCat = "{{ first_cat }}"
+    fetch('https://api.enkaelectronics.com.ge/catalog')
+        .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
+        .then(data => {
+            const currentSub = "{{ first_sub }}";
+            const currentCat = "{{ first_cat }}";
             
-            // БРОНЕБОЙНЫЙ ПОИСК ТОВАРА (Ищем по SKU или ID из URL)
             const currentSku = "{{ page.sku }}".trim();
-            const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop(); // Берет ID прямо из адресной строки
-            
-            // Ищем совпадение либо по коду товара (SKU), либо по ID из ссылки
-            const currentProduct = data.products.find(p => 
-                (currentSku !== "" && String(p.sku) === currentSku) || 
-                (urlId !== "" && String(p.id) === urlId)
-            );
-            
-            // Вытаскиваем настоящий ID для фильтрации похожих товаров
+            const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop();
+            const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
             const actualProductId = currentProduct ? currentProduct.id : null;
             
-            // === ЛОГИКА НАЛИЧИЯ И КНОПКИ ЗАКАЗА ===
-            // Переводим статус в нижний регистр для безопасной проверки
-            const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
+            // === ЗАПИСЬ "НЕДАВНО ПРОСМОТРЕННЫХ" В LOCALSTORAGE ===
+            if (actualProductId) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); 
+                recentIds.unshift(actualProductId); 
+                if (recentIds.length > 20) recentIds = recentIds.slice(0, 20);
+                localStorage.setItem('recentIds', JSON.stringify(recentIds));
+            }
             
+            const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
             const badgeContainer = document.getElementById('dynamicStockBadge');
             const btnContainer = document.getElementById('dynamicBuyButton');
             
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
                 if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> მარაგი ამოიწურა, იხილეთ მსგავსი</button>`;
-                
+                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
-                if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება მარაგში</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> მალე იქნება, იხილეთ მსგავსი</button>`;
-                
+                if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
+                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else {
                 if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order" onclick="handleBuyClick()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg> შეკვეთა</button>`;
+                if (btnContainer) btnContainer.innerHTML = `
+                <form id="inlineOrderForm" onsubmit="handleInlineOrder(event)" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                    <input type="text" id="orderName" placeholder="სახელი" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                    <input type="tel" id="orderPhone" placeholder="ტელეფონის ნომერი" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                    <button type="submit" id="submitOrderBtn" class="btn-alta-order">
+                        <svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span id="orderBtnText">შეკვეთა</span>
+                    </button>
+                </form>`;
             }
 
-            // === ФИЛЬТРАЦИЯ ПОХОЖИХ ТОВАРОВ ===
-            // Теперь мы точно отфильтруем текущий товар, так как знаем его настоящий actualProductId
+            // === ПОХОЖИЕ ТОВАРЫ ===
             let similar = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub));
-            
-            // Если их мало, добиваем из главной категории
             if(similar.length < 30) {
                 const more = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !similar.includes(p));
                 similar = similar.concat(more);
             }
-            
             similar = similar.slice(0, 30);
             
             if(similar.length > 0) {
-                document.getElementById('similarScroll').innerHTML = similar.map(p => {
-                    const imgUrl = (p.images && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
-                    
-                    // Логика бейджа скидки и старой цены для похожих товаров
-                    let discountBadgeHtml = '';
-                    let priceHtml = `<div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${String(p.price).replace(/₾/g, '')}₾</div>`;
-                    
-                    if (p.oldPrice) {
-                        const oldV = parseInt(p.oldPrice.replace(/[^0-9]/g, ''));
-                        const newV = parseInt(p.price.replace(/[^0-9]/g, ''));
-                        if (oldV > newV) {
-                            const pct = Math.round(((oldV - newV) / oldV) * 100);
-                            discountBadgeHtml = `<div class="sale-badge-red" style="top:15px; left:15px; font-size:0.8rem; padding:6px 12px; z-index:10;">-${pct}%</div>`;
-                            
-                            priceHtml = `
-                                <div style="display:flex; align-items:baseline; gap:8px;">
-                                    <div style="font-weight:900; color:#2563eb; font-size:1.4rem;">${String(p.price).replace(/₾/g, '')}₾</div>
-                                    <div style="text-decoration:line-through; color:#94a3b8; font-size:1rem; font-weight:700;">${String(p.oldPrice).replace(/₾/g, '')}₾</div>
-                                </div>
-                            `;
-                        }
-                    }
+                document.getElementById('similarSection').style.display = 'block';
+                document.getElementById('similarScroll').innerHTML = similar.map(p => window.createProductCardHTML(p)).join('');
+                window.initSliderArrows('similarScroll', 'simArrowLeft', 'simArrowRight');
+            }
 
-                    return `
-                    <div class="similar-card" onclick="location.href='/product/${p.id}/'">
-                        ${discountBadgeHtml}
-                        <div style="height:210px; padding:1.5rem; display:flex; align-items:center; justify-content:center; background:white;">
-                            <img src="${imgUrl}" style="max-width:100%; max-height:100%; object-fit:contain; border-radius: 0.4rem; mix-blend-mode: multiply;" onerror="this.src='/img/no-image.png'" draggable="false">
-                        </div>
-                        <div style="padding:1.2rem; display:flex; flex-direction:column; flex:1; background:#f8fafc; border-top:1px solid #f1f5f9;">
-                            <div style="font-size:0.95rem; font-weight:800; color:#0f172a; margin-bottom:0.8rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.3;">${p.name}</div>
-                            <div style="margin-top:auto;">${priceHtml}</div>
-                        </div>
-                    </div>`;
-                }).join('');
-
-                // 3. Логика стрелок для похожих товаров (заменяет драг-энд-дроп для ПК)
-                const slider = document.getElementById('similarScroll');
-                const leftBtn = document.getElementById('simArrowLeft');
-                const rightBtn = document.getElementById('simArrowRight');
-
-                const updateArrows = () => {
-                    if(slider.scrollWidth > slider.clientWidth) {
-                        leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
-                        leftBtn.style.opacity = slider.scrollLeft > 0 ? '1' : '0.3';
-                        rightBtn.style.opacity = slider.scrollLeft < (slider.scrollWidth - slider.clientWidth - 5) ? '1' : '0.3';
-                    } else {
-                        leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
-                    }
-                };
-
-                slider.addEventListener('scroll', updateArrows);
-                window.addEventListener('resize', updateArrows);
+            // === НЕДАВНО ПРОСМОТРЕННЫЕ ===
+            const recentSection = document.getElementById('recentlyViewedSection');
+            const recentScroll = document.getElementById('recentScroll');
+            if (recentSection && recentScroll) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); // Скрываем текущий
+                const recentProducts = recentIds.map(id => data.products.find(p => p.id === id)).filter(Boolean);
                 
-                leftBtn.addEventListener('click', () => { slider.scrollBy({ left: -295, behavior: 'smooth' }); });
-                rightBtn.addEventListener('click', () => { slider.scrollBy({ left: 295, behavior: 'smooth' }); });
-                
-                setTimeout(updateArrows, 150);
-
-            } else {
-                document.querySelector('.similar-products-section').style.display = 'none';
+                if (recentProducts.length > 0) {
+                    recentSection.style.display = 'block';
+                    recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p)).join('');
+                    window.initSliderArrows('recentScroll', 'recentArrowLeft', 'recentArrowRight');
+                }
             }
         });
     });
 
-    // ZOOM ИЗОБРАЖЕНИЙ (Zoommer style)
+    // ZOOM
     function openImageZoom() {
         const modal = document.getElementById('imageZoomModal');
         const largeImg = document.getElementById('zoomImageLarge');
         const currentMainSrc = document.getElementById('mainProductImage').src;
-        
         currentZoomIndex = allProductImages.findIndex(src => currentMainSrc.endsWith(src));
         if (currentZoomIndex === -1) currentZoomIndex = 0;
-        
         largeImg.src = allProductImages[currentZoomIndex] || currentMainSrc;
-        
-        modal.style.display = 'flex';
-        modal.offsetHeight; // Принудительный рендер для CSS анимации
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        modal.style.display = 'flex'; modal.offsetHeight; 
+        modal.classList.add('active'); document.body.style.overflow = 'hidden';
     }
     
     function closeImageZoom() {
         const modal = document.getElementById('imageZoomModal');
-        modal.classList.remove('active');
-        document.body.style.overflow = '';
+        modal.classList.remove('active'); document.body.style.overflow = '';
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
     
@@ -777,125 +864,65 @@ fetch('https://api.enkaelectronics.com.ge/catalog')
         if (currentZoomIndex < 0) currentZoomIndex = allProductImages.length - 1;
         document.getElementById('zoomImageLarge').src = allProductImages[currentZoomIndex];
     }
-
-    // Закрытие модалки при клике вне картинки
     document.getElementById('imageZoomModal').addEventListener('click', (e) => {
-        if (e.target.classList.contains('image-zoom-modal') || e.target.classList.contains('zoom-img-container')) {
-            closeImageZoom();
-        }
+        if (e.target.classList.contains('image-zoom-modal') || e.target.classList.contains('zoom-img-container')) closeImageZoom();
     });
 
-    // Свайп галереи на мобильных устройствах
+    // СВАЙПЫ ГАЛЕРЕИ
     function handleProductSwipe(event) {
         let touchEndX = event.changedTouches[0].screenX;
         const diff = pTouchStartX - touchEndX;
         const thumbs = document.querySelectorAll('.thumb-card');
-        
         if (Math.abs(diff) > 50 && thumbs.length > 1) {
             let idx = Array.from(thumbs).findIndex(t => t.classList.contains('active'));
             if (idx === -1) idx = 0;
-            
             let nextIdx = idx + (diff > 0 ? 1 : -1);
             if (nextIdx >= thumbs.length) nextIdx = 0;
             if (nextIdx < 0) nextIdx = thumbs.length - 1;
-            
             thumbs[nextIdx].click();
         }
     }
 
-    // Обновление главного изображения по клику на превью (с поддержкой видео)
     function updateGallery(imgSrc, element, isVideo = false) {
         const mainImg = document.getElementById('mainProductImage');
         const mainVid = document.getElementById('mainProductVideo');
-        
         if (isVideo) {
             let ytId = '';
-            if (imgSrc.includes('v=')) {
-                ytId = imgSrc.split('v=')[1].split('&')[0];
-            } else if (imgSrc.includes('youtu.be/')) {
-                ytId = imgSrc.split('youtu.be/')[1].split('?')[0];
-            }
-            
+            if (imgSrc.includes('v=')) ytId = imgSrc.split('v=')[1].split('&')[0];
+            else if (imgSrc.includes('youtu.be/')) ytId = imgSrc.split('youtu.be/')[1].split('?')[0];
             mainImg.style.display = 'none';
             mainVid.style.display = 'block';
             mainVid.src = 'https://www.youtube.com/embed/' + ytId + '?autoplay=1&mute=0';
         } else {
-            mainVid.style.display = 'none';
-            mainVid.src = ''; // Останавливаем плеер
-            mainImg.style.display = 'block';
-            
-            // Легкая анимация прозрачности при смене фото
-            mainImg.style.opacity = '0.5';
-            setTimeout(() => {
-                mainImg.src = imgSrc;
-                mainImg.style.opacity = '1';
-            }, 150);
+            mainVid.style.display = 'none'; mainVid.src = ''; 
+            mainImg.style.display = 'block'; mainImg.style.opacity = '0.5';
+            setTimeout(() => { mainImg.src = imgSrc; mainImg.style.opacity = '1'; }, 150);
         }
-
         document.querySelectorAll('.thumb-card').forEach(card => card.classList.remove('active'));
-        element.classList.add('active');
-        
-        // Центрируем активный thumbnail
-        element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        element.classList.add('active'); element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     }
 
-    // Логика копирования ссылки (Поделиться)
     function copyProductLink() {
-        // Поддержка современных и старых браузеров (включая iOS)
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(window.location.href).then(showCopyAlert);
         } else {
-            let textArea = document.createElement("textarea");
-            textArea.value = window.location.href;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try { 
-                document.execCommand('copy'); 
-                showCopyAlert(); 
-            } catch (err) { 
-                console.error('Copy failed', err); 
-            }
+            let textArea = document.createElement("textarea"); textArea.value = window.location.href;
+            textArea.style.position = "fixed"; textArea.style.left = "-999999px";
+            document.body.appendChild(textArea); textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); showCopyAlert(); } catch (err) {}
             textArea.remove();
         }
     }
-
-    // Показ красивого алерта
     function showCopyAlert() {
         const alert = document.getElementById('copyAlert');
-        if (!alert) return;
-        alert.classList.add('show');
-        setTimeout(() => alert.classList.remove('show'), 2000); // прячем через 2 секунды
-    }
-
-    // Логика кнопки покупки
-    function handleBuyClick() {
-        const product = {
-            id: "{{ page.sku }}", // Используем SKU, так как системный ID может быть перезаписан
-            name: {{ page.name | jsonify }}, // Безопасная передача названия
-            price: "{{ page.price }}",
-            images: allProductImages
-        };
-        if (typeof window.openOrderForm === 'function') {
-            window.openOrderForm(product);
-        }
+        if (!alert) return; alert.classList.add('show'); setTimeout(() => alert.classList.remove('show'), 2000);
     }
 </script>
-<!-- Meta Pixel ViewContent Event -->
+
 <script>
   if (typeof fbq === 'function') {
-    // Берем цену из Jekyll и очищаем её от "₾" и пробелов, чтобы получить чистое число
     var rawPrice = "{{ page.price }}"; 
     var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
-
-    fbq('track', 'ViewContent', {
-      content_ids: ['{{ page.sku }}'], // Используем SKU, так как вы передаете его при покупке
-      content_name: {{ page.name | jsonify }}, // jsonify безопасно экранирует кавычки в названии
-      content_type: 'product',
-      value: numericPrice,
-      currency: 'GEL'
-    });
+    fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
   }
 </script>
