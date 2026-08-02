@@ -170,27 +170,26 @@ title: "მთავარი"
     .select-option { padding: 1rem 1.4rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #475569; }
     @media (hover: hover) { .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; } }
 
-    /* ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ И ФЕЙДЫ */
+    /* ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ (ОТЛАЖЕННЫЙ) */
     .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
     .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
     
-    /* Фейды правильного цвета (#f8fafc) */
-    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
-    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
+    /* Убираем фейды, они ломают вид и перекрывают контент */
+    .sim-fade-left, .sim-fade-right { display: none !important; }
     
     .sim-arrow { 
-        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
-        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; 
+        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
         cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #0f172a; transition: all 0.3s; outline: none; 
     }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); } }
     .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
-    .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
+    .sim-arrow-left { left: -22px; } .sim-arrow-right { right: -22px; }
     @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
     
     /* Идеальная остановка скролла на товаре (Snap) */
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0; 
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 2px; 
         scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
         scroll-snap-type: x mandatory;
     }
@@ -198,7 +197,13 @@ title: "მთავარი"
     
     .similar-scroll-container .product-card { 
         flex: 0 0 280px; opacity: 1; transform: translateY(0); animation: none; 
-        scroll-snap-align: start; 
+        scroll-snap-align: start; /* Остановка ровно по краю карточки */
+    }
+
+    @media (max-width: 640px) {
+        .similar-scroll-container { padding: 1rem 2px; gap: 0.8rem; }
+        .similar-scroll-container .product-card { flex: 0 0 240px; }
+        .sim-arrow { display: none !important; }
     }
 
     @media (min-width: 641px) {
@@ -438,7 +443,7 @@ title: "მთავარი"
             const card = scroll.querySelector('.product-card');
             if(card) {
                 const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap; // Точный сдвиг для snap
+                return card.offsetWidth + gap; // Сдвиг ровно на 1 карточку
             }
             return 304;
         };
