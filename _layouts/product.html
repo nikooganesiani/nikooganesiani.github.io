@@ -27,7 +27,6 @@ layout: default
   {% endfor %}
 {% endif %}
 
-
 <style>
     .product-view-container { 
         max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; 
@@ -43,6 +42,13 @@ layout: default
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     @keyframes checkmarkScale { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.3); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* Ошибка встроенной формы заказа */
+    .form-error-msg {
+        display: none; color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center;
+        background: #fef2f2; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
+    }
 
     .top-navigation { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     .breadcrumbs { 
@@ -182,12 +188,13 @@ layout: default
 
     .desc-text { line-height: 1.8; color: #475569; font-size: 1.05rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
-    /* Дизайн скролл-секции (Похожие и Недавно просмотренные) */
+    /* Дизайн скролл-секции (ИСПРАВЛЕННЫЙ ФЕЙД И СНЭППИНГ) */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
     
-    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
-    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
+    /* Фейды правильного цвета (#f8fafc) */
+    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
     
     .sim-arrow { 
         display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
@@ -199,12 +206,15 @@ layout: default
     .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
     @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
 
+    /* Идеальная остановка скролла на товаре (Snap) */
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 0; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0; 
+        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
+        scroll-snap-type: x mandatory;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
-    /* Переиспользуем стили карточек из Index */
+    /* Карточки в скролле */
     .product-card {
         background: white; border-radius: 2.2rem; overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -242,7 +252,11 @@ layout: default
     .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f1f5f9; }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    .similar-scroll-container .product-card { flex: 0 0 280px; }
+    /* Остановка скролла для карточек */
+    .similar-scroll-container .product-card { 
+        flex: 0 0 280px; 
+        scroll-snap-align: start; 
+    }
 
     /* Zoom Modal */
     .image-zoom-modal {
@@ -285,7 +299,7 @@ layout: default
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
 
-        .similar-scroll-container .product-card { flex: 0 0 220px; border-radius: 1.2rem; }
+        .similar-scroll-container .product-card { flex: 0 0 240px; border-radius: 1.2rem; }
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
         .similar-scroll-container .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
@@ -604,7 +618,6 @@ layout: default
         {% endunless %}
     {% endfor %}
 
-    // Глобальные функции для рендера карточек в скролле (Похожие и Недавно просмотренные)
     window.createProductCardHTML = function(p) {
         let imgs = p.images || (p.image ? [p.image] : []);
         imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
@@ -658,7 +671,6 @@ layout: default
                     <div class="product-price">${String(p.price).replace(/₾/g, '')}₾</div>
                     ${p.oldPrice ? `<span class="old-price">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
                 </div>
-                <!-- В скролл блоках остается вызов модалки для удобства -->
                 <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     შეკვეთა
@@ -706,7 +718,7 @@ layout: default
             const card = scroll.querySelector('.product-card');
             if(card) {
                 const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap;
+                return card.offsetWidth + gap; // Точный сдвиг для snap
             }
             return 304;
         };
@@ -716,39 +728,125 @@ layout: default
         setTimeout(updateArrows, 150);
     };
 
-    // Отправка формы сразу со страницы
-    window.handleInlineOrder = function(e) {
+    // ФОРМАТИРОВАНИЕ НОМЕРА В ИНЛАЙН ФОРМЕ
+    window.formatInlinePhone = function(input) {
+        let value = input.value.replace(/\s/g, '');
+        if (value.startsWith('+995')) value = value.substring(4);
+        value = value.replace(/\D/g, '');
+        if (value.length > 9) value = value.slice(0, 9);
+        let formatted = '';
+        for (let i = 0; i < value.length; i++) {
+            if (i === 3 || i === 5 || i === 7) formatted += ' ';
+            formatted += value[i];
+        }
+        input.value = formatted;
+    };
+
+    // НАСТОЯЩАЯ ОТПРАВКА ИНЛАЙН-ФОРМЫ
+    window.handleInlineOrder = async function(e) {
         e.preventDefault();
         const btn = document.getElementById('submitOrderBtn');
         const icon = document.getElementById('orderBtnIcon');
         const text = document.getElementById('orderBtnText');
-        const name = document.getElementById('orderName').value;
-        const phone = document.getElementById('orderPhone').value;
+        const errorDiv = document.getElementById('inlineFormError');
+        
+        const nameInput = document.getElementById('orderName');
+        const phoneInput = document.getElementById('orderPhone');
+        const phoneWrapper = document.getElementById('orderPhoneWrapper');
+        
+        const name = nameInput.value.trim();
+        let phoneRaw = phoneInput.value.replace(/\s/g, '');
+        
+        const showError = (msg, el) => {
+            errorDiv.textContent = msg;
+            errorDiv.style.display = 'block';
+            if(el) el.style.borderColor = '#ef4444';
+            setTimeout(() => { 
+                errorDiv.style.display = 'none'; 
+                if(el) {
+                    if (el.id === 'orderPhoneWrapper') el.style.borderColor = '#f1f5f9';
+                    else el.style.borderColor = '#e2e8f0';
+                }
+            }, 3500);
+        };
 
+        if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", nameInput); return; }
+        if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
+
+        const fullPhone = '+995' + phoneRaw;
+        
         btn.style.pointerEvents = 'none';
         btn.style.opacity = '0.8';
         text.innerText = 'იგზავნება...';
+        icon.outerHTML = `<div class="spinner" id="orderBtnIcon" style="width:20px;height:20px;border-width:2px;margin:0; border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>`;
         
-        // ЗДЕСЬ ДОЛЖНА БЫТЬ ВАША ЛОГИКА ОТПРАВКИ ЗАКАЗА ЧЕРЕЗ FETCH. 
-        // Сейчас используется таймер-симуляция.
-        setTimeout(() => {
+        const product = {
+            name: {{ page.name | jsonify }},
+            price: "{{ page.price }}",
+            id: "{{ page.sku }}"
+        };
+
+        try {
+            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+
+            const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+            
+            const response = await fetch(targetWorker, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: name, 
+                    phone: fullPhone, 
+                    product: product.name, 
+                    price: product.price,
+                    product_id: product.id,
+                    event_id: eventId
+                })
+            });
+
+            if (!response.ok) throw new Error('Network error');
+
+            // Tracking
+            if (typeof fbq === 'function') {
+                fbq('track', 'Purchase', {
+                    value: numericPrice,
+                    currency: 'GEL',
+                    content_name: product.name,
+                    content_ids: product.id ? [String(product.id)] : [],
+                    content_type: 'product',
+                    num_items: 1
+                }, { eventID: eventId });
+            }
+
+            if (typeof window.sendCapiEvent === 'function') {
+                window.sendCapiEvent('Purchase', {
+                    value: numericPrice,
+                    currency: 'GEL',
+                    content_name: product.name,
+                    content_ids: product.id ? [String(product.id)] : [],
+                    content_type: 'product'
+                }, eventId); 
+            }
+
+            // Success UI (Кнопка зеленеет + галочка)
+            const newIcon = document.getElementById('orderBtnIcon');
             btn.style.opacity = '1';
             btn.style.background = '#16a34a';
             btn.style.boxShadow = '0 4px 15px rgba(22, 163, 74, 0.4)';
-            
-            icon.outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: checkmarkScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            newIcon.outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: checkmarkScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             text.innerText = 'შეკვეთა მიღებულია';
             
-            // Пиксель Facebook на успешный заказ
-            if (typeof fbq === 'function') {
-                fbq('track', 'Purchase', {
-                    value: parseFloat("{{ page.price }}".replace(/[^\d.]/g, '')) || 0,
-                    currency: 'GEL',
-                    content_ids: ['{{ page.sku }}'],
-                    content_type: 'product'
-                });
-            }
-        }, 800);
+            // Если вы хотите, вы можете тут же вызвать модалку подтверждения из default.html
+            setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 1500);
+
+        } catch (error) {
+            console.error(error);
+            showError("შეცდომა სერვერზე. გთხოვთ სცადოთ მოგვიანებით.");
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            text.innerText = 'შეკვეთა';
+            document.getElementById('orderBtnIcon').outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`;
+        }
     };
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -776,7 +874,7 @@ layout: default
             const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
             const actualProductId = currentProduct ? currentProduct.id : null;
             
-            // === ЗАПИСЬ "НЕДАВНО ПРОСМОТРЕННЫХ" В LOCALSTORAGE ===
+            // ЗАПИСЬ "НЕДАВНО ПРОСМОТРЕННЫХ"
             if (actualProductId) {
                 let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
                 recentIds = recentIds.filter(id => id !== actualProductId); 
@@ -799,8 +897,12 @@ layout: default
                 if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (btnContainer) btnContainer.innerHTML = `
                 <form id="inlineOrderForm" onsubmit="handleInlineOrder(event)" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
-                    <input type="text" id="orderName" placeholder="სახელი" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
-                    <input type="tel" id="orderPhone" placeholder="ტელეფონის ნომერი" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                    <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0;"></div>
+                    <input type="text" id="orderName" placeholder="სახელი" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s; color:#0f172a;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                    <div class="phone-wrapper" id="orderPhoneWrapper" style="display: flex; align-items: stretch; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; overflow: hidden; transform: translateZ(0); margin-bottom: 0;">
+                        <span class="phone-prefix" style="display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 1.2rem 0 0 1.2rem;">+995</span>
+                        <input type="tel" id="orderPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel" oninput="formatInlinePhone(this)" style="border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 1.2rem 1.2rem 0 !important; outline:none; font-size: 1rem; font-weight: 600; color:#0f172a;" onfocus="document.getElementById('orderPhoneWrapper').style.borderColor='#2563eb'; document.getElementById('orderPhoneWrapper').style.background='white'; document.getElementById('orderPhoneWrapper').style.boxShadow='0 0 0 4px rgba(37, 99, 235, 0.1)';" onblur="document.getElementById('orderPhoneWrapper').style.borderColor='#f1f5f9'; document.getElementById('orderPhoneWrapper').style.background='#f8fafc'; document.getElementById('orderPhoneWrapper').style.boxShadow='none';">
+                    </div>
                     <button type="submit" id="submitOrderBtn" class="btn-alta-order">
                         <svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="orderBtnText">შეკვეთა</span>
@@ -827,7 +929,7 @@ layout: default
             const recentScroll = document.getElementById('recentScroll');
             if (recentSection && recentScroll) {
                 let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-                recentIds = recentIds.filter(id => id !== actualProductId); // Скрываем текущий
+                recentIds = recentIds.filter(id => id !== actualProductId); 
                 const recentProducts = recentIds.map(id => data.products.find(p => p.id === id)).filter(Boolean);
                 
                 if (recentProducts.length > 0) {
