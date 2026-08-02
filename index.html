@@ -18,7 +18,7 @@ title: "მთავარი"
     
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* Хлебные крошки (Обновленный дизайн) */
+    /* Хлебные крошки */
     .breadcrumbs {
         margin: 1.5rem 0 1rem;
         display: flex; gap: 0.6rem; list-style: none; padding: 0; flex-wrap: wrap; align-items: center;
@@ -170,11 +170,13 @@ title: "მთავარი"
     .select-option { padding: 1rem 1.4rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #475569; }
     @media (hover: hover) { .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; } }
 
-    /* CSS для горизонтальных скроллов (Недавно просмотренные) */
+    /* ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ И ФЕЙДЫ */
     .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
     .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
-    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
-    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
+    
+    /* Фейды правильного цвета (#f8fafc) */
+    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); pointer-events: none; z-index: 2; }
     
     .sim-arrow { 
         display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
@@ -186,12 +188,18 @@ title: "მთავარი"
     .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
     @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
     
+    /* Идеальная остановка скролла на товаре (Snap) */
     .similar-scroll-container { 
-        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 0; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1.5rem 0; 
+        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
+        scroll-snap-type: x mandatory;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
     
-    .similar-scroll-container .product-card { flex: 0 0 280px; opacity: 1; transform: translateY(0); animation: none; }
+    .similar-scroll-container .product-card { 
+        flex: 0 0 280px; opacity: 1; transform: translateY(0); animation: none; 
+        scroll-snap-align: start; 
+    }
 
     @media (min-width: 641px) {
         .filters { margin-right: auto; }
@@ -227,7 +235,7 @@ title: "მთავარი"
 
         .slider-arrow, .similar-scroll-container .slider-arrow { display: none !important; }
         
-        .similar-scroll-container .product-card { flex: 0 0 220px; }
+        .similar-scroll-container .product-card { flex: 0 0 240px; }
     }
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -330,7 +338,6 @@ title: "მთავარი"
 
     const catalogStructure = window.CATALOG_STRUCTURE || {};
 
-    // Глобальные функции для рендера карточек (чтобы использовать и для каталога и для скролла)
     window.createProductCardHTML = function(p) {
         let imgs = p.images || (p.image ? [p.image] : []);
         imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
@@ -431,7 +438,7 @@ title: "მთავარი"
             const card = scroll.querySelector('.product-card');
             if(card) {
                 const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap;
+                return card.offsetWidth + gap; // Точный сдвиг для snap
             }
             return 304;
         };
