@@ -41,8 +41,6 @@ layout: default
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes checkmarkScale { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.3); } 100% { transform: scale(1); opacity: 1; } }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     /* Ошибка встроенной формы заказа */
     .form-error-msg {
@@ -185,56 +183,64 @@ layout: default
     @media (hover: hover) { .spec-item-row:hover { background: #f1f5f9; } }
     .spec-name-label { flex: 1; color: #64748b; font-size: 0.95rem; font-weight: 600; }
     .spec-value-text { flex: 1; color: #1e293b; font-weight: 800; font-size: 0.95rem; text-align: right; }
-
     .desc-text { line-height: 1.8; color: #475569; font-size: 1.05rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
-    /* Дизайн скролл-секции ИСПРАВЛЕННЫЙ */
+    /* ==============================================================
+       ПОЛНОСТЬЮ ПЕРЕПИСАННАЯ СИСТЕМА КАРУСЕЛЕЙ (БЕЗ БАГОВ) 
+       ============================================================== */
+    
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     
     .similar-nav-section { 
-        position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; 
-        padding: 0 10px; /* Отступ от краев, чтобы стрелки не вылезали за экран */
+        position: relative; 
+        z-index: 20; 
+        width: 100%; 
     }
     
-    .sim-fade-left { 
-        position: absolute; left: 10px; top: 0; bottom: 0; width: 60px; 
-        background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); 
-        pointer-events: none; z-index: 2; border-radius: 2.2rem 0 0 2.2rem;
+    /* Контейнер карусели */
+    .similar-scroll-container { 
+        display: flex; 
+        gap: 24px; 
+        padding: 1.5rem 0; /* Идеальное выравнивание с краями контента, без сдвигов */
+        overflow-x: auto; 
+        scroll-snap-type: x mandatory; 
+        scroll-behavior: smooth;
+        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
     }
-    .sim-fade-right { 
-        position: absolute; right: 10px; top: 0; bottom: 0; width: 60px; 
-        background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0) 100%); 
-        pointer-events: none; z-index: 2; border-radius: 0 2.2rem 2.2rem 0;
+    .similar-scroll-container::-webkit-scrollbar { display: none; }
+
+    /* Карточки в скролле - математически идеальная ширина */
+    .similar-scroll-container .product-card {
+        /* 4 карточки в ряд (100% ширины минус 3 отступа по 24px) */
+        flex: 0 0 calc(25% - 18px); 
+        scroll-snap-align: start; 
+        min-width: 0;
+        background: white; border-radius: 2.2rem; overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: 100%;
     }
+    @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
     
+    /* Фейды */
+    .sim-fade {
+        position: absolute; top: 0; bottom: 0; width: 80px; 
+        pointer-events: none; z-index: 5; transition: opacity 0.4s ease;
+        opacity: 0; /* Управляется JS */
+    }
+    .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
+    .sim-fade-right { right: 0; background: linear-gradient(to left, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
+    
+    /* Стрелки */
     .sim-arrow { 
-        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; 
+        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; 
         background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
         cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #0f172a; transition: all 0.3s; outline: none; 
     }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); } }
     .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
-    .sim-arrow-left { left: 15px; } .sim-arrow-right { right: 15px; }
-    @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
+    .sim-arrow-left { left: 10px; } .sim-arrow-right { right: 10px; }
 
-    /* Идеальная остановка скролла на товаре (Snap) */
-    .similar-scroll-container { 
-        display: flex; overflow-x: auto; 
-        gap: 1.5rem; padding: 1.5rem 60px; /* Важно: padding 60px чтобы товары не прятались под фейдами в начале/конце */
-        scroll-padding-inline: 60px; /* Важно: выравнивает snap-точку ровно за фейдом */
-        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
-        scroll-snap-type: x mandatory;
-    }
-    .similar-scroll-container::-webkit-scrollbar { display: none; }
-
-    /* Карточки в скролле */
-    .product-card {
-        background: white; border-radius: 2.2rem; overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: 100%;
-    }
-    @media (hover: hover) { .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
-    
+    /* Внутренности карточки */
     .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; height: auto; overflow: hidden; background: #ffffff; border-radius: 2.2rem 2.2rem 0 0; border-bottom: 1px solid #f1f5f9; }
     .product-image-wrapper img { border-radius: 0; }
     
@@ -265,11 +271,6 @@ layout: default
     .slider-arrow:active { transform: translateY(-50%) scale(0.85) !important; background: #f1f5f9; }
     .arrow-prev { left: 12px; } .arrow-next { right: 12px; }
 
-    /* Остановка скролла для карточек */
-    .similar-scroll-container .product-card { 
-        flex: 0 0 280px; 
-        scroll-snap-align: start; 
-    }
 
     /* Zoom Modal */
     .image-zoom-modal {
@@ -292,6 +293,7 @@ layout: default
     .zoom-arrow:active { transform: translateY(-50%) scale(0.9); }
     .zoom-prev { left: 20px; } .zoom-next { right: 20px; }
 
+    /* РЕСПОНСИВНОСТЬ */
     @media (max-width: 1024px) {
         .product-grid { grid-template-columns: 1fr; gap: 1.5rem; }
         .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; }
@@ -306,18 +308,22 @@ layout: default
         .zoom-arrow { width: 40px; height: 40px; }
         .zoom-prev { left: 10px; } .zoom-next { right: 10px; }
 
-        /* ОТКЛЮЧЕНИЕ СКРОЛЛА КАРТИНОК В КАРТОЧКЕ ДЛЯ ТЕЛЕФОНОВ (BUG 2) */
+        /* Идеальные 3 в ряд для планшетов */
+        .similar-scroll-container { gap: 16px; padding: 1rem 0; }
+        .similar-scroll-container .product-card {
+            flex: 0 0 calc(33.333% - 10.66px); /* 3 карточки */
+        }
+        
+        /* Исправление блокировки свайпа: отключаем внутренний скролл */
         .similar-scroll-container .product-images-track {
             overflow-x: hidden !important;
             scroll-snap-type: none !important;
-            touch-action: pan-y !important; /* Пропускаем свайп родительскому контейнеру */
         }
+        .similar-scroll-container .slider-arrow,
         .similar-scroll-container .carousel-dots {
             display: none !important;
         }
-        .similar-scroll-container .slider-arrow {
-            display: none !important;
-        }
+        .sim-arrow { display: none !important; } /* Скрываем стрелки, оставляем только свайп */
     }
     
     @media (max-width: 640px) {
@@ -325,11 +331,14 @@ layout: default
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
 
-        .similar-nav-section { padding: 0; }
-        .similar-scroll-container { padding: 1rem 1.5rem; scroll-padding-inline: 1.5rem; gap: 1rem; }
-        .sim-fade-left, .sim-fade-right { display: none; } /* Убираем фейды на телефонах для чистого свайпа */
+        /* Идеальные 2 в ряд для телефонов */
+        .similar-scroll-container { gap: 12px; padding: 1rem 0; }
+        .similar-scroll-container .product-card {
+            flex: 0 0 calc(50% - 6px); /* Ровно 2 карточки */
+            border-radius: 1.2rem;
+        }
+        .sim-fade { width: 30px; }
 
-        .similar-scroll-container .product-card { flex: 0 0 240px; border-radius: 1.2rem; }
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
         .similar-scroll-container .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
@@ -558,9 +567,9 @@ layout: default
         <h2 class="section-title">მსგავსი პროდუქტები</h2>
         <div class="similar-nav-section">
             <button class="sim-arrow sim-arrow-left" id="simArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
-            <div class="sim-fade-left"></div>
+            <div class="sim-fade sim-fade-left" id="simFadeLeft"></div>
             <div class="similar-scroll-container" id="similarScroll"></div>
-            <div class="sim-fade-right"></div>
+            <div class="sim-fade sim-fade-right" id="simFadeRight"></div>
             <button class="sim-arrow sim-arrow-right" id="simArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
@@ -570,9 +579,9 @@ layout: default
         <h2 class="section-title">ბოლოს ნანახი</h2>
         <div class="similar-nav-section">
             <button class="sim-arrow sim-arrow-left" id="recentArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
-            <div class="sim-fade-left"></div>
+            <div class="sim-fade sim-fade-left" id="recentFadeLeft"></div>
             <div class="similar-scroll-container" id="recentScroll"></div>
-            <div class="sim-fade-right"></div>
+            <div class="sim-fade sim-fade-right" id="recentFadeRight"></div>
             <button class="sim-arrow sim-arrow-right" id="recentArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
@@ -724,55 +733,59 @@ layout: default
         track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     };
 
-    window.initSliderArrows = function(scrollId, leftBtnId, rightBtnId) {
+    /* Идеальная система Карусели */
+    window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId, fadeRightId) {
         const scroll = document.getElementById(scrollId);
         const leftBtn = document.getElementById(leftBtnId);
         const rightBtn = document.getElementById(rightBtnId);
-        if(!scroll || !leftBtn || !rightBtn) return;
+        const fadeLeft = document.getElementById(fadeLeftId);
+        const fadeRight = document.getElementById(fadeRightId);
 
-        const updateArrows = () => {
-            if(scroll.scrollWidth > scroll.clientWidth) {
-                leftBtn.classList.add('visible'); 
-                rightBtn.classList.add('visible');
-                
-                // Управляем прозрачностью и кликабельностью чтобы не было багов с попыткой клика в край
-                if (scroll.scrollLeft > 10) {
-                    leftBtn.style.opacity = '1'; leftBtn.style.pointerEvents = 'auto';
-                } else {
-                    leftBtn.style.opacity = '0.3'; leftBtn.style.pointerEvents = 'none';
-                }
-                
-                if (scroll.scrollLeft < (scroll.scrollWidth - scroll.clientWidth - 10)) {
-                    rightBtn.style.opacity = '1'; rightBtn.style.pointerEvents = 'auto';
-                } else {
-                    rightBtn.style.opacity = '0.3'; rightBtn.style.pointerEvents = 'none';
-                }
-            } else {
-                leftBtn.classList.remove('visible'); 
-                rightBtn.classList.remove('visible');
+        if(!scroll) return;
+
+        const updateUI = () => {
+            const maxScrollLeft = scroll.scrollWidth - scroll.clientWidth;
+            const currentScroll = scroll.scrollLeft;
+
+            const isAtStart = currentScroll <= 5;
+            const isAtEnd = currentScroll >= (maxScrollLeft - 5);
+
+            // Если контент не влезает в контейнер (нет нужды в скролле)
+            if (scroll.scrollWidth <= scroll.clientWidth + 5) {
+                if (leftBtn) leftBtn.style.display = 'none';
+                if (rightBtn) rightBtn.style.display = 'none';
+                if (fadeLeft) fadeLeft.style.opacity = '0';
+                if (fadeRight) fadeRight.style.opacity = '0';
+                return;
             }
-        };
-        
-        scroll.addEventListener('scroll', updateArrows);
-        window.addEventListener('resize', updateArrows);
 
+            if (leftBtn) leftBtn.style.display = isAtStart ? 'none' : 'flex';
+            if (fadeLeft) fadeLeft.style.opacity = isAtStart ? '0' : '1';
+
+            if (rightBtn) rightBtn.style.display = isAtEnd ? 'none' : 'flex';
+            if (fadeRight) fadeRight.style.opacity = isAtEnd ? '0' : '1';
+        };
+
+        scroll.addEventListener('scroll', updateUI, { passive: true });
+        window.addEventListener('resize', updateUI);
+        
+        requestAnimationFrame(() => {
+            updateUI();
+            setTimeout(updateUI, 200); 
+        });
+
+        // Скроллит ровно на 1 карточку
         const getScrollAmount = () => {
             const card = scroll.querySelector('.product-card');
-            if(card) {
+            if (card) {
                 const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap; // Сдвиг ровно на 1 карточку
+                return card.offsetWidth + gap; 
             }
-            return 304;
+            return 300;
         };
 
-        leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
-        rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
-        
-        // requestAnimationFrame гарантирует, что блок (который изначально display: none) 
-        // уже отрендерился и получил размеры до запуска функции, что решает проблему 2го блока
-        requestAnimationFrame(() => {
-            setTimeout(updateArrows, 150);
-        });
+        if(leftBtn) leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
+        if(rightBtn) rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
     };
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -847,7 +860,7 @@ layout: default
             if(similar.length > 0) {
                 document.getElementById('similarSection').style.display = 'block';
                 document.getElementById('similarScroll').innerHTML = similar.map(p => window.createProductCardHTML(p)).join('');
-                window.initSliderArrows('similarScroll', 'simArrowLeft', 'simArrowRight');
+                window.initCarouselSystem('similarScroll', 'simArrowLeft', 'simArrowRight', 'simFadeLeft', 'simFadeRight');
             }
 
             // === НЕДАВНО ПРОСМОТРЕННЫЕ ===
@@ -861,7 +874,7 @@ layout: default
                 if (recentProducts.length > 0) {
                     recentSection.style.display = 'block';
                     recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p)).join('');
-                    window.initSliderArrows('recentScroll', 'recentArrowLeft', 'recentArrowRight');
+                    window.initCarouselSystem('recentScroll', 'recentArrowLeft', 'recentArrowRight', 'recentFadeLeft', 'recentFadeRight');
                 }
             }
         });
