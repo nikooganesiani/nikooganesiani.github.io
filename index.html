@@ -18,28 +18,25 @@ title: "მთავარი"
     
     .container { max-width: 1280px; margin: 0 auto; padding: 0rem 1.5rem; animation: fadeIn 0.6s ease; }
 
-    /* Хлебные крошки */
+    /* Хлебные крошки (Обновленный дизайн) */
     .breadcrumbs {
         margin: 1.5rem 0 1rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+        display: flex; gap: 0.6rem; list-style: none; padding: 0; flex-wrap: wrap; align-items: center;
+        background: white; max-width: 100%; box-sizing: border-box; padding: 0.8rem 1.5rem; border-radius: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
+        font-size: 0.85rem; font-weight: 700; color: #64748b;
     }
-    .crumb-link {
-        color: #94a3b8; text-decoration: none; transition: 0.2s; cursor: pointer;
-    }
-    .crumb-link:hover { color: #2563eb; }
-    .crumb-separator { color: #cbd5e1; font-size: 0.8rem; }
-    .crumb-current { color: #0f172a; }
-    .crumb-count { color: #2563eb; margin-left: 0.3rem; }
+    .breadcrumbs li { display: flex; align-items: center; }
+    .breadcrumbs a { text-decoration: none; color: #64748b; transition: color 0.3s ease; display: flex; align-items: center; gap: 6px; outline: none; }
+    @media (hover: hover) { .breadcrumbs a:hover { color: #2563eb; } }
+    .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; margin: 0 -2px; }
+    .breadcrumbs .separator svg { width: 14px; height: 14px; stroke-width: 3; }
+    .breadcrumbs .current { color: #0f172a; }
+    .crumb-count { color: #2563eb; margin-left: 0.3rem; font-weight: 700; }
 
     /* ФИЛЬТРЫ */
     .filters-bar {
-        display: none; /* Скрыты по умолчанию, включаются через JS */
+        display: none;
         flex-wrap: wrap; gap: 1rem; align-items: center;
         margin-top: 0.5rem; margin-bottom: 2rem; background: white; padding: 1.2rem; border-radius: 1.5rem;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); border: 1px solid #f1f5f9;
@@ -74,8 +71,8 @@ title: "მთავარი"
     .product-card {
         background: white; border-radius: 2.2rem; overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex; flex-direction: column; opacity: 0; transform: translateY(30px);
-        animation: fadeUp 0.5s ease forwards; border: 1px solid #f1f5f9; height: 100%;
+        display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: 100%;
+        opacity: 0; transform: translateY(30px); animation: fadeUp 0.5s ease forwards;
     }
     @media (hover: hover) { .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
     
@@ -88,7 +85,6 @@ title: "მთავარი"
     }
     .product-image-wrapper img { border-radius: 0; }
     
-    /* Нативная плавная галерея фотографий */
     .product-images-track { 
         display: flex; width: 100%; height: 100%; 
         overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth;
@@ -97,24 +93,12 @@ title: "მთავარი"
     .product-images-track::-webkit-scrollbar { display: none; }
     .product-slide { 
         flex: 0 0 100%; width: 100%; height: 100%; 
-        scroll-snap-align: start;
-        padding: 0; display: flex; align-items: center; justify-content: center;
+        scroll-snap-align: start; padding: 0; display: flex; align-items: center; justify-content: center;
     }
-    .product-image { 
-        width: 100%; height: 100%; object-fit: cover; 
-    }
+    .product-image { width: 100%; height: 100%; object-fit: cover; }
     
-    /* Точки карусели */
-    .carousel-dots {
-        position: absolute; bottom: 12px; left: 0; right: 0; 
-        display: flex; justify-content: center; gap: 6px; 
-        z-index: 10; pointer-events: none;
-    }
-    .dot {
-        width: 7px; height: 7px; border-radius: 50%; 
-        background: rgba(15, 23, 42, 0.25); 
-        backdrop-filter: blur(2px); transition: all 0.3s ease;
-    }
+    .carousel-dots { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 10; pointer-events: none; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(15, 23, 42, 0.25); backdrop-filter: blur(2px); transition: all 0.3s ease; }
     .dot.active { background: #2563eb; transform: scale(1.3); }
 
     .product-info { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
@@ -149,9 +133,7 @@ title: "მთავარი"
         display: flex; align-items: center; justify-content: center; gap: 8px; outline: none;
         box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
     }
-    @media (hover: hover) {
-        .btn-order:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.2); }
-    }
+    @media (hover: hover) { .btn-order:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(37,99,235,0.3); } }
     .btn-order:active { transform: scale(0.96); box-shadow: none; }
 
     .slider-arrow {
@@ -188,6 +170,29 @@ title: "მთავარი"
     .select-option { padding: 1rem 1.4rem; font-size: 0.9rem; cursor: pointer; transition: 0.2s; font-weight: 600; color: #475569; }
     @media (hover: hover) { .select-option:hover { background: #f8fafc; color: #2563eb; padding-left: 1.8rem; } }
 
+    /* CSS для горизонтальных скроллов (Недавно просмотренные) */
+    .section-title { font-size: 1.8rem; margin-bottom: 1.5rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
+    .similar-nav-section { position: relative; z-index: 20; max-width: 1280px; margin: 0 auto; }
+    .sim-fade-left { position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
+    .sim-fade-right { position: absolute; right: 0; top: 0; bottom: 0; width: 60px; background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); pointer-events: none; z-index: 2; }
+    
+    .sim-arrow { 
+        display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; 
+        background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+        cursor: pointer; z-index: 10; align-items: center; justify-content: center; color: #0f172a; transition: all 0.3s; outline: none; 
+    }
+    @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; transform: translateY(-50%) scale(1.1); } }
+    .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .sim-arrow-left { left: -15px; } .sim-arrow-right { right: -15px; }
+    @media (min-width: 1024px) { .sim-arrow.visible { display: flex; } }
+    
+    .similar-scroll-container { 
+        display: flex; gap: 1.5rem; overflow-x: auto; padding: 1rem 0; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch;
+    }
+    .similar-scroll-container::-webkit-scrollbar { display: none; }
+    
+    .similar-scroll-container .product-card { flex: 0 0 280px; opacity: 1; transform: translateY(0); animation: none; }
+
     @media (min-width: 641px) {
         .filters { margin-right: auto; }
     }
@@ -204,23 +209,25 @@ title: "მთავარი"
         
         .catalog { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-bottom: 2rem; }
 
-        .product-card { border-radius: 1.2rem; }
-        .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
-        .product-info { padding: 0.8rem; }
+        .product-card, .similar-scroll-container .product-card { border-radius: 1.2rem; }
+        .product-image-wrapper, .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
+        .product-info, .similar-scroll-container .product-info { padding: 0.8rem; }
         
-        .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
-        .product-name { font-size: 0.8rem; line-height: 1.3; }
+        .product-name-box, .similar-scroll-container .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
+        .product-name, .similar-scroll-container .product-name { font-size: 0.8rem; line-height: 1.3; }
 
-        .product-price-container { margin-bottom: 0.8rem; padding: 0; flex-direction: column; align-items: flex-start; gap: 0px; }
-        .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
-        .old-price { font-size: 0.75rem; margin-bottom: 2px; }
+        .product-price-container, .similar-scroll-container .product-price-container { margin-bottom: 0.8rem; padding: 0; flex-direction: column; align-items: flex-start; gap: 0px; }
+        .product-price, .similar-scroll-container .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
+        .old-price, .similar-scroll-container .old-price { font-size: 0.75rem; margin-bottom: 2px; }
 
-        .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
-        .btn-order svg { width: 16px; height: 16px; }
+        .btn-order, .similar-scroll-container .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
+        .btn-order svg, .similar-scroll-container .btn-order svg { width: 16px; height: 16px; }
 
-        .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
+        .discount-badge, .similar-scroll-container .discount-badge { top: 8px; left: 8px; padding: 4px 6px; font-size: 0.7rem; border-radius: 6px; }
 
-        .slider-arrow { display: none !important; }
+        .slider-arrow, .similar-scroll-container .slider-arrow { display: none !important; }
+        
+        .similar-scroll-container .product-card { flex: 0 0 220px; }
     }
     
     @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
@@ -233,7 +240,7 @@ title: "მთავარი"
     <div class="container">
         
         <!-- ХЛЕБНЫЕ КРОШКИ -->
-        <div id="breadcrumbs" class="breadcrumbs"></div>
+        <ul id="breadcrumbs" class="breadcrumbs" style="display:none;"></ul>
 
         <!-- ФИЛЬТРЫ -->
         <div class="filters-bar" id="filtersBar">
@@ -280,6 +287,19 @@ title: "მთავარი"
                 მეტის ნახვა
             </button>
         </div>
+        
+        <!-- БЛОК БОЛОС НАНАХИ (НЕДАВНО ПРОСМОТРЕННЫЕ) -->
+        <div class="recently-viewed-section" id="recentlyViewedSection" style="display: none; margin-bottom: 3rem;">
+            <h2 class="section-title">ბოლოს ნანახი</h2>
+            <div class="similar-nav-section">
+                <button class="sim-arrow sim-arrow-left" id="recentArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+                <div class="sim-fade-left"></div>
+                <div class="similar-scroll-container" id="recentScroll"></div>
+                <div class="sim-fade-right"></div>
+                <button class="sim-arrow sim-arrow-right" id="recentArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            </div>
+        </div>
+
     </div>
 </main>
 
@@ -287,7 +307,6 @@ title: "მთავარი"
     let currentPage = 1;
     const itemsPerPage = 16;
     
-    // Получаем параметры из URL
     const urlParams = new URLSearchParams(window.location.search);
     const searchQ = urlParams.get('search');
     const currentCategory = urlParams.get('category') || 'all';
@@ -311,9 +330,117 @@ title: "მთავარი"
 
     const catalogStructure = window.CATALOG_STRUCTURE || {};
 
-    // ==========================================
-    // ЛОГИКА ОТРИСОВКИ КАТАЛОГА (ФИЛЬТРАЦИЯ)
-    // ==========================================
+    // Глобальные функции для рендера карточек (чтобы использовать и для каталога и для скролла)
+    window.createProductCardHTML = function(p) {
+        let imgs = p.images || (p.image ? [p.image] : []);
+        imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
+        if (imgs.length === 0) imgs.push('/img/no-image.png');
+        
+        const hasMultipleImages = imgs.length > 1;
+        let discountBadge = '';
+        
+        if (p.oldPrice) {
+            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
+            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                discountBadge = `<div class="discount-badge">-${percent}%</div>`;
+            }
+        }
+        
+        const productDataAttr = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        
+        let dotsHtml = '';
+        if (hasMultipleImages) {
+            dotsHtml = `<div class="carousel-dots" id="dots-${p.id}">
+                ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
+            </div>`;
+        }
+
+        return `
+        <div class="product-card">
+            <div class="product-image-wrapper">
+                ${discountBadge}
+                <div class="product-images-track" id="track-${p.id}" onscroll="updateDots('${p.id}', this)">
+                    ${imgs.map(img => `
+                        <div class="product-slide">
+                            <a href="/product/${p.id}/" style="display:contents;" draggable="false">
+                                <img class="product-image" src="${img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+                ${dotsHtml}
+                ${hasMultipleImages ? `
+                    <button class="slider-arrow arrow-prev" onclick="changeSlide('${p.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+                    <button class="slider-arrow arrow-next" onclick="changeSlide('${p.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                ` : ''}
+            </div>
+            <div class="product-info">
+                <div class="product-name-box" onclick="location.href='/product/${p.id}/'">
+                    <div class="product-name">${p.name}</div>
+                </div>
+                <div class="product-price-container">
+                    <div class="product-price">${String(p.price).replace(/₾/g, '')}₾</div>
+                    ${p.oldPrice ? `<span class="old-price">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
+                </div>
+                <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    შეკვეთა
+                </button>
+            </div>
+        </div>`;
+    };
+
+    window.updateDots = function(productId, trackEl) {
+        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+        const dots = document.querySelectorAll(`#dots-${productId} .dot`);
+        dots.forEach((d, i) => {
+            if (i === index) d.classList.add('active');
+            else d.classList.remove('active');
+        });
+    };
+
+    window.changeSlide = function(productId, direction, event) {
+        if(event) { event.preventDefault(); event.stopPropagation(); }
+        const track = document.getElementById(`track-${productId}`);
+        const slideWidth = track.clientWidth;
+        track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
+    };
+
+    window.initSliderArrows = function(scrollId, leftBtnId, rightBtnId) {
+        const scroll = document.getElementById(scrollId);
+        const leftBtn = document.getElementById(leftBtnId);
+        const rightBtn = document.getElementById(rightBtnId);
+        if(!scroll || !leftBtn || !rightBtn) return;
+
+        const updateArrows = () => {
+            if(scroll.scrollWidth > scroll.clientWidth) {
+                leftBtn.classList.add('visible'); rightBtn.classList.add('visible');
+                leftBtn.style.opacity = scroll.scrollLeft > 0 ? '1' : '0.3';
+                rightBtn.style.opacity = scroll.scrollLeft < (scroll.scrollWidth - scroll.clientWidth - 5) ? '1' : '0.3';
+            } else {
+                leftBtn.classList.remove('visible'); rightBtn.classList.remove('visible');
+            }
+        };
+        
+        scroll.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+
+        const getScrollAmount = () => {
+            const card = scroll.querySelector('.product-card');
+            if(card) {
+                const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
+                return card.offsetWidth + gap;
+            }
+            return 304;
+        };
+
+        leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
+        rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
+        setTimeout(updateArrows, 150);
+    };
+
     function renderProducts(isLoadMore = false) {
         if (!isLoadMore) currentPage = 1;
 
@@ -329,38 +456,26 @@ title: "მთავარი"
             resetBtn.classList.remove('show');
         }
 
-        // Исключаем товары, которых нет в наличии
         filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
 
-        // 1. Полноценный Поиск
         if (searchQ) {
             const sq = searchQ.toLowerCase();
-            filtered = filtered.filter(p => 
-                p.name.toLowerCase().includes(sq) || 
-                (p.description && p.description.toLowerCase().includes(sq))
-            );
+            filtered = filtered.filter(p => p.name.toLowerCase().includes(sq) || (p.description && p.description.toLowerCase().includes(sq)));
         }
 
-        // 2. Фильтр по Категориям
-        if (currentCategory !== 'all') {
-            filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
-        }
-        if (currentSubcategory !== 'all') {
-            filtered = filtered.filter(p => p.subcategories && p.subcategories.includes(currentSubcategory));
-        }
+        if (currentCategory !== 'all') filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
+        if (currentSubcategory !== 'all') filtered = filtered.filter(p => p.subcategories && p.subcategories.includes(currentSubcategory));
         
-        // 3. Фильтр по Цене
         if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
         if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
         
-        // 4. Сортировка
         const sortBy = sortSelect.value;
         if (sortBy === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
         if (sortBy === 'name-desc') filtered.sort((a,b) => b.name.localeCompare(a.name));
         if (sortBy === 'price-asc') filtered.sort((a,b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a,b) => b.priceValue - a.priceValue);
 
-        // Хлебные крошки и панель фильтров
+        // Хлебные крошки
         const breadcrumbsEl = document.getElementById('breadcrumbs');
         const filtersBar = document.getElementById('filtersBar');
         
@@ -371,23 +486,26 @@ title: "მთავარი"
             breadcrumbsEl.style.display = 'flex';
             filtersBar.style.display = 'flex';
             
-            let crumbs = `<a href="/" class="crumb-link">მთავარი</a>`;
+            const sep = `<span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>`;
+            let crumbs = `<li><a href="/" draggable="false"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> მთავარი</a></li>`;
+            
             if (searchQ) {
-                crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">ძიება: "${searchQ}"</span>`;
-                crumbs += `<span class="crumb-count">(${filtered.length} ნაპოვნია)</span>`;
+                crumbs += `${sep}<li><span class="current">ძიება: "${searchQ}"</span></li>`;
+                crumbs += `<li><span class="crumb-count">(${filtered.length} ნაპოვნია)</span></li>`;
             } else {
                 const catName = catalogStructure[currentCategory]?.title || currentCategory;
-                crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">${catName}</span>`;
                 if (currentSubcategory !== 'all') {
+                    crumbs += `${sep}<li><a href="/?category=${currentCategory}" draggable="false">${catName}</a></li>`;
                     const subObj = catalogStructure[currentCategory]?.subs.find(s => s.id === currentSubcategory);
                     const subName = subObj ? subObj.name : currentSubcategory;
-                    crumbs += `<span class="crumb-separator">/</span><span class="crumb-current">${subName}</span>`;
+                    crumbs += `${sep}<li><span class="current">${subName}</span></li>`;
+                } else {
+                    crumbs += `${sep}<li><span class="current">${catName}</span></li>`;
                 }
             }
             breadcrumbsEl.innerHTML = crumbs;
         }
         
-        // Если ничего не найдено (Предотвращение повторной анимации)
         if (filtered.length === 0) {
             if (container.dataset.empty !== "true") {
                 container.innerHTML = `
@@ -406,74 +524,11 @@ title: "მთავარი"
         
         container.dataset.empty = "false";
         
-        // Пагинация массива
         const startIndex = isLoadMore ? (currentPage - 1) * itemsPerPage : 0;
         const endIndex = currentPage * itemsPerPage;
         const paginatedProducts = filtered.slice(startIndex, endIndex);
 
-        // Отрисовка карточек
-        const html = paginatedProducts.map(product => {
-            let imgs = product.images || (product.image ? [product.image] : []);
-            
-            // Фильтруем ссылки на YouTube
-            imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
-            if (imgs.length === 0) imgs.push('/img/no-image.png');
-
-            const hasMultipleImages = imgs.length > 1;
-            let discountBadge = '';
-            
-            if (product.oldPrice) {
-                const oldVal = parseInt(product.oldPrice.replace(/[^0-9]/g, ''));
-                const newVal = parseInt(product.price.replace(/[^0-9]/g, ''));
-                if (oldVal > newVal) {
-                    const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                    discountBadge = `<div class="discount-badge">-${percent}%</div>`;
-                }
-            }
-            
-            const productDataAttr = JSON.stringify(product).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-            
-            let dotsHtml = '';
-            if (hasMultipleImages) {
-                dotsHtml = `<div class="carousel-dots" id="dots-${product.id}">
-                    ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
-                </div>`;
-            }
-
-            return `
-            <div class="product-card">
-                <div class="product-image-wrapper">
-                    ${discountBadge}
-                    <div class="product-images-track" id="track-${product.id}" onscroll="updateDots('${product.id}', this)">
-                        ${imgs.map(img => `
-                            <div class="product-slide">
-                                <a href="product/${product.id}/" style="display:contents;" draggable="false">
-                                    <img class="product-image" src="${img}" alt="${product.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
-                                </a>
-                            </div>
-                        `).join('')}
-                    </div>
-                    ${dotsHtml}
-                    ${hasMultipleImages ? `
-                        <button class="slider-arrow arrow-prev" onclick="changeSlide('${product.id}', -1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-                        <button class="slider-arrow arrow-next" onclick="changeSlide('${product.id}', 1, event)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
-                    ` : ''}
-                </div>
-                <div class="product-info">
-                    <div class="product-name-box" onclick="location.href='product/${product.id}/'">
-                        <div class="product-name">${product.name}</div>
-                    </div>
-                    <div class="product-price-container">
-                        <div class="product-price">${String(product.price).replace(/₾/g, '')}₾</div>
-                        ${product.oldPrice ? `<span class="old-price">${String(product.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
-                    </div>
-                    <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                        შეკვეთა
-                    </button>
-                </div>
-            </div>
-        `}).join('');
+        const html = paginatedProducts.map(p => window.createProductCardHTML(p)).join('');
 
         if (isLoadMore) {
             container.insertAdjacentHTML('beforeend', html);
@@ -482,42 +537,31 @@ title: "მთავარი"
         }
 
         if (loadMoreContainer) {
-            if (filtered.length > endIndex) {
-                loadMoreContainer.style.display = 'block';
-            } else {
-                loadMoreContainer.style.display = 'none';
-            }
+            if (filtered.length > endIndex) loadMoreContainer.style.display = 'block';
+            else loadMoreContainer.style.display = 'none';
         }
     }
 
-    // ==========================================
-    // СЛАЙДЕР ИЗОБРАЖЕНИЙ (ТОЧКИ + КНОПКИ)
-    // ==========================================
-    window.updateDots = function(productId, trackEl) {
-        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
-        const dots = document.querySelectorAll(`#dots-${productId} .dot`);
-        dots.forEach((d, i) => {
-            if (i === index) d.classList.add('active');
-            else d.classList.remove('active');
-        });
-    };
+    function renderRecentlyViewed(products) {
+        const section = document.getElementById('recentlyViewedSection');
+        const scroll = document.getElementById('recentScroll');
+        if(!section || !scroll) return;
 
-    window.changeSlide = function(productId, direction, event) {
-        if(event) { event.preventDefault(); event.stopPropagation(); }
-        const track = document.getElementById(`track-${productId}`);
-        const slideWidth = track.clientWidth;
-        track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
-    };
+        let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+        if (recentIds.length === 0) { section.style.display = 'none'; return; }
 
-    // ==========================================
-    // ЛОГИКА ФИЛЬТРОВ И ЦЕН
-    // ==========================================
+        const recentProducts = recentIds.map(id => products.find(p => p.id === id)).filter(Boolean);
+        if (recentProducts.length === 0) { section.style.display = 'none'; return; }
+
+        section.style.display = 'block';
+        scroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p)).join('');
+        window.initSliderArrows('recentScroll', 'recentArrowLeft', 'recentArrowRight');
+    }
+
     const enforcePriceLogic = () => {
         let min = parseInt(minPriceInput.value);
         let max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max) && max !== 0) {
-            if (min > max) { minPriceInput.value = max; }
-        }
+        if (!isNaN(min) && !isNaN(max) && max !== 0) if (min > max) minPriceInput.value = max;
         renderProducts();
     };
     
@@ -525,9 +569,7 @@ title: "მთავარი"
     maxPriceInput.addEventListener('input', () => {
         let min = parseInt(minPriceInput.value);
         let max = parseInt(maxPriceInput.value);
-        if (!isNaN(min) && !isNaN(max)) {
-            if (max < min) { maxPriceInput.value = min; }
-        }
+        if (!isNaN(min) && !isNaN(max)) if (max < min) maxPriceInput.value = min;
         renderProducts();
     });
     
@@ -556,13 +598,8 @@ title: "მთავარი"
         document.addEventListener('click', () => customSelect.classList.remove('open'));
     }
 
-// ==========================================
-// ИНИЦИАЛИЗАЦИЯ
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    const catalogUrl = 'https://api.enkaelectronics.com.ge/catalog';
-
-    fetch(catalogUrl)
+    fetch('https://api.enkaelectronics.com.ge/catalog')
         .then(res => {
             if (!res.ok) throw new Error(`Ошибка загрузки каталога: ${res.status}`);
             return res.json();
@@ -573,9 +610,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
             renderProducts();
+            renderRecentlyViewed(window.allProducts);
         })
-        .catch(err => {
-            console.error('Не удалось загрузить каталог:', err);
-        });
+        .catch(err => console.error('Не удалось загрузить каталог:', err));
 });
 </script>
