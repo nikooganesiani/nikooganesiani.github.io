@@ -718,7 +718,7 @@ layout: default
             const card = scroll.querySelector('.product-card');
             if(card) {
                 const gap = parseFloat(getComputedStyle(scroll).gap) || 24;
-                return card.offsetWidth + gap; // Точный сдвиг для snap
+                return card.offsetWidth + gap; // Сдвиг ровно на 1 карточку
             }
             return 304;
         };
@@ -726,127 +726,6 @@ layout: default
         leftBtn.addEventListener('click', () => { scroll.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' }); });
         rightBtn.addEventListener('click', () => { scroll.scrollBy({ left: getScrollAmount(), behavior: 'smooth' }); });
         setTimeout(updateArrows, 150);
-    };
-
-    // ФОРМАТИРОВАНИЕ НОМЕРА В ИНЛАЙН ФОРМЕ
-    window.formatInlinePhone = function(input) {
-        let value = input.value.replace(/\s/g, '');
-        if (value.startsWith('+995')) value = value.substring(4);
-        value = value.replace(/\D/g, '');
-        if (value.length > 9) value = value.slice(0, 9);
-        let formatted = '';
-        for (let i = 0; i < value.length; i++) {
-            if (i === 3 || i === 5 || i === 7) formatted += ' ';
-            formatted += value[i];
-        }
-        input.value = formatted;
-    };
-
-    // НАСТОЯЩАЯ ОТПРАВКА ИНЛАЙН-ФОРМЫ
-    window.handleInlineOrder = async function(e) {
-        e.preventDefault();
-        const btn = document.getElementById('submitOrderBtn');
-        const icon = document.getElementById('orderBtnIcon');
-        const text = document.getElementById('orderBtnText');
-        const errorDiv = document.getElementById('inlineFormError');
-        
-        const nameInput = document.getElementById('orderName');
-        const phoneInput = document.getElementById('orderPhone');
-        const phoneWrapper = document.getElementById('orderPhoneWrapper');
-        
-        const name = nameInput.value.trim();
-        let phoneRaw = phoneInput.value.replace(/\s/g, '');
-        
-        const showError = (msg, el) => {
-            errorDiv.textContent = msg;
-            errorDiv.style.display = 'block';
-            if(el) el.style.borderColor = '#ef4444';
-            setTimeout(() => { 
-                errorDiv.style.display = 'none'; 
-                if(el) {
-                    if (el.id === 'orderPhoneWrapper') el.style.borderColor = '#f1f5f9';
-                    else el.style.borderColor = '#e2e8f0';
-                }
-            }, 3500);
-        };
-
-        if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", nameInput); return; }
-        if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
-
-        const fullPhone = '+995' + phoneRaw;
-        
-        btn.style.pointerEvents = 'none';
-        btn.style.opacity = '0.8';
-        text.innerText = 'იგზავნება...';
-        icon.outerHTML = `<div class="spinner" id="orderBtnIcon" style="width:20px;height:20px;border-width:2px;margin:0; border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>`;
-        
-        const product = {
-            name: {{ page.name | jsonify }},
-            price: "{{ page.price }}",
-            id: "{{ page.sku }}"
-        };
-
-        try {
-            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-            const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-
-            const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
-            
-            const response = await fetch(targetWorker, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    name: name, 
-                    phone: fullPhone, 
-                    product: product.name, 
-                    price: product.price,
-                    product_id: product.id,
-                    event_id: eventId
-                })
-            });
-
-            if (!response.ok) throw new Error('Network error');
-
-            // Tracking
-            if (typeof fbq === 'function') {
-                fbq('track', 'Purchase', {
-                    value: numericPrice,
-                    currency: 'GEL',
-                    content_name: product.name,
-                    content_ids: product.id ? [String(product.id)] : [],
-                    content_type: 'product',
-                    num_items: 1
-                }, { eventID: eventId });
-            }
-
-            if (typeof window.sendCapiEvent === 'function') {
-                window.sendCapiEvent('Purchase', {
-                    value: numericPrice,
-                    currency: 'GEL',
-                    content_name: product.name,
-                    content_ids: product.id ? [String(product.id)] : [],
-                    content_type: 'product'
-                }, eventId); 
-            }
-
-            // Success UI (Кнопка зеленеет + галочка)
-            const newIcon = document.getElementById('orderBtnIcon');
-            btn.style.opacity = '1';
-            btn.style.background = '#16a34a';
-            btn.style.boxShadow = '0 4px 15px rgba(22, 163, 74, 0.4)';
-            newIcon.outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation: checkmarkScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-            text.innerText = 'შეკვეთა მიღებულია';
-            
-            // Если вы хотите, вы можете тут же вызвать модалку подтверждения из default.html
-            setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 1500);
-
-        } catch (error) {
-            console.error(error);
-            showError("შეცდომა სერვერზე. გთხოვთ სცადოთ მოგვიანებით.");
-            btn.style.pointerEvents = 'auto';
-            btn.style.opacity = '1';
-            text.innerText = 'შეკვეთა';
-            document.getElementById('orderBtnIcon').outerHTML = `<svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>`;
-        }
     };
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -896,16 +775,16 @@ layout: default
             } else {
                 if (badgeContainer) badgeContainer.innerHTML = `<div class="stock-badge stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (btnContainer) btnContainer.innerHTML = `
-                <form id="inlineOrderForm" onsubmit="handleInlineOrder(event)" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
-                    <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0;"></div>
-                    <input type="text" id="orderName" placeholder="თქვენი სახელი" required autocomplete="name" required style="padding: 1.1rem; border-radius: 1.2rem; border: 1px solid #e2e8f0; font-size: 1.05rem; font-weight: 600; outline: none; background: #f8fafc; transition: all 0.3s; color:#0f172a;" onfocus="this.style.borderColor='#2563eb'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
-                    <div class="phone-wrapper" id="orderPhoneWrapper" style="display: flex; align-items: stretch; background: #f8fafc; border-radius: 1.2rem; border: 2px solid #f1f5f9; transition: all 0.3s; overflow: hidden; transform: translateZ(0); margin-bottom: 0;">
-                        <span class="phone-prefix" style="display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 1.2rem 0 0 1.2rem;">+995</span>
-                        <input type="tel" id="orderPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" required autocomplete="tel" oninput="formatInlinePhone(this)" style="border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 1.2rem 1.2rem 0 !important; outline:none; font-size: 1rem; font-weight: 600; color:#0f172a;" onfocus="document.getElementById('orderPhoneWrapper').style.borderColor='#2563eb'; document.getElementById('orderPhoneWrapper').style.background='white'; document.getElementById('orderPhoneWrapper').style.boxShadow='0 0 0 4px rgba(37, 99, 235, 0.1)';" onblur="document.getElementById('orderPhoneWrapper').style.borderColor='#f1f5f9'; document.getElementById('orderPhoneWrapper').style.background='#f8fafc'; document.getElementById('orderPhoneWrapper').style.boxShadow='none';">
+                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                    <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0; display:none;"></div>
+                    <input type="text" id="inlineName" class="input-field" placeholder="თქვენი სახელი" required autocomplete="name" style="margin-bottom: 0;">
+                    <div class="phone-wrapper" id="inlinePhoneWrapper" style="margin-bottom: 0;">
+                        <span class="phone-prefix">+995</span>
+                        <input type="tel" id="inlinePhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
                     </div>
-                    <button type="submit" id="submitOrderBtn" class="btn-alta-order">
-                        <svg id="orderBtnIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                        <span id="orderBtnText">შეკვეთა</span>
+                    <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order">
+                        <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+                        <span id="inlineOrderText">გაფორმება</span>
                     </button>
                 </form>`;
             }
@@ -1019,6 +898,111 @@ layout: default
         const alert = document.getElementById('copyAlert');
         if (!alert) return; alert.classList.add('show'); setTimeout(() => alert.classList.remove('show'), 2000);
     }
+
+  // Логика телефона (1-в-1 как в модалке)
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'inlinePhone') {
+            let val = e.target.value.replace(/\D/g, '');
+            if(val.startsWith('995')) val = val.substring(3);
+            if(val.length > 9) val = val.slice(0, 9);
+            let formatted = '';
+            for(let i = 0; i < val.length; i++) {
+                if(i === 3 || i === 5 || i === 7) formatted += ' ';
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+        }
+    });
+
+    // Отправка формы без анимации внутри кнопки
+    document.addEventListener('submit', async function(e) {
+        if (e.target && e.target.id === 'inlineOrderForm') {
+            e.preventDefault();
+            const nameInput = document.getElementById('inlineName');
+            const phoneInput = document.getElementById('inlinePhone');
+            const phoneWrapper = document.getElementById('inlinePhoneWrapper');
+            const errorDiv = document.getElementById('inlineFormError');
+            const btn = document.getElementById('submitInlineOrderBtn');
+            const icon = document.getElementById('inlineOrderIcon');
+            const text = document.getElementById('inlineOrderText');
+
+            const name = nameInput.value.trim();
+            let phoneRaw = phoneInput.value.replace(/\s/g, '');
+
+            const showError = (msg, el) => {
+                errorDiv.textContent = msg;
+                errorDiv.style.display = 'block';
+                if(el) el.classList.add('input-error');
+                setTimeout(() => { 
+                    errorDiv.style.display = 'none'; 
+                    if(el) el.classList.remove('input-error');
+                }, 3500);
+            };
+
+            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", nameInput); return; }
+            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
+
+            const fullPhone = '+995' + phoneRaw;
+            
+            const product = {
+                name: {{ page.name | jsonify }},
+                price: "{{ page.price }}",
+                id: "{{ page.sku }}"
+            };
+
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
+            const originalIcon = icon.outerHTML;
+            icon.outerHTML = `<div class="spinner" id="inlineOrderIcon" style="width:20px;height:20px;border-width:2px;margin:0; border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>`;
+            text.innerText = 'იგზავნება...';
+
+            try {
+                const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+                const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+                const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+                
+                const response = await fetch(targetWorker, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: name, 
+                        phone: fullPhone, 
+                        product: product.name, 
+                        price: product.price,
+                        product_id: product.id,
+                        event_id: eventId
+                    })
+                });
+
+                if (!response.ok) throw new Error('Network error');
+
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId });
+                }
+                if (typeof window.sendCapiEvent === 'function') {
+                    window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); 
+                }
+
+                // Возвращаем кнопку в исходный вид
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+                document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
+                text.innerText = 'გაფორმება';
+                
+                // Вызываем модалку успешного заказа
+                if(window.showOrderConfirm) {
+                    window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price });
+                }
+
+            } catch (error) {
+                console.error(error);
+                showError("შეცდომა სერვერზე. გთხოვთ სცადოთ მოგვიანებით.", null);
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+                document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
+                text.innerText = 'გაფორმება';
+            }
+        }
+    });
 </script>
 
 <script>
@@ -1027,4 +1011,5 @@ layout: default
     var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
     fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
   }
+
 </script>
