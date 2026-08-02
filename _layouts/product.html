@@ -224,7 +224,7 @@ layout: default
     /* Фейды */
     .sim-fade {
     position: absolute; top: 0; bottom: 0; width: 80px; 
-    pointer-events: none; z-index: 5; transition: opacity 0.4s ease;
+    pointer-events: none; z-index: 5; transition: opacity 0.15s ease;
     opacity: 0; /* Изначально прозрачный */
     }
     .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
@@ -777,10 +777,10 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId
 
         clearTimeout(scrollTimeout); // Сбрасываем старый таймер
 
-        // Засекаем 400мс. Если за это время скролл не повторился — значит он остановился
+        // Засекаем 100мс. Если за это время скролл не повторился — значит он остановился
         scrollTimeout = setTimeout(() => {
             updateUI(false); // Передаем false: скролл остановился, прячем фейды
-        }, 400); 
+        }, 100); 
     }, { passive: true });
     
     // Инициализация при загрузке (фейды скрыты, стрелки расставлены)
