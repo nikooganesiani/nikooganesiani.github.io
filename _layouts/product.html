@@ -221,6 +221,17 @@ layout: default
     }
     @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08); } }
     
+    /* Фейды */
+    .sim-fade {
+    /* Никаких display: none! Фейд работает везде */
+    position: absolute; top: 0; bottom: 0; width: 80px; 
+    pointer-events: none; z-index: 5; 
+    transition: opacity 0.15s ease; /* Быстрая реакция без долгого затухания */
+    opacity: 0; /* Скрыт, когда нет движения */
+}
+    .sim-fade-left { left: 0; background: linear-gradient(to right, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
+    .sim-fade-right { right: 0; background: linear-gradient(to left, #f8fafc 15%, rgba(248, 250, 252, 0) 100%); }
+    
     /* Стрелки */
     .sim-arrow { 
         display: none; position: absolute; top: 50%; transform: translateY(-50%); width: 46px; height: 46px; 
@@ -327,6 +338,7 @@ layout: default
         .similar-scroll-container .product-card {
             flex: 0 0 calc(50% - 6px); /* Ровно 2 карточки */
             border-radius: 1.2rem; }
+        .sim-fade { width: 30px; }
 
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
@@ -556,7 +568,9 @@ layout: default
         <h2 class="section-title">მსგავსი პროდუქტები</h2>
         <div class="similar-nav-section">
             <button class="sim-arrow sim-arrow-left" id="simArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="sim-fade sim-fade-left" id="simFadeLeft"></div>
             <div class="similar-scroll-container" id="similarScroll"></div>
+            <div class="sim-fade sim-fade-right" id="simFadeRight"></div>
             <button class="sim-arrow sim-arrow-right" id="simArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
@@ -566,7 +580,9 @@ layout: default
         <h2 class="section-title">ბოლოს ნანახი</h2>
         <div class="similar-nav-section">
             <button class="sim-arrow sim-arrow-left" id="recentArrowLeft"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="sim-fade sim-fade-left" id="recentFadeLeft"></div>
             <div class="similar-scroll-container" id="recentScroll"></div>
+            <div class="sim-fade sim-fade-right" id="recentFadeRight"></div>
             <button class="sim-arrow sim-arrow-right" id="recentArrowRight"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
@@ -718,11 +734,13 @@ layout: default
         track.scrollBy({ left: direction * slideWidth, behavior: 'smooth' });
     };
 
-    /* Идеальная система Карусели */
-window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId) {
+    /* Идеальная система Карусели (фейд без моргания) */
+window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId, fadeLeftId, fadeRightId) {
     const scroll = document.getElementById(scrollId);
     const leftBtn = document.getElementById(leftBtnId);
     const rightBtn = document.getElementById(rightBtnId);
+    const fadeLeft = document.getElementById(fadeLeftId);
+    const fadeRight = document.getElementById(fadeRightId);
 
     if(!scroll) return;
 
@@ -741,6 +759,43 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId) {
         if (rightBtn) rightBtn.style.display = currentScroll >= (maxScrollLeft - 5) ? 'none' : 'flex';
     };
 
+    // Включить фейды (только с тех сторон, где есть контент)
+    const showFades = () => {
+        const maxScrollLeft = scroll.scrollWidth - scroll.clientWidth;
+        const currentScroll = scroll.scrollLeft;
+        
+        if (fadeLeft) fadeLeft.style.opacity = currentScroll > 5 ? '1' : '0';
+        if (fadeRight) fadeRight.style.opacity = currentScroll < (maxScrollLeft - 5) ? '1' : '0';
+    };
+
+    // Выключить оба фейда
+    const hideFades = () => {
+        if (fadeLeft) fadeLeft.style.opacity = '0';
+        if (fadeRight) fadeRight.style.opacity = '0';
+    };
+
+    // 1. Движение ЕСТЬ -> Показываем фейды
+    let fallbackTimer;
+    scroll.addEventListener('scroll', () => {
+        showFades();
+        updateButtons();
+        
+        // Страховка для старых браузеров (Safari на старых айфонах), которые не знают scrollend
+        clearTimeout(fallbackTimer);
+        fallbackTimer = setTimeout(hideFades, 150); 
+    }, { passive: true });
+
+    // 2. Движение ПОЛНОСТЬЮ ОСТАНОВЛЕНО -> Прячем фейды
+    scroll.addEventListener('scrollend', () => {
+        clearTimeout(fallbackTimer);
+        hideFades();
+    });
+
+    // Инициализация при загрузке
+    requestAnimationFrame(() => {
+        hideFades();
+        updateButtons();
+    });
     window.addEventListener('resize', updateButtons);
 
     // Скролл по кнопкам
@@ -825,7 +880,7 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId) {
             if(similar.length > 0) {
                 document.getElementById('similarSection').style.display = 'block';
                 document.getElementById('similarScroll').innerHTML = similar.map(p => window.createProductCardHTML(p)).join('');
-                window.initCarouselSystem('similarScroll', 'simArrowLeft', 'simArrowRight');
+                window.initCarouselSystem('similarScroll', 'simArrowLeft', 'simArrowRight', 'simFadeLeft', 'simFadeRight');
             }
 
             // === НЕДАВНО ПРОСМОТРЕННЫЕ ===
@@ -839,7 +894,7 @@ window.initCarouselSystem = function(scrollId, leftBtnId, rightBtnId) {
                 if (recentProducts.length > 0) {
                     recentSection.style.display = 'block';
                     recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p)).join('');
-                    window.initCarouselSystem('recentScroll', 'recentArrowLeft', 'recentArrowRight'');
+                    window.initCarouselSystem('recentScroll', 'recentArrowLeft', 'recentArrowRight', 'recentFadeLeft', 'recentFadeRight');
                 }
             }
         });
