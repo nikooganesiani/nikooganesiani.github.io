@@ -49,7 +49,7 @@ layout: default
     /* Верхняя секция: Крошки */
     .top-header-group { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     
-    .breadcrumbs-container { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
+    .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
     .breadcrumbs { 
         display: flex; gap: 0.5rem; list-style: none; padding: 0.6rem 1.2rem; margin: 0; align-items: center; 
         background: white; border-radius: 2rem; border: 1px solid #f1f5f9;
@@ -67,7 +67,7 @@ layout: default
     
     .breadcrumb-product-name { color: #0f172a; }
 
-    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; }
+    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
     .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.3; letter-spacing: -0.5px; overflow-wrap: break-word; }
@@ -415,6 +415,7 @@ layout: default
                     </li>
                 {% endif %}
             </ul>
+            <div class="sku-desktop">კოდი: <b>{{ page.sku }}</b></div>
         </div>
     </div>
 
@@ -439,7 +440,7 @@ layout: default
                     </button>
                 </div>
 
-                <!-- SKU для мобильных -->
+                <!-- SKU для мобильных (внутри изображения снизу справа) -->
                 <div class="sku-mobile">კოდი: <b>{{ page.sku }}</b></div>
 
                 <div class="main-gallery-track" id="mainGalleryTrack" onscroll="syncThumbsWithScroll()">
@@ -494,9 +495,8 @@ layout: default
 
         <div class="product-info-section">
             
-            <div class="desktop-title-area" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="desktop-title-area" style="margin-bottom: 1.5rem;">
                 <h1 class="product-title-h1 title-desktop" style="margin-bottom: 0;">{{ page.name }}</h1>
-                <div class="sku-desktop" style="flex-shrink: 0;">კოდი: <b>{{ page.sku }}</b></div>
             </div>
             <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
 
@@ -871,7 +871,16 @@ layout: default
 
         const modal = document.getElementById('imageZoomModal');
 
-        // Отключаем плавный скролл, чтобы мгновенно перекинуть трек модалки на нужное фото
+        // Блокируем скролл сайта, компенсируя ширину скроллбара отступом, чтобы контент не сдвигался вправо
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = 'hidden';
+        document.body.style.paddingRight = scrollbarWidth + 'px';
+
+        modal.style.display = 'flex'; 
+        modal.offsetHeight; // Принудительный рефлоу для анимации
+
+        // Отключаем плавный скролл, чтобы мгновенно перекинуть трек модалки на нужное фото. 
+        // Важно выполнять это ПОСЛЕ применения display: flex к модалке, чтобы clientWidth не был равен 0.
         const modalTrack = document.getElementById('modalTrack');
         if(modalTrack) {
             modalTrack.style.scrollBehavior = 'auto';
@@ -881,11 +890,6 @@ layout: default
             syncModalThumbs();
         }
 
-        // Блокируем скролл сайта (без паддингов, чтобы ничего не съезжало)
-        document.body.style.overflow = 'hidden';
-
-        modal.style.display = 'flex'; 
-        modal.offsetHeight; // Принудительный рефлоу для анимации
         modal.classList.add('active'); 
     }
     
@@ -902,10 +906,12 @@ layout: default
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
         
-        // Возвращаем скролл сайту
-        document.body.style.overflow = '';
-        
-        setTimeout(() => { modal.style.display = 'none'; }, 300);
+        // Скрываем модалку и возвращаем скролл сайту после затухания анимации, чтобы избежать резкого сдвига экрана
+        setTimeout(() => { 
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 300);
     }
     
     function scrollModalGallery(dir, e) {
