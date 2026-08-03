@@ -128,7 +128,7 @@ layout: default
     .sticky-buy-box { background: white; border: 1px solid #f1f5f9; border-radius: 2.2rem; padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
-    /* Дизайнерское зачеркивание старой цены */
+    /* Зачеркивание старой цены маркером */
     .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
     .designer-strike::after {
         content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 10px;
@@ -163,7 +163,6 @@ layout: default
     .expandable-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)); pointer-events: none; transition: opacity 0.3s; }
     .expandable-block.expanded .expandable-overlay { opacity: 0; }
     
-    /* Эффект плавной кнопки для "მეტის/ნაკლების ნახვა" */
     .btn-expand { background: transparent; border: 1px solid #e2e8f0; color: #2563eb; font-weight: 800; font-size: 0.95rem; border-radius: 1rem; padding: 0.8rem; cursor: pointer; margin-top: 1rem; width: 100%; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .btn-expand:hover { background: #f8fafc; color: #1d4ed8; } }
     .btn-expand:active { transform: scale(0.96); background: #f1f5f9; }
@@ -180,14 +179,14 @@ layout: default
        ============================================================== */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     
-    /* Дизайнерский подчеркивающий маркер */
+    /* Правильный маркерный дизайн подчеркивания (строго под текстом) */
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.5rem; }
     .title-highlight::after { 
-        content: ''; position: absolute; left: 0; bottom: -8px; width: 100%; height: 8px; 
-        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M 0 6 Q 50 10 100 4" stroke="%232563eb" stroke-width="4" fill="none" stroke-linecap="round"/></svg>') no-repeat center/100% 100%; 
-        z-index: -1; pointer-events: none; opacity: 0.5;
+        content: ''; position: absolute; left: -2%; bottom: 2px; width: 104%; height: 8px; 
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 Q 20 2 50 4 T 100 5 Q 80 8 50 7 T 0 5 Z" fill="%232563eb"/></svg>') no-repeat center/100% 100%; 
+        z-index: -1; pointer-events: none; opacity: 0.15;
     }
-    .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.8rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
+    .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.8rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 0;}
 
     .similar-wrapper { display: flex; align-items: center; gap: 1rem; width: 100%; position: relative; }
     
@@ -205,7 +204,6 @@ layout: default
     }
     @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
-    /* Убрано увеличение кнопок скролла */
     .sim-arrow { display: flex; flex-shrink: 0; width: 46px; height: 46px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
     .sim-arrow:active { transform: scale(0.9); }
@@ -244,7 +242,7 @@ layout: default
 
     .btn-order { background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 1.2rem; cursor: pointer; font-weight: 800; font-size: 1.05rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; }
     @media (hover: hover) { .btn-order:hover { background: #1d4ed8; box-shadow: 0 8px 15px rgba(37,99,235,0.3); } }
-    .btn-order:active { transform: scale(0.95); }
+    .btn-order:active { transform: scale(0.96); }
 
     /* Островок для мобильных */
     .mobile-bottom-bar { 
@@ -284,48 +282,40 @@ layout: default
     }
     .modal-fullscreen.active { opacity: 1; display: flex; }
     
-    .modal-top-bar { padding: 20px; display: flex; justify-content: flex-end; }
-    .modal-close-btn { 
-        background: #f1f5f9; border: none; width: 44px; height: 44px; border-radius: 50%; 
-        display: flex; align-items: center; justify-content: center; cursor: pointer; 
-        color: #64748b; transition: all 0.2s; outline: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-    }
-    @media (hover: hover) { .modal-close-btn:hover { background: #fee2e2; color: #ef4444; } }
-    .modal-close-btn:active { transform: scale(0.9); }
-    
-    .modal-gallery-area { flex: 1; position: relative; display: flex; overflow: hidden; align-items: center; }
+    .modal-gallery-area { flex: 1; position: relative; display: flex; overflow: hidden; align-items: center; justify-content: center; width: 100%; }
     
     .modal-track { 
         display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; 
-        scrollbar-width: none; scroll-behavior: smooth; 
+        scrollbar-width: none; scroll-behavior: smooth; touch-action: pan-y pinch-zoom;
     }
     .modal-track::-webkit-scrollbar { display: none; }
+    
     .modal-slide { 
         flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; 
-        scroll-snap-align: start; padding: 1rem; box-sizing: border-box; 
+        scroll-snap-align: start; padding: 2rem; box-sizing: border-box; 
     }
-    .modal-slide img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; user-select: none; }
+    .modal-slide img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); pointer-events: auto; user-select: none; }
 
     .modal-nav-arrow { 
         position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); 
-        border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; 
+        border: 1px solid #f1f5f9; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; 
         justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; 
         box-shadow: 0 4px 15px rgba(0,0,0,0.1); outline: none; 
     }
-    @media (hover: hover) { .modal-nav-arrow:hover { background: #2563eb; color: #fff; } }
+    @media (hover: hover) { .modal-nav-arrow:hover { background: #2563eb; color: #fff; border-color: #2563eb; } }
     .modal-nav-arrow:active { transform: translateY(-50%) scale(0.9); }
     .modal-nav-arrow.left { left: 20px; } .modal-nav-arrow.right { right: 20px; }
     
-    .modal-thumb-area { padding: 1rem; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; }
-    .modal-thumb-strip { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding-bottom: 5px; }
+    .modal-thumb-area { padding: 1.5rem 1rem; background: #fff; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; box-sizing: border-box; }
+    .modal-thumb-strip { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 4px; }
     .modal-thumb-strip::-webkit-scrollbar { display: none; }
     .modal-thumb { 
         width: 70px; height: 70px; border: 2px solid transparent; border-radius: 12px; cursor: pointer; 
-        opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; 
+        opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; box-sizing: border-box; background: #fff;
     }
     .modal-thumb.active { border-color: #2563eb; opacity: 1; transform: scale(1.05); }
-    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; }
-    
+    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
+
     /* РЕСПОНСИВНОСТЬ */
     .title-desktop { display: block; }
     .title-mobile { display: none; font-size: 1.8rem; margin-bottom: 1.5rem; }
@@ -346,10 +336,9 @@ layout: default
         .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 10.66px); }
         .similar-scroll-container { padding: 1rem 1.5rem; margin: 0 -1.5rem; scroll-padding: 1.5rem; }
         
-        /* Убираем точки на планшете/телефоне */
         .carousel-dots { display: none !important; }
         .card-nav-arrow { display: none !important; }
-        .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; }
+        .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; pointer-events: none; }
     }
     
     @media (max-width: 640px) {
@@ -372,6 +361,7 @@ layout: default
         
         .modal-nav-arrow { width: 40px; height: 40px; }
         .modal-nav-arrow.left { left: 10px; } .modal-nav-arrow.right { right: 10px; }
+        .modal-slide { padding: 1rem; }
     }
 
     .specs-desc-grid { display: flex; flex-direction: column; gap: 3rem; }
@@ -412,6 +402,7 @@ layout: default
                     </li>
                 {% endif %}
             </ul>
+            <div class="sku-desktop">კოდი: <b>{{ page.sku }}</b></div>
         </div>
         
         <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
@@ -491,10 +482,7 @@ layout: default
 
         <div class="product-info-section">
             
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0;">
-                <h1 class="product-title-h1 title-mobile" style="margin-bottom: 0;">{{ page.name }}</h1>
-                <div class="sku-desktop" style="margin-bottom: 1.5rem;">კოდი: <b>{{ page.sku }}</b></div>
-            </div>
+            <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
 
             <div class="sticky-buy-box" id="stickyBuyBox">
                 <div class="price-wrapper">
@@ -635,12 +623,6 @@ layout: default
 
 <!-- Полноэкранная модалка просмотра фото -->
 <div class="modal-fullscreen" id="imageZoomModal">
-    <div class="modal-top-bar">
-        <button class="modal-close-btn" onclick="closeImageZoom()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-    </div>
-    
     <div class="modal-gallery-area">
         <button class="modal-nav-arrow left" onclick="scrollModalGallery(-1, event)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg>
@@ -864,32 +846,41 @@ layout: default
     // --- ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ (МОДАЛКА) ---
     function openImageZoom(img) {
         isZoomModalOpen = true; 
-        // Сбрасываем увеличение без CSS-анимаций, чтобы не было прыжков на фоне
+        // Моментально сбрасываем лупу без анимаций, чтобы не было прыжков при открытии
         img.style.transition = 'none'; 
         img.style.transform = 'scale(1)';
 
         const modal = document.getElementById('imageZoomModal');
+        
+        // Вычисляем индекс нажатой картинки (без учета видео)
+        const slides = document.querySelectorAll('.main-gallery-slide img');
+        let index = Array.from(slides).indexOf(img);
+        if (index === -1) index = 0;
+
+        // Отключаем smooth-скролл, мгновенно переходим на нужный слайд, потом возвращаем smooth
+        const modalTrack = document.getElementById('modalTrack');
+        if(modalTrack) {
+            modalTrack.style.scrollBehavior = 'auto';
+            modalTrack.scrollLeft = index * modalTrack.clientWidth;
+            void modalTrack.offsetWidth; // Force reflow
+            modalTrack.style.scrollBehavior = 'smooth';
+            syncModalThumbs();
+        }
+
         modal.style.display = 'flex'; modal.offsetHeight; 
         modal.classList.add('active'); 
         
         // Блокируем скролл сайта
         document.body.style.overflow = 'hidden';
         document.documentElement.style.overflow = 'hidden';
-
-        // Вычисляем индекс нажатой картинки (учитываем, что может быть видео, их в модалке нет)
-        const slides = document.querySelectorAll('.main-gallery-slide img');
-        let index = Array.from(slides).indexOf(img);
-        if (index === -1) index = 0;
-
-        // Перемещаем модальный трек на нужный слайд без анимации
-        const modalTrack = document.getElementById('modalTrack');
-        if(modalTrack) {
-            modalTrack.scrollTo({ left: index * modalTrack.clientWidth, behavior: 'auto' });
-            syncModalThumbs();
-        }
     }
     
-    function closeImageZoom() {
+    function closeImageZoom(e) {
+        // Если передан event, убедимся что клик был по фону, а не по самой картинке
+        if (e && e.target.tagName.toLowerCase() === 'img') return;
+        if (e && e.target.closest('.modal-nav-arrow')) return;
+        if (e && e.target.closest('.modal-thumb-strip')) return;
+
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
@@ -899,6 +890,9 @@ layout: default
         
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
+    
+    // Закрытие при клике по фону (передаем event в функцию закрытия)
+    document.getElementById('imageZoomModal').addEventListener('click', closeImageZoom);
     
     function scrollModalGallery(dir, e) {
         if(e) { e.preventDefault(); e.stopPropagation(); }
@@ -924,6 +918,7 @@ layout: default
 
     function syncModalThumbs() {
         const track = document.getElementById('modalTrack');
+        if(!track) return;
         const index = Math.round(track.scrollLeft / track.clientWidth);
         const thumbs = document.querySelectorAll('#modalThumbStrip .modal-thumb');
         if (thumbs.length > 0) {
