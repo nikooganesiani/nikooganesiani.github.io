@@ -70,7 +70,8 @@ layout: default
     .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
-    .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.3; letter-spacing: -0.5px; overflow-wrap: break-word; }
+    .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.3; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0; }
+    .desktop-title-area { margin-bottom: 0; display: block; }
     
     .product-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start; }
     .product-grid > div, .product-details-grid > div { min-width: 0; }
@@ -330,7 +331,7 @@ layout: default
 
     /* РЕСПОНСИВНОСТЬ */
     .title-desktop { display: block; }
-    .title-mobile { display: none; font-size: 1.8rem; margin-bottom: 1.5rem; }
+    .title-mobile { display: none; font-size: 1.8rem; margin: 0 0 0.5rem 0; }
 
     @media (max-width: 1024px) {
         .title-desktop { display: none; }
@@ -495,8 +496,8 @@ layout: default
 
         <div class="product-info-section">
             
-            <div class="desktop-title-area" style="margin-bottom: 1.5rem;">
-                <h1 class="product-title-h1 title-desktop" style="margin-bottom: 0;">{{ page.name }}</h1>
+            <div class="desktop-title-area">
+                <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
             </div>
             <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
 
@@ -871,11 +872,6 @@ layout: default
 
         const modal = document.getElementById('imageZoomModal');
 
-        // Блокируем скролл сайта, компенсируя ширину скроллбара отступом, чтобы контент не сдвигался вправо
-        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-        document.body.style.overflow = 'hidden';
-        document.body.style.paddingRight = scrollbarWidth + 'px';
-
         modal.style.display = 'flex'; 
         modal.offsetHeight; // Принудительный рефлоу для анимации
 
@@ -906,11 +902,9 @@ layout: default
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
         
-        // Скрываем модалку и возвращаем скролл сайту после затухания анимации, чтобы избежать резкого сдвига экрана
+        // Скрываем модалку после затухания анимации
         setTimeout(() => { 
             modal.style.display = 'none';
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
         }, 300);
     }
     
@@ -1007,6 +1001,35 @@ layout: default
     document.addEventListener('DOMContentLoaded', function() {
         checkExpandableBlocks();
         initStickyMobileBar();
+
+        // Умная блокировка скролла для модалки, чтобы не ломался хедер и не смещался сайт
+        const modalFullscreen = document.getElementById('imageZoomModal');
+        let tsY = 0, tsX = 0;
+        
+        modalFullscreen.addEventListener('touchstart', (e) => {
+            tsY = e.touches[0].clientY;
+            tsX = e.touches[0].clientX;
+        }, { passive: true });
+
+        modalFullscreen.addEventListener('touchmove', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('.modal-thumb-strip');
+            if (isTrack) {
+                const diffY = Math.abs(e.touches[0].clientY - tsY);
+                const diffX = Math.abs(e.touches[0].clientX - tsX);
+                if (diffY > diffX) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        modalFullscreen.addEventListener('wheel', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('.modal-thumb-strip');
+            if (isTrack) {
+                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
         
         const oldPriceStr = "{{ page.oldPrice }}";
         const priceStr = "{{ page.price }}";
@@ -1096,6 +1119,13 @@ layout: default
             }
         });
     });
+
+    // Блокировка скролла клавишами (пробел, стрелки), когда модалка открыта
+    window.addEventListener('keydown', (e) => {
+        if (isZoomModalOpen && [32, 33, 34, 38, 40].includes(e.keyCode)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 
     document.addEventListener('input', function(e) {
         if (e.target && e.target.id === 'inlinePhone') {
