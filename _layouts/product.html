@@ -130,7 +130,7 @@ layout: default
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
     /* Зачеркивание старой цены маркером */
-    .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #2563eb; font-weight: 700; }
+    .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
     .designer-strike::after {
         content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 10px;
         background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 Q 50 1 100 6" stroke="%23ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>') no-repeat center/100% 100%;
@@ -338,7 +338,7 @@ layout: default
         .title-mobile { display: block; font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem 0; padding: 0; }
         .sim-arrow { display: none !important; }
 
-        .product-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+        .product-grid { grid-template-columns: 1fr; gap: 0rem; }
         .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; }
         .current-price-line { font-size: 2.2rem; }
         .content-section-box { padding: 1.5rem; border-radius: 1.5rem; }
@@ -348,7 +348,7 @@ layout: default
         .sku-mobile { display: block; }
 
         .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 10.66px); }
-        .similar-scroll-container { padding: 1rem 1.5rem; margin: 0 -1.5rem; scroll-padding: 1.5rem; }
+        .similar-scroll-container { padding: 1rem 1rem; margin: 0 -1.5rem; scroll-padding: 0.6rem; }
         
         /* Убираем точки и стрелки на планшете/телефоне в каруселях */
         .carousel-dots { display: none !important; }
