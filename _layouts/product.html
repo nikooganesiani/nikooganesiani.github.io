@@ -70,8 +70,8 @@ layout: default
     .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
-    .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.3; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0; }
-    .desktop-title-area { margin-bottom: 0; display: block; }
+    .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0; padding: 0; }
+    .desktop-title-area { margin-bottom: 0; display: block; padding: 0; }
     
     .product-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2.5rem; align-items: start; }
     .product-grid > div, .product-details-grid > div { min-width: 0; }
@@ -124,7 +124,7 @@ layout: default
     .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.5rem; mix-blend-mode: multiply; pointer-events: none; }
     .thumb-card:active { transform: scale(0.94); }
 
-    .product-info-section { display: flex; flex-direction: column; gap: 1.5rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
+    .product-info-section { display: flex; flex-direction: column; gap: 1.0rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
     
     .sticky-buy-box { background: white; border: 1px solid #f1f5f9; border-radius: 2.2rem; padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
@@ -335,7 +335,7 @@ layout: default
 
     @media (max-width: 1024px) {
         .title-desktop { display: none; }
-        .title-mobile { display: block; margin-top: 0; }
+        .title-mobile { display: block; font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem 0; padding: 0; }
         .sim-arrow { display: none !important; }
 
         .product-grid { grid-template-columns: 1fr; gap: 1.5rem; }
@@ -361,7 +361,9 @@ layout: default
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
         .mobile-bottom-bar { display: flex; } 
-
+        .product-title-h1 { font-size: 1.4rem; line-height: 1.2; margin: 0 0 0.3rem 0; padding: 0; }
+        .desktop-title-area { padding: 0; margin: 0; }
+        .title-mobile { margin: 0 0 0.3rem 0 !important; padding: 0 !important; }
         .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 1.2rem; }
         .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
