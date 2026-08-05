@@ -88,6 +88,17 @@ layout: default
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
     }
     
+    @media (min-width: 1025px) {
+        .gallery-section { flex-direction: row; gap: 12px; align-items: flex-start; }
+        .thumb-strip { 
+            flex-direction: column; width: 72px; padding: 2px; gap: 10px;
+            order: -1; overflow-y: auto; overflow-x: hidden;
+            max-height: 520px; 
+        }
+        .thumb-strip::-webkit-scrollbar { display: none; }
+        .main-gallery-viewport { flex: 1; margin-bottom: 0; }
+    }
+    
     /* 24px (outer) - 16px (padding) = 8px (inner) */
     .main-gallery-viewport { 
         width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
@@ -212,18 +223,13 @@ layout: default
     .similar-products-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
-    .title-highlight::after { 
-        content: ''; position: absolute; left: -2%; bottom: -4px; width: 104%; height: 8px; 
-        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M 2 9 Q 50 1 98 9" stroke="%232563eb" stroke-width="4" fill="none" stroke-linecap="round"/></svg>') no-repeat center/100% 100%; 
-        z-index: -1; pointer-events: none; opacity: 0.4;
-    }
     .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.4rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
 
-    .similar-wrapper { display: flex; align-items: center; gap: 1rem; width: 100%; position: relative; }
+    .similar-wrapper { display: block; width: 100%; position: relative; }
     
     .similar-scroll-container { 
         display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; 
-        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; flex: 1; padding: 0.5rem 0;
+        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; width: 100%; padding: 0.5rem 0;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
@@ -235,9 +241,11 @@ layout: default
     }
     @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.1); } }
     
-    .sim-arrow { display: flex; flex-shrink: 0; width: 44px; height: 44px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .sim-arrow { position: absolute; top: 50%; margin-top: -22px; z-index: 10; display: flex; width: 44px; height: 44px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
     .sim-arrow:active { transform: scale(0.9); }
+    .sim-arrow.left { left: -16px; }
+    .sim-arrow.right { right: -16px; }
 
     .product-card .btn-fav-card { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     .product-card .btn-fav-card.active { color: #ef4444; }
@@ -280,9 +288,7 @@ layout: default
         display: none; position: fixed; bottom: 1rem; left: 1rem; right: 1rem; background: rgba(255,255,255,0.95); 
         backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.6rem; z-index: 999; 
         align-items: center; gap: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
-        transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
-    .mobile-bottom-bar.visible { transform: translateY(0); }
     .mobile-bottom-img { width: 40px; height: 40px; border-radius: 0.5rem; object-fit: contain; background: #f8fafc; border: 1px solid #f1f5f9; }
     .mobile-bottom-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     .mobile-bottom-price-row { display: flex; align-items: baseline; gap: 6px; }
@@ -368,7 +374,7 @@ layout: default
         .product-grid { grid-template-columns: 1fr; gap: 1rem; }
         
         .shared-box-style { border-radius: 20px; padding: 16px; }
-        .main-gallery-viewport { border-radius: 8px; } /* 20 - 12 (border offset+pad) ~ 8 */
+        .main-gallery-viewport { border-radius: 8px; }
         
         .sku-desktop { display: none; }
         .sku-mobile { display: block; }
@@ -384,6 +390,8 @@ layout: default
         .top-header-group { margin-bottom: 1rem; }
         .content-section-box { margin-top: 1rem; }
         .similar-products-section { margin-top: 1.5rem; }
+        
+        .desktop-price-inline { display: none !important; }
     }
     
     @media (max-width: 640px) {
@@ -398,40 +406,33 @@ layout: default
         
         /* Ультра-компактная галерея для мобильных (почти нет пустых зон) */
         .gallery-section { padding: 12px; border-radius: 16px; }
-        .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; } /* 16 outer - 12 pad = 4 ~ 8 to look organic */
+        .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; }
         .thumb-strip { padding: 0; gap: 6px; }
-        /* Math for mobile thumb: outer 10, padding 3, inner 7 (5 is safer to render smoothly) */
         .thumb-card { width: 56px; height: 56px; padding: 3px; border-radius: 10px; }
         .thumb-card img { border-radius: 5px; }
-/* Иконка категории в хлебных крошках */
-.breadcrumbs li a .cat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-    vertical-align: middle;
-    overflow: hidden;
-}
-.breadcrumbs li a .cat-icon svg {
-    display: block;
-    width: 16px;
-    height: 16px;
-    max-width: 16px;
-    max-height: 16px;
-}
 
-/* Мобильные: скрываем текст */
-@media (max-width: 1024px) {
-    .breadcrumbs li a .cat-text {
-        display: none;
-    }
-    .breadcrumbs li a .cat-icon {
-        margin-right: 0;
-    }
-}
+        .breadcrumbs li a .cat-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            vertical-align: middle;
+            overflow: hidden;
+        }
+        .breadcrumbs li a .cat-icon svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+            max-width: 16px;
+            max-height: 16px;
+        }
+
+        .breadcrumbs li a .cat-text { display: none; }
+        .breadcrumbs li a .cat-icon { margin-right: 0; }
+        
         .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 16px; }
         .similar-scroll-container .product-image-wrapper { border-radius: 16px 16px 0 0; }
         .similar-scroll-container .product-info { padding: 0.6rem; }
@@ -471,13 +472,13 @@ layout: default
                 {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
                     <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
                     <li class="truncate-node">
-    <a href="/?category={{ first_cat }}" draggable="false">
-        {% if cat_data and cat_data.icon %}
-          {{ cat_data.icon | replace: '<svg', '<svg width="16" height="16"' }}
-        {% endif %}
-        <span class="cat-text">{{ cat_name | strip }}</span>
-    </a>
-</li>
+                        <a href="/?category={{ first_cat }}" draggable="false">
+                            {% if cat_data and cat_data.icon %}
+                              {{ cat_data.icon | replace: '<svg', '<svg width="16" height="16"' }}
+                            {% endif %}
+                            <span class="cat-text">{{ cat_name | strip }}</span>
+                        </a>
+                    </li>
                     
                     {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
                     <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
@@ -574,22 +575,27 @@ layout: default
         </div>
 
         <div class="product-info-section">
-            
-            <div class="desktop-title-area">
-                <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
-            </div>
-
             <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
-                <div class="price-wrapper">
-                    <div class="current-price-line">
-                        {{ page.price | replace: '₾', '' }}<span class="gel-symbol">₾</span>
-                    </div>
-                    {% if page.oldPrice != "" and page.oldPrice != nil %}
-                    <div class="old-price-line designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
-                    {% endif %}
+                <div class="desktop-title-area" style="margin-bottom: 1.25rem;">
+                    <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
                 </div>
 
-                <div id="dynamicBuyButton"></div>
+                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
+                    <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+                    
+                    <div class="submit-row" style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="price-wrapper desktop-price-inline" style="flex-direction: column; align-items: flex-start; margin-bottom: 0; gap: 0; flex-shrink: 0;">
+                            <div class="current-price-line" style="font-size: 2.1rem; line-height: 1;">
+                                {{ page.price | replace: '₾', '' }}<span class="gel-symbol" style="font-size: 1.3rem;">₾</span>
+                            </div>
+                            {% if page.oldPrice != "" and page.oldPrice != nil %}
+                            <div class="old-price-line designer-strike" style="margin-left: 0; font-size: 1.05rem; margin-top: 4px;">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div id="dynamicBuyButton" style="flex: 1;"></div>
+                    </div>
+                </form>
 
                 <div class="benefits-grid">
                     <div class="benefit-card">
@@ -671,14 +677,18 @@ layout: default
     <div class="similar-products-section" id="subcatSection" style="display: none;">
         <div class="title-highlight">
             <h2 class="similar-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                {% if cat_data and cat_data.icon %}
+                    {{ cat_data.icon | replace: '<svg', '<svg width="24" height="24" style="margin-right: 8px;"' }}
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                {% endif %}
                 {{ sub_name | strip }}
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow" id="subcatArrowLeft" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="subcatArrowLeft" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="subcatScroll"></div>
-            <button class="sim-arrow" id="subcatArrowRight" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="subcatArrowRight" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
     {% endif %}
@@ -688,14 +698,18 @@ layout: default
     <div class="similar-products-section" id="catSection" style="display: none;">
         <div class="title-highlight">
             <h2 class="similar-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {% if cat_data and cat_data.icon %}
+                    {{ cat_data.icon | replace: '<svg', '<svg width="24" height="24" style="margin-right: 8px;"' }}
+                {% else %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {% endif %}
                 {{ cat_name | strip }}
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow" id="catArrowLeft" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="catArrowLeft" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="catScroll"></div>
-            <button class="sim-arrow" id="catArrowRight" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="catArrowRight" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
     {% endif %}
@@ -709,9 +723,9 @@ layout: default
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow" id="recentArrowLeft" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="recentArrowLeft" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="recentScroll"></div>
-            <button class="sim-arrow" id="recentArrowRight" onclick="scrollCarousel('recentScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="recentArrowRight" onclick="scrollCarousel('recentScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
 </div>
@@ -940,7 +954,15 @@ layout: default
             thumbs.forEach(t => t.classList.remove('active'));
             if(thumbs[index]) {
                 thumbs[index].classList.add('active');
-                thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                
+                const strip = document.getElementById('thumbStrip');
+                const t = thumbs[index];
+                
+                if (window.innerWidth <= 1024) {
+                    strip.scrollTo({ left: t.offsetLeft - strip.clientWidth / 2 + t.clientWidth / 2, behavior: 'smooth' });
+                } else {
+                    strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
+                }
             }
         }
     }
@@ -1066,40 +1088,13 @@ layout: default
         if (specs && specs.scrollHeight > 300) { btnSpecs.style.display = 'block'; }
     }
 
-    // --- ОСТРОВОК (STICKY BOTTOM BAR) ---
     function scrollToForm() {
         document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-    
-    function initStickyMobileBar() {
-        if(window.innerWidth > 640) return;
-        const buyBox = document.getElementById('dynamicBuyButton');
-        const mobileBar = document.getElementById('mobileBottomBar');
-        if(!buyBox || !mobileBar) return;
-        
-        window.addEventListener('scroll', () => {
-            const buyBoxRect = buyBox.getBoundingClientRect();
-            const footer = document.querySelector('footer') || document.querySelector('.site-footer');
-            
-            const isBuyBoxAbove = buyBoxRect.bottom < 0; 
-            
-            let isFooterVisible = false;
-            if (footer) {
-                isFooterVisible = footer.getBoundingClientRect().top < window.innerHeight;
-            }
-            
-            if (isBuyBoxAbove && !isFooterVisible) {
-                mobileBar.classList.add('visible');
-            } else {
-                mobileBar.classList.remove('visible');
-            }
-        }, { passive: true });
     }
 
     // --- ИНИЦИАЛИЗАЦИЯ И API ---
     document.addEventListener('DOMContentLoaded', function() {
         checkExpandableBlocks();
-        initStickyMobileBar();
 
         const modalFullscreen = document.getElementById('imageZoomModal');
         let tsY = 0, tsX = 0;
@@ -1165,17 +1160,17 @@ layout: default
             const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
             const badgeTag = document.getElementById('dynamicStockBadgeTag');
             const btnContainer = document.getElementById('dynamicBuyButton');
+            const formInputs = document.getElementById('dynamicFormInputs');
             
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
-                if (btnContainer) btnContainer.innerHTML = `
-                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
+                if (formInputs) formInputs.innerHTML = `
                     <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0; display:none;"></div>
                     
                     <div class="input-wrapper" id="inlineNameWrapper">
@@ -1188,12 +1183,13 @@ layout: default
                         <span class="prefix">+995</span>
                         <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
                     </div>
-                    
+                `;
+                if (btnContainer) btnContainer.innerHTML = `
                     <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order">
                         <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="inlineOrderText">ყიდვა</span>
                     </button>
-                </form>`;
+                `;
             }
 
             // === ПОДКАТЕГОРИЯ ===
@@ -1206,6 +1202,10 @@ layout: default
                 if(subcatProducts.length > 0) {
                     subcatSection.style.display = 'block';
                     subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
+                    if(subcatProducts.length <= 4) {
+                        document.getElementById('subcatArrowLeft').style.display = 'none';
+                        document.getElementById('subcatArrowRight').style.display = 'none';
+                    }
                 }
             }
 
@@ -1218,6 +1218,10 @@ layout: default
                 if(catProducts.length > 0) {
                     catSection.style.display = 'block';
                     catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
+                    if(catProducts.length <= 4) {
+                        document.getElementById('catArrowLeft').style.display = 'none';
+                        document.getElementById('catArrowRight').style.display = 'none';
+                    }
                 }
             }
 
@@ -1232,6 +1236,10 @@ layout: default
                 if (recentProducts.length > 0) {
                     recentSection.style.display = 'block';
                     recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
+                    if (recentProducts.length <= 4) {
+                        document.getElementById('recentArrowLeft').style.display = 'none';
+                        document.getElementById('recentArrowRight').style.display = 'none';
+                    }
                 }
             }
         });
@@ -1266,6 +1274,8 @@ layout: default
             const btn = document.getElementById('submitInlineOrderBtn');
             const icon = document.getElementById('inlineOrderIcon');
             const text = document.getElementById('inlineOrderText');
+
+            if (!nameInput || !phoneInput) return;
 
             const name = nameInput.value.trim();
             let phoneRaw = phoneInput.value.replace(/\s/g, '');
