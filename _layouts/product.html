@@ -43,7 +43,7 @@ layout: default
 
     .form-error-msg {
         display: none; color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center;
-        background: #fef2f2; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
+        background: #fef2f2; padding: 0.8rem; border-radius: 0.75rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
     }
 
     /* Верхняя секция: Крошки */
@@ -52,7 +52,7 @@ layout: default
     .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
     .breadcrumbs { 
         display: flex; gap: 0.5rem; list-style: none; padding: 0.6rem 1.2rem; margin: 0; align-items: center; 
-        background: white; border-radius: 2rem; border: 1px solid #f1f5f9;
+        background: white; border-radius: 1rem; border: 1px solid #f1f5f9;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
         flex: 1 1 auto; min-width: 0; overflow: hidden;
     }
@@ -60,14 +60,14 @@ layout: default
     .breadcrumbs li.truncate-node { flex: 0 1 auto; min-width: 0; overflow: hidden; }
     .breadcrumbs li.truncate-node a, .breadcrumbs li.truncate-node span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; outline: none; }
     
-    .breadcrumbs a { text-decoration: none; color: #64748b; transition: color 0.3s ease; outline: none; }
+    .breadcrumbs a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #64748b; transition: color 0.3s ease; outline: none; }
     @media (hover: hover) { .breadcrumbs a:hover { color: #2563eb; } }
     .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; flex-shrink: 0; }
     .breadcrumbs .separator svg { width: 14px; height: 14px; }
     
     .breadcrumb-product-name { color: #0f172a; }
 
-    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
+    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
     .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0; padding: 0; }
@@ -78,7 +78,7 @@ layout: default
 
     /* ГАЛЕРЕЯ ТОВАРА */
     .gallery-section { 
-        background: white; border-radius: 2.2rem; border: 1px solid #f1f5f9; padding: 1.5rem; 
+        background: white; border-radius: 1rem; border: 1px solid #f1f5f9; padding: 1.5rem; 
         display: flex; flex-direction: column; position: relative;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
@@ -86,16 +86,16 @@ layout: default
     
     .main-gallery-viewport { 
         width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
-        border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; background: #fff;
+        border-radius: 0.75rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; background: #fff;
     }
     
     .gallery-badges { position: absolute; top: 1.2rem; left: 1.2rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
     .gallery-actions { position: absolute; top: 1.2rem; right: 1.2rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
-    .sku-mobile { display: none; position: absolute; bottom: 1.2rem; right: 1.2rem; z-index: 15; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.05); pointer-events: none; }
+    .sku-mobile { display: none; position: absolute; bottom: 1.2rem; right: 1.2rem; z-index: 15; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.05); pointer-events: none; }
     .sku-mobile b { color: #2563eb; }
 
-    .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 12px; font-weight: 900; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
-    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; border: 1px solid transparent; }
+    .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 900; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 800; border: 1px solid transparent; }
     .pill-stock-in { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1); }
     .pill-stock-out { background: #fef2f2; color: #ef4444; border-color: #fecaca; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
     .pill-stock-soon { background: #fffbeb; color: #d97706; border-color: #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1); }
@@ -118,18 +118,17 @@ layout: default
     .thumb-strip { display: flex; gap: 0.8rem; overflow-x: auto; width: 100%; padding: 0.5rem; -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
     .thumb-strip::-webkit-scrollbar { display: none; }
     
-    .thumb-card { width: 80px; height: 80px; border: 2px solid #f1f5f9; border-radius: 1.2rem; cursor: pointer; padding: 8px; background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
+    .thumb-card { width: 80px; height: 80px; border: 2px solid #f1f5f9; border-radius: 0.5rem; cursor: pointer; padding: 8px; background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
     @media (hover: hover) { .thumb-card:hover { border-color: #cbd5e1; } }
     .thumb-card.active { border-color: #2563eb; }
-    .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.5rem; mix-blend-mode: multiply; pointer-events: none; }
+    .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.375rem; mix-blend-mode: multiply; pointer-events: none; }
     .thumb-card:active { transform: scale(0.94); }
 
     .product-info-section { display: flex; flex-direction: column; gap: 1.0rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
     
-    .sticky-buy-box { background: white; border: 1px solid #f1f5f9; border-radius: 2.2rem; padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
+    .sticky-buy-box { background: white; border: 1px solid #f1f5f9; border-radius: 1rem; padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
-    /* Зачеркивание старой цены маркером */
     .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
     .designer-strike::after {
         content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 10px;
@@ -142,46 +141,48 @@ layout: default
     .old-price-line { font-size: 1.2rem; margin-left: 5px; line-height: 1.3; }
     .gel-symbol { font-size: 1.5rem; margin-left: 5px; font-weight: 800; }
 
-    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.2rem; border-radius: 1.2rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
+    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.2rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
     .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
     
     .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-size: 0.95rem; }
     @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: 0 10px 20px rgba(0,0,0,0.05); } }
 
+    .inline-input { border: 1px solid #e2e8f0; border-radius: 0.75rem; outline: none; background: #f8fafc; color: #0f172a; height: 3.2rem; font-size: 0.95rem; font-weight: 600; width: 100%; transition: all 0.2s; }
+    .inline-input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .inline-input::placeholder { color: #94a3b8; font-weight: 500; }
+
     .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; border-top: 1px dashed #f1f5f9; padding-top: 1.5rem; }
-    .benefit-card { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.2rem; padding: 1rem; display: flex; align-items: center; gap: 12px; transition: border-color 0.3s, background 0.3s; }
+    .benefit-card { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 12px; transition: border-color 0.3s, background 0.3s; }
     @media (hover: hover) { .benefit-card:hover { border-color: #cbd5e1; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.03); } }
     .benefit-icon { width: 38px; height: 38px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #2563eb; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0; }
     .benefit-info { display: flex; flex-direction: column; }
     .benefit-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;}
     .benefit-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
 
-    .content-section-box { margin-top: 2.5rem; background: white; border: 1px solid #f1f5f9; border-radius: 2.2rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
+    .content-section-box { margin-top: 2.5rem; background: white; border: 1px solid #f1f5f9; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
     .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
     
     .expandable-block { position: relative; max-height: 280px; overflow: hidden; transition: max-height 0.4s ease-in-out; }
     .expandable-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)); pointer-events: none; transition: opacity 0.3s; }
     .expandable-block.expanded .expandable-overlay { opacity: 0; }
     
-    /* Эффект плавной кнопки для "მეტის/ნაკლების ნახვა" */
-    .btn-expand { background: transparent; border: 1px solid #e2e8f0; color: #2563eb; font-weight: 800; font-size: 0.95rem; border-radius: 1rem; padding: 0.8rem; cursor: pointer; margin-top: 1rem; width: 100%; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .btn-expand { background: transparent; border: 1px solid #e2e8f0; color: #2563eb; font-weight: 800; font-size: 0.95rem; border-radius: 0.75rem; padding: 0.8rem; cursor: pointer; margin-top: 1rem; width: 100%; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .btn-expand:hover { background: #f8fafc; color: #1d4ed8; } }
     .btn-expand:active { transform: scale(0.96); background: #f1f5f9; }
 
     .spec-list-container { display: flex; flex-direction: column; gap: 0.5rem; }
-    .spec-item-row { display: flex; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 1.2rem; transition: background 0.3s; align-items: center; }
+    .spec-item-row { display: flex; padding: 1rem 1.2rem; background: #f8fafc; border-radius: 0.75rem; transition: background 0.3s; align-items: center; }
     @media (hover: hover) { .spec-item-row:hover { background: #f1f5f9; } }
     .spec-name-label { flex: 1; color: #64748b; font-size: 0.95rem; font-weight: 600; }
     .spec-value-text { flex: 1; color: #1e293b; font-weight: 800; font-size: 0.95rem; text-align: right; }
     .desc-text { line-height: 1.8; color: #475569; font-size: 1.05rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
     /* ==============================================================
-       КАРУСЕЛИ ПОХОЖИХ И ПРОСМОТРЕННЫХ
+       КАРУСЕЛИ
        ============================================================== */
     .similar-products-section { margin-top: 4rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     
-    /* Тот самый маркерный подчерк из первого варианта (строго под текстом) */
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.5rem; }
     .title-highlight::after { 
         content: ''; position: absolute; left: -2%; bottom: -6px; width: 104%; height: 8px; 
@@ -200,13 +201,12 @@ layout: default
 
     .similar-scroll-container .product-card {
         flex: 0 0 calc(25% - 18px); scroll-snap-align: start; min-width: 0;
-        background: white; border-radius: 2.2rem; overflow: hidden; position: relative;
+        background: white; border-radius: 1rem; overflow: hidden; position: relative;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: border-color 0.3s, box-shadow 0.3s;
         display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: auto;
     }
     @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
-    /* Убрано увеличение кнопок скролла */
     .sim-arrow { display: flex; flex-shrink: 0; width: 46px; height: 46px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
     .sim-arrow:active { transform: scale(0.9); }
@@ -216,7 +216,7 @@ layout: default
     .product-card .btn-fav-card.active svg { fill: currentColor; }
     .product-card .btn-fav-card:active { transform: scale(0.85); }
 
-    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #ffffff; border-radius: 2.2rem 2.2rem 0 0; border-bottom: 1px solid #f1f5f9; }
+    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #ffffff; border-radius: 1rem 1rem 0 0; border-bottom: 1px solid #f1f5f9; }
     
     .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; background: rgba(255,255,255,0.95); border: 1px solid #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; opacity: 0; transition: all 0.2s; z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.1); outline: none; }
     @media (hover: hover) { .product-card:hover .card-nav-arrow { opacity: 1; } .card-nav-arrow:hover { background: #2563eb; color: #fff; border-color: #2563eb; } }
@@ -243,41 +243,41 @@ layout: default
     .product-price { font-size: 1.8rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; line-height: 1; }
     .old-price { font-size: 0.95rem; line-height: 1.3; }
 
-    .btn-order { background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 1.2rem; cursor: pointer; font-weight: 800; font-size: 1.05rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-order { background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; cursor: pointer; font-weight: 800; font-size: 1.05rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 8px; }
     @media (hover: hover) { .btn-order:hover { background: #1d4ed8; box-shadow: 0 8px 15px rgba(37,99,235,0.3); } }
     .btn-order:active { transform: scale(0.96); }
 
     /* Островок для мобильных */
     .mobile-bottom-bar { 
         display: none; position: fixed; bottom: 1rem; left: 1rem; right: 1rem; background: rgba(255,255,255,0.95); 
-        backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.5rem; padding: 0.8rem; z-index: 999; 
+        backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.8rem; z-index: 999; 
         align-items: center; gap: 10px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
         transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     }
     .mobile-bottom-bar.visible { transform: translateY(0); }
-    .mobile-bottom-img { width: 44px; height: 44px; border-radius: 8px; object-fit: contain; background: #f8fafc; border: 1px solid #f1f5f9; }
+    .mobile-bottom-img { width: 44px; height: 44px; border-radius: 0.5rem; object-fit: contain; background: #f8fafc; border: 1px solid #f1f5f9; }
     .mobile-bottom-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     .mobile-bottom-price-row { display: flex; align-items: baseline; gap: 6px; }
     .mobile-bottom-price { font-weight: 900; color: #2563eb; font-size: 1.2rem; line-height: 1; }
     .mobile-bottom-old-price { font-size: 0.85rem; }
     .mobile-bottom-actions { display: flex; gap: 6px; align-items: center; }
-    .mobile-bottom-btn { width: 38px; height: 38px; border-radius: 12px; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; border: none; outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .mobile-bottom-btn { width: 38px; height: 38px; border-radius: 0.75rem; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; border: none; outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
     .mobile-bottom-btn:active { transform: scale(0.9); }
     .mobile-bottom-btn.active { color: #ef4444; background: #fee2e2; }
     .mobile-bottom-btn.active svg { fill: currentColor; }
-    .mobile-bottom-buy { background: #2563eb; color: white; border: none; border-radius: 12px; padding: 0 1.2rem; height: 38px; font-weight: 800; display: flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .mobile-bottom-buy { background: #2563eb; color: white; border: none; border-radius: 0.75rem; padding: 0 1.2rem; height: 38px; font-weight: 800; display: flex; align-items: center; gap: 6px; font-size: 0.95rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
     .mobile-bottom-buy:active { transform: scale(0.94); }
 
     /* Глобальный Toast Alert */
     .global-toast {
         position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
-        background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px;
+        background: #1e293b; color: white; padding: 12px 24px; border-radius: 0.75rem;
         font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100000; white-space: nowrap;
     }
     .global-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Полностью новая модалка галереи */
+    /* Полноэкранная модалка галереи */
     .modal-fullscreen { 
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
         background: rgba(255, 255, 255, 0.98); z-index: 100000; flex-direction: column; 
@@ -298,13 +298,12 @@ layout: default
         scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative;
     }
     
-    /* Обертка для фото в модалке, чтобы обводка была красивой */
     .modal-img-wrapper {
         display: flex; align-items: center; justify-content: center;
         width: 100%; height: 100%; max-height: 85vh;
     }
     .modal-img-wrapper img { 
-        max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 12px; 
+        max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.75rem; 
         box-shadow: 0 10px 30px rgba(0,0,0,0.08); pointer-events: auto; user-select: none; 
         border: 1px solid #e2e8f0; background: #fff;
     }
@@ -323,11 +322,11 @@ layout: default
     .modal-thumb-strip { display: inline-flex; gap: 12px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 4px; text-align: left; }
     .modal-thumb-strip::-webkit-scrollbar { display: none; }
     .modal-thumb { 
-        width: 70px; height: 70px; border: 2px solid transparent; border-radius: 12px; cursor: pointer; 
+        width: 70px; height: 70px; border: 2px solid transparent; border-radius: 0.5rem; cursor: pointer; 
         opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; box-sizing: border-box; background: #fff;
     }
     .modal-thumb.active { border-color: #2563eb; opacity: 1; transform: scale(1.05); }
-    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; pointer-events: none; }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 0.375rem; pointer-events: none; }
 
     /* РЕСПОНСИВНОСТЬ */
     .title-desktop { display: block; margin: 0; }
@@ -339,10 +338,10 @@ layout: default
         .sim-arrow { display: none !important; }
 
         .product-grid { grid-template-columns: 1fr; gap: 0rem; }
-        .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; }
+        .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; border-radius: 1rem; }
         .current-price-line { font-size: 2.2rem; }
-        .content-section-box { padding: 1.5rem; border-radius: 1.5rem; }
-        .gallery-section { border-radius: 1.5rem; padding: 1rem; }
+        .content-section-box { padding: 1.5rem; border-radius: 1rem; }
+        .gallery-section { border-radius: 1rem; padding: 1rem; }
         
         .sku-desktop { display: none; }
         .sku-mobile { display: block; }
@@ -350,13 +349,15 @@ layout: default
         .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 10.66px); }
         .similar-scroll-container { padding: 1rem 1rem; margin: 0 -1.5rem; scroll-padding: 0.6rem; }
         
-        /* Убираем точки и стрелки на планшете/телефоне в каруселях */
         .carousel-dots { display: none !important; }
         .card-nav-arrow { display: none !important; }
         .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; pointer-events: none; }
     }
     
     @media (max-width: 640px) {
+        /* Прячем текст 'მთავარი' и название товара в крошках для мобильных */
+        .breadcrumb-text-home, .breadcrumb-sep-product, .breadcrumb-item-product { display: none !important; }
+        
         .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
@@ -364,15 +365,15 @@ layout: default
         .product-title-h1 { font-size: 1.4rem; line-height: 1.2; margin: 0 0 0.3rem 0; padding: 0; }
         .desktop-title-area { padding: 0; margin: 0; }
         .title-mobile { margin: 0 0 0.3rem 0 !important; padding: 0 !important; }
-        .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 1.2rem; }
-        .similar-scroll-container .product-image-wrapper { border-radius: 1.2rem 1.2rem 0 0; }
+        .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 1rem; }
+        .similar-scroll-container .product-image-wrapper { border-radius: 1rem 1rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
         .similar-scroll-container .product-name-box { height: 2.4rem; margin-bottom: 0.5rem; }
         .similar-scroll-container .product-name { font-size: 0.85rem; line-height: 1.3; }
         .similar-scroll-container .product-price-container { margin-bottom: 0.8rem; padding: 0; min-height: auto; }
         .similar-scroll-container .product-price { font-size: 1.2rem; letter-spacing: -0.5px; }
         .similar-scroll-container .old-price { font-size: 0.75rem; margin-bottom: 2px; }
-        .similar-scroll-container .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.8rem; gap: 5px; }
+        .similar-scroll-container .btn-order { padding: 0.6rem; font-size: 0.85rem; border-radius: 0.75rem; gap: 5px; }
         .similar-scroll-container .btn-order svg { width: 16px; height: 16px; }
         .product-card .btn-fav-card { width: 28px; height: 28px; top: 8px; right: 8px; }
         
@@ -396,7 +397,7 @@ layout: default
                 <li>
                     <a href="/" draggable="false">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                        მთავარი
+                        <span class="breadcrumb-text-home">მთავარი</span>
                     </a>
                 </li>
                 
@@ -413,8 +414,8 @@ layout: default
                     </li>
                     {% endif %}
                     
-                    <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-                    <li class="truncate-node">
+                    <span class="separator breadcrumb-sep-product"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
+                    <li class="truncate-node breadcrumb-item-product">
                         <span class="breadcrumb-product-name">{{ page.name }}</span>
                     </li>
                 {% endif %}
@@ -482,7 +483,7 @@ layout: default
 
                 <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
                     {% if is_video %}
-                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 0.5rem; overflow: hidden;">
+                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 0.375rem; overflow: hidden;">
                             <img src="https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
                             <div class="video-thumb-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -591,22 +592,47 @@ layout: default
         </div>
     </div>
 
-    <!-- БЛОК ПОХОЖИХ ТОВАРОВ -->
-    <div class="similar-products-section" id="similarSection" style="display: none;">
+    <!-- БЛОК ПОДКАТЕГОРИИ -->
+    {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
+    <div class="similar-products-section" id="subcatSection" style="display: none;">
         <div class="title-highlight">
-            <h2 class="similar-title">მსგავსი პროდუქტები</h2>
+            <h2 class="similar-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {{ sub_name | strip }}
+            </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow" id="simArrowLeft" onclick="scrollCarousel('similarScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
-            <div class="similar-scroll-container" id="similarScroll"></div>
-            <button class="sim-arrow" id="simArrowRight" onclick="scrollCarousel('similarScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow" id="subcatArrowLeft" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="similar-scroll-container" id="subcatScroll"></div>
+            <button class="sim-arrow" id="subcatArrowRight" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
+    {% endif %}
+
+    <!-- БЛОК КАТЕГОРИИ -->
+    {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
+    <div class="similar-products-section" id="catSection" style="display: none;">
+        <div class="title-highlight">
+            <h2 class="similar-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {{ cat_name | strip }}
+            </h2>
+        </div>
+        <div class="similar-wrapper">
+            <button class="sim-arrow" id="catArrowLeft" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="similar-scroll-container" id="catScroll"></div>
+            <button class="sim-arrow" id="catArrowRight" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+        </div>
+    </div>
+    {% endif %}
     
     <!-- БЛОК НЕДАВНО ПРОСМОТРЕННЫЕ -->
     <div class="similar-products-section" id="recentlyViewedSection" style="display: none;">
         <div class="title-highlight">
-            <h2 class="similar-title">ბოლოს ნანახი</h2>
+            <h2 class="similar-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                ბოლოს ნანახი
+            </h2>
         </div>
         <div class="similar-wrapper">
             <button class="sim-arrow" id="recentArrowLeft" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
@@ -653,7 +679,7 @@ layout: default
                 {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
                     <div class="modal-slide">
                         <div class="modal-img-wrapper">
-                            <img src="{{ img }}" alt="Zoom" draggable="false">
+                            <img src="{{ img }}" alt="Zoom" draggable="false" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                         </div>
                     </div>
                 {% endunless %}
@@ -793,7 +819,6 @@ layout: default
         });
     };
 
-    // Прокрутка фото ВНУТРИ карточки (цикличная)
     window.scrollCardGallery = function(id, dir, e) {
         e.preventDefault(); e.stopPropagation();
         const track = document.getElementById('track-' + id);
@@ -850,7 +875,7 @@ layout: default
     let isZoomModalOpen = false;
 
     function zoomImagePC(e, img) {
-        if(window.innerWidth < 1024 || isZoomModalOpen) return;
+        if(window.innerWidth < 1024) return;
         img.style.transition = 'none'; 
         const rect = img.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -860,7 +885,7 @@ layout: default
     }
     
     function resetZoomPC(img) {
-        if(window.innerWidth < 1024 || isZoomModalOpen) return;
+        if(window.innerWidth < 1024) return;
         img.style.transition = 'transform 0.3s ease'; 
         img.style.transform = 'scale(1)';
     }
@@ -869,22 +894,18 @@ layout: default
     function openImageZoom(img, index) {
         isZoomModalOpen = true; 
         
-        // Сбрасываем увеличение у главного изображения, чтобы оно не было огромным на фоне
         img.style.transition = 'none'; 
         img.style.transform = 'scale(1)';
 
         const modal = document.getElementById('imageZoomModal');
-
         modal.style.display = 'flex'; 
-        modal.offsetHeight; // Принудительный рефлоу для анимации
+        modal.offsetHeight; 
 
-        // Отключаем плавный скролл, чтобы мгновенно перекинуть трек модалки на нужное фото. 
-        // Важно выполнять это ПОСЛЕ применения display: flex к модалке, чтобы clientWidth не был равен 0.
         const modalTrack = document.getElementById('modalTrack');
         if(modalTrack) {
             modalTrack.style.scrollBehavior = 'auto';
             modalTrack.scrollLeft = index * modalTrack.clientWidth;
-            void modalTrack.offsetWidth; // Принудительный рефлоу для мгновенного перехода
+            void modalTrack.offsetWidth; 
             modalTrack.style.scrollBehavior = 'smooth';
             syncModalThumbs();
         }
@@ -893,19 +914,20 @@ layout: default
     }
     
     function closeImageZoom(e) {
-        // Убедимся, что пользователь кликнул по пустому фону, а не по фото или кнопкам
         if (e) {
-            const isImg = e.target.closest('img');
-            const isArrow = e.target.closest('.modal-nav-arrow');
             const isThumbArea = e.target.closest('.modal-thumb-area');
-            if (isImg || isArrow || isThumbArea) return;
+            const isArrow = e.target.closest('.modal-nav-arrow');
+            const isThumb = e.target.closest('.modal-thumb');
+            if (isArrow || isThumbArea || isThumb) return;
+            
+            const isImg = e.target.closest('.modal-img-wrapper img');
+            if (isImg && window.innerWidth >= 1024) return; // Позволяем зум на пк без закрытия
         }
 
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
         
-        // Скрываем модалку после затухания анимации
         setTimeout(() => { 
             modal.style.display = 'none';
         }, 300);
@@ -1005,7 +1027,6 @@ layout: default
         checkExpandableBlocks();
         initStickyMobileBar();
 
-        // Умная блокировка скролла для модалки, чтобы не ломался хедер и не смещался сайт
         const modalFullscreen = document.getElementById('imageZoomModal');
         let tsY = 0, tsX = 0;
         
@@ -1073,20 +1094,27 @@ layout: default
             
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('similarScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (btnContainer) btnContainer.innerHTML = `
-                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
                     <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0; display:none;"></div>
-                    <input type="text" id="inlineName" class="input-field" placeholder="თქვენი სახელი" required autocomplete="name" style="margin-bottom: 0;">
-                    <div class="phone-wrapper" id="inlinePhoneWrapper" style="margin-bottom: 0;">
-                        <span class="phone-prefix">+995</span>
-                        <input type="tel" id="inlinePhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
+                    
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <svg style="position: absolute; left: 1rem; color: #94a3b8; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="inlineName" class="inline-input" placeholder="თქვენი სახელი" required autocomplete="name" style="padding-left: 2.8rem;">
                     </div>
+                    
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <svg style="position: absolute; left: 1rem; color: #94a3b8; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span class="phone-prefix" style="position: absolute; left: 2.8rem; pointer-events: none; font-weight: 700; color: #64748b;">+995</span>
+                        <input type="tel" id="inlinePhone" class="inline-input phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel" style="padding-left: 5.6rem;">
+                    </div>
+                    
                     <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order">
                         <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="inlineOrderText">ყიდვა</span>
@@ -1094,17 +1122,29 @@ layout: default
                 </form>`;
             }
 
-            // === ПОХОЖИЕ ТОВАРЫ ===
-            let similar = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub));
-            if(similar.length < 30) {
-                const more = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !similar.includes(p));
-                similar = similar.concat(more);
-            }
-            similar = similar.slice(0, 30);
+            // === ПОДКАТЕГОРИЯ ===
+            const subcatSection = document.getElementById('subcatSection');
+            const subcatScroll = document.getElementById('subcatScroll');
+            let subcatProducts = [];
             
-            if(similar.length > 0) {
-                document.getElementById('similarSection').style.display = 'block';
-                document.getElementById('similarScroll').innerHTML = similar.map(p => window.createProductCardHTML(p, 'sim')).join('');
+            if(subcatSection && subcatScroll && currentSub) {
+                subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).slice(0, 30);
+                if(subcatProducts.length > 0) {
+                    subcatSection.style.display = 'block';
+                    subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
+                }
+            }
+
+            // === КАТЕГОРИЯ ===
+            const catSection = document.getElementById('catSection');
+            const catScroll = document.getElementById('catScroll');
+            
+            if(catSection && catScroll && currentCat) {
+                let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).slice(0, 30);
+                if(catProducts.length > 0) {
+                    catSection.style.display = 'block';
+                    catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
+                }
             }
 
             // === НЕДАВНО ПРОСМОТРЕННЫЕ ===
@@ -1123,7 +1163,6 @@ layout: default
         });
     });
 
-    // Блокировка скролла клавишами (пробел, стрелки), когда модалка открыта
     window.addEventListener('keydown', (e) => {
         if (isZoomModalOpen && [32, 33, 34, 38, 40].includes(e.keyCode)) {
             e.preventDefault();
@@ -1144,12 +1183,11 @@ layout: default
         }
     });
 
-    document.addEventListener('submit', async function(e) {
+    document.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'inlineOrderForm') {
             e.preventDefault();
             const nameInput = document.getElementById('inlineName');
             const phoneInput = document.getElementById('inlinePhone');
-            const phoneWrapper = document.getElementById('inlinePhoneWrapper');
             const errorDiv = document.getElementById('inlineFormError');
             const btn = document.getElementById('submitInlineOrderBtn');
             const icon = document.getElementById('inlineOrderIcon');
@@ -1161,15 +1199,15 @@ layout: default
             const showError = (msg, el) => {
                 errorDiv.textContent = msg;
                 errorDiv.style.display = 'block';
-                if(el) el.classList.add('input-error');
+                if(el) el.style.borderColor = '#ef4444';
                 setTimeout(() => { 
                     errorDiv.style.display = 'none'; 
-                    if(el) el.classList.remove('input-error');
+                    if(el) el.style.borderColor = '#e2e8f0';
                 }, 3500);
             };
 
             if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", nameInput); return; }
-            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
+            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneInput); return; }
 
             const fullPhone = '+995' + phoneRaw;
             
@@ -1185,25 +1223,25 @@ layout: default
             icon.outerHTML = `<div class="spinner" id="inlineOrderIcon" style="width:20px;height:20px;border-width:2px;margin:0; border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>`;
             text.innerText = 'იგზავნება...';
 
-            try {
-                const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-                const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-                const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
-                
-                const response = await fetch(targetWorker, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        name: name, 
-                        phone: fullPhone, 
-                        product: product.name, 
-                        price: product.price,
-                        product_id: product.id,
-                        event_id: eventId
-                    })
-                });
+            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+            const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+            
+            // Fire-and-forget: отправляем на сервер, не заставляя пользователя ждать.
+            fetch(targetWorker, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: name, 
+                    phone: fullPhone, 
+                    product: product.name, 
+                    price: product.price,
+                    product_id: product.id,
+                    event_id: eventId
+                })
+            }).catch(console.error);
 
-                if (!response.ok) throw new Error('Network error');
-
+            // Обработка пикселей и трекинга в фоне без задержек.
+            setTimeout(() => {
                 try {
                     if (typeof fbq === 'function') {
                         fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId });
@@ -1212,23 +1250,16 @@ layout: default
                         window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); 
                     }
                 } catch(err) { console.error(err); }
+            }, 50);
 
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-                document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
-                text.innerText = 'ყიდვა';
-                
-                if(window.showOrderConfirm) {
-                    window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price });
-                }
-
-            } catch (error) {
-                console.error(error);
-                showError("შეცდომა სერვერზე. გთხოვთ სცადოთ მოგვიანებით.", null);
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-                document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
-                text.innerText = 'ყიდვა';
+            // Мгновенное подтверждение покупки и очистка UI
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
+            text.innerText = 'ყიდვა';
+            
+            if(window.showOrderConfirm) {
+                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price });
             }
         }
     });
