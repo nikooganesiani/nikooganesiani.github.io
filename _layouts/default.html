@@ -202,19 +202,24 @@
     .footer-col h3 { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; letter-spacing: -0.5px; text-align: center; }
     
     .footer-btn {
+        position: relative; overflow: hidden;
         display: flex; align-items: stretch; text-decoration: none;
         background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px;
         margin-bottom: 0.8rem; cursor: pointer; transition: all 0.2s; outline: none;
-        width: 100%; position: relative; overflow: hidden; padding: 0;
+        width: 100%; min-height: 48px; padding: 0;
     }
     @media (hover: hover) { .footer-btn:hover { border-color: #cbd5e1; background: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transform: translateY(-2px); } }
     .footer-btn:active { transform: scale(0.96); box-shadow: none; }
     
-    .footer-btn-icon { background: #2563eb; width: 48px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .footer-btn-icon {
+        position: absolute; left: 0; top: 0; bottom: 0; width: 48px;
+        background: #2563eb; display: flex; align-items: center; justify-content: center; z-index: 1;
+    }
     .footer-btn-icon svg { width: 20px; height: 20px; color: white; }
     .footer-btn-text {
-        flex: 1; padding: 0.8rem; font-size: 0.95rem; font-weight: 700; color: #475569;
-        display: flex; align-items: center; justify-content: center; text-align: center;
+        flex: 1; display: flex; align-items: center; justify-content: center;
+        padding: 0.8rem 48px; /* Идеальное центрирование благодаря равным отступам */
+        font-size: 0.95rem; font-weight: 700; color: #475569; text-align: center; z-index: 2;
     }
     
     .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0; color: #94a3b8; font-size: 0.85rem; font-weight: 600; }
@@ -249,14 +254,17 @@
     }
 
     /* УМНЫЙ ТОСТ (УВЕДОМЛЕНИЯ ВВЕРХУ) */
+    .global-toast-wrapper {
+        position: fixed; top: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100000;
+        pointer-events: none; padding: 0 1.5rem;
+    }
     .global-toast {
-        position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
         background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px;
         font-size: 0.95rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100000; 
-        display: inline-flex; align-items: center; justify-content: center; width: max-content; max-width: 90vw; text-align: center; line-height: 1.4;
+        opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.4;
     }
-    .global-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .global-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
     /* ПРОЧИЕ СТИЛИ (Формы, Таймлайн, Трекинг) */
     .phone-wrapper { display: flex; align-items: stretch; background: #f8fafc; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
@@ -336,7 +344,6 @@
     {% include meta-pixel.html %}
     
     <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ ДО ЗАГРУЗКИ КОНТЕНТА -->
-    <!-- (Вынесены вверх, чтобы ошибки в карточке товара не ломали навигацию) -->
     <script>
         window.openAppModal = function(id) {
             try {
@@ -404,7 +411,7 @@
             if(countEl) countEl.innerText = favs.length > 0 ? `(${favs.length})` : '';
             if (favs.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:2rem 0; font-weight:600;">რჩეულები ცარიელია</div>'; return; }
             list.innerHTML = favs.map((f, i) => {
-                let oldPHtml = f.oldPrice ? `<span class="list-item-old-price" style="margin-left:6px;">${f.oldPrice}</span>` : '';
+                let oldPHtml = (f.oldPrice && f.oldPrice !== 'null' && !f.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${f.oldPrice}</span>` : '';
                 return `<div class="list-item-card" onclick="location.href='${f.link}'" style="cursor:pointer;">
                     <img class="list-item-img" src="${f.img || '/img/no-image.png'}" alt="">
                     <div class="list-item-info">
@@ -441,7 +448,7 @@
                 let d = new Date(o.date);
                 let dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
                 let priceFixed = String(o.price).includes('₾') ? o.price : String(o.price).trim() + ' ₾';
-                let oldPHtml = o.oldPrice ? `<span class="list-item-old-price" style="margin-left:6px;">${o.oldPrice}</span>` : '';
+                let oldPHtml = (o.oldPrice && o.oldPrice !== 'null' && !o.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${o.oldPrice}</span>` : '';
                 return `<div class="list-item-card list-item-col">
                     <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px dashed #e2e8f0; padding-bottom:8px; margin-bottom:8px;">
                         <span style="font-size:0.8rem; color:#64748b; font-weight:600;">${dateStr}</span>
@@ -519,7 +526,7 @@
                 </div>
                 <div class="footer-col">
                     <h3>ინფორმაცია</h3>
-                    <a href="/info/about" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></div><div class="footer-btn-text">ჩვენ შესახებ</div></a>
+                    <a href="/info/about" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div class="footer-btn-text">ჩვენ შესახებ</div></a>
                     <a href="/info/delivery" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div><div class="footer-btn-text">მიწოდება</div></a>
                     <a href="/info/warranty" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div class="footer-btn-text">გარანტია</div></a>
                     <a href="/info/privacy" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div><div class="footer-btn-text">კონფიდენციალურობა</div></a>
@@ -568,7 +575,9 @@
     </nav>
 
     <!-- ГЛОБАЛЬНЫЙ УМНЫЙ ТОСТ -->
-    <div id="globalToast" class="global-toast"></div>
+    <div class="global-toast-wrapper">
+        <div id="globalToast" class="global-toast"></div>
+    </div>
 
     <!-- МОДАЛКА ДЛЯ ПОКАЗА СКОПИРОВАННОЙ ССЫЛКИ -->
     <div class="modal" id="linkModal">
@@ -794,7 +803,22 @@
 
     function parseGeorgianDate(dateStr) {
         if (!dateStr) return null;
-        try { const parts = String(dateStr).trim().split(' '); const dateParts = parts[0].split('.'); if (dateParts.length === 3) { const day = parseInt(dateParts[0]), month = parseInt(dateParts[1]) - 1, year = parseInt(dateParts[2]); let hours = 0, minutes = 0; if (parts.length > 1 && parts[1]) { const timeParts = parts[1].split(':'); if (timeParts.length === 2) { hours = parseInt(timeParts[0]); minutes = parseInt(timeParts[1]); } } const d = new Date(year, month, day, hours, minutes); return isNaN(d.getTime()) ? null : d; } return null; } catch (e) { return null; }
+        try { 
+            const parts = String(dateStr).trim().split(' '); 
+            const dateParts = parts[0].split(/[./-]/); 
+            if (dateParts.length === 3) { 
+                const day = parseInt(dateParts[0]), month = parseInt(dateParts[1]) - 1, year = parseInt(dateParts[2]); 
+                let hours = 0, minutes = 0; 
+                if (parts.length > 1 && parts[1]) { 
+                    const timeParts = parts[1].split(':'); 
+                    if (timeParts.length >= 2) { hours = parseInt(timeParts[0]); minutes = parseInt(timeParts[1]); } 
+                } 
+                const d = new Date(year, month, day, hours, minutes); 
+                return isNaN(d.getTime()) ? null : d; 
+            } 
+            const d = new Date(dateStr);
+            return isNaN(d.getTime()) ? null : d;
+        } catch (e) { return null; }
     }
 
     function getStatusBadge(statusName) {
@@ -828,11 +852,12 @@
                 const data = await response.json();
                 trackingResult.style.display = 'block';
                 if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
-                   trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`; return;
+                   trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`; return;
                 }
                 const order = data.data[0]; const currentStatus = order.statusName || 'უცნობი'; const trackingEvents = [];
                 const addDate = parseGeorgianDate(order.formatted_add_date); if (addDate) trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
-                const safeDate = (dateString) => { if (!dateString) return new Date(); const d = new Date(dateString); return isNaN(d.getTime()) ? new Date() : d; };
+                const safeDate = (dateString) => { return parseGeorgianDate(dateString) || new Date(); };
+                
                 if (currentStatus === 'საწყობშია' || currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') { let d = safeDate(order.delivery_date); trackingEvents.push({ status: 'საწყობშია', created_at: d.toISOString() }); }
                 if (currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') { let d = safeDate(order.delivery_date); trackingEvents.push({ status: 'გატანილია ჩასაბარებლად', created_at: d.toISOString() }); }
                 if (currentStatus && !trackingEvents.some(ev => ev.status === currentStatus)) { let d = safeDate(order.delivery_date); trackingEvents.push({ status: currentStatus, created_at: d.toISOString() }); }
@@ -845,13 +870,13 @@
                 statusOrder.forEach((status) => {
                     const hasEvent = statusDateMap[status] !== undefined; const isPast = hasEvent && status !== lastStatus; const isCurrent = status === lastStatus;
                     let stepClass = 'future'; if (isPast) stepClass = 'past'; else if (isCurrent) stepClass = 'current';
-                    let dateStr = hasEvent ? new Date(statusDateMap[status]).toLocaleDateString('ru-RU') : '—';
+                    let dateStr = hasEvent ? new Date(statusDateMap[status]).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'}) : '—';
                     timelineHtml += `<div class="timeline-step-v ${stepClass}"><div class="timeline-indicator"><div class="timeline-dot-v"></div><div class="timeline-line"></div></div><div class="timeline-content-v"><div class="timeline-date-v">${dateStr}</div><div class="timeline-text-v">${statusMap[status] || status}</div></div></div>`;
                 });
 
                 trackingResult.innerHTML = `<div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);"><p style="font-size: 0.85rem; font-weight: 800; color: #94a3b8; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical dark-timeline">${timelineHtml}</div></div>`;
             } catch (error) {
-                trackingResult.style.display = 'block'; trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
+                trackingResult.style.display = 'block'; trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
             } finally { trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება'; }
         });
         if(trackingOrderId) trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
@@ -923,7 +948,7 @@
                 if (response.ok) {
                     if (typeof fbq === 'function') { fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId }); }
                     if (typeof window.sendCapiEvent === 'function') { window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); }
-                    window.closeAppModal('orderFormModal'); setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price }); }, 400);
+                    window.closeAppModal('orderFormModal'); setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: product.oldPrice || product.old_price }); }, 400);
                 }
             } catch(error) { console.error(error); }
             submitBtn.innerHTML = originalContent; submitBtn.disabled = false;
@@ -939,8 +964,8 @@
             const rawConfirmPrice = String(data.price).replace(/₾/g, '').trim();
             document.getElementById('confirmPrice').textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
             
-            let oldPriceEl = document.querySelector('.modern-price-old, .old-price');
-            let oldPrice = oldPriceEl ? oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾' : null;
+            // Исправлено: берем старую цену напрямую из данных, а не со всей страницы
+            let oldPrice = (data.oldPrice && data.oldPrice !== 'null' && data.oldPrice !== 'undefined') ? String(data.oldPrice).replace(/₾/g, '').trim() + ' ₾' : null;
             
             let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
             orders.unshift({ name: data.name, phone: data.phone, product: data.product, price: rawConfirmPrice + ' ₾', oldPrice: oldPrice, date: new Date().toISOString() });
@@ -983,15 +1008,19 @@
             if (card) {
                 let nameEl = card.querySelector('.product-name'); if(nameEl) name = nameEl.innerText;
                 let priceEl = card.querySelector('.product-price'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                let oldPriceEl = card.querySelector('.old-price'); if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+                let oldPriceEl = card.querySelector('.old-price, .modern-price-old'); if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
                 let imgEl = card.querySelector('.product-image'); if(imgEl) img = imgEl.src;
                 let aEl = card.querySelector('a'); if(aEl) link = aEl.getAttribute('href');
             } else {
                 let titleEl = document.querySelector('.title-desktop'); if(!titleEl || titleEl.offsetParent === null) titleEl = document.querySelector('.title-mobile');
                 if(titleEl) name = titleEl.innerText;
                 let priceEl = document.querySelector('.modern-price-current'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                let oldPriceEl = document.querySelector('.modern-price-old, .old-price'); if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                let imgEl = document.querySelector('.main-gallery-slide img'); if(imgEl) img = imgEl.src;
+                
+                // Исправлено: искать старую цену только в родительском блоке текущей цены, чтобы избежать утечек со слайдера
+                let oldPriceEl = priceEl ? priceEl.parentNode.querySelector('.modern-price-old, .old-price') : null; 
+                if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+                
+                let imgEl = document.querySelector('.main-gallery-slide img, .product-main-img'); if(imgEl) img = imgEl.src;
             }
 
             let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
