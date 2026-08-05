@@ -83,7 +83,7 @@ layout: default
 
     /* ГАЛЕРЕЯ ТОВАРА */
     .gallery-section { 
-        display: flex; flex-direction: column; position: relative;
+        display: flex !important; flex-direction: row !important; position: relative;
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
     }
     
@@ -98,10 +98,16 @@ layout: default
         /* Обеспечиваем рендеринг: width вместо flex-basis, min-height для защиты от коллапса */
         .main-gallery-viewport { flex: 1; margin-bottom: 0; width: calc(100% - 88px); min-height: 200px; }
     }
-    
+    #thumbStrip {
+    width: 80px !important;
+    min-width: 80px !important;
+    order: -1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    }
     .main-gallery-viewport { 
-        aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
-        border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid #e2e8f0; background: #fff;
+        aspect-ratio: 1 / 1; overflow: hidden; position: relative; flex-grow: 1 !important; min-width: 0 !important;
+        border-radius: 8px; border: 1px solid #e2e8f0; background: #fff;
     }
     
     .gallery-badges { position: absolute; top: 1rem; left: 1rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
