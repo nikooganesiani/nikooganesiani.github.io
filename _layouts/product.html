@@ -403,21 +403,30 @@ layout: default
         /* Math for mobile thumb: outer 10, padding 3, inner 7 (5 is safer to render smoothly) */
         .thumb-card { width: 56px; height: 56px; padding: 3px; border-radius: 10px; }
         .thumb-card img { border-radius: 5px; }
-/* Иконка категории в хлебных крошках — по образу "მთავარი" */
-.breadcrumbs .cat-icon {
+/* Иконка категории в хлебных крошках */
+.breadcrumbs li a .cat-icon {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    vertical-align: middle;
 }
-.breadcrumbs .cat-icon svg {
+.breadcrumbs li a .cat-icon svg {
+    display: block;
     width: 16px;
     height: 16px;
 }
 
-/* На мобильных скрываем текст, иконка остаётся */
+/* Мобильные: скрываем текст, показываем только иконку */
 @media (max-width: 1024px) {
-    .breadcrumbs .cat-text {
+    .breadcrumbs li a .cat-text {
         display: none;
+    }
+    .breadcrumbs li a .cat-icon {
+        margin-right: 0;
     }
 }
         .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 16px; }
