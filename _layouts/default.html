@@ -49,7 +49,6 @@
     ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 14px; height: 14px; }
     ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background-color: #f8fafc; }
     
-    /* Убрано расширение при наведении, зафиксирована ширина 4px */
     ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
         background-color: rgba(148, 163, 184, 0.45); border-radius: 10px; border: 4px solid #f8fafc; 
         background-clip: padding-box; transition: background-color 0.4s ease;
@@ -59,16 +58,14 @@
     }
     ::-webkit-scrollbar-thumb:active, html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background-color: rgba(37, 99, 235, 0.95); border-width: 4px; }
 
-    .search-results, .modal-content, .modal-list-container {
-        -ms-overflow-style: none; scrollbar-width: none;
-    }
+    .search-results, .modal-content, .modal-list-container { -ms-overflow-style: none; scrollbar-width: none; }
     .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar, .modal-list-container::-webkit-scrollbar { display: none; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
     body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
     main { flex: 1; } 
 
-    /* ПРЕМИАЛЬНЫЙ HEADER */
+    /* ПРЕМИАЛЬНЫЙ HEADER (ПК) */
     .header {
         position: sticky; top: 0; z-index: 100;
         background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -103,10 +100,7 @@
     .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); }
 
     .header-right { display: flex; align-items: center; gap: 0.8rem; flex: 1; justify-content: flex-end; }
-    .mobile-search-toggle, .close-search-btn { display: none; background: transparent; border: none; cursor: pointer; outline: none; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-    .mobile-search-toggle:active, .close-search-btn:active { transform: scale(0.85); }
-
-    /* Иконки кабинета в хедере */
+    
     .desktop-icon-btn {
         position: relative; background: #f8fafc; border: 1px solid #e2e8f0; width: 44px; height: 44px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b;
@@ -135,7 +129,7 @@
     .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
     .search-clear.show { display: block; }
     
-    /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК (МАТЕМАТИЧЕСКАЯ ГАРМОНИЯ) */
+    /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК */
     .modal {
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -150,7 +144,6 @@
     .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     .modal-content h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; }
     
-    /* Универсальные скругления 12px внутри контейнера 24px (24 - 12 = 12) */
     .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f8fafc; color: #0f172a; outline: none; }
     .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     .phone-wrapper { border-radius: 12px; }
@@ -166,12 +159,12 @@
         border-radius: 12px; padding: 12px; position: relative; align-items: center; transition: all 0.2s;
     }
     @media (hover: hover) { .list-item-card:hover { border-color: #cbd5e1; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.03); } }
-    .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: white; border: 1px solid #f1f5f9; padding: 2px; }
+    .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: white; border: 1px solid #f1f5f9; padding: 2px; flex-shrink: 0; }
     .list-item-info { flex: 1; min-width: 0; }
-    .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .list-item-price { font-weight: 900; color: #2563eb; font-size: 1.1rem; margin-top: 4px; }
-    .list-item-sub { font-size: 0.8rem; color: #64748b; font-weight: 600; margin-bottom: 2px; }
-    .list-item-del-btn { background: #fee2e2; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; }
+    .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+    .list-item-price { font-weight: 900; color: #2563eb; font-size: 1.1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
+    .list-item-old-price { font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; text-decoration-color: #ef4444; font-weight: 700; }
+    .list-item-del-btn { background: #fee2e2; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; flex-shrink: 0; }
     .list-item-del-btn:active { transform: scale(0.85); }
     .list-item-col { flex-direction: column; align-items: flex-start; }
 
@@ -208,12 +201,13 @@
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2.5rem; margin-bottom: 3rem; }
     .footer-col h3 { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; letter-spacing: -0.5px; }
     .footer-col a, .footer-col button {
-        display: flex; align-items: center; gap: 10px; color: #64748b; font-weight: 600; text-decoration: none;
-        margin-bottom: 0.8rem; font-size: 0.95rem; transition: all 0.2s; background: transparent; border: none; cursor: pointer; padding: 0; text-align: left; outline: none;
+        display: flex; align-items: center; gap: 10px; color: #475569; font-weight: 600; text-decoration: none;
+        margin-bottom: 0.8rem; font-size: 0.95rem; transition: all 0.2s; background: #f8fafc;
+        border: 1px solid #f1f5f9; border-radius: 12px; padding: 0.8rem 1rem; cursor: pointer; outline: none; width: 100%;
     }
-    @media (hover: hover) { .footer-col a:hover, .footer-col button:hover { color: #2563eb; transform: translateX(6px); } }
-    .footer-col a:active, .footer-col button:active { transform: scale(0.96); }
-    .footer-col svg { width: 18px; height: 18px; color: #94a3b8; transition: 0.2s; flex-shrink: 0; }
+    @media (hover: hover) { .footer-col a:hover, .footer-col button:hover { color: #2563eb; border-color: #cbd5e1; background: #fff; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.03); } }
+    .footer-col a:active, .footer-col button:active { transform: scale(0.96); box-shadow: none; }
+    .footer-col svg { width: 20px; height: 20px; color: #94a3b8; transition: 0.2s; flex-shrink: 0; }
     @media (hover: hover) { .footer-col a:hover svg, .footer-col button:hover svg { color: #2563eb; } }
     .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0; color: #94a3b8; font-size: 0.85rem; font-weight: 600; }
 
@@ -226,7 +220,7 @@
     }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 25%; outline: none; transition: transform 0.2s;
+        color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 20%; outline: none; transition: transform 0.2s;
     }
     .bottom-nav-item:active { transform: scale(0.9); }
     .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; }
@@ -237,37 +231,27 @@
     }
     
     /* АДАПТИВ & РЕШЕНИЕ КОНФЛИКТА СЛОЕВ */
-    @media (max-width: 860px) {
-        .nav-btn-text { display: none; }
-        .nav-btn-header { padding: 0.6rem; border-radius: 50%; }
-        .logo-img { height: 32px; }
-    }
     @media (max-width: 640px) {
-        .desktop-icon-btn { display: none !important; }
+        .header { display: none !important; } /* Полностью отключаем хедер на мобильных */
         .mobile-bottom-nav { display: flex; }
         body { padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } /* Сдвигаем футер вверх */
-        .mobile-bottom-bar { bottom: calc(75px + env(safe-area-inset-bottom)) !important; z-index: 90 !important; } /* Островок товара в product.html */
+        
+        /* Важно: Островок товара из product.html сдвигаем над меню */
+        .mobile-bottom-bar { bottom: calc(75px + env(safe-area-inset-bottom)) !important; z-index: 90 !important; } 
 
-        .header-content { padding: 0.6rem 1rem; }
-        .header-main-layout { gap: 0; }
-        .header-left { flex: 1; justify-content: flex-start; }
-        .header-right { flex: initial; }
-        .nav-btn-header { background: transparent; border: none; box-shadow: none; padding: 8px; margin-left: -8px; }
-        .logo { position: absolute; left: 50%; transform: translateX(-50%); }
-        .mobile-search-toggle { display: block; padding: 8px; margin-right: -8px; }
-        .mobile-search-toggle svg { width: 22px; height: 22px; }
-        .search-clear { display: none !important; }
-        .header-center { 
-            position: absolute; top: 0; left: -1rem; right: -1rem; height: 100%; 
-            background: rgba(255, 255, 255, 0.98); z-index: 20; 
-            display: flex; align-items: center; padding: 0 1rem; gap: 10px;
-            opacity: 0; pointer-events: none; transform: translateY(-5px) scale(0.98);
-            transition: all 0.3s;
-        }
-        .header-center.active { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
-        .close-search-btn { display: block; color: #64748b; padding: 8px; margin-left: -8px; }
-        .close-search-btn svg { width: 24px; height: 24px; }
+        .footer-grid { text-align: center; }
+        .footer-col h3 { text-align: center; }
+        .footer-col a, .footer-col button { justify-content: center; }
     }
+
+    /* УМНЫЙ ТОСТ (УВЕДОМЛЕНИЯ ВВЕРХУ) */
+    .global-toast {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+        background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px;
+        font-size: 0.95rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100000; white-space: nowrap; display: flex; align-items: center;
+    }
+    .global-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 
     /* ПРОЧИЕ СТИЛИ (Формы, Таймлайн, Трекинг) */
     .phone-wrapper { display: flex; align-items: stretch; background: #f8fafc; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
@@ -346,6 +330,7 @@
 
     {% include meta-pixel.html %}
     
+    <!-- ХЕДЕР ТОЛЬКО ДЛЯ ПК -->
     <header class="header">
         <div class="header-content">
             <div class="header-main-layout">
@@ -359,13 +344,12 @@
                     </button>
                 </div>
                 
-                <div class="header-center" id="mobileSearchWrapper">
+                <div class="header-center">
                     <div class="search-box">
                         <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         <input type="text" id="searchInput" placeholder="ძიება..." autocomplete="off">
-                        <span class="search-clear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                        <span class="search-clear" id="desktopSearchClear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
                     </div>
-                    <button class="close-search-btn" id="closeSearchBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
                 
                 <div class="header-right">
@@ -377,7 +361,6 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                         <span class="header-badge orders-badge" style="display:none;">0</span>
                     </button>
-                    <button class="mobile-search-toggle" id="mobileSearchToggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
                 </div>
             </div>
         </div>
@@ -393,21 +376,21 @@
                     <h3>კონტაქტები</h3>
                     <a href="tel:+995551178990"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +995 551 17 89 90</a>
                     <a href="https://wa.me/995551178990" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg> WhatsApp</a>
-                    <a href="mailto:enka.electronics.ge@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> enka.electronics.ge@gmail.com</a>
+                    <a href="mailto:enka.electronics.ge@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> ელ-ფოსტა</a>
                     <a href="https://www.facebook.com/enkaelectronics" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> Facebook</a>
                 </div>
                 <div class="footer-col">
                     <h3>ინფორმაცია</h3>
-                    <a href="/info/about" draggable="false">ჩვენ შესახებ</a>
-                    <a href="/info/delivery" draggable="false">მიწოდება</a>
-                    <a href="/info/warranty" draggable="false">გარანტია</a>
-                    <a href="/info/privacy" draggable="false">კონფიდენციალურობა</a>
+                    <a href="/info/about" draggable="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg> ჩვენ შესახებ</a>
+                    <a href="/info/delivery" draggable="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> მიწოდება</a>
+                    <a href="/info/warranty" draggable="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> გარანტია</a>
+                    <a href="/info/privacy" draggable="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> კონფიდენციალურობა</a>
                 </div>
                 <div class="footer-col">
                     <h3>კაბინეტი</h3>
-                    <button onclick="openFavorites(event)">რჩეულები</button>
-                    <button onclick="openOrders(event)">ჩემი შეკვეთები</button>
-                    <button id="footerTrackingBtn">შეკვეთის სტატუსი</button>
+                    <button onclick="openFavorites(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> რჩეულები</button>
+                    <button onclick="openOrders(event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> ჩემი შეკვეთები</button>
+                    <button id="footerTrackingBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg> შეკვეთის სტატუსი</button>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -426,6 +409,10 @@
             <div class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></div>
             <span>კატალოგი</span>
         </button>
+        <button class="bottom-nav-item" onclick="window.openAppModal('searchModalMobile')">
+            <div class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+            <span>ძიება</span>
+        </button>
         <button class="bottom-nav-item" onclick="openFavorites(event)">
             <div class="bottom-nav-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -442,6 +429,9 @@
         </button>
     </nav>
 
+    <!-- ГЛОБАЛЬНЫЙ УМНЫЙ ТОСТ -->
+    <div id="globalToast" class="global-toast"></div>
+
     <!-- МОДАЛКИ -->
     <div class="modal" id="navModal">
         <div class="modal-content">
@@ -449,19 +439,29 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА МОБИЛЬНОГО ПОИСКА -->
+    <div class="modal" id="searchModalMobile" style="align-items: flex-start; padding-top: 1rem;">
+        <div class="modal-content" style="max-height: 95vh; display: flex; flex-direction: column;">
+            <div style="position:relative;">
+                <svg style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="mobileSearchInput" class="input-field" placeholder="ძიება..." style="margin-bottom:0; padding-left:2.5rem;">
+                <span class="search-clear" id="mobileSearchClear" style="right:1rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+            </div>
+            <div id="mobileSearchResults" class="modal-list-container" style="flex:1; margin-top:1rem; display:none;"></div>
+        </div>
+    </div>
+
     <div class="modal" id="favModal">
         <div class="modal-content">
-            <h3>რჩეულები</h3>
+            <h3>რჩეულები <span id="favModalCount" style="color:#64748b; font-size:1.1rem; margin-left:4px;"></span></h3>
             <div id="favList" class="modal-list-container"></div>
-            <button class="btn-submit" onclick="closeAppModal('favModal')" style="background: #f1f5f9; color: #0f172a; margin-top:1rem; box-shadow: none;">დახურვა</button>
         </div>
     </div>
 
     <div class="modal" id="ordersModal">
         <div class="modal-content">
-            <h3>ჩემი შეკვეთები</h3>
+            <h3>ჩემი შეკვეთები <span id="ordersModalCount" style="color:#64748b; font-size:1.1rem; margin-left:4px;"></span></h3>
             <div id="ordersList" class="modal-list-container"></div>
-            <button class="btn-submit" onclick="closeAppModal('ordersModal')" style="background: #f1f5f9; color: #0f172a; margin-top:1rem; box-shadow: none;">დახურვა</button>
         </div>
     </div>
 
@@ -529,6 +529,49 @@
     </div>
 
 <script>
+    // --- УМНЫЕ УВЕДОМЛЕНИЯ ---
+    let toastTimeout;
+    window.showToast = function(msg, actionData = null) {
+        const t = document.getElementById('globalToast');
+        if(!t) return;
+        
+        t.innerHTML = msg;
+        if (actionData) {
+            t.style.cursor = 'pointer';
+            t.innerHTML += ' <svg width="18" height="18" style="margin-left:8px; opacity:0.9;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+            t.onclick = function() {
+                if(actionData === 'fav') {
+                    window.openFavorites();
+                } else if (actionData && actionData.type === 'link') {
+                    alert("დაკოპირებული ბმული:\n\n" + actionData.url);
+                }
+                t.classList.remove('show');
+            };
+        } else {
+            t.style.cursor = 'default';
+            t.onclick = null;
+        }
+
+        t.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 4000);
+    }
+
+    // --- ПЕРЕХВАТ КОПИРОВАНИЯ ССЫЛКИ ДЛЯ УМНОГО ТОСТА ---
+    window.copyProductLink = function(btn) {
+        if(btn) { btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "", 200); }
+        let url = window.location.href;
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(() => window.showToast('ბმული დაკოპირდა', {type: 'link', url: url}));
+        } else {
+            let textArea = document.createElement("textarea"); textArea.value = url;
+            textArea.style.position = "fixed"; textArea.style.left = "-999999px";
+            document.body.appendChild(textArea); textArea.focus(); textArea.select();
+            try { document.execCommand('copy'); window.showToast('ბმული დაკოპირდა', {type: 'link', url: url}); } catch (err) {}
+            textArea.remove();
+        }
+    }
+
     // --- ГЛОБАЛЬНЫЕ ФУНКЦИИ ИЗБРАННОГО И ЗАКАЗОВ ---
     window.updateBadges = function() {
         let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
@@ -543,19 +586,24 @@
     function renderFavorites() {
         const list = document.getElementById('favList');
         let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
+        document.getElementById('favModalCount').innerText = favs.length > 0 ? `(${favs.length})` : '';
         if (favs.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:2rem 0; font-weight:600;">რჩეულები ცარიელია</div>'; return; }
-        list.innerHTML = favs.map((f, i) => `
+        
+        list.innerHTML = favs.map((f, i) => {
+            let oldPHtml = f.oldPrice ? `<span class="list-item-old-price">${f.oldPrice}</span>` : '';
+            return `
             <div class="list-item-card" onclick="location.href='${f.link}'" style="cursor:pointer;">
                 <img class="list-item-img" src="${f.img || '/img/no-image.png'}" alt="">
                 <div class="list-item-info">
                     <div class="list-item-title">${f.name}</div>
-                    <div class="list-item-price">${f.price}</div>
+                    <div class="list-item-price">${f.price} ${oldPHtml}</div>
                 </div>
                 <button class="list-item-del-btn" onclick="event.stopPropagation(); removeFav(${i})">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     window.removeFav = function(index) {
@@ -576,23 +624,27 @@
     function renderOrders() {
         const list = document.getElementById('ordersList');
         let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+        document.getElementById('ordersModalCount').innerText = orders.length > 0 ? `(${orders.length})` : '';
         if (orders.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:2rem 0; font-weight:600;">შეკვეთები არ გაქვთ</div>'; return; }
+        
         list.innerHTML = orders.map(o => {
             let d = new Date(o.date);
             let dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+            let oldPHtml = o.oldPrice ? `<span class="list-item-old-price" style="margin-left:6px;">${o.oldPrice}</span>` : '';
             return `
             <div class="list-item-card list-item-col">
                 <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px dashed #e2e8f0; padding-bottom:8px; margin-bottom:8px;">
                     <span style="font-size:0.8rem; color:#64748b; font-weight:600;">${dateStr}</span>
-                    <span style="font-size:0.95rem; color:#2563eb; font-weight:800;">${o.price} ₾</span>
+                    <span style="font-size:1rem; color:#2563eb; font-weight:800; display:flex; align-items:center;">${o.price} ${oldPHtml}</span>
                 </div>
-                <div class="list-item-title" style="white-space:normal; line-height:1.3;">${o.product}</div>
+                <div class="list-item-title" style="white-space:normal; line-height:1.3; font-size: 0.9rem;">${o.product}</div>
                 <div style="font-size:0.8rem; color:#64748b; margin-top:4px; font-weight:600;">${o.name} • ${o.phone}</div>
             </div>
-        `}).join('');
+            `;
+        }).join('');
     }
 
-    // --- ПЕРЕХВАТ СОХРАНЕНИЯ ЗАКАЗА ИЗ PRODUCT.HTML И КАТАЛОГА ---
+    // --- ПЕРЕХВАТ СОХРАНЕНИЯ ЗАКАЗА ИЗ PRODUCT.HTML ---
     const originalShowOrderConfirm = window.showOrderConfirm;
     window.showOrderConfirm = function(data) {
         document.getElementById('confirmName').textContent = data.name || '-';
@@ -601,8 +653,12 @@
         const rawConfirmPrice = String(data.price).replace(/₾/g, '').trim();
         document.getElementById('confirmPrice').textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
         
+        // Пытаемся найти старую цену на странице, если она есть
+        let oldPriceEl = document.querySelector('.modern-price-old, .old-price');
+        let oldPrice = oldPriceEl ? oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾' : null;
+        
         let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
-        orders.unshift({ name: data.name, phone: data.phone, product: data.product, price: rawConfirmPrice, date: new Date().toISOString() });
+        orders.unshift({ name: data.name, phone: data.phone, product: data.product, price: rawConfirmPrice + ' ₾', oldPrice: oldPrice, date: new Date().toISOString() });
         localStorage.setItem('myOrders', JSON.stringify(orders));
         updateBadges();
 
@@ -648,19 +704,9 @@
         const searchQ = params.get('search');
         if (searchQ) {
             const s = document.getElementById('searchInput');
-            if (s) { s.value = searchQ; s.placeholder = ''; document.querySelector('.search-icon')?.classList.add('active'); document.querySelector('.search-clear')?.classList.add('show'); }
+            if (s) { s.value = searchQ; s.placeholder = ''; document.querySelector('.search-icon')?.classList.add('active'); document.getElementById('desktopSearchClear')?.classList.add('show'); }
         }
     });
-
-    const mobileSearchToggle = document.getElementById('mobileSearchToggle');
-    const closeSearchBtn = document.getElementById('closeSearchBtn');
-    const mobileSearchWrapper = document.getElementById('mobileSearchWrapper');
-    const searchInput = document.getElementById('searchInput');
-
-    if (mobileSearchToggle && closeSearchBtn && mobileSearchWrapper) {
-        mobileSearchToggle.addEventListener('click', () => { mobileSearchWrapper.classList.add('active'); setTimeout(() => searchInput.focus(), 100); });
-        closeSearchBtn.addEventListener('click', () => { mobileSearchWrapper.classList.remove('active'); searchInput.value = ''; searchInput.dispatchEvent(new Event('input')); });
-    }
 
     window.openAppModal = function(id) {
         const m = document.getElementById(id); if(!m) return;
@@ -668,6 +714,11 @@
         document.documentElement.style.setProperty('--sb-width', `${scrollbarWidth}px`);
         document.documentElement.classList.add('modal-open'); 
         m.style.display = 'flex'; m.offsetHeight; m.classList.add('active');
+        
+        // Автофокус для поиска на мобильных
+        if(id === 'searchModalMobile') {
+            setTimeout(() => document.getElementById('mobileSearchInput').focus(), 100);
+        }
     };
 
     window.closeAppModal = function(id) {
@@ -683,41 +734,86 @@
     const navBtnHeader = document.getElementById('navBtnHeader');
     if(navBtnHeader) navBtnHeader.onclick = () => window.openAppModal('navModal');
 
-    const s = document.getElementById('searchInput');
-    const ic = document.querySelector('.search-icon');
-    const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
-    let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
-    const tp = () => { if(!s||!act) return; let cw = w[wi]; if(del){ ci--; s.placeholder = cw.substring(0,ci); if(ci===0){ del=0; wi=(wi+1)%w.length; to=setTimeout(tp,500); } else to=setTimeout(tp,30); } else { ci++; s.placeholder = cw.substring(0,ci); if(ci===cw.length){ del=1; to=setTimeout(tp,2500); } else to=setTimeout(tp,80); } };
-    if (s && s.value.length > 0) { act = 0; s.placeholder = ''; if (ic) ic.classList.add('active'); } else { tp(); }
+    // --- ЛОГИКА ПОИСКА (ПК И МОБИЛЬНЫЙ) ---
+    function setupSearch(inputId, resultsId, clearId) {
+        const s = document.getElementById(inputId);
+        const r = document.getElementById(resultsId);
+        const c = document.getElementById(clearId);
+        if (!s) return;
+        
+        // Плейсхолдер анимация (только для десктопа)
+        if (inputId === 'searchInput') {
+            const ic = document.querySelector('.search-icon');
+            const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
+            let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
+            const tp = () => { if(!s||!act) return; let cw = w[wi]; if(del){ ci--; s.placeholder = cw.substring(0,ci); if(ci===0){ del=0; wi=(wi+1)%w.length; to=setTimeout(tp,500); } else to=setTimeout(tp,30); } else { ci++; s.placeholder = cw.substring(0,ci); if(ci===cw.length){ del=1; to=setTimeout(tp,2500); } else to=setTimeout(tp,80); } };
+            if (s.value.length > 0) { act = 0; s.placeholder = ''; if (ic) ic.classList.add('active'); } else { tp(); }
+            
+            s.addEventListener('input', function() {
+                if(this.value.length){ if(act){ act=0; clearTimeout(to); s.placeholder=''; } document.querySelector('.search-icon')?.classList.add('active'); } 
+                else { document.querySelector('.search-icon')?.classList.remove('active'); if(!act){ if(s.placeholder===''){del=0; ci=0;} act=1; tp(); } }
+            });
+        }
 
-    if(s) s.oninput = function() {
-        if(this.value.length){ if(act){ act=0; clearTimeout(to); s.placeholder=''; } document.querySelector('.search-icon')?.classList.add('active'); } 
-        else { document.querySelector('.search-icon')?.classList.remove('active'); if(!act){ if(s.placeholder===''){del=0; ci=0;} act=1; tp(); } }
-    };
-    if (s) { s.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); const q = this.value.trim(); if (q) window.location.href = '/?search=' + encodeURIComponent(q); } }); }
-
-    (function () {
-        let s = document.getElementById('searchInput'); let r = document.createElement('div'); if (!s) return;
-        r.className = 'search-results'; s.parentNode.appendChild(r);
         s.addEventListener('input', function () {
-            let q = this.value.trim(); if (!q) { r.innerHTML = ''; r.classList.remove('show'); return; }
+            let q = this.value.trim(); 
+            if(c) { if(q.length > 0) c.classList.add('show'); else c.classList.remove('show'); }
+            if (!q) { if(r) { r.innerHTML = ''; r.classList.remove('show'); r.style.display = 'none'; } return; }
+            
             fetch('https://api.enkaelectronics.com.ge/catalog').then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
                 .then(d => {
                     let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && (p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase()))));
-                    r.innerHTML = f.length ? f.map(p => {
-                        let catText = ''; let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
-                        let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
-                        if (mainCatId && window.CATALOG_STRUCTURE[mainCatId]) { catText = window.CATALOG_STRUCTURE[mainCatId].title; if (subCatId) { let sub = window.CATALOG_STRUCTURE[mainCatId].subs.find(sb => sb.id === subCatId); if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">&bull;</span> ${sub.name} `; } }
-                        let oldPriceValue = p.oldPrice || p.old_price; let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-left:8px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
-                        return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px; display:flex; align-items:center;"><span>${String(p.price).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
-                    }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
-                    r.classList.add('show');
+                    if(r) {
+                        if (inputId === 'mobileSearchInput') {
+                            r.innerHTML = f.length ? f.map(p => {
+                                let catText = ''; let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
+                                if (mainCatId && window.CATALOG_STRUCTURE && window.CATALOG_STRUCTURE[mainCatId]) catText = window.CATALOG_STRUCTURE[mainCatId].title;
+                                let oldP = (p.oldPrice || p.old_price) ? `<span class="list-item-old-price" style="margin-left:6px;">${String(p.oldPrice || p.old_price).replace(/₾/g, '')}₾</span>` : '';
+                                return `<div class="list-item-card" onclick="location.href='/product/${p.id}/'" style="cursor:pointer; margin-bottom:8px;">
+                                    <img class="list-item-img" src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" onerror="this.src='/img/no-image.png'">
+                                    <div class="list-item-info">
+                                        <div class="list-item-title">${p.name}</div>
+                                        <div style="font-size:0.75rem; color:#94a3b8; margin-top:2px; font-weight:600;">${catText}</div>
+                                        <div class="list-item-price">${String(p.price).replace(/₾/g, '')}₾ ${oldP}</div>
+                                    </div>
+                                </div>`;
+                            }).join('') : '<div style="text-align:center; padding:2rem; color:#94a3b8; font-weight:600;">ვერაფერი მოიძებნა</div>';
+                            r.style.display = 'flex';
+                        } else {
+                            r.innerHTML = f.length ? f.map(p => {
+                                let catText = ''; let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
+                                let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
+                                if (mainCatId && window.CATALOG_STRUCTURE[mainCatId]) { catText = window.CATALOG_STRUCTURE[mainCatId].title; if (subCatId) { let sub = window.CATALOG_STRUCTURE[mainCatId].subs.find(sb => sb.id === subCatId); if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">&bull;</span> ${sub.name} `; } }
+                                let oldPriceValue = p.oldPrice || p.old_price; let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-left:8px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
+                                return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:900;color:#2563eb;margin-top:2px; display:flex; align-items:center;"><span>${String(p.price).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
+                            }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
+                            r.classList.add('show');
+                        }
+                    }
                 }).catch(err => console.error(err));
         });
-        document.addEventListener('click', e => { if (!s.contains(e.target) && !r.contains(e.target)) r.classList.remove('show'); });
+
+        if(c) {
+            c.onclick = function(){ s.value=''; s.focus(); c.classList.remove('show'); s.dispatchEvent(new Event('input')); };
+        }
+
+        s.addEventListener('keypress', function(e) { 
+            if (e.key === 'Enter') { e.preventDefault(); const q = this.value.trim(); if (q) window.location.href = '/?search=' + encodeURIComponent(q); } 
+        });
+        
+        if (inputId === 'searchInput') {
+            document.addEventListener('click', e => { if (!s.contains(e.target) && r && !r.contains(e.target)) r.classList.remove('show'); });
+        }
+    }
+
+    // Инициализируем оба поиска
+    (function(){
+        let sr = document.createElement('div'); sr.className = 'search-results'; sr.id = 'desktopSearchResults';
+        let desktopInput = document.getElementById('searchInput');
+        if(desktopInput) desktopInput.parentNode.appendChild(sr);
+        setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear');
+        setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear');
     })();
-    
-    (function(){let inp=document.getElementById('searchInput');let clr=document.querySelector('.search-clear');if(!inp||!clr)return;inp.addEventListener('input',function(){if(this.value.length>0){clr.classList.add('show');}else{clr.classList.remove('show');}});clr.onclick=function(){inp.value='';inp.focus();clr.classList.remove('show');inp.dispatchEvent(new Event('input'));};})();
 
     // --- ТРЕКИНГ ЗАКАЗОВ ---
     const trackingOrderId = document.getElementById('trackingOrderId');
@@ -889,24 +985,24 @@
 </script>
 
 <script>
-    // --- ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ИЗБРАННОГО ---
-    // Этот скрипт перезапишет любую функцию toggleFav на странице
+    // --- ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ИЗБРАННОГО С УМНЫМ ТОСТОМ ---
     window.toggleFav = function(event, btn) {
         if(event) { event.preventDefault(); event.stopPropagation(); }
         
-        let name = "პროდუქტი", price = "0 ₾", img = "", link = window.location.pathname;
+        let name = "პროდუქტი", price = "0 ₾", oldPrice = null, img = "", link = window.location.pathname;
         const card = btn.closest('.product-card');
         
-        // Добываем инфу о товаре в зависимости от того, где была нажата кнопка (в карточке или на странице товара)
         if (card) {
             let nameEl = card.querySelector('.product-name'); if(nameEl) name = nameEl.innerText;
             let priceEl = card.querySelector('.product-price'); if(priceEl) price = priceEl.innerText;
+            let oldPriceEl = card.querySelector('.old-price'); if(oldPriceEl) oldPrice = oldPriceEl.innerText;
             let imgEl = card.querySelector('.product-image'); if(imgEl) img = imgEl.src;
             let aEl = card.querySelector('a'); if(aEl) link = aEl.getAttribute('href');
         } else {
             let titleEl = document.querySelector('.title-desktop'); if(!titleEl || titleEl.offsetParent === null) titleEl = document.querySelector('.title-mobile');
             if(titleEl) name = titleEl.innerText;
             let priceEl = document.querySelector('.modern-price-current'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+            let oldPriceEl = document.querySelector('.modern-price-old, .old-price'); if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
             let imgEl = document.querySelector('.main-gallery-slide img'); if(imgEl) img = imgEl.src;
         }
 
@@ -918,15 +1014,14 @@
             btn.classList.remove('active');
             if(window.showToast) window.showToast('წაშლილია რჩეულებიდან');
         } else {
-            favs.unshift({ name, price, img, link });
+            favs.unshift({ name, price, oldPrice, img, link });
             btn.classList.add('active');
-            if(window.showToast) window.showToast('დამატებულია რჩეულებში');
+            if(window.showToast) window.showToast('დამატებულია რჩეულებში', 'fav');
         }
 
         localStorage.setItem('myFavs', JSON.stringify(favs));
         updateBadges();
 
-        // Обновляем состояние других кнопок на странице, если они ведут на этот же товар
         document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(otherBtn => {
             let otherLink = ""; let otherCard = otherBtn.closest('.product-card');
             if(otherCard) { let a = otherCard.querySelector('a'); if(a) otherLink = a.getAttribute('href'); } else otherLink = window.location.pathname;
@@ -934,7 +1029,6 @@
         });
     };
 
-    // Наблюдатель, чтобы подкрашивать "Избранное" у динамически загружаемых карточек
     const favObserver = new MutationObserver((mutations) => {
         let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
         let changed = false; mutations.forEach(m => { if (m.addedNodes.length) changed = true; });
@@ -950,7 +1044,6 @@
     });
     favObserver.observe(document.body, { childList: true, subtree: true });
 
-    // Инициализация при загрузке
     window.addEventListener('load', () => {
         let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
         document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
