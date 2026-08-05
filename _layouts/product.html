@@ -413,14 +413,17 @@ layout: default
     height: 16px;
     margin-right: 4px;
     vertical-align: middle;
+    overflow: hidden;
 }
 .breadcrumbs li a .cat-icon svg {
     display: block;
     width: 16px;
     height: 16px;
+    max-width: 16px;
+    max-height: 16px;
 }
 
-/* Мобильные: скрываем текст, показываем только иконку */
+/* Мобильные: скрываем текст */
 @media (max-width: 1024px) {
     .breadcrumbs li a .cat-text {
         display: none;
