@@ -153,10 +153,10 @@ layout: default
     
     .desktop-title-area { margin-bottom: 1.25rem; }
 
-    /* Современный и крутой прайс */
+    /* Современный прайс */
     .modern-price-container {
         display: inline-flex;
-        flex-direction: column;
+        flex-direction: row; /* Меняем на горизонтальное расположение */
         justify-content: center;
         align-items: center;
         background: #eff6ff; 
@@ -165,24 +165,45 @@ layout: default
         border: 2px dashed #bfdbfe; 
         min-width: 120px;
         flex-shrink: 0;
+        gap: 1rem; /* Добавляем отступ между актуальной и старой ценой */
     }
+    
     .modern-price-current {
-        font-size: 2.3rem;
+        font-size: 2rem; /* Снизили размер, как вы просили */
         font-weight: 900;
         color: #1d4ed8;
         line-height: 1;
         letter-spacing: -1px;
-        display: flex; align-items: baseline;
+        display: flex; 
+        align-items: center; /* Центрируем по вертикали */
     }
-    .modern-price-current .gel { font-size: 1.4rem; font-weight: 800; margin-left: 2px; }
+    
+    .modern-price-current .gel { 
+        font-size: inherit; /* Размер символа валюты теперь равен размеру цифр */
+        font-weight: 800; 
+        margin-left: 2px; 
+    }
+    
     .modern-price-old {
-        font-size: 1.05rem;
+        font-size: 2rem; /* Размер старой цены теперь такой же - 2rem */
         color: #64748b;
-        margin-top: 4px;
         font-weight: 700;
+        margin-top: 0; /* Убираем верхний отступ */
+        display: flex;
+        align-items: center; /* Центрируем по вертикали */
+        padding-left: 1rem; /* Место под разделитель */
+        border-left: 2px dashed #93c5fd; /* Обводка-разделитель (чуть темнее обводки контейнера) */
+        line-height: 1;
+        letter-spacing: -1px;
     }
 
-    .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
+    .designer-strike { 
+        position: relative; 
+        display: inline-flex; 
+        text-decoration: none !important; 
+        color: #94a3b8; 
+        font-weight: 700; 
+    }
     .designer-strike::after {
         content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 10px;
         background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 Q 50 1 100 6" stroke="%23ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>') no-repeat center/100% 100%;
