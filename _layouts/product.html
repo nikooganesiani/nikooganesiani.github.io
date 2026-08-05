@@ -473,7 +473,7 @@ layout: default
                     <li class="truncate-node">
     <a href="/?category={{ first_cat }}" draggable="false">
         {% if cat_data and cat_data.icon %}
-          <span class="cat-icon">{{ cat_data.icon }}</span>
+          {{ cat_data.icon | replace: '<svg', '<svg width="16" height="16"' }}
         {% endif %}
         <span class="cat-text">{{ cat_name | strip }}</span>
     </a>
