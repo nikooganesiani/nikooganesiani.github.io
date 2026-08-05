@@ -46,14 +46,19 @@ layout: default
         background: #fef2f2; padding: 0.8rem; border-radius: 0.75rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
     }
 
+    /* Унифицированный стиль для главных блоков */
+    .shared-box-style {
+        background: white; border: 1px solid #f1f5f9; border-radius: 1.5rem; 
+        padding: 1.25rem; box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+    }
+
     /* Верхняя секция: Крошки */
     .top-header-group { margin-bottom: 2rem; animation: slideDown 0.4s ease; }
     
     .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
     .breadcrumbs { 
-        display: flex; gap: 0.5rem; list-style: none; padding: 0.6rem 1.2rem; margin: 0; align-items: center; 
-        background: white; border-radius: 1rem; border: 1px solid #f1f5f9;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+        display: flex; gap: 0.5rem; list-style: none; padding: 0.5rem 1rem; margin: 0; align-items: center; 
+        background: white; border-radius: 0.75rem; border: 1px solid #e2e8f0;
         flex: 1 1 auto; min-width: 0; overflow: hidden;
     }
     .breadcrumbs li { display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; }
@@ -67,7 +72,7 @@ layout: default
     
     .breadcrumb-product-name { color: #0f172a; }
 
-    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 1rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
+    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
     .product-title-h1 { font-size: 2rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0; padding: 0; }
@@ -78,20 +83,18 @@ layout: default
 
     /* ГАЛЕРЕЯ ТОВАРА */
     .gallery-section { 
-        background: white; border-radius: 1rem; border: 1px solid #f1f5f9; padding: 1.5rem; 
-        display: flex; flex-direction: column; position: relative;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        display: flex; flex-direction: column; position: relative; padding: 1rem;
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
     }
     
     .main-gallery-viewport { 
         width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
-        border-radius: 0.75rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; background: #fff;
+        border-radius: 0.75rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; background: #fff;
     }
     
-    .gallery-badges { position: absolute; top: 1.2rem; left: 1.2rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
-    .gallery-actions { position: absolute; top: 1.2rem; right: 1.2rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
-    .sku-mobile { display: none; position: absolute; bottom: 1.2rem; right: 1.2rem; z-index: 15; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.05); pointer-events: none; }
+    .gallery-badges { position: absolute; top: 1rem; left: 1rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
+    .gallery-actions { position: absolute; top: 1rem; right: 1rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
+    .sku-mobile { display: none; position: absolute; bottom: 1rem; right: 1rem; z-index: 15; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.05); pointer-events: none; }
     .sku-mobile b { color: #2563eb; }
 
     .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 900; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
@@ -106,7 +109,8 @@ layout: default
     .btn-fav.active { color: #ef4444; }
     .btn-fav.active svg { fill: currentColor; }
 
-    .main-gallery-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth; touch-action: pan-y pinch-zoom; }
+    /* Убрано scroll-behavior: smooth для естественного свайпа, snap оставлен */
+    .main-gallery-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
     .main-gallery-track::-webkit-scrollbar { display: none; }
     
     .main-gallery-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: transparent; padding: 0px; }
@@ -115,10 +119,10 @@ layout: default
 
     .video-thumb-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; backdrop-filter: blur(2px); transition: all 0.3s; pointer-events: none; }
     
-    .thumb-strip { display: flex; gap: 0.8rem; overflow-x: auto; width: 100%; padding: 0.5rem; -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
+    .thumb-strip { display: flex; gap: 0.8rem; overflow-x: auto; width: 100%; padding: 0.2rem; -ms-overflow-style: none; scrollbar-width: none; }
     .thumb-strip::-webkit-scrollbar { display: none; }
     
-    .thumb-card { width: 80px; height: 80px; border: 2px solid #f1f5f9; border-radius: 0.5rem; cursor: pointer; padding: 8px; background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
+    .thumb-card { width: 80px; height: 80px; border: 2px solid #f1f5f9; border-radius: 0.5rem; cursor: pointer; padding: 6px; background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
     @media (hover: hover) { .thumb-card:hover { border-color: #cbd5e1; } }
     .thumb-card.active { border-color: #2563eb; }
     .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.375rem; mix-blend-mode: multiply; pointer-events: none; }
@@ -126,7 +130,7 @@ layout: default
 
     .product-info-section { display: flex; flex-direction: column; gap: 1.0rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
     
-    .sticky-buy-box { background: white; border: 1px solid #f1f5f9; border-radius: 1rem; padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
+    .sticky-buy-box { padding: 2rem; position: sticky; top: 2rem; transition: box-shadow 0.3s; }
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
     .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
@@ -148,9 +152,22 @@ layout: default
     .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-size: 0.95rem; }
     @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: 0 10px 20px rgba(0,0,0,0.05); } }
 
-    .inline-input { border: 1px solid #e2e8f0; border-radius: 0.75rem; outline: none; background: #f8fafc; color: #0f172a; height: 3.2rem; font-size: 0.95rem; font-weight: 600; width: 100%; transition: all 0.2s; }
-    .inline-input:focus { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-    .inline-input::placeholder { color: #94a3b8; font-weight: 500; }
+    /* Надежные Flexbox Инпуты */
+    .input-wrapper {
+        position: relative; display: flex; align-items: center; background: #f8fafc;
+        border: 1px solid #e2e8f0; border-radius: 0.75rem; height: 3.2rem;
+        padding: 0 1rem; gap: 0.6rem; transition: all 0.2s;
+    }
+    .input-wrapper:focus-within {
+        border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .input-wrapper svg { color: #94a3b8; flex-shrink: 0; width: 20px; height: 20px; }
+    .input-wrapper .prefix { font-weight: 700; color: #64748b; }
+    .clean-input {
+        border: none; background: transparent; outline: none; width: 100%;
+        font-size: 0.95rem; font-weight: 600; color: #0f172a; height: 100%; padding: 0;
+    }
+    .clean-input::placeholder { color: #94a3b8; font-weight: 500; }
 
     .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; border-top: 1px dashed #f1f5f9; padding-top: 1.5rem; }
     .benefit-card { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; gap: 12px; transition: border-color 0.3s, background 0.3s; }
@@ -160,7 +177,7 @@ layout: default
     .benefit-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;}
     .benefit-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
 
-    .content-section-box { margin-top: 2.5rem; background: white; border: 1px solid #f1f5f9; border-radius: 1rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
+    .content-section-box { margin-top: 2.5rem; padding: 2.5rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
     .section-title { font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
     
     .expandable-block { position: relative; max-height: 280px; overflow: hidden; transition: max-height 0.4s ease-in-out; }
@@ -195,17 +212,17 @@ layout: default
     
     .similar-scroll-container { 
         display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; 
-        scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; flex: 1; padding: 1rem 0;
+        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; flex: 1; padding: 1rem 0;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
     .similar-scroll-container .product-card {
         flex: 0 0 calc(25% - 18px); scroll-snap-align: start; min-width: 0;
-        background: white; border-radius: 1rem; overflow: hidden; position: relative;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03); transition: border-color 0.3s, box-shadow 0.3s;
+        background: white; border-radius: 1.5rem; overflow: hidden; position: relative;
+        box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05); transition: border-color 0.3s, box-shadow 0.3s;
         display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: auto;
     }
-    @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
+    @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.1); } }
     
     .sim-arrow { display: flex; flex-shrink: 0; width: 46px; height: 46px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
@@ -216,7 +233,7 @@ layout: default
     .product-card .btn-fav-card.active svg { fill: currentColor; }
     .product-card .btn-fav-card:active { transform: scale(0.85); }
 
-    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #ffffff; border-radius: 1rem 1rem 0 0; border-bottom: 1px solid #f1f5f9; }
+    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #ffffff; border-radius: 1.5rem 1.5rem 0 0; border-bottom: 1px solid #f1f5f9; }
     
     .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; background: rgba(255,255,255,0.95); border: 1px solid #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; opacity: 0; transition: all 0.2s; z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.1); outline: none; }
     @media (hover: hover) { .product-card:hover .card-nav-arrow { opacity: 1; } .card-nav-arrow:hover { background: #2563eb; color: #fff; border-color: #2563eb; } }
@@ -224,7 +241,7 @@ layout: default
     .card-nav-arrow.prev { left: 8px; }
     .card-nav-arrow.next { right: 8px; }
 
-    .product-images-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+    .product-images-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none; }
     .product-images-track::-webkit-scrollbar { display: none; }
     .product-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
     .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.15s ease-out; }
@@ -289,7 +306,7 @@ layout: default
     
     .modal-track { 
         display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; 
-        scrollbar-width: none; scroll-behavior: smooth; touch-action: pan-y pinch-zoom;
+        scrollbar-width: none; -ms-overflow-style: none; /* Убран smooth для нативного свайпа */
     }
     .modal-track::-webkit-scrollbar { display: none; }
     
@@ -334,14 +351,13 @@ layout: default
 
     @media (max-width: 1024px) {
         .title-desktop { display: none; }
-        .title-mobile { display: block; font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem 0; padding: 0; }
+        /* Заголовок перенесен выше для мобилок */
+        .title-mobile { display: block; font-size: 1.6rem; line-height: 1.2; margin: 0 0 1rem 0; padding: 0; }
         .sim-arrow { display: none !important; }
 
-        .product-grid { grid-template-columns: 1fr; gap: 0rem; }
-        .sticky-buy-box { position: static; box-shadow: none; border-color: #e2e8f0; border-radius: 1rem; }
-        .current-price-line { font-size: 2.2rem; }
-        .content-section-box { padding: 1.5rem; border-radius: 1rem; }
-        .gallery-section { border-radius: 1rem; padding: 1rem; }
+        .product-grid { grid-template-columns: 1fr; gap: 1rem; } /* Уменьшили gap */
+        
+        .shared-box-style { border-radius: 1rem; padding: 1rem; }
         
         .sku-desktop { display: none; }
         .sku-mobile { display: block; }
@@ -351,7 +367,14 @@ layout: default
         
         .carousel-dots { display: none !important; }
         .card-nav-arrow { display: none !important; }
-        .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; pointer-events: none; }
+        
+        /* Убрали pointer-events: none, чтобы карточки на мобильных кликались! */
+        .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; }
+
+        .top-header-group { margin-bottom: 1rem; }
+        .content-section-box { margin-top: 1rem; }
+        .similar-products-section { margin-top: 2.5rem; }
+        .product-details-grid, .specs-desc-grid { gap: 1.5rem; }
     }
     
     @media (max-width: 640px) {
@@ -362,9 +385,15 @@ layout: default
         .spec-value-text { text-align: left; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.8rem; }
         .mobile-bottom-bar { display: flex; } 
-        .product-title-h1 { font-size: 1.4rem; line-height: 1.2; margin: 0 0 0.3rem 0; padding: 0; }
+        .product-title-h1 { font-size: 1.4rem; line-height: 1.2; }
         .desktop-title-area { padding: 0; margin: 0; }
-        .title-mobile { margin: 0 0 0.3rem 0 !important; padding: 0 !important; }
+        
+        /* Компактная галерея */
+        .gallery-section { padding: 0.75rem; border-radius: 1rem; }
+        .main-gallery-viewport { margin-bottom: 0.75rem; border-radius: 0.5rem; }
+        .thumb-strip { padding: 0; gap: 0.5rem; }
+        .thumb-card { width: 60px; height: 60px; padding: 4px; border-radius: 0.5rem; }
+
         .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 1rem; }
         .similar-scroll-container .product-image-wrapper { border-radius: 1rem 1rem 0 0; }
         .similar-scroll-container .product-info { padding: 0.8rem; }
@@ -377,8 +406,8 @@ layout: default
         .similar-scroll-container .btn-order svg { width: 16px; height: 16px; }
         .product-card .btn-fav-card { width: 28px; height: 28px; top: 8px; right: 8px; }
         
-        .modal-nav-arrow { width: 40px; height: 40px; }
-        .modal-nav-arrow.left { left: 10px; } .modal-nav-arrow.right { right: 10px; }
+        /* Скрытие стрелок модалки на мобильных */
+        .modal-nav-arrow { display: none !important; }
         .modal-slide { padding: 1rem; }
     }
 
@@ -424,9 +453,12 @@ layout: default
         </div>
     </div>
 
+    <!-- Заголовок перенесен сюда для мобильных устройств, чтобы быть сразу под крошками -->
+    <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
+
     <!-- СЕТКА ТОВАРА -->
     <div class="product-grid">
-        <div class="gallery-section">
+        <div class="gallery-section shared-box-style">
             
             <div class="main-gallery-viewport">
                 <!-- Бейджи статуса и скидки -->
@@ -503,9 +535,8 @@ layout: default
             <div class="desktop-title-area">
                 <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
             </div>
-            <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
 
-            <div class="sticky-buy-box" id="stickyBuyBox">
+            <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
                 <div class="price-wrapper">
                     <div class="current-price-line">
                         {{ page.price | replace: '₾', '' }}<span class="gel-symbol">₾</span>
@@ -561,7 +592,7 @@ layout: default
         </div>
     </div>
 
-    <div class="content-section-box">
+    <div class="content-section-box shared-box-style">
         <div class="product-details-grid">
             <div class="specs-container">
                 <h2 class="section-title">
@@ -921,7 +952,7 @@ layout: default
             if (isArrow || isThumbArea || isThumb) return;
             
             const isImg = e.target.closest('.modal-img-wrapper img');
-            if (isImg && window.innerWidth >= 1024) return; // Позволяем зум на пк без закрытия
+            if (isImg && window.innerWidth >= 1024) return; 
         }
 
         isZoomModalOpen = false;
@@ -1104,15 +1135,15 @@ layout: default
                 <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
                     <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0; display:none;"></div>
                     
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <svg style="position: absolute; left: 1rem; color: #94a3b8; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <input type="text" id="inlineName" class="inline-input" placeholder="თქვენი სახელი" required autocomplete="name" style="padding-left: 2.8rem;">
+                    <div class="input-wrapper" id="inlineNameWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="inlineName" class="clean-input" placeholder="თქვენი სახელი" required autocomplete="name">
                     </div>
                     
-                    <div style="position: relative; display: flex; align-items: center;">
-                        <svg style="position: absolute; left: 1rem; color: #94a3b8; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                        <span class="phone-prefix" style="position: absolute; left: 2.8rem; pointer-events: none; font-weight: 700; color: #64748b;">+995</span>
-                        <input type="tel" id="inlinePhone" class="inline-input phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel" style="padding-left: 5.6rem;">
+                    <div class="input-wrapper" id="inlinePhoneWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span class="prefix">+995</span>
+                        <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
                     </div>
                     
                     <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order">
@@ -1206,8 +1237,8 @@ layout: default
                 }, 3500);
             };
 
-            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", nameInput); return; }
-            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneInput); return; }
+            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", document.getElementById('inlineNameWrapper')); return; }
+            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", document.getElementById('inlinePhoneWrapper')); return; }
 
             const fullPhone = '+995' + phoneRaw;
             
@@ -1227,7 +1258,6 @@ layout: default
             const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
             const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
             
-            // Fire-and-forget: отправляем на сервер, не заставляя пользователя ждать.
             fetch(targetWorker, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -1240,7 +1270,6 @@ layout: default
                 })
             }).catch(console.error);
 
-            // Обработка пикселей и трекинга в фоне без задержек.
             setTimeout(() => {
                 try {
                     if (typeof fbq === 'function') {
@@ -1252,7 +1281,6 @@ layout: default
                 } catch(err) { console.error(err); }
             }, 50);
 
-            // Мгновенное подтверждение покупки и очистка UI
             btn.style.pointerEvents = 'auto';
             btn.style.opacity = '1';
             document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
