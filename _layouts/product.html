@@ -76,10 +76,9 @@ layout: default
     .sku-desktop b { color: #2563eb; }
 
     .product-title-h1 { font-size: 1.8rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0 0 0.5rem 0; padding: 0; }
-    .desktop-title-area { margin-bottom: 0; display: block; padding: 0; }
     
-    /* Уплотненная сетка на ПК */
-    .product-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start; }
+    /* Уплотненная сетка на ПК (50/50 - одинаковая ширина) */
+    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
     .product-grid > div, .product-details-grid > div { min-width: 0; }
 
     /* ГАЛЕРЕЯ ТОВАРА */
@@ -89,19 +88,19 @@ layout: default
     }
     
     @media (min-width: 1025px) {
-        .gallery-section { flex-direction: row; gap: 12px; align-items: flex-start; }
+        .gallery-section { flex-direction: row; gap: 16px; align-items: flex-start; }
         .thumb-strip { 
             flex-direction: column; width: 72px; padding: 2px; gap: 10px;
             order: -1; overflow-y: auto; overflow-x: hidden;
-            max-height: 520px; 
+            max-height: 520px; flex-shrink: 0;
         }
         .thumb-strip::-webkit-scrollbar { display: none; }
-        .main-gallery-viewport { flex: 1; margin-bottom: 0; }
+        /* Обеспечиваем рендеринг: width вместо flex-basis, min-height для защиты от коллапса */
+        .main-gallery-viewport { flex: 1; margin-bottom: 0; width: calc(100% - 88px); min-height: 200px; }
     }
     
-    /* 24px (outer) - 16px (padding) = 8px (inner) */
     .main-gallery-viewport { 
-        width: 100%; aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
+        aspect-ratio: 1 / 1; overflow: hidden; position: relative; 
         border-radius: 8px; margin-bottom: 0.75rem; border: 1px solid #e2e8f0; background: #fff;
     }
     
@@ -146,17 +145,43 @@ layout: default
     .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; }
     @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
     
+    .desktop-title-area { margin-bottom: 1.25rem; }
+
+    /* Современный и крутой прайс */
+    .modern-price-container {
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #eff6ff; 
+        padding: 0.6rem 1.4rem;
+        border-radius: 16px;
+        border: 2px dashed #bfdbfe; 
+        min-width: 120px;
+        flex-shrink: 0;
+    }
+    .modern-price-current {
+        font-size: 2.3rem;
+        font-weight: 900;
+        color: #1d4ed8;
+        line-height: 1;
+        letter-spacing: -1px;
+        display: flex; align-items: baseline;
+    }
+    .modern-price-current .gel { font-size: 1.4rem; font-weight: 800; margin-left: 2px; }
+    .modern-price-old {
+        font-size: 1.05rem;
+        color: #64748b;
+        margin-top: 4px;
+        font-weight: 700;
+    }
+
     .designer-strike { position: relative; display: inline-block; text-decoration: none !important; color: #94a3b8; font-weight: 700; }
     .designer-strike::after {
         content: ''; position: absolute; left: -5%; top: 50%; width: 110%; height: 10px;
         background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M 0 5 Q 50 1 100 6" stroke="%23ef4444" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>') no-repeat center/100% 100%;
         transform: translateY(-50%); pointer-events: none; opacity: 0.85;
     }
-
-    .price-wrapper { display: flex; flex-direction: row; align-items: baseline; gap: 1rem; margin-bottom: 1.25rem; }
-    .current-price-line { font-size: 2.2rem; font-weight: 900; color: #2563eb; letter-spacing: -1px; display: flex; align-items: baseline; line-height: 1; }
-    .old-price-line { font-size: 1.1rem; margin-left: 5px; line-height: 1.3; }
-    .gel-symbol { font-size: 1.4rem; margin-left: 5px; font-weight: 800; }
 
     .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
@@ -224,12 +249,16 @@ layout: default
     
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
     .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.4rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
+    
+    /* Стилизация SVG иконок в заголовках категорий */
+    .similar-title .cat-icon-svg { color: #2563eb; stroke: #2563eb; }
+    .similar-title .cat-icon-svg path, .similar-title .cat-icon-svg rect, .similar-title .cat-icon-svg circle, .similar-title .cat-icon-svg polygon, .similar-title .cat-icon-svg polyline { stroke: #2563eb; }
 
-    .similar-wrapper { display: block; width: 100%; position: relative; }
+    .similar-wrapper { position: relative; width: 100%; }
     
     .similar-scroll-container { 
         display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; 
-        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; width: 100%; padding: 0.5rem 0;
+        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; width: 100%; padding: 0.5rem 0; box-sizing: border-box;
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
@@ -241,11 +270,14 @@ layout: default
     }
     @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.1); } }
     
-    .sim-arrow { position: absolute; top: 50%; margin-top: -22px; z-index: 10; display: flex; width: 44px; height: 44px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .sim-arrow { 
+        position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+        display: flex; width: 44px; height: 44px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; 
+    }
     @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
-    .sim-arrow:active { transform: scale(0.9); }
-    .sim-arrow.left { left: -16px; }
-    .sim-arrow.right { right: -16px; }
+    .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .sim-arrow.left { left: -22px; }
+    .sim-arrow.right { right: -22px; }
 
     .product-card .btn-fav-card { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     .product-card .btn-fav-card.active { color: #ef4444; }
@@ -368,6 +400,9 @@ layout: default
 
     @media (max-width: 1024px) {
         .title-desktop { display: none; }
+        .desktop-title-area { display: none; margin: 0; padding: 0; }
+        .desktop-price-inline { display: none !important; }
+        
         .title-mobile { display: block; line-height: 1.2; padding: 0; margin-bottom: 1rem; }
         .sim-arrow { display: none !important; }
 
@@ -379,8 +414,15 @@ layout: default
         .sku-desktop { display: none; }
         .sku-mobile { display: block; }
 
-        .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 10.66px); }
-        .similar-scroll-container { padding: 0.5rem 1rem; margin: 0 -2rem; scroll-padding: 1rem; gap: 12px; }
+        /* Идеальный скролл на мобильных как было в лучших версиях */
+        .similar-scroll-container { 
+            padding: 0.5rem 1.5rem; 
+            margin: 0 -1.5rem; 
+            width: calc(100% + 3rem); 
+            scroll-padding: 1.5rem; 
+            gap: 12px; 
+        }
+        .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 8px); }
         
         .carousel-dots { display: none !important; }
         .card-nav-arrow { display: none !important; }
@@ -390,8 +432,6 @@ layout: default
         .top-header-group { margin-bottom: 1rem; }
         .content-section-box { margin-top: 1rem; }
         .similar-products-section { margin-top: 1.5rem; }
-        
-        .desktop-price-inline { display: none !important; }
     }
     
     @media (max-width: 640px) {
@@ -402,9 +442,7 @@ layout: default
         .benefits-grid { grid-template-columns: 1fr; gap: 0.6rem; }
         .mobile-bottom-bar { display: flex; } 
         .product-title-h1 { font-size: 1.3rem; }
-        .desktop-title-area { padding: 0; margin: 0; }
         
-        /* Ультра-компактная галерея для мобильных (почти нет пустых зон) */
         .gallery-section { padding: 12px; border-radius: 16px; }
         .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; }
         .thumb-strip { padding: 0; gap: 6px; }
@@ -576,24 +614,24 @@ layout: default
 
         <div class="product-info-section">
             <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
-                <div class="desktop-title-area" style="margin-bottom: 1.25rem;">
+                <div class="desktop-title-area">
                     <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
                 </div>
 
                 <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
                     <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
                     
-                    <div class="submit-row" style="display: flex; gap: 1.5rem; align-items: center; margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                        <div class="price-wrapper desktop-price-inline" style="flex-direction: column; align-items: flex-start; margin-bottom: 0; gap: 0; flex-shrink: 0;">
-                            <div class="current-price-line" style="font-size: 2.1rem; line-height: 1;">
-                                {{ page.price | replace: '₾', '' }}<span class="gel-symbol" style="font-size: 1.3rem;">₾</span>
+                    <div class="submit-row" style="display: flex; gap: 1.25rem; align-items: stretch; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                        <div class="modern-price-container desktop-price-inline">
+                            <div class="modern-price-current">
+                                {{ page.price | replace: '₾', '' }}<span class="gel">₾</span>
                             </div>
                             {% if page.oldPrice != "" and page.oldPrice != nil %}
-                            <div class="old-price-line designer-strike" style="margin-left: 0; font-size: 1.05rem; margin-top: 4px;">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+                            <div class="modern-price-old designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
                             {% endif %}
                         </div>
                         
-                        <div id="dynamicBuyButton" style="flex: 1;"></div>
+                        <div id="dynamicBuyButton" style="flex: 1; display: flex;"></div>
                     </div>
                 </form>
 
@@ -677,11 +715,6 @@ layout: default
     <div class="similar-products-section" id="subcatSection" style="display: none;">
         <div class="title-highlight">
             <h2 class="similar-title">
-                {% if cat_data and cat_data.icon %}
-                    {{ cat_data.icon | replace: '<svg', '<svg width="24" height="24" style="margin-right: 8px;"' }}
-                {% else %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                {% endif %}
                 {{ sub_name | strip }}
             </h2>
         </div>
@@ -699,9 +732,9 @@ layout: default
         <div class="title-highlight">
             <h2 class="similar-title">
                 {% if cat_data and cat_data.icon %}
-                    {{ cat_data.icon | replace: '<svg', '<svg width="24" height="24" style="margin-right: 8px;"' }}
+                    {{ cat_data.icon | replace: '<svg', '<svg class="cat-icon-svg" width="24" height="24" style="margin-right: 8px;"' }}
                 {% else %}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <svg class="cat-icon-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                 {% endif %}
                 {{ cat_name | strip }}
             </h2>
@@ -1164,10 +1197,10 @@ layout: default
             
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (formInputs) formInputs.innerHTML = `
@@ -1185,8 +1218,8 @@ layout: default
                     </div>
                 `;
                 if (btnContainer) btnContainer.innerHTML = `
-                    <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order">
-                        <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order" style="height: 100%; border-radius: 16px; font-size: 1.15rem;">
+                        <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="inlineOrderText">ყიდვა</span>
                     </button>
                 `;
