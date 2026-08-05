@@ -63,9 +63,9 @@ layout: default
     }
     .breadcrumbs li { display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; }
     .breadcrumbs li.truncate-node { flex: 0 1 auto; min-width: 0; overflow: hidden; }
-    .breadcrumbs li.truncate-node a, .breadcrumbs li.truncate-node span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; outline: none; }
+    .breadcrumbs li.truncate-node a, .breadcrumbs li.truncate-node span { display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; outline: none; align-items: center; gap: 4px; }
     
-    .breadcrumbs a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: #64748b; transition: color 0.3s ease; outline: none; }
+    .breadcrumbs a { display: flex; align-items: center; gap: 4px; text-decoration: none; color: #64748b; transition: color 0.3s ease; outline: none; }
     @media (hover: hover) { .breadcrumbs a:hover { color: #2563eb; } }
     .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; flex-shrink: 0; }
     .breadcrumbs .separator svg { width: 14px; height: 14px; }
