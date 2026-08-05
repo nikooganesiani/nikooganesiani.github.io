@@ -254,7 +254,7 @@
         background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px;
         font-size: 0.95rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100000; 
-        display: flex; align-items: center; justify-content: center; width: fit-content; max-width: 90vw; text-align: center;
+        display: inline-flex; align-items: center; justify-content: center; width: max-content; max-width: 90vw; text-align: center; line-height: 1.4;
     }
     .global-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
 
@@ -336,8 +336,8 @@
     {% include meta-pixel.html %}
     
     <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ ДО ЗАГРУЗКИ КОНТЕНТА -->
+    <!-- (Вынесены вверх, чтобы ошибки в карточке товара не ломали навигацию) -->
     <script>
-        // Инициализируем безопасные глобальные функции в самом верху, чтобы никакая ошибка их не сломала
         window.openAppModal = function(id) {
             try {
                 const m = document.getElementById(id); if(!m) return;
@@ -359,7 +359,7 @@
             } catch(e) { console.error(e); }
         };
 
-        let toastTimeout;
+        window.globalToastTimeout = null;
         window.showToast = function(msg, actionData = null) {
             try {
                 const t = document.getElementById('globalToast'); if(!t) return;
@@ -369,7 +369,10 @@
                     t.innerHTML += ' <svg width="18" height="18" style="margin-left:8px; opacity:0.9; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>';
                     t.onclick = function() {
                         if(actionData === 'fav') { window.openFavorites(); } 
-                        else if (actionData && actionData.type === 'link') { alert("დაკოპირებული ბმული:\n\n" + actionData.url); }
+                        else if (actionData && actionData.type === 'link') { 
+                            document.getElementById('copiedLinkText').innerText = actionData.url;
+                            window.openAppModal('linkModal');
+                        }
                         t.classList.remove('show');
                     };
                 } else {
@@ -377,8 +380,8 @@
                     t.onclick = function() { t.classList.remove('show'); };
                 }
                 t.classList.add('show');
-                clearTimeout(toastTimeout);
-                toastTimeout = setTimeout(() => { t.classList.remove('show'); }, 4000);
+                clearTimeout(window.globalToastTimeout);
+                window.globalToastTimeout = setTimeout(() => { t.classList.remove('show'); }, 4000);
             } catch(e) { console.error(e); }
         }
 
@@ -567,6 +570,15 @@
     <!-- ГЛОБАЛЬНЫЙ УМНЫЙ ТОСТ -->
     <div id="globalToast" class="global-toast"></div>
 
+    <!-- МОДАЛКА ДЛЯ ПОКАЗА СКОПИРОВАННОЙ ССЫЛКИ -->
+    <div class="modal" id="linkModal">
+        <div class="modal-content" style="text-align:center;">
+            <h3 style="margin-bottom:1rem; font-size: 1.3rem;">დაკოპირებული ბმული:</h3>
+            <div style="background:#f1f5f9; padding:1rem; border-radius:12px; word-break:break-all; font-size:0.9rem; color:#2563eb; margin-bottom:1.5rem; font-weight:600;" id="copiedLinkText"></div>
+            <button class="btn-submit" style="background: #f1f5f9; color: #0f172a; box-shadow: none;" onclick="closeAppModal('linkModal')">დახურვა</button>
+        </div>
+    </div>
+
     <!-- МОДАЛКИ -->
     <div class="modal" id="navModal">
         <div class="modal-content">
@@ -704,7 +716,6 @@
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) window.closeAppModal(e.target);
         
-        // Клик по картинке в мобильном островке прокручивает наверх
         if (e.target.closest('.mobile-bottom-img')) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
