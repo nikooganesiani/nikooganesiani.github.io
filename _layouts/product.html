@@ -20,7 +20,7 @@ layout: default
 {% assign sub_name = first_sub %}
 {% if cat_data and cat_data.subs %}
   {% for sub in cat_data.subs %}
-    {% if sub.id == first_sub %}
+    {% if sub.id == first_sub %}F
       {% assign sub_name = sub.name %}
       {% break %}
     {% endif %}
@@ -154,7 +154,7 @@ layout: default
     /* Обновленные инпуты (красная обводка при ошибке) */
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
-        background: #f1f5f9; border: 2px solid transparent; border-radius: 12px;
+        background: #ffffff; border: 2px solid transparent; border-radius: 12px;
         transition: all 0.2s; overflow: hidden;
     }
     .input-wrapper:focus-within { background: #e2e8f0; }
