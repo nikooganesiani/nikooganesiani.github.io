@@ -1,3 +1,4 @@
+--- START OF FILE Paste August 07, 2026 - 5:22AM ---
 ---
 # Этот блок обязателен для Jekyll, можно оставить пустым
 ---
@@ -30,12 +31,10 @@
     <script src="/capi.js"></script>
 
     <script>
-    // Jekyll автоматически преобразует данные из _data/catalog.yml в JS-объект
     window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
     </script>
 
 <style>
-    
     ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
 
     #topProgressBar {
@@ -47,13 +46,13 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     
-    @-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #f8fafc; } }
+    @-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #ffffff; } }
 
     ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 14px; height: 14px; }
-    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background-color: #f8fafc; }
+    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background-color: #ffffff; }
     
     ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
-        background-color: rgba(148, 163, 184, 0.45); border-radius: 10px; border: 4px solid #f8fafc; 
+        background-color: rgba(148, 163, 184, 0.45); border-radius: 10px; border: 4px solid #ffffff; 
         background-clip: padding-box; transition: background-color 0.4s ease;
     }
     @media (hover: hover) {
@@ -65,74 +64,74 @@
     .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar, .modal-list-container::-webkit-scrollbar { display: none; }
     
     html { overflow-y: scroll; scroll-behavior: smooth; }
-    body { background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
+    body { background: #ffffff; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
     main { flex: 1; } 
 
-    /* ПРЕМИАЛЬНЫЙ HEADER (ПК) */
+    /* ПРЕМИАЛЬНЫЙ HEADER (ПК) - Без теней и обводок */
     .header {
         position: sticky; top: 0; z-index: 100;
         background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(226, 232, 240, 0.6); box-shadow: 0 4px 20px -2px rgba(0,0,0,0.02);
+        border-bottom: none; box-shadow: none;
     }
     .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
     .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; }
     
     .header-left { display: flex; align-items: center; gap: 1.2rem; flex: 1; justify-content: flex-start; }
-    .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); user-select: none; }
-    @media (hover: hover) { .logo:hover .logo-img { transform: translateY(-1px); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); } }
+    .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; user-select: none; }
+    @media (hover: hover) { .logo:hover .logo-img { transform: translateY(-1px); } }
     .logo:active .logo-img { transform: scale(0.96); }
 
     .nav-btn-header { 
-        display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; 
+        display: flex; align-items: center; gap: 8px; background: transparent; border: none; 
         padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #0f172a; cursor: pointer; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03); outline: none; user-select: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; user-select: none;
     }
-    @media (hover: hover) { .nav-btn-header:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; box-shadow: 0 4px 12px -2px rgba(37,99,235,0.1); } }
+    @media (hover: hover) { .nav-btn-header:hover { background: #f1f5f9; color: #2563eb; } }
     .nav-btn-header:active { transform: scale(0.92); }
     .nav-burger-icon { width: 20px; height: 20px; }
 
     .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; }
     .search-box { position: relative; width: 100%; }
     .search-box input {
-        width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem; border: 1px solid transparent; border-radius: 2rem; 
+        width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem; border: none; border-radius: 2rem; 
         font-size: 0.95rem; font-weight: 500; background: #f1f5f9; color: #0f172a; transition: all 0.3s; outline: none;
     }
-    .search-box input:focus { background: white; border-color: #2563eb; box-shadow: 0 4px 15px rgba(37,99,235,0.08); }
+    .search-box input:focus { background: #e2e8f0; }
     .search-box input::placeholder { color: #94a3b8; font-weight: 500; }
     .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #94a3b8; pointer-events: none; transition: all 0.4s; }
-    .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); filter: drop-shadow(0 4px 6px rgba(37, 99, 235, 0.25)); }
+    .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); }
 
     .header-right { display: flex; align-items: center; gap: 0.8rem; flex: 1; justify-content: flex-end; }
     
     .desktop-icon-btn {
-        position: relative; background: #f8fafc; border: 1px solid #e2e8f0; width: 44px; height: 44px; border-radius: 50%;
+        position: relative; background: transparent; border: none; width: 44px; height: 44px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 2px 8px -2px rgba(0,0,0,0.03); outline: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
     }
-    @media (hover: hover) { .desktop-icon-btn:hover { background: #f1f5f9; border-color: #cbd5e1; color: #2563eb; transform: translateY(-2px); } }
+    @media (hover: hover) { .desktop-icon-btn:hover { background: #f1f5f9; color: #2563eb; transform: translateY(-2px); } }
     .desktop-icon-btn:active { transform: scale(0.92); }
     .desktop-icon-btn svg { width: 20px; height: 20px; }
     .header-badge {
-        position: absolute; top: -4px; right: -4px; background: #ef4444; color: white;
+        position: absolute; top: 2px; right: 2px; background: #ef4444; color: white;
         font-size: 10px; font-weight: 900; height: 18px; min-width: 18px; border-radius: 9px;
-        display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
-        line-height: 1; padding: 0 4px; box-sizing: border-box; box-shadow: 0 2px 4px rgba(239,68,68,0.3);
+        display: flex; align-items: center; justify-content: center;
+        line-height: 1; padding: 0 4px; box-sizing: border-box;
     }
 
     .search-results {
         position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: white;
-        border-radius: 1.5rem; box-shadow: 0 15px 40px -5px rgba(0,0,0,0.1); border: 1px solid #f1f5f9;
+        border-radius: 1.5rem; box-shadow: none; border: none;
         z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
         transition: all 0.3s; max-height: 400px; overflow-y: auto; padding: 0.5rem;
     }
     .search-results.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
     .search-result-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer; border-radius: 1rem; transition: all 0.2s; }
     @media (hover: hover) { .search-result-item:hover { background: #f8fafc; transform: translateX(4px); } }
-    .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: white; border: 1px solid #f1f5f9; padding: 2px; }
+    .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: transparent; border: none; }
     .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
     .search-clear.show { display: block; }
     
-    /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК */
+    /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК - Без теней и обводок */
     .modal {
         display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
@@ -141,34 +140,35 @@
     .modal.active { opacity: 1; }
     .modal-content {
         background: white; max-width: 440px; width: 100%; border-radius: 24px; padding: 24px;
-        max-height: 90vh; overflow-y: auto; overflow-x: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2); border: 1px solid #e2e8f0;
+        max-height: 90vh; overflow-y: auto; overflow-x: hidden; box-shadow: none; border: none;
         transform: scale(0.9) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
     .modal-content h3 { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; }
     
-    .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid #f1f5f9; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f8fafc; color: #0f172a; outline: none; }
-    .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+    .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid transparent; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f1f5f9; color: #0f172a; outline: none; }
+    .input-field:focus { background: #e2e8f0; }
+    .input-error { border-color: #ef4444 !important; }
     .phone-wrapper { border-radius: 12px; }
+    
     .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
-    @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.4); } }
+    @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; } }
     .btn-submit:active { transform: scale(0.96); box-shadow: none; }
-    .order-confirm-details { border-radius: 12px; }
 
     /* МОДАЛКИ СПИСКОВ (Избранное, Заказы) */
     .modal-list-container { max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 10px; }
     .list-item-card {
-        display: flex; gap: 12px; background: #f8fafc; border: 1px solid #f1f5f9;
+        display: flex; gap: 12px; background: transparent; border: none;
         border-radius: 12px; padding: 12px; position: relative; align-items: center; transition: all 0.2s;
     }
-    @media (hover: hover) { .list-item-card:hover { border-color: #cbd5e1; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.03); } }
-    .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: white; border: 1px solid #f1f5f9; padding: 2px; flex-shrink: 0; }
+    @media (hover: hover) { .list-item-card:hover { background: #f8fafc; } }
+    .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: transparent; border: none; flex-shrink: 0; }
     .list-item-info { flex: 1; min-width: 0; }
     .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
     .list-item-price { font-weight: 900; color: #2563eb; font-size: 1.1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
     .list-item-old-price { font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; text-decoration-color: #ef4444; font-weight: 700; }
-    .list-item-del-btn { background: #fee2e2; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; flex-shrink: 0; }
-    .list-item-del-btn:active { transform: scale(0.85); }
+    .list-item-del-btn { background: transparent; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; flex-shrink: 0; }
+    .list-item-del-btn:active { transform: scale(0.85); background: #fee2e2; }
     .list-item-col { flex-direction: column; align-items: flex-start; }
 
     /* МОДАЛКА КАТАЛОГА */
@@ -182,13 +182,12 @@
     }
     #dynamicNavAccordion::-webkit-scrollbar { display: none; }
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
-    .nav-acc-item { flex-shrink: 0; background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden; transition: all 0.3s; }
-    @media (hover: hover) { .nav-acc-item:hover { border-color: #cbd5e1; } }
-    .nav-acc-item.active { background: white; border-color: #2563eb; box-shadow: 0 10px 25px -5px rgba(37,99,235,0.15); }
+    .nav-acc-item { flex-shrink: 0; background: transparent; border: none; border-radius: 12px; overflow: hidden; transition: all 0.3s; }
+    .nav-acc-item.active { background: #f8fafc; }
     .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; }
     .nav-acc-header-left { display: flex; align-items: center; gap: 12px; }
-    .nav-acc-icon { width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: 0.3s; }
-    .nav-acc-item.active .nav-acc-icon { background: #2563eb; color: white; }
+    .nav-acc-icon { width: 40px; height: 40px; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; transition: 0.3s; }
+    .nav-acc-item.active .nav-acc-icon { color: #2563eb; }
     .nav-acc-icon svg { width: 20px; height: 20px; }
     .acc-chevron { width: 20px; height: 20px; color: #94a3b8; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .nav-acc-item.active .acc-chevron { transform: rotate(180deg); color: #2563eb; }
@@ -196,10 +195,10 @@
     .nav-acc-item.active .nav-acc-content { display: block; animation: fadeIn 0.4s ease; }
     .nav-sub-list { display: flex; flex-wrap: wrap; gap: 0.5rem; border-top: 1px dashed #e2e8f0; padding-top: 1rem; margin-top: 0.2rem; }
     .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s; user-select: none; }
-    @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; box-shadow: 0 4px 10px rgba(37,99,235,0.2); } }
+    @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; } }
 
-    /* ПРЕМИАЛЬНЫЙ ФУТЕР (РАЗДЕЛЕННЫЕ КНОПКИ) */
-    .premium-footer { background: white; border-top: 1px solid #e2e8f0; padding: 3rem 1.5rem 1.5rem; margin-top: auto; }
+    /* ПРЕМИАЛЬНЫЙ ФУТЕР */
+    .premium-footer { background: transparent; border-top: 1px solid #e2e8f0; padding: 3rem 1.5rem 1.5rem; margin-top: auto; }
     .premium-footer .footer-content { max-width: 1280px; margin: 0 auto; }
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2.5rem; margin-bottom: 3rem; }
     .footer-col h3 { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin-bottom: 1.25rem; letter-spacing: -0.5px; text-align: center; }
@@ -207,21 +206,21 @@
     .footer-btn {
         position: relative; overflow: hidden;
         display: flex; align-items: stretch; text-decoration: none;
-        background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px;
+        background: transparent; border: none; border-radius: 12px;
         margin-bottom: 0.8rem; cursor: pointer; transition: all 0.2s; outline: none;
         width: 100%; min-height: 48px; padding: 0;
     }
-    @media (hover: hover) { .footer-btn:hover { border-color: #cbd5e1; background: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transform: translateY(-2px); } }
-    .footer-btn:active { transform: scale(0.96); box-shadow: none; }
+    @media (hover: hover) { .footer-btn:hover { background: #f8fafc; transform: translateY(-2px); } }
+    .footer-btn:active { transform: scale(0.96); }
     
     .footer-btn-icon {
         position: absolute; left: 0; top: 0; bottom: 0; width: 48px;
-        background: #2563eb; display: flex; align-items: center; justify-content: center; z-index: 1;
+        background: transparent; display: flex; align-items: center; justify-content: center; z-index: 1;
     }
-    .footer-btn-icon svg { width: 20px; height: 20px; color: white; }
+    .footer-btn-icon svg { width: 20px; height: 20px; color: #2563eb; }
     .footer-btn-text {
         flex: 1; display: flex; align-items: center; justify-content: center;
-        padding: 0.8rem 48px; /* Идеальное центрирование благодаря равным отступам */
+        padding: 0.8rem 48px;
         font-size: 0.95rem; font-weight: 700; color: #475569; text-align: center; z-index: 2;
     }
     
@@ -232,7 +231,7 @@
         display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
         background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
         border-top: 1px solid rgba(226, 232, 240, 0.8); z-index: 100; justify-content: space-around; align-items: center;
-        padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
+        padding-bottom: env(safe-area-inset-bottom);
     }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -243,16 +242,14 @@
     .bottom-nav-badge {
         position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
         font-size: 9px; font-weight: 900; height: 16px; min-width: 16px; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center; border: 2px solid #fff; padding: 0 4px;
+        display: flex; align-items: center; justify-content: center; padding: 0 4px;
     }
     
-    /* АДАПТИВ & РЕШЕНИЕ КОНФЛИКТА СЛОЕВ */
+    /* АДАПТИВ */
     @media (max-width: 640px) {
-        .header { display: none !important; } /* Полностью отключаем хедер на мобильных */
+        .header { display: none !important; } 
         .mobile-bottom-nav { display: flex; }
-        body { padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } /* Сдвигаем футер вверх */
-        
-        /* Важно: Островок товара из product.html сдвигаем над меню */
+        body { padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } 
         .mobile-bottom-bar { bottom: calc(75px + env(safe-area-inset-bottom)) !important; z-index: 90 !important; } 
     }
 
@@ -270,17 +267,15 @@
     .global-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
     /* ПРОЧИЕ СТИЛИ (Формы, Таймлайн, Трекинг) */
-    .phone-wrapper { display: flex; align-items: stretch; background: #f8fafc; border: 2px solid #f1f5f9; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
-    .phone-wrapper:focus-within { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+    .phone-wrapper { display: flex; align-items: stretch; background: #f1f5f9; border: 2px solid transparent; border-radius: 12px; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
+    .phone-wrapper:focus-within { background: #e2e8f0; }
+    .phone-wrapper.error-border { border-color: #ef4444 !important; }
     .phone-prefix { display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 12px 0 0 12px; }
-    .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 12px 12px 0 !important; }
-
-    .form-error-msg { display: none; color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center; margin-bottom: 1rem; background: #fef2f2; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease; }
-    .input-error { border-color: #ef4444 !important; background: #fef2f2 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important; }
+    .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 12px 12px 0 !important; outline: none; }
 
     .order-confirm-icon-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
     .order-confirm-circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; animation: statusPulse 2s infinite; }
-    .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3); z-index: 2; }
+    .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; z-index: 2; }
     .order-confirm-check-svg { width: 30px; height: 30px; color: white; stroke-width: 4; }
     .order-confirm-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px dashed #f1f5f9; }
     .order-confirm-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -289,38 +284,39 @@
     .order-confirm-price { font-weight: 900; font-size: 1.4rem; color: #2563eb; }
 
     .status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; line-height: 1; }
-    .status-badge-delivered { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
-    .status-badge-processing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); }
-    .status-badge-shipping { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
-    .status-badge-unknown { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+    .status-badge-delivered { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
+    .status-badge-processing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+    .status-badge-shipping { background: rgba(250, 204, 21, 0.15); color: #facc15; }
+    .status-badge-unknown { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
 
     .timeline-vertical { display: flex; flex-direction: column; width: 100%; margin-top: 1.5rem; }
     .timeline-step-v { display: flex; align-items: stretch; min-height: 50px; }
     .timeline-indicator { display: flex; flex-direction: column; align-items: center; margin-right: 1rem; width: 14px; }
-    .timeline-dot-v { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #e2e8f0; background: white; z-index: 1; flex-shrink: 0; }
+    .timeline-dot-v { width: 12px; height: 12px; border-radius: 50%; border: 2px solid transparent; background: white; z-index: 1; flex-shrink: 0; }
     .timeline-line { width: 2px; background: #e2e8f0; flex-grow: 1; margin-top: 4px; margin-bottom: 4px; }
     .timeline-step-v:last-child .timeline-line { display: none; }
     .timeline-content-v { padding-bottom: 1.5rem; display: flex; flex-direction: column; justify-content: flex-start; margin-top: -3px; }
     .timeline-date-v { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
     .timeline-text-v { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
 
-    #trackingModal .modal-content { background: linear-gradient(145deg, #0f172a, #162032); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.4); }
+    #trackingModal .modal-content { background: #1e293b; color: #ffffff; }
     #trackingModal h3 { color: #ffffff; }
     #trackingModal .tracking-input-wrapper { position: relative; margin-bottom: 1.2rem; }
-    #trackingModal .tracking-input-wrapper svg { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #64748b; }
-    #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding-left: 3.2rem; margin-bottom: 0; }
-    #trackingModal .tracking-input-wrapper input:focus { border-color: #3b82f6; background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2); }
-    #trackingModal .tracking-input-wrapper input::placeholder { color: #64748b; }
-    #trackingModal .btn-submit { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; border: none; box-shadow: 0 4px 15px rgba(37,99,235,0.25); }
-    @media (hover: hover) { #trackingModal .btn-submit:hover { background: linear-gradient(135deg, #60a5fa, #3b82f6); box-shadow: 0 8px 25px rgba(37,99,235,0.4); } }
-    .tracking-error-msg { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease; }
+    #trackingModal .tracking-input-wrapper svg { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+    #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; color: #ffffff; padding-left: 3.2rem; margin-bottom: 0; }
+    #trackingModal .tracking-input-wrapper input:focus { background: rgba(255, 255, 255, 0.15); }
+    #trackingModal .tracking-input-wrapper input::placeholder { color: #94a3b8; }
+    #trackingModal .btn-submit { background: #3b82f6; color: #ffffff; border: none; }
+    @media (hover: hover) { #trackingModal .btn-submit:hover { background: #60a5fa; } }
+    .tracking-error-msg { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease; }
+    
     .dark-timeline .timeline-line { background: rgba(255,255,255,0.1); }
-    .dark-timeline .timeline-dot-v { background: #1e293b; border-color: rgba(255,255,255,0.1); }
-    .dark-timeline .timeline-step-v.past .timeline-dot-v { background: #475569; border-color: #475569; }
+    .dark-timeline .timeline-dot-v { background: #1e293b; }
+    .dark-timeline .timeline-step-v.past .timeline-dot-v { background: #475569; border-color: transparent; }
     .dark-timeline .timeline-step-v.past .timeline-line { background: #475569; }
-    .dark-timeline .timeline-step-v.current .timeline-dot-v { background: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.2); }
-    .dark-timeline .timeline-date-v { color: #64748b; }
-    .dark-timeline .timeline-text-v { color: #94a3b8; }
+    .dark-timeline .timeline-step-v.current .timeline-dot-v { background: #3b82f6; border-color: transparent; }
+    .dark-timeline .timeline-date-v { color: #94a3b8; }
+    .dark-timeline .timeline-text-v { color: #cbd5e1; }
     .dark-timeline .timeline-step-v.current .timeline-text-v { color: #ffffff; }
     .dark-timeline .timeline-step-v.current .timeline-date-v { color: #60a5fa; }
     .dark-spinner { border-color: rgba(255,255,255,0.1); border-top-color: #ffffff; }
@@ -367,6 +363,21 @@
                 if (!document.querySelector('.modal.active')) { document.documentElement.classList.remove('modal-open'); }
                 setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
             } catch(e) { console.error(e); }
+        };
+
+        // Логика подсветки полей с ошибками
+        window.showInputError = function(el) {
+            if (el) {
+                el.classList.add('error-border');
+                const input = el.querySelector('input');
+                if (input) {
+                    const removeError = () => {
+                        el.classList.remove('error-border');
+                        input.removeEventListener('input', removeError);
+                    };
+                    input.addEventListener('input', removeError);
+                }
+            }
         };
 
         window.globalToastTimeout = null;
@@ -587,7 +598,7 @@
         <div class="modal-content" style="text-align:center;">
             <h3 style="margin-bottom:1rem; font-size: 1.3rem;">დაკოპირებული ბმული:</h3>
             <div style="background:#f1f5f9; padding:1rem; border-radius:12px; word-break:break-all; font-size:0.9rem; color:#2563eb; margin-bottom:1.5rem; font-weight:600;" id="copiedLinkText"></div>
-            <button class="btn-submit" style="background: #f1f5f9; color: #0f172a; box-shadow: none;" onclick="closeAppModal('linkModal')">დახურვა</button>
+            <button class="btn-submit" style="background: #f1f5f9; color: #0f172a;" onclick="closeAppModal('linkModal')">დახურვა</button>
         </div>
     </div>
 
@@ -628,28 +639,30 @@
             <h3>შეკვეთის სტატუსი</h3>
             <div class="tracking-input-wrapper">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>    
-                <input type="text" id="trackingOrderId" class="input-field" placeholder="თქვენი შეკვეთის კოდი...">
+                <input type="text" id="trackingOrderId" class="input-field" style="background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; color: #ffffff;" placeholder="თქვენი შეკვეთის კოდი...">
             </div>
-            <button id="trackingCheckBtn" class="btn-submit">შემოწმება</button>
+            <button id="trackingCheckBtn" class="btn-submit" style="background: #3b82f6;">შემოწმება</button>
             <div id="trackingResult" style="margin-top:1.5rem;display:none;"></div>
         </div>
     </div>
 
     <div class="modal order-form-modal" id="orderFormModal">
         <div class="modal-content">
-            <div style="background: #f8fafc; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                <img style="max-width: 140px; max-height: 140px; object-fit: contain; margin-bottom: 0.8rem; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); background: white; padding: 0.5rem;" id="formProductImage" src="" alt="პროდუქტი">
+            <div style="background: transparent; border-radius: 12px; padding: 1.5rem 0; margin-bottom: 0.5rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <img style="max-width: 140px; max-height: 140px; object-fit: contain; margin-bottom: 0.8rem; border-radius: 12px; background: transparent;" id="formProductImage" src="" alt="პროდუქტი">
                 <div style="font-size: 1.1rem; font-weight: 800; color: #1e293b;" id="formProductName">პროდუქტი</div>
                 <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
                 <div style="font-size: 1.8rem; font-weight: 900; color: #2563eb;" id="formProductPrice">0 ₾</div>
             </div>
 
-            <form id="quickOrderForm">
-                <div id="quickFormError" class="form-error-msg"></div>
-                <input type="text" id="quickName" class="input-field" placeholder="თქვენი სახელი" required autocomplete="name">
-                <div class="phone-wrapper">
+            <form id="quickOrderForm" novalidate>
+                <input type="email" name="email_hp" id="quickEmailHp" style="display:none" tabindex="-1" autocomplete="off">
+                <div id="quickFormWrapperName" style="width: 100%;">
+                    <input type="text" id="quickName" class="input-field" placeholder="თქვენი სახელი" autocomplete="name">
+                </div>
+                <div class="phone-wrapper" id="quickFormWrapperPhone">
                     <span class="phone-prefix">+995</span>
-                    <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
+                    <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
                 </div>
                 <button type="submit" class="btn-submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
@@ -675,14 +688,14 @@
             <h3 style="font-size:1.8rem;">შეკვეთა მიღებულია!</h3>
             <p style="text-align:center;color:#64748b;font-size:1rem;font-weight:500;margin-bottom:1.5rem;line-height:1.5;">მალე დაგიკავშირდებით. <br>მადლობა, რომ აირჩიეთ ENKA Electronics!</p>
             
-            <div class="order-confirm-details" style="background: white; padding: 1.2rem; margin-bottom: 1.5rem; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);">
+            <div class="order-confirm-details" style="background: transparent; padding: 1.2rem; margin-bottom: 1.5rem;">
                 <div class="order-confirm-row"><span class="order-confirm-label">სახელი:</span><span class="order-confirm-value" id="confirmName">-</span></div>
                 <div class="order-confirm-row"><span class="order-confirm-label">ტელეფონი:</span><span class="order-confirm-value" id="confirmPhone">-</span></div>
                 <div class="order-confirm-row"><span class="order-confirm-label">პროდუქტი:</span><span class="order-confirm-value" id="confirmProduct">-</span></div>
                 <div class="order-confirm-row" style="border:none; padding-top: 0.5rem;"><span class="order-confirm-label" style="font-size:1rem;">თანხა:</span><span class="order-confirm-price" id="confirmPrice">-</span></div>
             </div>
             
-            <button class="btn-submit" id="closeOrderConfirmModal" style="background: #2563eb; color: #ffffff; box-shadow: none;" onclick="window.closeAppModal('orderConfirmModal'); window.openOrders(event);">ჩემი შეკვეთები</button>
+            <button class="btn-submit" id="closeOrderConfirmModal" style="background: #2563eb; color: #ffffff;" onclick="window.closeAppModal('orderConfirmModal'); window.openOrders(event);">ჩემი შეკვეთები</button>
         </div>
     </div>
 
@@ -727,10 +740,7 @@
 
     window.addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) window.closeAppModal(e.target);
-        
-        if (e.target.closest('.mobile-bottom-img')) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        if (e.target.closest('.mobile-bottom-img')) window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
     // --- ЛОГИКА ПОИСКА (ПК И МОБИЛЬНЫЙ) ---
@@ -877,7 +887,7 @@
                     timelineHtml += `<div class="timeline-step-v ${stepClass}"><div class="timeline-indicator"><div class="timeline-dot-v"></div><div class="timeline-line"></div></div><div class="timeline-content-v"><div class="timeline-date-v">${dateStr}</div><div class="timeline-text-v">${statusMap[status] || status}</div></div></div>`;
                 });
 
-                trackingResult.innerHTML = `<div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);"><p style="font-size: 0.85rem; font-weight: 800; color: #94a3b8; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical dark-timeline">${timelineHtml}</div></div>`;
+                trackingResult.innerHTML = `<div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);"><p style="font-size: 0.85rem; font-weight: 800; color: #94a3b8; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical dark-timeline">${timelineHtml}</div></div>`;
             } catch (error) {
                 trackingResult.style.display = 'block'; trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
             } finally { trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება'; }
@@ -902,11 +912,11 @@
                     thumbContainer.style.display = 'flex';
                     imgs.forEach(src => {
                         const imgThumb = document.createElement('img'); imgThumb.src = src;
-                        imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid #f1f5f9; border-radius: 8px; padding: 4px; background: white; transition: 0.2s; flex-shrink: 0;";
+                        imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid transparent; border-radius: 8px; padding: 4px; background: transparent; transition: 0.2s; flex-shrink: 0;";
                         imgThumb.onclick = function() { 
                             mainImg.style.opacity = '0'; mainImg.style.transform = 'scale(0.95)';
                             setTimeout(() => { mainImg.src = src; mainImg.style.opacity = '1'; mainImg.style.transform = 'scale(1)'; }, 250);
-                            Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='#f1f5f9'); imgThumb.style.borderColor='#2563eb'; 
+                            Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='transparent'); imgThumb.style.borderColor='#2563eb'; 
                             imgThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                         };
                         thumbContainer.appendChild(imgThumb);
@@ -915,8 +925,8 @@
                 } else { thumbContainer.style.display = 'none'; }
             } else { mainImg.src = "/img/no-image.png"; }
             quickName.value = ''; quickPhone.value = '';
-            const errorDiv = document.getElementById('quickFormError'); if(errorDiv) errorDiv.style.display = 'none';
-            quickName.classList.remove('input-error'); if(document.querySelector('.phone-wrapper')) document.querySelector('.phone-wrapper').classList.remove('input-error');
+            
+            quickName.classList.remove('input-error'); if(document.querySelector('.phone-wrapper')) document.querySelector('.phone-wrapper').classList.remove('error-border');
             document.getElementById('orderFormModal').dataset.product = JSON.stringify(product);
             window.openAppModal('orderFormModal');
         } catch(e) { console.error(e); }
@@ -934,11 +944,17 @@
     if (quickForm) {
         quickForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+
+            // Проверка honeypot (защита от ботов)
+            const hp = document.getElementById('quickEmailHp');
+            if (hp && hp.value) return; 
+
             const name = quickName.value.trim(); const phoneRaw = quickPhone.value.replace(/\s/g, '');
-            const errorDiv = document.getElementById('quickFormError'); const phoneWrapper = document.querySelector('.phone-wrapper');
-            const showError = (msg, inputEl) => { errorDiv.textContent = msg; errorDiv.style.display = 'block'; if (inputEl) inputEl.classList.add('input-error'); setTimeout(() => { errorDiv.style.display = 'none'; if (inputEl) inputEl.classList.remove('input-error'); }, 3500); };
-            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", quickName); return; }
-            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", phoneWrapper); return; }
+            const phoneWrapper = document.getElementById('quickFormWrapperPhone');
+            const nameWrapper = document.getElementById('quickFormWrapperName');
+            
+            if(!name) { window.showInputError(nameWrapper); return; }
+            if(phoneRaw.length !== 9) { window.showInputError(phoneWrapper); return; }
             
             const product = JSON.parse(document.getElementById('orderFormModal').dataset.product || '{}');
             const fullPhone = '+995' + phoneRaw; const submitBtn = quickForm.querySelector('.btn-submit');
@@ -958,7 +974,7 @@
         });
     }
 
-    // Перехват сохранения заказа
+    // Сохранение заказа
     window.showOrderConfirm = function(data) {
         try {
             document.getElementById('confirmName').textContent = data.name || '-';
@@ -967,7 +983,6 @@
             const rawConfirmPrice = String(data.price).replace(/₾/g, '').trim();
             document.getElementById('confirmPrice').textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
             
-            // Исправлено: берем старую цену напрямую из данных, а не со всей страницы
             let oldPrice = (data.oldPrice && data.oldPrice !== 'null' && data.oldPrice !== 'undefined') ? String(data.oldPrice).replace(/₾/g, '').trim() + ' ₾' : null;
             
             let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
@@ -997,7 +1012,6 @@
             }
         });
     });
-
 </script>
 
 <script>
@@ -1019,7 +1033,6 @@
                 if(titleEl) name = titleEl.innerText;
                 let priceEl = document.querySelector('.modern-price-current'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
                 
-                // Исправлено: искать старую цену только в родительском блоке текущей цены, чтобы избежать утечек со слайдера
                 let oldPriceEl = priceEl ? priceEl.parentNode.querySelector('.modern-price-old, .old-price') : null; 
                 if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
                 
