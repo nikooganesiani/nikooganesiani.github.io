@@ -741,7 +741,7 @@
             
             if (inputId === 'searchInput') {
                 const ic = document.querySelector('.search-icon');
-                const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი"];
+                const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი", "გრილი", "მადუღარა", "ჩოფერი", "წვენსაწური", "უთო", "საპარსი", "ტრიმერი", "ყურსასმენები", "სმარტ საათი", "ხორცსაკეპი", "ელექტრო ტაფა", "გაზქურა", "ფრის აპარატი", "მიქსერი"];
                 let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
                 const tp = () => { if(!s||!act) return; let cw = w[wi]; if(del){ ci--; s.placeholder = cw.substring(0,ci); if(ci===0){ del=0; wi=(wi+1)%w.length; to=setTimeout(tp,500); } else to=setTimeout(tp,30); } else { ci++; s.placeholder = cw.substring(0,ci); if(ci===cw.length){ del=1; to=setTimeout(tp,2500); } else to=setTimeout(tp,80); } };
                 if (s.value.length > 0) { act = 0; s.placeholder = ''; if (ic) ic.classList.add('active'); } else { tp(); }
