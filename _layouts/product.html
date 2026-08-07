@@ -41,24 +41,17 @@ layout: default
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .form-error-msg {
-        display: none; color: #ef4444; font-size: 0.85rem; font-weight: 700; text-align: center;
-        background: #fef2f2; padding: 0.8rem; border-radius: 0.75rem; border: 1px solid #fee2e2; animation: fadeIn 0.3s ease;
-    }
-
-    /* Унифицированный стиль для главных блоков с математически выверенными радиусами */
+    /* Очищенный стиль для главных блоков без фонов и обводок */
     .shared-box-style {
-        background: white; border: 1px solid #f1f5f9; border-radius: 24px; 
-        padding: 16px; box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.05);
+        border-radius: 24px; 
     }
 
-    /* Верхняя секция: Крошки */
     .top-header-group { margin-bottom: 1.25rem; animation: slideDown 0.4s ease; }
     
     .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
     .breadcrumbs { 
-        display: flex; gap: 0.5rem; list-style: none; padding: 0.5rem 1rem; margin: 0; align-items: center; 
-        background: white; border-radius: 0.75rem; border: 1px solid #e2e8f0;
+        display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; align-items: center; 
+        background: transparent; border: none;
         flex: 1 1 auto; min-width: 0; overflow: hidden;
     }
     .breadcrumbs li { display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; }
@@ -70,18 +63,16 @@ layout: default
     .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; flex-shrink: 0; }
     .breadcrumbs .separator svg { width: 14px; height: 14px; }
     
-    .breadcrumb-product-name { color: #0f172a; }
-
-    .sku-desktop { background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
+    .sku-desktop { background: transparent; border: none; padding: 0; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
-    .product-title-h1 { font-size: 1.8rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0 0 0.5rem 0; padding: 0; }
+    /* Единый стиль заголовка перед галереей */
+    .product-title-h1 { font-size: 1.8rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0 0 1rem 0; padding: 0; }
     
-    /* Уплотненная сетка на ПК (50/50 - одинаковая ширина) */
-    .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    /* Уменьшенная правая колонка примерно на 30% относительно изначальных 50/50 */
+    .product-grid { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
     .product-grid > div, .product-details-grid > div { min-width: 0; }
 
-    /* ГАЛЕРЕЯ ТОВАРА */
     .gallery-section { 
         display: flex !important; flex-direction: row !important; position: relative;
         opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
@@ -95,24 +86,17 @@ layout: default
             max-height: 520px; flex-shrink: 0;
         }
         .thumb-strip::-webkit-scrollbar { display: none; }
-        /* Обеспечиваем рендеринг: width вместо flex-basis, min-height для защиты от коллапса */
         .main-gallery-viewport { flex: 1; margin-bottom: 0; width: calc(100% - 88px); min-height: 200px; }
     }
-    #thumbStrip {
-    width: 80px !important;
-    min-width: 80px !important;
-    order: -1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    }
+    #thumbStrip { width: 80px !important; min-width: 80px !important; order: -1 !important; display: flex !important; flex-direction: column !important; }
     .main-gallery-viewport { 
         aspect-ratio: 1 / 1; overflow: hidden; position: relative; flex-grow: 1 !important; min-width: 0 !important;
-        border-radius: 8px; border: 1px solid #e2e8f0; background: #fff;
+        border-radius: 12px; border: none; background: transparent;
     }
     
     .gallery-badges { position: absolute; top: 1rem; left: 1rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
     .gallery-actions { position: absolute; top: 1rem; right: 1rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
-    .sku-mobile { display: none; position: absolute; bottom: 1rem; right: 1rem; z-index: 15; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: 0 4px 10px rgba(0,0,0,0.05); pointer-events: none; }
+    .sku-mobile { display: none; position: absolute; bottom: 1rem; right: 1rem; z-index: 15; background: transparent; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: none; pointer-events: none; }
     .sku-mobile b { color: #2563eb; }
 
     .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 900; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
@@ -121,8 +105,8 @@ layout: default
     .pill-stock-out { background: #fef2f2; color: #ef4444; border-color: #fecaca; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
     .pill-stock-soon { background: #fffbeb; color: #d97706; border-color: #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1); }
 
-    .btn-icon-round { background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border: 1px solid #e2e8f0; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; box-shadow: 0 4px 15px rgba(0,0,0,0.06); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
-    @media (hover: hover) { .btn-icon-round:hover { color: #0f172a; border-color: #cbd5e1; background: #fff; } .btn-fav:hover { color: #ef4444; border-color: #fecaca; } }
+    .btn-icon-round { background: #f8fafc; border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; box-shadow: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    @media (hover: hover) { .btn-icon-round:hover { color: #0f172a; background: #f1f5f9; } .btn-fav:hover { color: #ef4444; } }
     .btn-icon-round:active { transform: scale(0.9); }
     .btn-fav.active { color: #ef4444; }
     .btn-fav.active svg { fill: currentColor; }
@@ -139,84 +123,43 @@ layout: default
     .thumb-strip { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.1rem; -ms-overflow-style: none; scrollbar-width: none; }
     .thumb-strip::-webkit-scrollbar { display: none; }
     
-    /* Математика: outer(12) - border(2) - padding(4) = inner(6) */
-    .thumb-card { width: 72px; height: 72px; border: 2px solid #f1f5f9; border-radius: 12px; cursor: pointer; padding: 4px; background: white; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
-    @media (hover: hover) { .thumb-card:hover { border-color: #cbd5e1; } }
+    .thumb-card { width: 72px; height: 72px; border: 2px solid transparent; border-radius: 12px; cursor: pointer; padding: 4px; background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
     .thumb-card.active { border-color: #2563eb; }
     .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; mix-blend-mode: multiply; pointer-events: none; }
     .thumb-card:active { transform: scale(0.94); }
 
     .product-info-section { display: flex; flex-direction: column; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
     
-    .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; }
-    @media (hover: hover) { .sticky-buy-box:hover { box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.08); } }
+    /* Флекс-контейнер для управления порядком на мобильных */
+    .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; display: flex; flex-direction: column; }
     
-    .desktop-title-area { margin-bottom: 1.25rem; }
-
-    /* Прайс */
     .modern-price-container {
-        display: inline-flex;
-        flex-direction: row; /* Меняем на горизонтальное расположение */
-        justify-content: center;
-        align-items: center;
-        background: #eff6ff; 
-        padding: 0.6rem 1.4rem;
-        border-radius: 16px;
-        border: 2px dashed #bfdbfe; 
-        min-width: 120px;
-        flex-shrink: 0;
-        gap: 1rem; /* Добавляем отступ между актуальной и старой ценой */
+        display: inline-flex; flex-direction: row; justify-content: center; align-items: center;
+        background: #eff6ff; padding: 0.6rem 1.4rem; border-radius: 16px; border: 2px dashed #bfdbfe; 
+        min-width: 120px; flex-shrink: 0; gap: 1rem; 
     }
-    
-    .modern-price-current {
-        font-size: 1.6rem; /* Снизили размер, как вы просили */
-        font-weight: 900;
-        color: #1d4ed8;
-        line-height: 1;
-        letter-spacing: -1px;
-        display: flex; 
-        align-items: center; /* Центрируем по вертикали */
-    }
-    
-    .modern-price-current .gel { 
-        font-size: inherit; /* Размер символа валюты теперь равен размеру цифр */
-        font-weight: 800; 
-        margin-left: 2px; 
-    }
-    
-    .modern-price-old {
-        font-size: 1.6rem;
-        font-weight: 900;
-        margin-top: 0;
-        display: flex;
-        align-items: center;
-        padding-left: 1rem; 
-        border-left: 2px dashed #93c5fd; 
-        line-height: 1;
-        letter-spacing: -1px;
-    }
+    .modern-price-current { font-size: 1.6rem; font-weight: 900; color: #1d4ed8; line-height: 1; letter-spacing: -1px; display: flex; align-items: center; }
+    .modern-price-current .gel { font-size: inherit; font-weight: 800; margin-left: 2px; }
+    .modern-price-old { font-size: 1.6rem; font-weight: 900; margin-top: 0; display: flex; align-items: center; padding-left: 1rem; border-left: 2px dashed #93c5fd; line-height: 1; letter-spacing: -1px; }
 
-    .designer-strike { 
-        text-decoration: line-through !important; /* Нативное перечеркивание шрифта */
-        text-decoration-color: #ef4444 !important; /* Красный цвет линии */
-        text-decoration-thickness: 3px !important; /* Толщина линии скидки */
-        color: #94a3b8; 
-    }
+    .designer-strike { text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 3px !important; color: #94a3b8; }
 
     .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
     .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
     
-    .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; font-size: 0.95rem; }
-    @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: 0 10px 20px rgba(0,0,0,0.05); } }
+    .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: none; font-size: 0.95rem; }
+    @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; } }
 
-    /* Супер-строгий Flexbox для Инпутов с устранением бага автозаполнения */
+    /* Обновленные инпуты (красная обводка при ошибке) */
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
-        background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+        background: #f1f5f9; border: 2px solid transparent; border-radius: 12px;
         transition: all 0.2s; overflow: hidden;
     }
-    .input-wrapper:focus-within { border-color: #2563eb; background: #ffffff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .input-wrapper:focus-within { background: #e2e8f0; }
+    .input-wrapper.error-border { border-color: #ef4444 !important; }
+    
     .input-wrapper svg { flex-shrink: 0; color: #94a3b8; width: 20px; height: 20px; }
     .input-wrapper .prefix { flex-shrink: 0; font-weight: 700; color: #64748b; font-size: 15px; }
     .clean-input {
@@ -225,21 +168,24 @@ layout: default
     }
     .clean-input::placeholder { color: #94a3b8; font-weight: 500; }
     
-    /* Хак против системных голубых/желтых фонов автозаполнения браузеров */
     .clean-input:-webkit-autofill, .clean-input:-webkit-autofill:hover, 
     .clean-input:-webkit-autofill:focus, .clean-input:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #f1f5f9 inset !important;
         -webkit-text-fill-color: #0f172a !important;
         transition: background-color 5000s ease-in-out 0s;
     }
     .input-wrapper:focus-within .clean-input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #e2e8f0 inset !important;
     }
 
-    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 1.25rem; border-top: 1px dashed #f1f5f9; padding-top: 1.25rem; }
-    .benefit-card { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; transition: border-color 0.3s, background 0.3s; }
-    @media (hover: hover) { .benefit-card:hover { border-color: #cbd5e1; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.03); } }
-    .benefit-icon { width: 34px; height: 34px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2563eb; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0; }
+    /* Бенефиты без обводки */
+    .benefits-container { order: 2; margin-top: 1.25rem; }
+    #inlineOrderForm { order: 1; width: 100%; }
+    .desktop-price-inline { margin-bottom: 1.25rem; }
+
+    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .benefit-card { background: transparent; border: none; padding: 0; display: flex; align-items: center; gap: 10px; transition: none; }
+    .benefit-icon { width: 34px; height: 34px; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2563eb; flex-shrink: 0; box-shadow: none; }
     .benefit-info { display: flex; flex-direction: column; }
     .benefit-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;}
     .benefit-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
@@ -251,26 +197,19 @@ layout: default
     .expandable-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)); pointer-events: none; transition: opacity 0.3s; }
     .expandable-block.expanded .expandable-overlay { opacity: 0; }
     
-    .btn-expand { background: transparent; border: 1px solid #e2e8f0; color: #2563eb; font-weight: 800; font-size: 0.95rem; border-radius: 0.75rem; padding: 0.8rem; cursor: pointer; margin-top: 1rem; width: 100%; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
-    @media (hover: hover) { .btn-expand:hover { background: #f8fafc; color: #1d4ed8; } }
-    .btn-expand:active { transform: scale(0.96); background: #f1f5f9; }
+    .btn-expand { background: transparent; border: none; color: #2563eb; font-weight: 800; font-size: 0.95rem; padding: 0.8rem 0; cursor: pointer; margin-top: 0.5rem; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    @media (hover: hover) { .btn-expand:hover { color: #1d4ed8; } }
+    .btn-expand:active { transform: scale(0.96); }
 
     .spec-list-container { display: flex; flex-direction: column; gap: 0.4rem; }
-    .spec-item-row { display: flex; padding: 0.8rem 1rem; background: #f8fafc; border-radius: 0.5rem; transition: background 0.3s; align-items: center; }
-    @media (hover: hover) { .spec-item-row:hover { background: #f1f5f9; } }
+    .spec-item-row { display: flex; padding: 0.6rem 0; background: transparent; transition: background 0.3s; align-items: center; }
     .spec-name-label { flex: 1; color: #64748b; font-size: 0.9rem; font-weight: 600; }
     .spec-value-text { flex: 1; color: #1e293b; font-weight: 800; font-size: 0.9rem; text-align: right; }
     .desc-text { line-height: 1.7; color: #475569; font-size: 1rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
-    /* ==============================================================
-       КАРУСЕЛИ
-       ============================================================== */
     .similar-products-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
-    
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
     .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.4rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
-    
-    /* Стилизация SVG иконок в заголовках категорий */
     .similar-title .cat-icon-svg { color: #2563eb; stroke: #2563eb; }
     .similar-title .cat-icon-svg path, .similar-title .cat-icon-svg rect, .similar-title .cat-icon-svg circle, .similar-title .cat-icon-svg polygon, .similar-title .cat-icon-svg polyline { stroke: #2563eb; }
 
@@ -282,32 +221,31 @@ layout: default
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
+    /* Прозрачные карточки товаров */
     .similar-scroll-container .product-card {
         flex: 0 0 calc(25% - 12px); scroll-snap-align: start; min-width: 0;
-        background: white; border-radius: 20px; overflow: hidden; position: relative;
-        box-shadow: 0 4px 15px -4px rgba(0, 0, 0, 0.05); transition: border-color 0.3s, box-shadow 0.3s;
-        display: flex; flex-direction: column; border: 1px solid #f1f5f9; height: auto;
+        background: transparent; border-radius: 0; overflow: hidden; position: relative;
+        box-shadow: none; border: none; height: auto; display: flex; flex-direction: column;
     }
-    @media (hover: hover) { .similar-scroll-container .product-card:hover { border-color: #e2e8f0; box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.1); } }
     
     .sim-arrow { 
         position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
-        display: flex; width: 44px; height: 44px; background: white; border: 1px solid #e2e8f0; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; 
+        display: flex; width: 44px; height: 44px; background: #f8fafc; border: none; border-radius: 50%; box-shadow: none; cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; 
     }
-    @media (hover: hover) { .sim-arrow:hover { background: #2563eb; color: white; border-color: #2563eb; } }
+    @media (hover: hover) { .sim-arrow:hover { background: #f1f5f9; color: #2563eb; } }
     .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
     .sim-arrow.left { left: -22px; }
     .sim-arrow.right { right: -22px; }
 
-    .product-card .btn-fav-card { position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(255,255,255,0.9); backdrop-filter: blur(4px); border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .product-card .btn-fav-card { position: absolute; top: 10px; right: 10px; z-index: 10; background: transparent; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; box-shadow: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     .product-card .btn-fav-card.active { color: #ef4444; }
     .product-card .btn-fav-card.active svg { fill: currentColor; }
     .product-card .btn-fav-card:active { transform: scale(0.85); }
 
-    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: #ffffff; border-radius: 20px 20px 0 0; border-bottom: 1px solid #f1f5f9; }
+    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: transparent; border-radius: 20px; border: none; }
     
-    .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: rgba(255,255,255,0.95); border: 1px solid #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; opacity: 0; transition: all 0.2s; z-index: 20; box-shadow: 0 4px 10px rgba(0,0,0,0.1); outline: none; }
-    @media (hover: hover) { .product-card:hover .card-nav-arrow { opacity: 1; } .card-nav-arrow:hover { background: #2563eb; color: #fff; border-color: #2563eb; } }
+    .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; opacity: 0; transition: all 0.2s; z-index: 20; box-shadow: none; outline: none; }
+    @media (hover: hover) { .product-card:hover .card-nav-arrow { opacity: 1; } .card-nav-arrow:hover { color: #2563eb; } }
     .card-nav-arrow:active { transform: translateY(-50%) scale(0.85); }
     .card-nav-arrow.prev { left: 8px; }
     .card-nav-arrow.next { right: 8px; }
@@ -321,13 +259,13 @@ layout: default
     .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(15, 23, 42, 0.25); backdrop-filter: blur(2px); transition: all 0.3s ease; }
     .dot.active { background: #2563eb; transform: scale(1.3); }
 
-    .product-info { padding: 1rem; display: flex; flex-direction: column; flex: 1; }
+    .product-info { padding: 1rem 0; display: flex; flex-direction: column; flex: 1; }
     .product-name-box { background: transparent; border: none; padding: 0; height: 2.6rem; display: flex; align-items: flex-start; margin-bottom: 0.6rem; transition: opacity 0.2s ease; cursor: pointer; }
     @media (hover: hover) { .product-name-box:hover { opacity: 0.8; } }
     .product-name { font-size: 1rem; font-weight: 750; color: #0f172a; line-height: 1.3; letter-spacing: -0.2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
     .discount-badge { position: absolute; top: 10px; left: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 800; z-index: 5; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); pointer-events: none; }
     
-    .product-price-container { display: flex; flex-direction: row; align-items: flex-end; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; padding: 0 0.2rem; min-height: 2.2rem; }
+    .product-price-container { display: flex; flex-direction: row; align-items: flex-end; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; min-height: 2.2rem; }
     .product-price { font-size: 1.5rem; font-weight: 900; color: #2563eb; letter-spacing: -0.5px; line-height: 1; }
     .old-price { font-size: 0.85rem; line-height: 1.3; margin-bottom: 2px; }
 
@@ -341,27 +279,18 @@ layout: default
         backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.6rem; z-index: 999; 
         align-items: center; gap: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
     }
-    .mobile-bottom-img { width: 40px; height: 40px; border-radius: 0.5rem; object-fit: contain; background: #f8fafc; border: 1px solid #f1f5f9; }
+    .mobile-bottom-img { width: 40px; height: 40px; border-radius: 0.5rem; object-fit: contain; background: transparent; border: none; }
     .mobile-bottom-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     .mobile-bottom-price-row { display: flex; align-items: baseline; gap: 6px; }
     .mobile-bottom-price { font-weight: 900; color: #2563eb; font-size: 1.1rem; line-height: 1; }
     .mobile-bottom-old-price { font-size: 0.8rem; }
     .mobile-bottom-actions { display: flex; gap: 6px; align-items: center; }
-    .mobile-bottom-btn { width: 36px; height: 36px; border-radius: 0.6rem; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; border: none; outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .mobile-bottom-btn { width: 36px; height: 36px; border-radius: 0.6rem; background: transparent; color: #64748b; display: flex; align-items: center; justify-content: center; border: none; outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
     .mobile-bottom-btn:active { transform: scale(0.9); }
-    .mobile-bottom-btn.active { color: #ef4444; background: #fee2e2; }
+    .mobile-bottom-btn.active { color: #ef4444; }
     .mobile-bottom-btn.active svg { fill: currentColor; }
     .mobile-bottom-buy { background: #2563eb; color: white; border: none; border-radius: 0.6rem; padding: 0 1rem; height: 36px; font-weight: 800; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
     .mobile-bottom-buy:active { transform: scale(0.94); }
-
-    /* Глобальный Toast Alert */
-    .global-toast {
-        position: fixed; bottom: 145px; left: 50%; transform: translateX(-50%) translateY(20px);
-        background: #1e293b; color: white; padding: 12px 24px; border-radius: 0.75rem;
-        font-size: 0.9rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 100000; white-space: nowrap;
-    }
-    .global-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* Полноэкранная модалка галереи */
     .modal-fullscreen { 
@@ -370,83 +299,37 @@ layout: default
         opacity: 0; transition: opacity 0.3s ease; 
     }
     .modal-fullscreen.active { opacity: 1; display: flex; }
-    
     .modal-gallery-area { flex: 1; position: relative; display: flex; overflow: hidden; align-items: center; justify-content: center; width: 100%; }
-    
-    .modal-track { 
-        display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; 
-        scrollbar-width: none; -ms-overflow-style: none; 
-    }
+    .modal-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
     .modal-track::-webkit-scrollbar { display: none; }
-    
-    .modal-slide { 
-        flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; 
-        scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative;
-    }
-    
-    .modal-img-wrapper {
-        display: flex; align-items: center; justify-content: center;
-        width: 100%; height: 100%; max-height: 85vh;
-    }
-    .modal-img-wrapper img { 
-        max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.75rem; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08); pointer-events: auto; user-select: none; 
-        border: 1px solid #e2e8f0; background: #fff;
-    }
-
-    .modal-nav-arrow { 
-        position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.9); 
-        border: 1px solid #f1f5f9; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; 
-        justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; 
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1); outline: none; 
-    }
-    @media (hover: hover) { .modal-nav-arrow:hover { background: #2563eb; color: #fff; border-color: #2563eb; } }
+    .modal-slide { flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative; }
+    .modal-img-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; max-height: 85vh; }
+    .modal-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.75rem; pointer-events: auto; user-select: none; border: none; background: transparent; }
+    .modal-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; box-shadow: none; outline: none; }
+    @media (hover: hover) { .modal-nav-arrow:hover { color: #2563eb; } }
     .modal-nav-arrow:active { transform: translateY(-50%) scale(0.9); }
     .modal-nav-arrow.left { left: 20px; } .modal-nav-arrow.right { right: 20px; }
     
-    .modal-thumb-area { padding: 1.5rem 1rem; background: #fff; border-top: 1px solid #f1f5f9; text-align: center; box-sizing: border-box; width: 100%; }
+    .modal-thumb-area { padding: 1.5rem 1rem; background: #fff; text-align: center; box-sizing: border-box; width: 100%; }
     .modal-thumb-strip { display: inline-flex; gap: 12px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 4px; text-align: left; }
     .modal-thumb-strip::-webkit-scrollbar { display: none; }
-    .modal-thumb { 
-        width: 60px; height: 60px; border: 2px solid transparent; border-radius: 10px; cursor: pointer; 
-        opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; box-sizing: border-box; background: #fff;
-    }
+    .modal-thumb { width: 60px; height: 60px; border: 2px solid transparent; border-radius: 10px; cursor: pointer; opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; box-sizing: border-box; background: #fff; }
     .modal-thumb.active { border-color: #2563eb; opacity: 1; transform: scale(1.05); }
     .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; pointer-events: none; }
 
-    /* РЕСПОНСИВНОСТЬ */
-    .title-desktop { display: block; }
-    .title-mobile { display: none; font-size: 1.6rem; margin: 0 0 0.5rem 0; font-weight: 900; }
-
     @media (max-width: 1024px) {
-        .title-desktop { display: none; }
-        .desktop-title-area { display: none; margin: 0; padding: 0; }
-        .desktop-price-inline { display: none !important; }
-        
-        .title-mobile { display: block; line-height: 1.2; padding: 0; margin-bottom: 1rem; }
-        .sim-arrow { display: none !important; }
-
+        .product-title-h1 { font-size: 1.6rem; }
         .product-grid { grid-template-columns: 1fr; gap: 1rem; }
         
-        .shared-box-style { border-radius: 20px; padding: 16px; }
-        .main-gallery-viewport { border-radius: 8px; }
-        
+        .gallery-actions { display: none !important; }
         .sku-desktop { display: none; }
         .sku-mobile { display: block; }
+        
+        .benefits-container { order: -1; margin-top: 0; margin-bottom: 1rem; }
 
-        /* Идеальный скролл на мобильных как было в лучших версиях */
-        .similar-scroll-container { 
-            padding: 0.5rem 1.5rem; 
-            margin: 0 -1.5rem; 
-            width: calc(100% + 3rem); 
-            scroll-padding: 1.5rem; 
-            gap: 12px; 
-        }
+        .similar-scroll-container { padding: 0.5rem 1.5rem; margin: 0 -1.5rem; width: calc(100% + 3rem); scroll-padding: 1.5rem; gap: 12px; }
         .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 8px); }
-        
-        .carousel-dots { display: none !important; }
-        .card-nav-arrow { display: none !important; }
-        
+        .sim-arrow, .carousel-dots, .card-nav-arrow { display: none !important; }
         .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; }
 
         .top-header-group { margin-bottom: 1rem; }
@@ -455,45 +338,27 @@ layout: default
     }
     
     @media (max-width: 640px) {
-        .breadcrumb-text-home, .breadcrumb-sep-product, .breadcrumb-item-product { display: none !important; }
+        .breadcrumb-text-home { display: none !important; }
         
-        .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.2rem; padding: 0.8rem; }
+        .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.2rem; padding: 0.8rem 0; }
         .spec-value-text { text-align: left; font-size: 0.85rem; }
         .benefits-grid { grid-template-columns: 1fr; gap: 0.6rem; }
         .mobile-bottom-bar { display: flex; } 
         .product-title-h1 { font-size: 1.3rem; }
         
-        .gallery-section { padding: 12px; border-radius: 16px; }
+        .gallery-section { padding: 0; }
         .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; }
         .thumb-strip { padding: 0; gap: 6px; }
         .thumb-card { width: 56px; height: 56px; padding: 3px; border-radius: 10px; }
         .thumb-card img { border-radius: 5px; }
 
-        .breadcrumbs li a .cat-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            width: 16px;
-            height: 16px;
-            margin-right: 4px;
-            vertical-align: middle;
-            overflow: hidden;
-        }
-        .breadcrumbs li a .cat-icon svg {
-            display: block;
-            width: 16px;
-            height: 16px;
-            max-width: 16px;
-            max-height: 16px;
-        }
-
+        .breadcrumbs li a .cat-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 16px; height: 16px; margin-right: 4px; vertical-align: middle; overflow: hidden; }
+        .breadcrumbs li a .cat-icon svg { display: block; width: 16px; height: 16px; max-width: 16px; max-height: 16px; }
         .breadcrumbs li a .cat-text { display: none; }
         .breadcrumbs li a .cat-icon { margin-right: 0; }
         
-        .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); border-radius: 16px; }
-        .similar-scroll-container .product-image-wrapper { border-radius: 16px 16px 0 0; }
-        .similar-scroll-container .product-info { padding: 0.6rem; }
+        .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); }
+        .similar-scroll-container .product-info { padding: 0.6rem 0; }
         .similar-scroll-container .product-name-box { height: 2.3rem; margin-bottom: 0.4rem; }
         .similar-scroll-container .product-name { font-size: 0.8rem; line-height: 1.3; }
         .similar-scroll-container .product-price-container { margin-bottom: 0.6rem; padding: 0; min-height: auto; }
@@ -512,7 +377,6 @@ layout: default
     .product-details-grid { display: flex; flex-direction: column; gap: 1.5rem; }
     .description-container { border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
     @media (min-width: 1024px) { .product-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; } .description-container { border-top: none; padding-top: 0; } }
-  
 </style>
 
 <div class="product-view-container">
@@ -544,21 +408,14 @@ layout: default
                         <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false">{{ sub_name | strip }}</a>
                     </li>
                     {% endif %}
-                    
-                    <span class="separator breadcrumb-sep-product"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-                    <li class="truncate-node breadcrumb-item-product">
-                        <span class="breadcrumb-product-name">{{ page.name }}</span>
-                    </li>
                 {% endif %}
             </ul>
             <div class="sku-desktop">კოდი: <b>{{ page.sku }}</b></div>
         </div>
     </div>
 
-    <!-- Заголовок перенесен сюда для мобильных устройств (Компактность) -->
-    <h1 class="product-title-h1 title-mobile">{{ page.name }}</h1>
+    <h1 class="product-title-h1">{{ page.name }}</h1>
 
-    <!-- СЕТКА ТОВАРА -->
     <div class="product-grid">
         <div class="gallery-section shared-box-style">
             
@@ -604,7 +461,14 @@ layout: default
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip" id="thumbStrip">
-                {% for img in page.images %}
+                {% assign thumb_limit = 5 %}
+                {% for img in page.images limit: thumb_limit %}
+                    {% assign is_last_thumb = false %}
+                    {% if forloop.index == 5 and page.images.size > 5 %}
+                        {% assign is_last_thumb = true %}
+                        {% assign extra_photos = page.images.size | minus: 4 %}
+                    {% endif %}
+
                     {% assign is_video = false %}
                     {% if img contains 'youtube.com' or img contains 'youtu.be' %}
                         {% assign is_video = true %}
@@ -615,16 +479,23 @@ layout: default
                         {% endif %}
                     {% endif %}
 
-                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
-                    {% if is_video %}
-                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
-                            <img src="https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
-                            <div class="video-thumb-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            </div>
+                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="{% if is_last_thumb %}openImageZoom(null, 4){% else %}scrollToGallerySlide({{ forloop.index0 }}){% endif %}">
+                    {% if is_last_thumb %}
+                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden; background: #0f172a;">
+                            <img src="{% if is_video %}https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg{% else %}{{ img }}{% endif %}" alt="Photo" style="opacity: 0.4; object-fit: cover; width: 100%; height: 100%; pointer-events: none;">
+                            <span style="position: absolute; color: white; font-weight: 800; font-size: 1.2rem; pointer-events: none;">+{{ extra_photos }}</span>
                         </div>
                     {% else %}
-                        <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
+                        {% if is_video %}
+                            <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
+                                <img src="https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
+                                <div class="video-thumb-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                </div>
+                            </div>
+                        {% else %}
+                            <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
+                        {% endif %}
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -634,14 +505,52 @@ layout: default
 
         <div class="product-info-section">
             <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
-                <div class="desktop-title-area">
-                    <h1 class="product-title-h1 title-desktop">{{ page.name }}</h1>
+                
+                <div class="benefits-container">
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                            </div>
+                            <div class="benefit-info">
+                                <span class="benefit-label">მიწოდება</span>
+                                <span class="benefit-val" style="color:#16a34a;">უფასო</span>
+                            </div>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                            </div>
+                            <div class="benefit-info">
+                                <span class="benefit-label">გარანტია</span>
+                                <span class="benefit-val">{{ page.warranty }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="benefit-card" style="margin-top: 0.8rem;">
+                        <div class="benefit-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                        </div>
+                        <div class="benefit-info" style="flex: 1;">
+                            <span class="benefit-label">გადახდა</span>
+                            <span class="benefit-val">მიღებისას</span>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="ნაღდი ფული"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Visa">
+                                <rect width="32" height="32" rx="4" fill="#1a1f71"/>
+                                <g transform="translate(2, 7) scale(0.034)"><path d="m293.2 348.73l33.359-195.76h53.358l-33.384 195.76h-53.333zm246.11-191.54c-10.569-3.966-27.135-8.222-47.821-8.222-52.726 0-89.863 26.551-90.181 64.604-0.297 28.129 26.515 43.822 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-0.133 13.123-16.586 19.115-31.924 19.115-21.355 0-32.701-2.967-50.225-10.273l-6.878-3.111-7.487 43.822c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.885 0.199-22.27-14.016-39.215-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.56-16.838 17.446-0.271 30.088 3.534 39.936 7.5l4.781 2.259 7.231-42.427m137.31-4.223h-41.23c-12.772 0-22.332 3.486-27.94 16.234l-79.245 179.4h56.031s9.159-24.121 11.231-29.418c6.123 0 60.555 0.084 68.336 0.084 1.596 6.854 6.492 29.334 6.492 29.334h49.512l-43.187-195.64zm-65.417 126.41c4.414-11.279 21.26-54.724 21.26-54.724-0.314 0.521 4.381-11.334 7.074-18.684l3.606 16.878s10.217 46.729 12.353 56.527h-44.293v3e-3zm-363.3-126.41l-52.239 133.5-5.565-27.129c-9.726-31.274-40.025-65.157-73.898-82.12l47.767 171.2 56.455-0.063 84.004-195.39-56.524-1e-3" fill="#fff"/><path d="m146.92 152.96h-86.041l-0.682 4.073c66.939 16.204 111.23 55.363 129.62 102.42l-18.709-89.96c-3.229-12.396-12.597-16.096-24.186-16.528" fill="#F2AE14"/></g>
+                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Mastercard">
+                                <rect width="32" height="32" rx="4" fill="#000"/><circle fill="#ea001b" cx="11" cy="16" r="7"/><circle fill="#f79e1b" cx="21" cy="16" r="7"/><path fill="#ff5f00" d="M16 19.3a7 7 0 0 0 0-6.6 7 7 0 0 0 0 6.6z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-                <form id="inlineOrderForm" style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
-                    <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
-                    
-                    <div class="submit-row" style="display: flex; gap: 1.25rem; align-items: stretch; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                <form id="inlineOrderForm" novalidate style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
+                    <div class="submit-row" style="display: flex; gap: 1.25rem; align-items: stretch; margin-bottom: 0.5rem;">
                         <div class="modern-price-container desktop-price-inline">
                             <div class="modern-price-current">
                                 {{ page.price | replace: '₾', '' }}<span class="gel">₾</span>
@@ -650,51 +559,12 @@ layout: default
                             <div class="modern-price-old designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
                             {% endif %}
                         </div>
-                        
-                        <div id="dynamicBuyButton" style="flex: 1; display: flex;"></div>
                     </div>
+                    
+                    <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+                    <div id="dynamicBuyButton" style="width: 100%; display: flex; margin-top: 0.5rem;"></div>
                 </form>
 
-                <div class="benefits-grid">
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                        </div>
-                        <div class="benefit-info">
-                            <span class="benefit-label">მიწოდება</span>
-                            <span class="benefit-val" style="color:#16a34a;">უფასო</span>
-                        </div>
-                    </div>
-                    <div class="benefit-card">
-                        <div class="benefit-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                        </div>
-                        <div class="benefit-info">
-                            <span class="benefit-label">გარანტია</span>
-                            <span class="benefit-val">{{ page.warranty }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="benefit-card" style="margin-top: 0.8rem;">
-                    <div class="benefit-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                    </div>
-                    <div class="benefit-info" style="flex: 1;">
-                        <span class="benefit-label">გადახდა</span>
-                        <span class="benefit-val">მიღებისას</span>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="ნაღდი ფული"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Visa">
-                            <rect width="32" height="32" rx="4" fill="#1a1f71"/>
-                            <g transform="translate(2, 7) scale(0.034)"><path d="m293.2 348.73l33.359-195.76h53.358l-33.384 195.76h-53.333zm246.11-191.54c-10.569-3.966-27.135-8.222-47.821-8.222-52.726 0-89.863 26.551-90.181 64.604-0.297 28.129 26.515 43.822 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-0.133 13.123-16.586 19.115-31.924 19.115-21.355 0-32.701-2.967-50.225-10.273l-6.878-3.111-7.487 43.822c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.885 0.199-22.27-14.016-39.215-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.56-16.838 17.446-0.271 30.088 3.534 39.936 7.5l4.781 2.259 7.231-42.427m137.31-4.223h-41.23c-12.772 0-22.332 3.486-27.94 16.234l-79.245 179.4h56.031s9.159-24.121 11.231-29.418c6.123 0 60.555 0.084 68.336 0.084 1.596 6.854 6.492 29.334 6.492 29.334h49.512l-43.187-195.64zm-65.417 126.41c4.414-11.279 21.26-54.724 21.26-54.724-0.314 0.521 4.381-11.334 7.074-18.684l3.606 16.878s10.217 46.729 12.353 56.527h-44.293v3e-3zm-363.3-126.41l-52.239 133.5-5.565-27.129c-9.726-31.274-40.025-65.157-73.898-82.12l47.767 171.2 56.455-0.063 84.004-195.39-56.524-1e-3" fill="#fff"/><path d="m146.92 152.96h-86.041l-0.682 4.073c66.939 16.204 111.23 55.363 129.62 102.42l-18.709-89.96c-3.229-12.396-12.597-16.096-24.186-16.528" fill="#F2AE14"/></g>
-                        </svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Mastercard">
-                            <rect width="32" height="32" rx="4" fill="#000"/><circle fill="#ea001b" cx="11" cy="16" r="7"/><circle fill="#f79e1b" cx="21" cy="16" r="7"/><path fill="#ff5f00" d="M16 19.3a7 7 0 0 0 0-6.6 7 7 0 0 0 0 6.6z"/>
-                        </svg>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -845,43 +715,21 @@ layout: default
     </div>
 </div>
 
-<!-- Глобальный Toast -->
-<div id="globalToast" class="global-toast"></div>
-
 <script>
-    // Toast Notifications
-    let toastTimeout;
-    window.showToast = function(msg) {
-        const t = document.getElementById('globalToast');
-        t.innerText = msg;
-        t.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    // --- ИЗБРАННОЕ ---
-    function toggleFav(event, btn) {
-        if(event) { event.preventDefault(); event.stopPropagation(); }
-        btn.classList.toggle('active');
-        if (btn.classList.contains('active')) {
-            showToast('დამატებულია რჩეულებში');
-        } else {
-            showToast('წაშლილია რჩეულებიდან');
+    // Красная обводка полей ввода при ошибке (замена стандартным html5 попапам)
+    window.showInputError = function(el) {
+        if (el) {
+            el.classList.add('error-border');
+            const input = el.querySelector('input');
+            if (input) {
+                const removeError = () => {
+                    el.classList.remove('error-border');
+                    input.removeEventListener('input', removeError);
+                };
+                input.addEventListener('input', removeError);
+            }
         }
-    }
-
-    function copyProductLink(btn) {
-        if(btn) { btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "", 200); }
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(window.location.href).then(() => showToast('ბმული დაკოპირდა'));
-        } else {
-            let textArea = document.createElement("textarea"); textArea.value = window.location.href;
-            textArea.style.position = "fixed"; textArea.style.left = "-999999px";
-            document.body.appendChild(textArea); textArea.focus(); textArea.select();
-            try { document.execCommand('copy'); showToast('ბმული დაკოპირდა'); } catch (err) {}
-            textArea.remove();
-        }
-    }
+    };
 
     // --- КАРТОЧКА ПРОДУКТА ---
     window.createProductCardHTML = function(p, prefix = 'sim') {
@@ -999,10 +847,24 @@ layout: default
         track.scrollTo({ left: index * width, behavior: 'smooth' });
     }
 
+    let overlaysCache = null;
     function syncThumbsWithScroll() {
         const track = document.getElementById('mainGalleryTrack');
         const index = Math.round(track.scrollLeft / track.clientWidth);
         const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
+        
+        // Скрытие элементов интерфейса, если выбран iframe (например YouTube)
+        const slides = track.querySelectorAll('.main-gallery-slide');
+        if (slides[index]) {
+            const hasIframe = slides[index].querySelector('iframe') !== null;
+            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions, .sku-mobile');
+            overlaysCache.forEach(el => {
+                el.style.opacity = hasIframe ? '0' : '1';
+                el.style.pointerEvents = hasIframe ? 'none' : 'auto';
+                el.style.transition = 'opacity 0.3s ease';
+            });
+        }
+
         if (thumbs.length > 0) {
             thumbs.forEach(t => t.classList.remove('active'));
             if(thumbs[index]) {
@@ -1043,8 +905,10 @@ layout: default
     function openImageZoom(img, index) {
         isZoomModalOpen = true; 
         
-        img.style.transition = 'none'; 
-        img.style.transform = 'scale(1)';
+        if(img) {
+            img.style.transition = 'none'; 
+            img.style.transform = 'scale(1)';
+        }
 
         const modal = document.getElementById('imageZoomModal');
         modal.style.display = 'flex'; 
@@ -1224,17 +1088,16 @@ layout: default
             } else {
                 if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (formInputs) formInputs.innerHTML = `
-                    <div id="inlineFormError" class="form-error-msg" style="margin-bottom:0; display:none;"></div>
-                    
+                    <input type="email" name="email_hp" id="inlineEmailHp" style="display:none" tabindex="-1" autocomplete="off">
                     <div class="input-wrapper" id="inlineNameWrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <input type="text" id="inlineName" class="clean-input" placeholder="თქვენი სახელი" required autocomplete="name">
+                        <input type="text" id="inlineName" class="clean-input" placeholder="თქვენი სახელი" autocomplete="name">
                     </div>
                     
                     <div class="input-wrapper" id="inlinePhoneWrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         <span class="prefix">+995</span>
-                        <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" required inputmode="numeric" autocomplete="tel">
+                        <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
                     </div>
                 `;
                 if (btnContainer) btnContainer.innerHTML = `
@@ -1321,9 +1184,12 @@ layout: default
     document.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'inlineOrderForm') {
             e.preventDefault();
+            
+            const hp = document.getElementById('inlineEmailHp');
+            if (hp && hp.value) return; 
+
             const nameInput = document.getElementById('inlineName');
             const phoneInput = document.getElementById('inlinePhone');
-            const errorDiv = document.getElementById('inlineFormError');
             const btn = document.getElementById('submitInlineOrderBtn');
             const icon = document.getElementById('inlineOrderIcon');
             const text = document.getElementById('inlineOrderText');
@@ -1333,18 +1199,8 @@ layout: default
             const name = nameInput.value.trim();
             let phoneRaw = phoneInput.value.replace(/\s/g, '');
 
-            const showError = (msg, el) => {
-                errorDiv.textContent = msg;
-                errorDiv.style.display = 'block';
-                if(el) el.style.borderColor = '#ef4444';
-                setTimeout(() => { 
-                    errorDiv.style.display = 'none'; 
-                    if(el) el.style.borderColor = '#e2e8f0';
-                }, 3500);
-            };
-
-            if(!name) { showError("გთხოვთ, შეიყვანოთ თქვენი სახელი.", document.getElementById('inlineNameWrapper')); return; }
-            if(phoneRaw.length !== 9) { showError("გთხოვთ, შეიყვანოთ ტელეფონის სწორი ნომერი (9 ციფრი).", document.getElementById('inlinePhoneWrapper')); return; }
+            if(!name) { window.showInputError(document.getElementById('inlineNameWrapper')); return; }
+            if(phoneRaw.length !== 9) { window.showInputError(document.getElementById('inlinePhoneWrapper')); return; }
 
             const fullPhone = '+995' + phoneRaw;
             
@@ -1393,7 +1249,7 @@ layout: default
             text.innerText = 'ყიდვა';
             
             if(window.showOrderConfirm) {
-                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price });
+                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: '{{ page.oldPrice }}' });
             }
         }
     });
