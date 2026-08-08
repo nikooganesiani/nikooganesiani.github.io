@@ -23,17 +23,23 @@
             ENKA Electronics
         {%- endif -%}
     </title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+    <link rel="preload" href="/fonts/googlesans.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <script src="/capi.js"></script>
+    <script src="/capi.js" defer></script>
 
     <script>
     window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
     </script>
 
 <style>
+    @font-face {
+  font-family: 'Google Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: optional;
+  src: url('/fonts/googlesans.woff2') format('woff2');
+}
     ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
 
     #topProgressBar {
@@ -340,7 +346,24 @@
         });
     </script>
 
-    {% include meta-pixel.html %}
+    <!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('set', 'autoConfig', 'false');
+fbq('init', '1499689204986172');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
     
     <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ ДО ЗАГРУЗКИ КОНТЕНТА -->
     <script>
