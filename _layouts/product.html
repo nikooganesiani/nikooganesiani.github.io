@@ -472,7 +472,6 @@ layout: default
 
                 <div class="main-gallery-track" id="mainGalleryTrack">
                     {% assign photo_idx = 0 %}
-{% assign first_image_loaded = false %}
 {% for img in page.images %}
     {% assign is_vid = false %}
     {% if img contains 'youtube.com' or img contains 'youtu.be' %}
@@ -489,7 +488,7 @@ layout: default
             <lite-youtube videoid="{{ vid_id }}" playlabel="Play Video"></lite-youtube>
         {% else %}
             <img src="{{ img }}" alt="{{ page.name }}" width="800" height="800"
-                 {% if first_image_loaded == false %}
+                 {% if photo_idx == 0 %}
                      fetchpriority="high"
                  {% else %}
                      loading="lazy"
@@ -499,7 +498,6 @@ layout: default
                  onmousemove="zoomImagePC(event, this)" 
                  onmouseleave="resetZoomPC(this)">
             {% assign photo_idx = photo_idx | plus: 1 %}
-            {% assign first_image_loaded = true %}
         {% endif %}
     </div>
 {% endfor %}
