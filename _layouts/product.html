@@ -480,7 +480,7 @@ layout: default
                         {% endif %}
                     {% endif %}
 
-                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="{% if is_last_thumb %}openImageZoom(null, 4){% else %}scrollToGallerySlide({{ forloop.index0 }}){% endif %}">
+                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="{% if is_last_thumb %}openImageZoom(null, 3){% else %}scrollToGallerySlide({{ forloop.index0 }}){% endif %}">
                     {% if is_last_thumb %}
                         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden; background: #0f172a;">
                             <img src="{% if is_video %}https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg{% else %}{{ img }}{% endif %}" alt="Photo" style="opacity: 0.4; object-fit: cover; width: 100%; height: 100%; pointer-events: none;">
