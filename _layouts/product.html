@@ -1219,7 +1219,7 @@ layout: default
 
             const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-            const targetWorker = window.WORKER_URL || 'https://telegram-form-handler.niko-oganesiani.workers.dev';
+            const targetWorker = window.WORKER_URL || 'https://form-handler.enkaelectronics.com.ge';
             
             fetch(targetWorker, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
