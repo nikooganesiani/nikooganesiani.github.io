@@ -27,6 +27,19 @@ layout: default
   {% endfor %}
 {% endif %}
 
+<!-- Проверяем наличие видео в галерее -->
+{% assign yt_id = "" %}
+{% for img in page.images %}
+    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+        {% if img contains 'v=' %}
+            {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
+        {% else %}
+            {% assign yt_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+        {% endif %}
+        {% break %}
+    {% endif %}
+{% endfor %}
+
 <style>
     .product-view-container { 
         max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; 
@@ -41,18 +54,14 @@ layout: default
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Очищенный стиль для главных блоков без фонов и обводок */
-    .shared-box-style {
-        border-radius: 24px; 
-    }
+    .shared-box-style { border-radius: 24px; }
 
     .top-header-group { margin-bottom: 1.25rem; animation: slideDown 0.4s ease; }
     
     .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
     .breadcrumbs { 
         display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; align-items: center; 
-        background: transparent; border: none;
-        flex: 1 1 auto; min-width: 0; overflow: hidden;
+        background: transparent; border: none; flex: 1 1 auto; min-width: 0; overflow: hidden;
     }
     .breadcrumbs li { display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; }
     .breadcrumbs li.truncate-node { flex: 0 1 auto; min-width: 0; overflow: hidden; }
@@ -66,10 +75,11 @@ layout: default
     .sku-desktop { background: transparent; border: none; padding: 0; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; flex-shrink: 0; height: fit-content; }
     .sku-desktop b { color: #2563eb; }
 
-    /* Единый стиль заголовка перед галереей */
+    /* Блок SKU и статуса для мобильных */
+    .mobile-top-meta { display: none; }
+
     .product-title-h1 { font-size: 1.8rem; font-weight: 900; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0 0 1rem 0; padding: 0; }
     
-    /* Уменьшенная правая колонка примерно на 30% относительно изначальных 50/50 */
     .product-grid { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
     .product-grid > div, .product-details-grid > div { min-width: 0; }
 
@@ -87,8 +97,11 @@ layout: default
         }
         .thumb-strip::-webkit-scrollbar { display: none; }
         .main-gallery-viewport { flex: 1; margin-bottom: 0; width: calc(100% - 88px); min-height: 200px; }
+        .desktop-only-slide { display: flex !important; }
+        .main-gallery-dots { display: none !important; }
     }
     #thumbStrip { width: 80px !important; min-width: 80px !important; order: -1 !important; display: flex !important; flex-direction: column !important; }
+    
     .main-gallery-viewport { 
         aspect-ratio: 1 / 1; overflow: hidden; position: relative; flex-grow: 1 !important; min-width: 0 !important;
         border-radius: 12px; border: none; background: transparent;
@@ -96,8 +109,6 @@ layout: default
     
     .gallery-badges { position: absolute; top: 1rem; left: 1rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
     .gallery-actions { position: absolute; top: 1rem; right: 1rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
-    .sku-mobile { display: none; position: absolute; bottom: 1rem; right: 1rem; z-index: 15; background: transparent; font-size: 0.8rem; font-weight: 700; color: #64748b; box-shadow: none; pointer-events: none; }
-    .sku-mobile b { color: #2563eb; }
 
     .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 900; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
     .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 800; border: 1px solid transparent; }
@@ -123,26 +134,27 @@ layout: default
     .thumb-strip { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.1rem; -ms-overflow-style: none; scrollbar-width: none; }
     .thumb-strip::-webkit-scrollbar { display: none; }
     
-    .thumb-card { width: 72px; height: 72px; border: 2px solid transparent; border-radius: 12px; cursor: pointer; padding: 4px; background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
+    .thumb-card { width: 72px; height: 72px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; padding: 4px; background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
     .thumb-card.active { border-color: #2563eb; }
     .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; mix-blend-mode: multiply; pointer-events: none; }
     .thumb-card:active { transform: scale(0.94); }
 
     .product-info-section { display: flex; flex-direction: column; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
     
-    /* Флекс-контейнер для управления порядком на мобильных */
-    .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; display: flex; flex-direction: column; }
+    .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; display: flex; flex-direction: column; gap: 1rem; }
     
     .modern-price-container {
-        display: inline-flex; flex-direction: row; justify-content: center; align-items: center;
-        background: #eff6ff; padding: 0.6rem 1.4rem; border-radius: 16px; border: 2px dashed #bfdbfe; 
-        min-width: 120px; flex-shrink: 0; gap: 1rem; 
+        display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center;
+        background: #eff6ff; padding: 1rem 1.4rem; border-radius: 16px; border: 2px dashed #bfdbfe; 
+        min-width: 120px; flex-shrink: 0; gap: 0.4rem; 
     }
-    .modern-price-current { font-size: 1.6rem; font-weight: 900; color: #1d4ed8; line-height: 1; letter-spacing: -1px; display: flex; align-items: center; }
+    .modern-price-current { font-size: 1.8rem; font-weight: 900; color: #1d4ed8; line-height: 1; letter-spacing: -1px; display: flex; align-items: center; }
     .modern-price-current .gel { font-size: inherit; font-weight: 800; margin-left: 2px; }
-    .modern-price-old { font-size: 1.6rem; font-weight: 900; margin-top: 0; display: flex; align-items: center; padding-left: 1rem; border-left: 2px dashed #93c5fd; line-height: 1; letter-spacing: -1px; }
+    .modern-price-old { font-size: 1.1rem; font-weight: 900; margin-top: 0; display: flex; align-items: center; line-height: 1; letter-spacing: -1px; }
 
     .designer-strike { text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 3px !important; color: #94a3b8; }
+
+    .free-delivery-badge-desktop { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 800; color: #16a34a; background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 8px; margin-top: 4px; }
 
     .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
@@ -151,13 +163,13 @@ layout: default
     .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: none; font-size: 0.95rem; }
     @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; } }
 
-    /* Обновленные инпуты (красная обводка при ошибке) */
+    /* ИСПРАВЛЕННЫЕ ИНПУТЫ (без бага с цветом autofill) */
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
-        background: #ffffff; border: 2px solid transparent; border-radius: 12px;
+        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
         transition: all 0.2s; overflow: hidden;
     }
-    .input-wrapper:focus-within { background: #e2e8f0; }
+    .input-wrapper:focus-within { background: #ffffff; border-color: #2563eb; }
     .input-wrapper.error-border { border-color: #ef4444 !important; }
     
     .input-wrapper svg { flex-shrink: 0; color: #94a3b8; width: 20px; height: 20px; }
@@ -170,25 +182,17 @@ layout: default
     
     .clean-input:-webkit-autofill, .clean-input:-webkit-autofill:hover, 
     .clean-input:-webkit-autofill:focus, .clean-input:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 1000px #f1f5f9 inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
         -webkit-text-fill-color: #0f172a !important;
         transition: background-color 5000s ease-in-out 0s;
     }
     .input-wrapper:focus-within .clean-input:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0 1000px #e2e8f0 inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
     }
 
-    /* Бенефиты без обводки */
-    .benefits-container { order: 2; margin-top: 1.25rem; }
-    #inlineOrderForm { order: 1; width: 100%; }
-    .desktop-price-inline { margin-bottom: 1.25rem; }
+    .payment-info-bottom { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; color: #64748b; font-size: 0.9rem; font-weight: 700; text-align: center; }
 
-    .benefits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-    .benefit-card { background: transparent; border: none; padding: 0; display: flex; align-items: center; gap: 10px; transition: none; }
-    .benefit-icon { width: 34px; height: 34px; background: transparent; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #2563eb; flex-shrink: 0; box-shadow: none; }
-    .benefit-info { display: flex; flex-direction: column; }
-    .benefit-label { font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;}
-    .benefit-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; }
+    #inlineOrderForm { order: 1; width: 100%; }
 
     .content-section-box { margin-top: 1.5rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
     .section-title { font-size: 1.4rem; margin-bottom: 1.25rem; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
@@ -207,6 +211,10 @@ layout: default
     .spec-value-text { flex: 1; color: #1e293b; font-weight: 800; font-size: 0.9rem; text-align: right; }
     .desc-text { line-height: 1.7; color: #475569; font-size: 1rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
+    .video-review-container { margin-top: 2rem; }
+    .video-iframe-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .video-iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
     .similar-products-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
     .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.4rem; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; }
@@ -221,7 +229,6 @@ layout: default
     }
     .similar-scroll-container::-webkit-scrollbar { display: none; }
 
-    /* Прозрачные карточки товаров */
     .similar-scroll-container .product-card {
         flex: 0 0 calc(25% - 12px); scroll-snap-align: start; min-width: 0;
         background: transparent; border-radius: 0; overflow: hidden; position: relative;
@@ -304,7 +311,9 @@ layout: default
     .modal-track::-webkit-scrollbar { display: none; }
     .modal-slide { flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative; }
     .modal-img-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; max-height: 85vh; }
-    .modal-img-wrapper img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 0.75rem; pointer-events: auto; user-select: none; border: none; background: transparent; }
+    .modal-img-wrapper img, .modal-img-wrapper iframe { width: 100%; height: 100%; max-height: 85vh; border-radius: 0.75rem; border: none; background: transparent; }
+    .modal-img-wrapper img { object-fit: contain; pointer-events: auto; user-select: none; }
+    
     .modal-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; box-shadow: none; outline: none; }
     @media (hover: hover) { .modal-nav-arrow:hover { color: #2563eb; } }
     .modal-nav-arrow:active { transform: translateY(-50%) scale(0.9); }
@@ -318,21 +327,35 @@ layout: default
     .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; pointer-events: none; }
 
     @media (max-width: 1024px) {
-        .product-title-h1 { font-size: 1.6rem; }
+        .product-title-h1 { font-size: 1.6rem; margin-top: 0; }
         .product-grid { grid-template-columns: 1fr; gap: 1rem; }
         
-        .gallery-actions { display: none !important; }
+        /* Мобильный вид SKU и бейджа (над названием) */
         .sku-desktop { display: none; }
-        .sku-mobile { display: block; }
+        .mobile-top-meta { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding-top: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; margin-bottom: 12px; 
+        }
+        .mobile-sku-text { font-size: 0.85rem; font-weight: 700; color: #64748b; }
         
-        .benefits-container { order: -1; margin-top: 0; margin-bottom: 1rem; }
+        .gallery-badges, .gallery-actions { display: none !important; }
+        #thumbStrip { display: none !important; }
+        
+        .desktop-only-slide { display: none !important; }
+        
+        .main-gallery-dots {
+            display: flex; position: absolute; bottom: 12px; right: 12px; gap: 6px; z-index: 20;
+            background: rgba(255,255,255,0.75); backdrop-filter: blur(4px); padding: 5px 8px; border-radius: 12px;
+        }
+        .main-gallery-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; transition: all 0.3s; }
+        .main-gallery-dots .dot.active { background: #2563eb; transform: scale(1.4); }
 
         .similar-scroll-container { padding: 0.5rem 1.5rem; margin: 0 -1.5rem; width: calc(100% + 3rem); scroll-padding: 1.5rem; gap: 12px; }
         .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 8px); }
         .sim-arrow, .carousel-dots, .card-nav-arrow { display: none !important; }
         .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; }
 
-        .top-header-group { margin-bottom: 1rem; }
+        .top-header-group { margin-bottom: 0rem; }
         .content-section-box { margin-top: 1rem; }
         .similar-products-section { margin-top: 1.5rem; }
     }
@@ -342,15 +365,11 @@ layout: default
         
         .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.2rem; padding: 0.8rem 0; }
         .spec-value-text { text-align: left; font-size: 0.85rem; }
-        .benefits-grid { grid-template-columns: 1fr; gap: 0.6rem; }
         .mobile-bottom-bar { display: flex; } 
         .product-title-h1 { font-size: 1.3rem; }
         
         .gallery-section { padding: 0; }
         .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; }
-        .thumb-strip { padding: 0; gap: 6px; }
-        .thumb-card { width: 56px; height: 56px; padding: 3px; border-radius: 10px; }
-        .thumb-card img { border-radius: 5px; }
 
         .breadcrumbs li a .cat-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 16px; height: 16px; margin-right: 4px; vertical-align: middle; overflow: hidden; }
         .breadcrumbs li a .cat-icon svg { display: block; width: 16px; height: 16px; max-width: 16px; max-height: 16px; }
@@ -413,6 +432,12 @@ layout: default
             </ul>
             <div class="sku-desktop">კოდი: <b>{{ page.sku }}</b></div>
         </div>
+        
+        <!-- Новый блок SKU и Статуса для мобильных -->
+        <div class="mobile-top-meta">
+            <div class="mobile-sku-text">SKU: {{ page.sku }}</div>
+            <div id="mobileDynamicStockBadgeTag"></div>
+        </div>
     </div>
 
     <h1 class="product-title-h1">{{ page.name }}</h1>
@@ -421,13 +446,13 @@ layout: default
         <div class="gallery-section shared-box-style">
             
             <div class="main-gallery-viewport">
-                <!-- Бейджи статуса и скидки -->
+                <!-- Бейджи статуса и скидки (PC Only) -->
                 <div class="gallery-badges">
                     <div id="dynamicStockBadgeTag"></div>
                     <div class="sale-badge-red" id="saleBadge" style="display: none;"></div>
                 </div>
 
-                <!-- Избранное и Поделиться -->
+                <!-- Избранное и Поделиться (PC Only) -->
                 <div class="gallery-actions">
                     <button class="btn-icon-round btn-fav" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -437,20 +462,25 @@ layout: default
                     </button>
                 </div>
 
-                <!-- SKU для мобильных -->
-                <div class="sku-mobile">კოდი: <b>{{ page.sku }}</b></div>
+                <!-- Точки для мобильной версии -->
+                <div class="main-gallery-dots" id="mainGalleryDots"></div>
 
                 <div class="main-gallery-track" id="mainGalleryTrack" onscroll="syncThumbsWithScroll()">
                     {% assign photo_idx = 0 %}
                     {% for img in page.images %}
-                        <div class="main-gallery-slide">
-                            {% if img contains 'youtube.com' or img contains 'youtu.be' %}
-                                {% if img contains 'v=' %}
-                                    {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
-                                {% else %}
-                                    {% assign yt_id = img | split: 'youtu.be/' | last | split: '?' | first %}
-                                {% endif %}
-                                <iframe style="width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/{{ yt_id }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        {% assign is_vid = false %}
+                        {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                            {% assign is_vid = true %}
+                            {% if img contains 'v=' %}
+                                {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
+                            {% else %}
+                                {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                            {% endif %}
+                        {% endif %}
+                        
+                        <div class="main-gallery-slide {% if is_vid %}desktop-only-slide{% endif %}">
+                            {% if is_vid %}
+                                <iframe style="width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/{{ vid_id }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             {% else %}
                                 <img src="{{ img }}" alt="{{ page.name }}" onerror="this.src='/img/no-image.png'" draggable="false" onclick="openImageZoom(this, {{ photo_idx }})" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                                 {% assign photo_idx = photo_idx | plus: 1 %}
@@ -462,41 +492,27 @@ layout: default
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip" id="thumbStrip">
-                {% assign thumb_limit = 4 %}
-                {% for img in page.images limit: thumb_limit %}
-                    {% assign is_last_thumb = false %}
-                    {% if forloop.index == 4 and page.images.size > 4 %}
-                    {% assign is_last_thumb = true %}
-                    {% assign extra_photos = page.images.size | minus: 3 %}
-               {% endif %}
-
+                {% for img in page.images %}
                     {% assign is_video = false %}
                     {% if img contains 'youtube.com' or img contains 'youtu.be' %}
                         {% assign is_video = true %}
                         {% if img contains 'v=' %}
-                            {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
+                            {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
                         {% else %}
-                            {% assign yt_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                            {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
                         {% endif %}
                     {% endif %}
 
-                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="{% if is_last_thumb %}openImageZoom(null, 3){% else %}scrollToGallerySlide({{ forloop.index0 }}){% endif %}">
-                    {% if is_last_thumb %}
-                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden; background: #0f172a;">
-                            <img src="{% if is_video %}https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg{% else %}{{ img }}{% endif %}" alt="Photo" style="opacity: 0.4; object-fit: cover; width: 100%; height: 100%; pointer-events: none;">
-                            <span style="position: absolute; color: white; font-weight: 800; font-size: 1.2rem; pointer-events: none;">+{{ extra_photos }}</span>
+                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                    {% if is_video %}
+                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
+                            <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
+                            <div class="video-thumb-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
                         </div>
                     {% else %}
-                        {% if is_video %}
-                            <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
-                                <img src="https://img.youtube.com/vi/{{ yt_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
-                                <div class="video-thumb-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                                </div>
-                            </div>
-                        {% else %}
-                            <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
-                        {% endif %}
+                        <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -506,66 +522,29 @@ layout: default
 
         <div class="product-info-section">
             <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
-                
-                <div class="benefits-container">
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
-                            </div>
-                            <div class="benefit-info">
-                                <span class="benefit-label">მიწოდება</span>
-                                <span class="benefit-val" style="color:#16a34a;">უფასო</span>
-                            </div>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                            </div>
-                            <div class="benefit-info">
-                                <span class="benefit-label">გარანტია</span>
-                                <span class="benefit-val">{{ page.warranty }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="benefit-card" style="margin-top: 0.8rem;">
-                        <div class="benefit-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-                        </div>
-                        <div class="benefit-info" style="flex: 1;">
-                            <span class="benefit-label">გადახდა</span>
-                            <span class="benefit-val">მიღებისას</span>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" title="ნაღდი ფული"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Visa">
-                                <rect width="32" height="32" rx="4" fill="#1a1f71"/>
-                                <g transform="translate(2, 7) scale(0.034)"><path d="m293.2 348.73l33.359-195.76h53.358l-33.384 195.76h-53.333zm246.11-191.54c-10.569-3.966-27.135-8.222-47.821-8.222-52.726 0-89.863 26.551-90.181 64.604-0.297 28.129 26.515 43.822 46.754 53.185 20.771 9.598 27.752 15.716 27.652 24.283-0.133 13.123-16.586 19.115-31.924 19.115-21.355 0-32.701-2.967-50.225-10.273l-6.878-3.111-7.487 43.822c12.463 5.467 35.508 10.199 59.438 10.445 56.09 0 92.502-26.248 92.916-66.885 0.199-22.27-14.016-39.215-44.801-53.188-18.65-9.056-30.072-15.099-29.951-24.269 0-8.137 9.668-16.838 30.56-16.838 17.446-0.271 30.088 3.534 39.936 7.5l4.781 2.259 7.231-42.427m137.31-4.223h-41.23c-12.772 0-22.332 3.486-27.94 16.234l-79.245 179.4h56.031s9.159-24.121 11.231-29.418c6.123 0 60.555 0.084 68.336 0.084 1.596 6.854 6.492 29.334 6.492 29.334h49.512l-43.187-195.64zm-65.417 126.41c4.414-11.279 21.26-54.724 21.26-54.724-0.314 0.521 4.381-11.334 7.074-18.684l3.606 16.878s10.217 46.729 12.353 56.527h-44.293v3e-3zm-363.3-126.41l-52.239 133.5-5.565-27.129c-9.726-31.274-40.025-65.157-73.898-82.12l47.767 171.2 56.455-0.063 84.004-195.39-56.524-1e-3" fill="#fff"/><path d="m146.92 152.96h-86.041l-0.682 4.073c66.939 16.204 111.23 55.363 129.62 102.42l-18.709-89.96c-3.229-12.396-12.597-16.096-24.186-16.528" fill="#F2AE14"/></g>
-                            </svg>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" title="Mastercard">
-                                <rect width="32" height="32" rx="4" fill="#000"/><circle fill="#ea001b" cx="11" cy="16" r="7"/><circle fill="#f79e1b" cx="21" cy="16" r="7"/><path fill="#ff5f00" d="M16 19.3a7 7 0 0 0 0-6.6 7 7 0 0 0 0 6.6z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
                 <form id="inlineOrderForm" novalidate style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
-                    <div class="submit-row" style="display: flex; gap: 1.25rem; align-items: stretch; margin-bottom: 0.5rem;">
+                    
+                    <!-- Измененный блок цены + Бесплатная доставка (Desktop) -->
+                    <div class="submit-row" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem;">
                         <div class="modern-price-container desktop-price-inline">
-                            <div class="modern-price-current">
-                                {{ page.price | replace: '₾', '' }}<span class="gel">₾</span>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="modern-price-current">
+                                    {{ page.price | replace: '₾', '' }}<span class="gel">₾</span>
+                                </div>
+                                {% if page.oldPrice != "" and page.oldPrice != nil %}
+                                <div class="modern-price-old designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+                                {% endif %}
                             </div>
-                            {% if page.oldPrice != "" and page.oldPrice != nil %}
-                            <div class="modern-price-old designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
-                            {% endif %}
+                            <div class="free-delivery-badge-desktop">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
+                                უფასო მიწოდება
+                            </div>
                         </div>
                     </div>
                     
                     <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
-                    <div id="dynamicBuyButton" style="width: 100%; display: flex; margin-top: 0.5rem;"></div>
+                    <div id="dynamicBuyButton" style="width: 100%; display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;"></div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -597,6 +576,19 @@ layout: default
                     პროდუქტის აღწერა
                 </h3>
                 <div class="desc-text">{{ page.longDescription }}</div>
+                
+                <!-- Отдельный блок видео (под описанием) -->
+                {% if yt_id != "" %}
+                <div class="video-review-container">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                        ვიდეო განხილვა
+                    </h3>
+                    <div class="video-iframe-wrapper">
+                        <iframe src="https://www.youtube.com/embed/{{ yt_id }}?rel=0" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -654,7 +646,7 @@ layout: default
     </div>
 </div>
 
-<!-- Островок для мобильных (Залипает внизу) -->
+<!-- Островок для мобильных -->
 <div class="mobile-bottom-bar" id="mobileBottomBar">
     <img src="{{ page.images[0] }}" class="mobile-bottom-img" alt="Product">
     <div class="mobile-bottom-info">
@@ -663,6 +655,10 @@ layout: default
             {% if page.oldPrice != "" and page.oldPrice != nil %}
             <div class="mobile-bottom-old-price designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
             {% endif %}
+        </div>
+        <div style="font-size: 0.75rem; color: #16a34a; font-weight: 750; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
+            უფასო მიწოდება
         </div>
     </div>
     <div class="mobile-bottom-actions">
@@ -679,7 +675,7 @@ layout: default
     </div>
 </div>
 
-<!-- Полноэкранная модалка просмотра фото -->
+<!-- Полноэкранная модалка просмотра фото и видео -->
 <div class="modal-fullscreen" id="imageZoomModal" onclick="closeImageZoom(event)">
     <div class="modal-gallery-area">
         <button class="modal-nav-arrow left" onclick="scrollModalGallery(-1, event)">
@@ -688,13 +684,20 @@ layout: default
         
         <div class="modal-track" id="modalTrack" onscroll="syncModalThumbs()">
             {% for img in page.images %}
-                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
-                    <div class="modal-slide">
-                        <div class="modal-img-wrapper">
+                <div class="modal-slide">
+                    <div class="modal-img-wrapper">
+                        {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                            {% if img contains 'v=' %}
+                                {% assign modal_vid = img | split: 'v=' | last | split: '&' | first %}
+                            {% else %}
+                                {% assign modal_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                            {% endif %}
+                            <iframe src="https://www.youtube.com/embed/{{ modal_vid }}?rel=0" frameborder="0" allowfullscreen></iframe>
+                        {% else %}
                             <img src="{{ img }}" alt="Zoom" draggable="false" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
-                        </div>
+                        {% endif %}
                     </div>
-                {% endunless %}
+                </div>
             {% endfor %}
         </div>
         
@@ -706,18 +709,29 @@ layout: default
     <div class="modal-thumb-area">
         <div class="modal-thumb-strip" id="modalThumbStrip">
             {% for img in page.images %}
-                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
-                    <div class="modal-thumb" onclick="scrollToModalSlide({{ forloop.index0 }}, event)">
+                <div class="modal-thumb" onclick="scrollToModalSlide({{ forloop.index0 }}, event)">
+                    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                        {% if img contains 'v=' %}
+                            {% assign t_vid = img | split: 'v=' | last | split: '&' | first %}
+                        {% else %}
+                            {% assign t_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                        {% endif %}
+                        <div style="position: relative; width: 100%; height: 100%;">
+                            <img src="https://img.youtube.com/vi/{{ t_vid }}/default.jpg" alt="Thumb Video">
+                            <div style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); width: 20px; height: 20px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    {% else %}
                         <img src="{{ img }}" alt="Thumb">
-                    </div>
-                {% endunless %}
+                    {% endif %}
+                </div>
             {% endfor %}
         </div>
     </div>
 </div>
 
 <script>
-    // Красная обводка полей ввода при ошибке (замена стандартным html5 попапам)
     window.showInputError = function(el) {
         if (el) {
             el.classList.add('error-border');
@@ -732,7 +746,6 @@ layout: default
         }
     };
 
-    // --- КАРТОЧКА ПРОДУКТА ---
     window.createProductCardHTML = function(p, prefix = 'sim') {
         let imgs = p.images || (p.image ? [p.image] : []);
         imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
@@ -841,7 +854,7 @@ layout: default
         }
     };
 
-    // --- ЛОГИКА ГЛАВНОЙ ГАЛЕРЕИ ---
+    // Основная галерея
     function scrollToGallerySlide(index) {
         const track = document.getElementById('mainGalleryTrack');
         const width = track.clientWidth;
@@ -851,14 +864,25 @@ layout: default
     let overlaysCache = null;
     function syncThumbsWithScroll() {
         const track = document.getElementById('mainGalleryTrack');
-        const index = Math.round(track.scrollLeft / track.clientWidth);
-        const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
         
-        // Скрытие элементов интерфейса, если выбран iframe (например YouTube)
+        // Логика точек для мобильной версии
+        if (window.innerWidth <= 1024) {
+            const visibleSlides = Array.from(track.children).filter(el => window.getComputedStyle(el).display !== 'none');
+            const index = Math.round(track.scrollLeft / track.clientWidth);
+            const dots = document.querySelectorAll('#mainGalleryDots .dot');
+            dots.forEach((d, i) => {
+                if (i === index) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+        }
+
+        // Логика Thumb Strip и UI элементов для ПК
+        const index = Math.round(track.scrollLeft / track.clientWidth);
         const slides = track.querySelectorAll('.main-gallery-slide');
+        
         if (slides[index]) {
             const hasIframe = slides[index].querySelector('iframe') !== null;
-            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions, .sku-mobile');
+            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions');
             overlaysCache.forEach(el => {
                 el.style.opacity = hasIframe ? '0' : '1';
                 el.style.pointerEvents = hasIframe ? 'none' : 'auto';
@@ -866,26 +890,29 @@ layout: default
             });
         }
 
+        const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
         if (thumbs.length > 0) {
             thumbs.forEach(t => t.classList.remove('active'));
             if(thumbs[index]) {
                 thumbs[index].classList.add('active');
-                
                 const strip = document.getElementById('thumbStrip');
                 const t = thumbs[index];
-                
-                if (window.innerWidth <= 1024) {
-                    strip.scrollTo({ left: t.offsetLeft - strip.clientWidth / 2 + t.clientWidth / 2, behavior: 'smooth' });
-                } else {
-                    strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
-                }
+                strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
             }
         }
     }
 
-    // --- ЗУМ НА ПК ---
-    let isZoomModalOpen = false;
+    function initMobileDots() {
+        if (window.innerWidth > 1024) return;
+        const track = document.getElementById('mainGalleryTrack');
+        const slides = track.querySelectorAll('.main-gallery-slide:not(.desktop-only-slide)');
+        const dotsContainer = document.getElementById('mainGalleryDots');
+        if (dotsContainer && slides.length > 1) {
+            dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
+        }
+    }
 
+    let isZoomModalOpen = false;
     function zoomImagePC(e, img) {
         if(window.innerWidth < 1024) return;
         img.style.transition = 'none'; 
@@ -902,19 +929,15 @@ layout: default
         img.style.transform = 'scale(1)';
     }
 
-    // --- ПОЛНОЭКРАННАЯ ГАЛЕРЕЯ (МОДАЛКА) ---
     function openImageZoom(img, index) {
         isZoomModalOpen = true; 
-        
         if(img) {
             img.style.transition = 'none'; 
             img.style.transform = 'scale(1)';
         }
-
         const modal = document.getElementById('imageZoomModal');
         modal.style.display = 'flex'; 
         modal.offsetHeight; 
-
         const modalTrack = document.getElementById('modalTrack');
         if(modalTrack) {
             modalTrack.style.scrollBehavior = 'auto';
@@ -923,7 +946,6 @@ layout: default
             modalTrack.style.scrollBehavior = 'smooth';
             syncModalThumbs();
         }
-
         modal.classList.add('active'); 
     }
     
@@ -933,18 +955,14 @@ layout: default
             const isArrow = e.target.closest('.modal-nav-arrow');
             const isThumb = e.target.closest('.modal-thumb');
             if (isArrow || isThumbArea || isThumb) return;
-            
             const isImg = e.target.closest('.modal-img-wrapper img');
-            if (isImg && window.innerWidth >= 1024) return; 
+            const isIframe = e.target.closest('.modal-img-wrapper iframe');
+            if ((isImg || isIframe) && window.innerWidth >= 1024) return; 
         }
-
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
-        
-        setTimeout(() => { 
-            modal.style.display = 'none';
-        }, 300);
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
     
     function scrollModalGallery(dir, e) {
@@ -953,14 +971,9 @@ layout: default
         if(!track) return;
         const width = track.clientWidth;
         const maxScroll = track.scrollWidth - track.clientWidth;
-        
-        if (dir === 1 && track.scrollLeft >= maxScroll - 10) {
-            track.scrollTo({ left: 0, behavior: 'smooth' });
-        } else if (dir === -1 && track.scrollLeft <= 10) {
-            track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
-        } else {
-            track.scrollBy({ left: dir * width, behavior: 'smooth' });
-        }
+        if (dir === 1 && track.scrollLeft >= maxScroll - 10) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+        else if (dir === -1 && track.scrollLeft <= 10) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+        else { track.scrollBy({ left: dir * width, behavior: 'smooth' }); }
     }
 
     function scrollToModalSlide(index, e) {
@@ -986,7 +999,6 @@ layout: default
         }
     }
 
-    // --- РАСКРЫВАЮЩИЕСЯ БЛОКИ ---
     function toggleExpand(blockId, btn) {
         const block = document.getElementById(blockId);
         if (block.classList.contains('expanded')) {
@@ -1010,9 +1022,9 @@ layout: default
         document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    // --- ИНИЦИАЛИЗАЦИЯ И API ---
     document.addEventListener('DOMContentLoaded', function() {
         checkExpandableBlocks();
+        initMobileDots();
 
         const modalFullscreen = document.getElementById('imageZoomModal');
         let tsY = 0, tsX = 0;
@@ -1077,39 +1089,49 @@ layout: default
             
             const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
             const badgeTag = document.getElementById('dynamicStockBadgeTag');
+            const mobileBadgeTag = document.getElementById('mobileDynamicStockBadgeTag');
             const btnContainer = document.getElementById('dynamicBuyButton');
             const formInputs = document.getElementById('dynamicFormInputs');
             
+            let stockHtml = '';
+            let btnHtml = '';
+
             if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
-                if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                stockHtml = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
+                btnHtml = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
-                if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
-                if (btnContainer) btnContainer.innerHTML = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+                stockHtml = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
+                btnHtml = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
             } else {
-                if (badgeTag) badgeTag.innerHTML = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
+                stockHtml = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
                 if (formInputs) formInputs.innerHTML = `
                     <input type="email" name="email_hp" id="inlineEmailHp" style="display:none" tabindex="-1" autocomplete="off">
                     <div class="input-wrapper" id="inlineNameWrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <input type="text" id="inlineName" class="clean-input" placeholder="თქვენი სახელი" autocomplete="name">
                     </div>
-                    
                     <div class="input-wrapper" id="inlinePhoneWrapper">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                         <span class="prefix">+995</span>
                         <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
                     </div>
                 `;
-                if (btnContainer) btnContainer.innerHTML = `
+                btnHtml = `
                     <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order" style="height: 100%; border-radius: 16px; font-size: 1.15rem;">
                         <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="inlineOrderText">ყიდვა</span>
                     </button>
+                    <div class="payment-info-bottom">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                        შეუკვეთე ახლა, გადაიხადე მიღებისას
+                    </div>
                 `;
             }
 
-            // === ПОДКАТЕГОРИЯ ===
+            if (badgeTag) badgeTag.innerHTML = stockHtml;
+            if (mobileBadgeTag) mobileBadgeTag.innerHTML = stockHtml;
+            if (btnContainer) btnContainer.innerHTML = btnHtml;
+
             const subcatSection = document.getElementById('subcatSection');
             const subcatScroll = document.getElementById('subcatScroll');
             let subcatProducts = [];
@@ -1126,7 +1148,6 @@ layout: default
                 }
             }
 
-            // === КАТЕГОРИЯ ===
             const catSection = document.getElementById('catSection');
             const catScroll = document.getElementById('catScroll');
             
@@ -1142,7 +1163,6 @@ layout: default
                 }
             }
 
-            // === НЕДАВНО ПРОСМОТРЕННЫЕ ===
             const recentSection = document.getElementById('recentlyViewedSection');
             const recentScroll = document.getElementById('recentScroll');
             if (recentSection && recentScroll) {
