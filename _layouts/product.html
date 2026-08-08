@@ -86,7 +86,7 @@ layout: default
     .breadcrumbs li.truncate-node { flex: 0 1 auto; min-width: 0; overflow: hidden; }
     .breadcrumbs li.truncate-node a, .breadcrumbs li.truncate-node span { display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; outline: none; align-items: center; gap: 4px; }
     
-    .breadcrumbs a { display: flex; align-items: center; gap: 4px; text-decoration: none; color: #64748b; transition: color 0.3s ease; outline: none; }
+    .breadcrumbs a { display: flex; align-items: center; gap: 4px; text-decoration: none; color: #484B61; transition: color 0.3s ease; outline: none; }
     @media (hover: hover) { .breadcrumbs a:hover { color: #2563eb; } }
     .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; flex-shrink: 0; }
     .breadcrumbs .separator svg { width: 14px; height: 14px; }
@@ -131,7 +131,7 @@ layout: default
 
     .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
     .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; border: 1px solid transparent; }
-    .pill-stock-in { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1); }
+    .pill-stock-in { background: #0B652D; color: #F5FFF9; border-color: #bbf7d0; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1); }
     .pill-stock-out { background: #fef2f2; color: #ef4444; border-color: #fecaca; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
     .pill-stock-soon { background: #fffbeb; color: #d97706; border-color: #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1); }
 
@@ -174,7 +174,7 @@ layout: default
 
     .designer-strike { text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 3px !important; color: #94a3b8; }
 
-    .free-delivery-badge-desktop { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: #16a34a; background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 8px; margin-top: 4px; }
+    .free-delivery-badge-desktop { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: #0A5733; background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 8px; margin-top: 4px; }
 
     .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
@@ -209,7 +209,7 @@ layout: default
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
     }
 
-    .payment-info-bottom { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; color: #64748b; font-size: 0.9rem; font-weight: 700; text-align: center; }
+    .payment-info-bottom { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; color: #484B61; font-size: 0.9rem; font-weight: 700; text-align: center; }
 
     #inlineOrderForm { order: 1; width: 100%; }
 
@@ -226,7 +226,7 @@ layout: default
 
     .spec-list-container { display: flex; flex-direction: column; gap: 0.4rem; }
     .spec-item-row { display: flex; padding: 0.6rem 0; background: transparent; transition: background 0.3s; align-items: center; }
-    .spec-name-label { flex: 1; color: #64748b; font-size: 0.9rem; font-weight: 600; }
+    .spec-name-label { flex: 1; color: #484B61; font-size: 0.9rem; font-weight: 600; }
     .spec-value-text { flex: 1; color: #1e293b; font-weight: 700; font-size: 0.9rem; text-align: right; }
     .desc-text { line-height: 1.7; color: #475569; font-size: 1rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
 
@@ -355,7 +355,7 @@ layout: default
             display: flex; align-items: center; justify-content: space-between; 
             padding-top: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; margin-bottom: 12px; 
         }
-        .mobile-sku-text { font-size: 0.85rem; font-weight: 700; color: #64748b; }
+        .mobile-sku-text { font-size: 0.85rem; font-weight: 400; color: #484B61; }
         
         .gallery-badges, .gallery-actions { display: none !important; }
         #thumbStrip { display: none !important; }
@@ -679,7 +679,7 @@ layout: default
             <div class="mobile-bottom-old-price designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
             {% endif %}
         </div>
-        <div style="font-size: 0.75rem; color: #16a34a; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+        <div style="font-size: 0.75rem; color: #0A5733; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
             უფასო მიწოდება
         </div>
