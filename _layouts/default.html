@@ -810,7 +810,7 @@
     const trackingCheckBtn = document.getElementById('trackingCheckBtn');
     const trackingResult = document.getElementById('trackingResult');
     const footerTrackingBtn = document.getElementById('footerTrackingBtn');
-    const WORKER_URL_TRACKING = 'https://modaldelivery.niko-oganesiani.workers.dev';
+    const WORKER_URL_TRACKING = 'https:/delivery-modal.enkaelectronics.com.ge';
     const statusMap = { 'ასაღები': 'შეკვეთა მზად არის', 'საწყობშია': 'მივიდა საწყობში', 'გატანილია ჩასაბარებლად': 'კურიერი გზაშია', 'ჩაბარებულია': 'ჩაბარებულია' };
     const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
 
@@ -895,7 +895,7 @@
         if(trackingOrderId) trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
     }
 
-    if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://telegram-form-handler.niko-oganesiani.workers.dev';}
+    if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://form-handler.enkaelectronics.com.ge';}
     const quickForm = document.getElementById('quickOrderForm');
     const quickName = document.getElementById('quickName');
     const quickPhone = document.getElementById('quickPhone');
