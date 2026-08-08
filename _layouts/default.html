@@ -25,16 +25,6 @@
     </title>
     <link rel="preload" href="/fonts/googlesans.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">
-    {%- assign first_product_img = '' -%}
-{%- for img in page.images -%}
-  {%- unless img contains 'youtube.com' or img contains 'youtu.be' -%}
-    {%- assign first_product_img = img -%}
-    {%- break -%}
-  {%- endunless -%}
-{%- endfor -%}
-{%- if first_product_img != '' -%}
-<link rel="preload" as="image" href="{{ first_product_img }}" fetchpriority="high">
-{%- endif -%}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <script src="/capi.js" defer></script>
 
