@@ -1072,8 +1072,14 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 let imgEl = card.querySelector('.product-image'); if(imgEl) img = imgEl.src;
                 let aEl = card.querySelector('a'); if(aEl) link = aEl.getAttribute('href');
             } else {
-                let titleEl = document.querySelector('.title-desktop'); if(!titleEl || titleEl.offsetParent === null) titleEl = document.querySelector('.title-mobile');
-                if(titleEl) name = titleEl.innerText;
+                let titleEl = document.querySelector('.title-desktop');
+if (!titleEl || titleEl.offsetParent === null) {
+  titleEl = document.querySelector('.title-mobile');
+}
+if (!titleEl || titleEl.offsetParent === null) {
+  titleEl = document.querySelector('h1.product-title-h1');
+}
+if (titleEl) name = titleEl.innerText;
                 let priceEl = document.querySelector('.modern-price-current'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
                 
                 let oldPriceEl = priceEl ? priceEl.parentNode.querySelector('.modern-price-old, .old-price') : null; 
