@@ -462,13 +462,13 @@ layout: default
 
             {% if page.images.size > 1 %}
             <div class="thumb-strip" id="thumbStrip">
-                {% assign thumb_limit = 5 %}
+                {% assign thumb_limit = 4 %}
                 {% for img in page.images limit: thumb_limit %}
                     {% assign is_last_thumb = false %}
-                    {% if forloop.index == 5 and page.images.size > 5 %}
-                        {% assign is_last_thumb = true %}
-                        {% assign extra_photos = page.images.size | minus: 4 %}
-                    {% endif %}
+                    {% if forloop.index == 4 and page.images.size > 4 %}
+                    {% assign is_last_thumb = true %}
+                    {% assign extra_photos = page.images.size | minus: 3 %}
+               {% endif %}
 
                     {% assign is_video = false %}
                     {% if img contains 'youtube.com' or img contains 'youtu.be' %}
