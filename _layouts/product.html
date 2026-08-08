@@ -2,6 +2,20 @@
 layout: default
 ---
 
+{% capture lcp_preload %}
+  {%- assign first_product_img = '' -%}
+  {%- if page.images -%}
+    {%- for img in page.images -%}
+      {%- unless img contains 'youtube.com' or img contains 'youtu.be' -%}
+        {%- assign first_product_img = img -%}
+        {%- break -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if first_product_img != '' -%}
+    <link rel="preload" as="image" href="{{ first_product_img }}" fetchpriority="high">
+  {%- endif -%}
+{% endcapture %}
 <!-- Оптимизация загрузки ресурсов -->
 <link rel="preconnect" href="https://api.enkaelectronics.com.ge" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.css" />
