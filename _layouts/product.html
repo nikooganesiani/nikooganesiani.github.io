@@ -2,6 +2,11 @@
 layout: default
 ---
 
+<!-- Оптимизация загрузки ресурсов -->
+<link rel="preconnect" href="https://api.enkaelectronics.com.ge" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.css" />
+<script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.js" defer></script>
+
 {% assign first_cat = page.categories | first %}
 {% if first_cat == nil or first_cat == empty %}
   {% assign first_cat = page.category | default: page.categories %}
@@ -128,6 +133,7 @@ layout: default
     .main-gallery-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: transparent; padding: 0px; }
     .main-gallery-slide img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; cursor: zoom-in; user-select: none; -webkit-user-drag: none; transition: transform 0.3s ease; }
     .main-gallery-slide img:active { transform: scale(0.97); transition: transform 0.15s ease-out !important; }
+    lite-youtube { width: 100%; height: 100%; max-width: 100%; border-radius: inherit; }
 
     .video-thumb-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; backdrop-filter: blur(2px); transition: all 0.3s; pointer-events: none; }
     
@@ -163,7 +169,6 @@ layout: default
     .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: none; font-size: 0.95rem; }
     @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; } }
 
-    /* ИСПРАВЛЕННЫЕ ИНПУТЫ (без бага с цветом autofill) */
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
         background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
@@ -213,7 +218,7 @@ layout: default
 
     .video-review-container { margin-top: 2rem; }
     .video-iframe-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-    .video-iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .video-iframe-wrapper lite-youtube { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
     .similar-products-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
     .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
@@ -311,7 +316,7 @@ layout: default
     .modal-track::-webkit-scrollbar { display: none; }
     .modal-slide { flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative; }
     .modal-img-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; max-height: 85vh; }
-    .modal-img-wrapper img, .modal-img-wrapper iframe { width: 100%; height: 100%; max-height: 85vh; border-radius: 0.75rem; border: none; background: transparent; }
+    .modal-img-wrapper img, .modal-img-wrapper lite-youtube { width: 100%; height: 100%; max-height: 85vh; border-radius: 0.75rem; border: none; background: transparent; }
     .modal-img-wrapper img { object-fit: contain; pointer-events: auto; user-select: none; }
     
     .modal-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; box-shadow: none; outline: none; }
@@ -454,10 +459,10 @@ layout: default
 
                 <!-- Избранное и Поделиться (PC Only) -->
                 <div class="gallery-actions">
-                    <button class="btn-icon-round btn-fav" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                    <button class="btn-icon-round btn-fav" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
-                    <button class="btn-icon-round" onclick="copyProductLink(this)" title="გაზიარება">
+                    <button class="btn-icon-round" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
                     </button>
                 </div>
@@ -465,7 +470,7 @@ layout: default
                 <!-- Точки для мобильной версии -->
                 <div class="main-gallery-dots" id="mainGalleryDots"></div>
 
-                <div class="main-gallery-track" id="mainGalleryTrack" onscroll="syncThumbsWithScroll()">
+                <div class="main-gallery-track" id="mainGalleryTrack">
                     {% assign photo_idx = 0 %}
                     {% for img in page.images %}
                         {% assign is_vid = false %}
@@ -480,9 +485,9 @@ layout: default
                         
                         <div class="main-gallery-slide {% if is_vid %}desktop-only-slide{% endif %}">
                             {% if is_vid %}
-                                <iframe style="width: 100%; height: 100%; border: none;" src="https://www.youtube.com/embed/{{ vid_id }}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                <lite-youtube videoid="{{ vid_id }}" playlabel="Play Video"></lite-youtube>
                             {% else %}
-                                <img src="{{ img }}" alt="{{ page.name }}" onerror="this.src='/img/no-image.png'" draggable="false" onclick="openImageZoom(this, {{ photo_idx }})" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                                <img src="{{ img }}" alt="{{ page.name }}" width="800" height="800" fetchpriority="high" onerror="this.src='/img/no-image.png'" draggable="false" onclick="openImageZoom(this, {{ photo_idx }})" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                                 {% assign photo_idx = photo_idx | plus: 1 %}
                             {% endif %}
                         </div>
@@ -506,13 +511,13 @@ layout: default
                 <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
                     {% if is_video %}
                         <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
-                            <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
+                            <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
                             <div class="video-thumb-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             </div>
                         </div>
                     {% else %}
-                        <img src="{{ img }}" alt="Photo" onerror="this.src='/img/no-image.png'" draggable="false">
+                        <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" onerror="this.src='/img/no-image.png'" draggable="false">
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -524,7 +529,6 @@ layout: default
             <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
                 <form id="inlineOrderForm" novalidate style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
                     
-                    <!-- Измененный блок цены + Бесплатная доставка (Desktop) -->
                     <div class="submit-row" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem;">
                         <div class="modern-price-container desktop-price-inline">
                             <div style="display: flex; align-items: center; gap: 1rem;">
@@ -567,7 +571,7 @@ layout: default
                     </div>
                     <div class="expandable-overlay"></div>
                 </div>
-                <button class="btn-expand" id="btnExpandSpecs" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
+                <button class="btn-expand" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
             </div>
 
             <div class="description-container">
@@ -577,7 +581,6 @@ layout: default
                 </h3>
                 <div class="desc-text">{{ page.longDescription }}</div>
                 
-                <!-- Отдельный блок видео (под описанием) -->
                 {% if yt_id != "" %}
                 <div class="video-review-container">
                     <h3 class="section-title">
@@ -585,7 +588,7 @@ layout: default
                         ვიდეო განხილვა
                     </h3>
                     <div class="video-iframe-wrapper">
-                        <iframe src="https://www.youtube.com/embed/{{ yt_id }}?rel=0" frameborder="0" allowfullscreen></iframe>
+                        <lite-youtube videoid="{{ yt_id }}" playlabel="Play Video"></lite-youtube>
                     </div>
                 </div>
                 {% endif %}
@@ -593,7 +596,6 @@ layout: default
         </div>
     </div>
 
-    <!-- БЛОК ПОДКАТЕГОРИИ -->
     {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
     <div class="similar-products-section" id="subcatSection" style="display: none;">
         <div class="title-highlight">
@@ -602,14 +604,13 @@ layout: default
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow left" id="subcatArrowLeft" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="subcatArrowLeft" aria-label="წინა" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="subcatScroll"></div>
-            <button class="sim-arrow right" id="subcatArrowRight" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="subcatArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
     {% endif %}
 
-    <!-- БЛОК КАТЕГОРИИ -->
     {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
     <div class="similar-products-section" id="catSection" style="display: none;">
         <div class="title-highlight">
@@ -623,14 +624,13 @@ layout: default
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow left" id="catArrowLeft" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="catArrowLeft" aria-label="წინა" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="catScroll"></div>
-            <button class="sim-arrow right" id="catArrowRight" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="catArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
     {% endif %}
     
-    <!-- БЛОК НЕДАВНО ПРОСМОТРЕННЫЕ -->
     <div class="similar-products-section" id="recentlyViewedSection" style="display: none;">
         <div class="title-highlight">
             <h2 class="similar-title">
@@ -639,16 +639,15 @@ layout: default
             </h2>
         </div>
         <div class="similar-wrapper">
-            <button class="sim-arrow left" id="recentArrowLeft" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <button class="sim-arrow left" id="recentArrowLeft" aria-label="წინა" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
             <div class="similar-scroll-container" id="recentScroll"></div>
-            <button class="sim-arrow right" id="recentArrowRight" onclick="scrollCarousel('recentScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+            <button class="sim-arrow right" id="recentArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('recentScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
         </div>
     </div>
 </div>
 
-<!-- Островок для мобильных -->
 <div class="mobile-bottom-bar" id="mobileBottomBar">
-    <img src="{{ page.images[0] }}" class="mobile-bottom-img" alt="Product">
+    <img src="{{ page.images[0] }}" class="mobile-bottom-img" alt="Product" width="80" height="80" loading="lazy">
     <div class="mobile-bottom-info">
         <div class="mobile-bottom-price-row">
             <div class="mobile-bottom-price">{{ page.price | replace: '₾', '' }}₾</div>
@@ -662,27 +661,26 @@ layout: default
         </div>
     </div>
     <div class="mobile-bottom-actions">
-        <button class="mobile-bottom-btn" onclick="copyProductLink(this)" title="გაზიარება">
+        <button class="mobile-bottom-btn" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
         </button>
-        <button class="mobile-bottom-btn btn-fav" onclick="toggleFav(event, this)">
+        <button class="mobile-bottom-btn btn-fav" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
-        <button class="mobile-bottom-buy" onclick="scrollToForm()">
+        <button class="mobile-bottom-buy" aria-label="ყიდვა" onclick="scrollToForm()">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
             ყიდვა
         </button>
     </div>
 </div>
 
-<!-- Полноэкранная модалка просмотра фото и видео -->
 <div class="modal-fullscreen" id="imageZoomModal" onclick="closeImageZoom(event)">
     <div class="modal-gallery-area">
-        <button class="modal-nav-arrow left" onclick="scrollModalGallery(-1, event)">
+        <button class="modal-nav-arrow left" aria-label="წინა" onclick="scrollModalGallery(-1, event)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg>
         </button>
         
-        <div class="modal-track" id="modalTrack" onscroll="syncModalThumbs()">
+        <div class="modal-track" id="modalTrack">
             {% for img in page.images %}
                 <div class="modal-slide">
                     <div class="modal-img-wrapper">
@@ -692,16 +690,16 @@ layout: default
                             {% else %}
                                 {% assign modal_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
                             {% endif %}
-                            <iframe src="https://www.youtube.com/embed/{{ modal_vid }}?rel=0" frameborder="0" allowfullscreen></iframe>
+                            <lite-youtube videoid="{{ modal_vid }}" playlabel="Play Video"></lite-youtube>
                         {% else %}
-                            <img src="{{ img }}" alt="Zoom" draggable="false" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                            <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                         {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
         
-        <button class="modal-nav-arrow right" onclick="scrollModalGallery(1, event)">
+        <button class="modal-nav-arrow right" aria-label="შემდეგი" onclick="scrollModalGallery(1, event)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg>
         </button>
     </div>
@@ -717,13 +715,13 @@ layout: default
                             {% assign t_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
                         {% endif %}
                         <div style="position: relative; width: 100%; height: 100%;">
-                            <img src="https://img.youtube.com/vi/{{ t_vid }}/default.jpg" alt="Thumb Video">
+                            <img src="https://img.youtube.com/vi/{{ t_vid }}/default.jpg" alt="Thumb Video" width="320" height="180" loading="lazy">
                             <div style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); width: 20px; height: 20px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                             </div>
                         </div>
                     {% else %}
-                        <img src="{{ img }}" alt="Thumb">
+                        <img src="{{ img }}" alt="Thumb" width="800" height="800" loading="lazy">
                     {% endif %}
                 </div>
             {% endfor %}
@@ -773,8 +771,8 @@ layout: default
                 ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
             </div>`;
             arrowsHtml = `
-                <button class="card-nav-arrow prev" onclick="scrollCardGallery('${uniqueId}', -1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
-                <button class="card-nav-arrow next" onclick="scrollCardGallery('${uniqueId}', 1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
+                <button class="card-nav-arrow prev" aria-label="წინა" onclick="scrollCardGallery('${uniqueId}', -1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
+                <button class="card-nav-arrow next" aria-label="შემდეგი" onclick="scrollCardGallery('${uniqueId}', 1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
             `;
         }
 
@@ -782,15 +780,15 @@ layout: default
         <div class="product-card">
             <div class="product-image-wrapper">
                 ${discountBadge}
-                <button class="btn-fav-card" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                <button class="btn-fav-card" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                 </button>
                 ${arrowsHtml}
-                <div class="product-images-track" id="track-${uniqueId}" onscroll="updateDots('${uniqueId}', this)">
+                <div class="product-images-track" id="track-${uniqueId}">
                     ${imgs.map(img => `
                         <div class="product-slide">
                             <a href="/product/${p.id}/" style="display:contents;" draggable="false">
-                                <img class="product-image" src="${img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                                <img class="product-image" src="${img}" alt="${p.name}" width="800" height="800" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
                             </a>
                         </div>
                     `).join('')}
@@ -805,7 +803,7 @@ layout: default
                     <div class="product-price">${String(p.price).replace(/₾/g, '')}₾</div>
                     ${p.oldPrice ? `<span class="old-price designer-strike">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
                 </div>
-                <button class="btn-order" onclick='window.openOrderForm(${productDataAttr})'>
+                <button class="btn-order" aria-label="ყიდვა" onclick='window.openOrderForm(${productDataAttr})'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     ყიდვა
                 </button>
@@ -814,11 +812,16 @@ layout: default
     };
 
     window.updateDots = function(uniqueId, trackEl) {
-        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
-        const dots = document.querySelectorAll(`#dots-${uniqueId} .dot`);
-        dots.forEach((d, i) => {
-            if (i === index) d.classList.add('active');
-            else d.classList.remove('active');
+        if (trackEl._isUpdating) return;
+        trackEl._isUpdating = true;
+        window.requestAnimationFrame(() => {
+            const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+            const dots = document.querySelectorAll(`#dots-${uniqueId} .dot`);
+            dots.forEach((d, i) => {
+                if (i === index) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+            trackEl._isUpdating = false;
         });
     };
 
@@ -854,7 +857,6 @@ layout: default
         }
     };
 
-    // Основная галерея
     function scrollToGallerySlide(index) {
         const track = document.getElementById('mainGalleryTrack');
         const width = track.clientWidth;
@@ -865,9 +867,7 @@ layout: default
     function syncThumbsWithScroll() {
         const track = document.getElementById('mainGalleryTrack');
         
-        // Логика точек для мобильной версии
         if (window.innerWidth <= 1024) {
-            const visibleSlides = Array.from(track.children).filter(el => window.getComputedStyle(el).display !== 'none');
             const index = Math.round(track.scrollLeft / track.clientWidth);
             const dots = document.querySelectorAll('#mainGalleryDots .dot');
             dots.forEach((d, i) => {
@@ -876,16 +876,15 @@ layout: default
             });
         }
 
-        // Логика Thumb Strip и UI элементов для ПК
         const index = Math.round(track.scrollLeft / track.clientWidth);
         const slides = track.querySelectorAll('.main-gallery-slide');
         
         if (slides[index]) {
-            const hasIframe = slides[index].querySelector('iframe') !== null;
+            const hasVideo = slides[index].querySelector('lite-youtube') !== null;
             if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions');
             overlaysCache.forEach(el => {
-                el.style.opacity = hasIframe ? '0' : '1';
-                el.style.pointerEvents = hasIframe ? 'none' : 'auto';
+                el.style.opacity = hasVideo ? '0' : '1';
+                el.style.pointerEvents = hasVideo ? 'none' : 'auto';
                 el.style.transition = 'opacity 0.3s ease';
             });
         }
@@ -956,8 +955,8 @@ layout: default
             const isThumb = e.target.closest('.modal-thumb');
             if (isArrow || isThumbArea || isThumb) return;
             const isImg = e.target.closest('.modal-img-wrapper img');
-            const isIframe = e.target.closest('.modal-img-wrapper iframe');
-            if ((isImg || isIframe) && window.innerWidth >= 1024) return; 
+            const isVideo = e.target.closest('.modal-img-wrapper lite-youtube');
+            if ((isImg || isVideo) && window.innerWidth >= 1024) return; 
         }
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
@@ -1022,9 +1021,44 @@ layout: default
         document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
+    // Делегирование событий прокрутки для оптимизации PageSpeed
     document.addEventListener('DOMContentLoaded', function() {
         checkExpandableBlocks();
         initMobileDots();
+
+        // Оптимизированный слушатель для галереи (throttle)
+        const mainTrack = document.getElementById('mainGalleryTrack');
+        let mainScrollTimeout;
+        if (mainTrack) {
+            mainTrack.addEventListener('scroll', () => {
+                if (mainScrollTimeout) return;
+                mainScrollTimeout = window.requestAnimationFrame(() => {
+                    syncThumbsWithScroll();
+                    mainScrollTimeout = null;
+                });
+            }, { passive: true });
+        }
+
+        // Оптимизированный слушатель для модальной галереи
+        const modalTrackEl = document.getElementById('modalTrack');
+        let modalScrollTimeout;
+        if (modalTrackEl) {
+            modalTrackEl.addEventListener('scroll', () => {
+                if (modalScrollTimeout) return;
+                modalScrollTimeout = window.requestAnimationFrame(() => {
+                    syncModalThumbs();
+                    modalScrollTimeout = null;
+                });
+            }, { passive: true });
+        }
+
+        // Делегирование событий прокрутки карточек товаров (через захват)
+        document.addEventListener('scroll', function(e) {
+            if (e.target && e.target.classList && e.target.classList.contains('product-images-track')) {
+                const id = e.target.id.replace('track-', '');
+                window.updateDots(id, e.target);
+            }
+        }, true);
 
         const modalFullscreen = document.getElementById('imageZoomModal');
         let tsY = 0, tsX = 0;
@@ -1117,7 +1151,7 @@ layout: default
                     </div>
                 `;
                 btnHtml = `
-                    <button type="submit" id="submitInlineOrderBtn" class="btn-alta-order" style="height: 100%; border-radius: 16px; font-size: 1.15rem;">
+                    <button type="submit" id="submitInlineOrderBtn" aria-label="ყიდვა" class="btn-alta-order" style="height: 100%; border-radius: 16px; font-size: 1.15rem;">
                         <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span id="inlineOrderText">ყიდვა</span>
                     </button>
