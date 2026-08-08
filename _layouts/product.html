@@ -176,7 +176,7 @@ layout: default
 
     .free-delivery-badge-desktop { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: #0A5733; background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 8px; margin-top: 4px; }
 
-    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1.1rem; border-radius: 0.75rem; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
+    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
     @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
     .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
     
@@ -185,7 +185,7 @@ layout: default
 
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
-        background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px;
+        background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
         transition: all 0.2s; overflow: hidden;
     }
     .input-wrapper:focus-within { background: #ffffff; border-color: #2563eb; }
@@ -209,7 +209,7 @@ layout: default
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
     }
 
-    .payment-info-bottom { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; color: #484B61; font-size: 0.9rem; font-weight: 700; text-align: center; }
+    .payment-info-bottom { display: flex; justify-content: center; margin-top: 10px; margin-bottom: 10px; color: #484B61; font-size: 0.9rem; font-weight: 500; text-align: center; border: 1px solid #e2e8f0; border-radius: 9px; background: #fbfdff; padding: 10px; }
 
     #inlineOrderForm { order: 1; width: 100%; }
 
@@ -220,7 +220,7 @@ layout: default
     .expandable-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background-image: linear-gradient(rgba(245, 247, 250, 0), rgb(245, 247, 250)); pointer-events: none; transition: opacity 0.3s; }
     .expandable-block.expanded .expandable-overlay { opacity: 0; }
     
-    .btn-expand { background: transparent; border: none; color: #2563eb; font-weight: 700; font-size: 0.95rem; padding: 0.8rem 0; cursor: pointer; margin-top: 0.5rem; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .btn-expand { background: transparent; border: none; color: #2563eb; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-bottom: 0.5rem; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
     @media (hover: hover) { .btn-expand:hover { color: #1d4ed8; } }
     .btn-expand:active { transform: scale(0.96); }
 
@@ -301,7 +301,7 @@ layout: default
 
     /* Островок для мобильных */
     .mobile-bottom-bar { 
-        display: none; position: fixed; bottom: 1rem; left: 1rem; right: 1rem; background: rgba(255,255,255,0.95); 
+        display: none; position: fixed; bottom: 1rem; left: 0.4rem; right: 0.4rem; background: rgba(255,255,255,0.95); 
         backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.6rem; z-index: 999; 
         align-items: center; gap: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
     }
@@ -679,9 +679,8 @@ layout: default
             <div class="mobile-bottom-old-price designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
             {% endif %}
         </div>
-        <div style="font-size: 0.75rem; color: #0A5733; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
-            უფასო მიწოდება
+        <div style="font-size: 0.6rem; color: #0A5733; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+           უფასო მიწოდება
         </div>
     </div>
     <div class="mobile-bottom-actions">
@@ -1180,7 +1179,6 @@ layout: default
                         <span id="inlineOrderText">ყიდვა</span>
                     </button>
                     <div class="payment-info-bottom">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                         შეუკვეთე ახლა, გადაიხადე მიღებისას
                     </div>
                 `;
