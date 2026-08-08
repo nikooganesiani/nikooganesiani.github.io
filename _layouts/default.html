@@ -43,11 +43,12 @@
 
 <style>
     @font-face {
-  font-family: 'Google Sans';
+  font-family: 'Google Sans Variable';
+  src: url('fonts/GoogleSansVariable.woff2') format('woff2') tech('variations'),
+  url('fonts/GoogleSansVariable.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
-  font-weight: 400 700;
-  font-display: block;
-  src: url('/fonts/googlesans.woff2') format('woff2');
+  font-display: swap;
 }
     ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
 
@@ -58,7 +59,7 @@
     }
     img, a { -webkit-user-drag: none; user-drag: none; }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     
     @-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #ffffff; } }
 
