@@ -936,6 +936,7 @@ layout: default
 
     let isZoomModalOpen = false;
     function zoomImagePC(e, img) {
+        if (img.closest('#imageZoomModal')) return;
         if(window.innerWidth < 1024) return;
         img.style.transition = 'none'; 
         const rect = img.getBoundingClientRect();
@@ -946,6 +947,7 @@ layout: default
     }
     
     function resetZoomPC(img) {
+        if (img.closest('#imageZoomModal')) return;
         if(window.innerWidth < 1024) return;
         img.style.transition = 'transform 0.3s ease'; 
         img.style.transform = 'scale(1)';
