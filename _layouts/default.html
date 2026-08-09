@@ -44,7 +44,9 @@
 <style>
     @font-face {
   font-family: 'Google Sans Variable';
-  src: url('/fonts/GoogleSansVariable.woff2') format('woff2-variations');
+  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
