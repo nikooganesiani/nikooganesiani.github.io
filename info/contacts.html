@@ -113,6 +113,14 @@ title: "კონტაქტები"
         word-break: break-all;
     }
 
+    .contact-note {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 8px;
+        line-height: 1.5;
+        font-weight: 400;
+    }
+
     .footer-actions {
         grid-column: span 2;
         text-align: center;
@@ -138,6 +146,19 @@ title: "კონტაქტები"
         box-shadow: 0 10px 20px -10px var(--primary-color);
     }
 
+    /* Стили для информационных блоков (без ссылок) */
+    .contact-item.static:hover {
+        background: var(--accent-soft);
+        transform: none;
+        box-shadow: none;
+        border-color: transparent;
+        cursor: default;
+    }
+    .contact-item.static:hover .icon-wrapper {
+        background: white;
+        color: var(--primary-color);
+    }
+
     /* Мобильная адаптация */
     @media (max-width: 650px) {
         .card-content {
@@ -156,6 +177,10 @@ title: "კონტაქტები"
         .contact-item {
             padding: 20px;
         }
+        /* На мобильных блокам не нужно растягиваться на две колонки */
+        .contact-item[style*="grid-column: span 2"] {
+            grid-column: span 1 !important;
+        }
     }
 
     /* Анимация появления */
@@ -170,6 +195,9 @@ title: "კონტაქტები"
     .contact-item:nth-child(2) { animation-delay: 0.2s; }
     .contact-item:nth-child(3) { animation-delay: 0.3s; }
     .contact-item:nth-child(4) { animation-delay: 0.4s; }
+    .contact-item:nth-child(5) { animation-delay: 0.5s; }
+    .contact-item:nth-child(6) { animation-delay: 0.6s; }
+    .contact-item:nth-child(7) { animation-delay: 0.7s; }
 </style>
 
 <div class="contacts-container">
@@ -217,6 +245,45 @@ title: "კონტაქტები"
                 <div class="contact-label">Facebook</div>
                 <div class="contact-value">enkaelectronics</div>
             </a>
+
+            <!-- Индивидуальный предприниматель -->
+            <div class="contact-item static">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="contact-label">ინდივიდუალური მეწარმე</div>
+                <div class="contact-value">ნინო ქურიძე</div>
+            </div>
+
+            <!-- Идентификационный код -->
+            <div class="contact-item static">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <line x1="4" y1="9" x2="20" y2="9"/>
+                        <line x1="4" y1="15" x2="20" y2="15"/>
+                        <line x1="10" y1="3" x2="8" y2="21"/>
+                        <line x1="16" y1="3" x2="14" y2="21"/>
+                    </svg>
+                </div>
+                <div class="contact-label">საიდენტიფიკაციო კოდი (საიდენტიფიკაციო №)</div>
+                <div class="contact-value">01030037652</div>
+            </div>
+
+            <!-- Юридический адрес с припиской -->
+            <div class="contact-item static" style="grid-column: span 2;">
+                <div class="icon-wrapper">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                </div>
+                <div class="contact-label">იურიდიული მისამართი</div>
+                <div class="contact-value">თბილისი, გიორგი ცაბაძის ქ. N8</div>
+                <div class="contact-note">ფიზიკური ობიექტი არ გვაქვს. შეკვეთების მიწოდება ხდება უფასო საკურიერო მომსახურებით.</div>
+            </div>
 
             <div class="footer-actions">
                 <a href="#" id="backButton" class="back-link">
