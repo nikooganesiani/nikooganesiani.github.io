@@ -979,9 +979,6 @@ layout: default
             const isArrow = e.target.closest('.modal-nav-arrow');
             const isThumb = e.target.closest('.modal-thumb');
             if (isArrow || isThumbArea || isThumb) return;
-            const isImg = e.target.closest('.modal-img-wrapper img');
-            const isVideo = e.target.closest('.modal-img-wrapper lite-youtube');
-            if ((isImg || isVideo) && window.innerWidth >= 1024) return; 
         }
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
