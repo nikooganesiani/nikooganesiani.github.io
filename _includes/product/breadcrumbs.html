@@ -10,7 +10,7 @@
             
             {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
                 <span class="flex items-center shrink-0 text-slate-300"><svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-                <li class="flex-auto min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
+                <li class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
                     <a href="/?category={{ first_cat }}" draggable="false" class="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors outline-none no-underline overflow-hidden text-ellipsis whitespace-nowrap">
                         {% if cat_data and cat_data.icon %}
                           <span class="max-sm:flex items-center justify-center shrink-0 w-4 h-4 max-sm:mr-0 mr-1 [&>svg]:w-4 [&>svg]:h-4 [&>svg]:block">
@@ -23,7 +23,7 @@
                 
                 {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
                 <span class="flex items-center shrink-0 text-slate-300"><svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
-                <li class="flex-auto min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
+                <li class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
                     <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false" class="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors outline-none no-underline truncate">{{ sub_name | strip }}</a>
                 </li>
                 {% endif %}
