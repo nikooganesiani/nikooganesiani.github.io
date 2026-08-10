@@ -1,190 +1,196 @@
---- START OF FILE Paste August 10, 2026 - 11:23AM ---
-
 ---
-# Этот блок обязателен для Jekyll, можно оставить пустым
+layout: default
 ---
 
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>
-        {%- assign is_file = false -%}
-        {%- if page.name -%}
-            {%- if page.name contains ".html" or page.name contains ".md" -%}
-                {%- assign is_file = true -%}
-            {%- endif -%}
-        {%- endif -%}
+{% capture lcp_preload %}
+  {%- assign first_product_img = '' -%}
+  {%- if page.images -%}
+    {%- for img in page.images -%}
+      {%- unless img contains 'youtube.com' or img contains 'youtu.be' -%}
+        {%- assign first_product_img = img -%}
+        {%- break -%}
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+  {%- if first_product_img != '' -%}
+    <link rel="preload" as="image" href="{{ first_product_img }}" fetchpriority="high">
+  {%- endif -%}
+{% endcapture %}
+<!-- Оптимизация загрузки ресурсов -->
+<link rel="preconnect" href="https://api.enkaelectronics.com.ge" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.css" />
+<script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.2/src/lite-yt-embed.js" defer></script>
 
-        {%- if page.name and is_file == false -%}
-            {{ page.name }} – ENKA Electronics
-        {%- elsif page.title -%}
-            {{ page.title }} – ENKA Electronics
-        {%- else -%}
-            ENKA Electronics
-        {%- endif -%}
-    </title>
-{%- if page.description -%}
-  <meta name="description" content="{{ page.description | strip_html | escape }}">
-{%- elsif page.excerpt -%}
-  <meta name="description" content="{{ page.excerpt | strip_html | escape }}">
-{%- else -%}
-  <meta name="description" content="{{ site.description | strip_html | escape }}">
-{%- endif -%}
-    <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="preconnect" href="https://img.enkaelectronics.com.ge" crossorigin>
-    {{ lcp_preload }}
-    <script src="/capi.js" defer></script>
+{% assign first_cat = page.categories | first %}
+{% if first_cat == nil or first_cat == empty %}
+  {% assign first_cat = page.category | default: page.categories %}
+{% endif %}
+{% assign first_cat = first_cat | strip %}
 
-    <script>
-    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
-    </script>
+{% assign first_sub = page.subcategories | first %}
+{% if first_sub == nil or first_sub == empty %}
+  {% assign first_sub = page.subcategory | default: page.sub | default: page.subcategories %}
+{% endif %}
+{% assign first_sub = first_sub | strip %}
+
+{% assign cat_data = site.data.catalog[first_cat] %}
+{% assign cat_name = cat_data.title | default: first_cat %}
+
+{% assign sub_name = first_sub %}
+{% if cat_data and cat_data.subs %}
+  {% for sub in cat_data.subs %}
+    {% if sub.id == first_sub %}
+      {% assign sub_name = sub.name %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<!-- Проверяем наличие видео в галерее -->
+{% assign yt_id = "" %}
+{% for img in page.images %}
+    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+        {% if img contains 'v=' %}
+            {% assign yt_id = img | split: 'v=' | last | split: '&' | first %}
+        {% else %}
+            {% assign yt_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+        {% endif %}
+        {% break %}
+    {% endif %}
+{% endfor %}
 
 <style>
-    @font-face {
-  font-family: 'Google Sans Variable';
-  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2');
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
-}
-    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
-
-    #topProgressBar {
-        position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: #2563eb;
-        z-index: 999999; pointer-events: none; transform: scaleX(0); transform-origin: left;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    .product-view-container { 
+        max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; 
+        padding: 1rem 1.5rem 4rem 1.5rem; animation: fadeIn 0.6s ease;
+        -webkit-user-select: none; user-select: none; overflow-x: hidden;
     }
-    img, a { -webkit-user-drag: none; user-drag: none; }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
-    
-    @-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #ffffff; } }
-
-    ::-webkit-scrollbar, html::-webkit-scrollbar, body::-webkit-scrollbar { width: 14px; height: 14px; }
-    ::-webkit-scrollbar-track, html::-webkit-scrollbar-track, body::-webkit-scrollbar-track { background-color: #ffffff; }
-    
-    ::-webkit-scrollbar-thumb, html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb {
-        background-color: rgba(148, 163, 184, 0.45); border-radius: 10px; border: 4px solid #ffffff; 
-        background-clip: padding-box; transition: background-color 0.4s ease;
-    }
-    @media (hover: hover) {
-        ::-webkit-scrollbar-thumb:hover, html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover { background-color: rgba(148, 163, 184, 0.85); border-width: 4px; }
-    }
-    ::-webkit-scrollbar-thumb:active, html::-webkit-scrollbar-thumb:active, body::-webkit-scrollbar-thumb:active { background-color: rgba(37, 99, 235, 0.95); border-width: 4px; }
-
-    .search-results, .modal-content, .modal-list-container { -ms-overflow-style: none; scrollbar-width: none; }
-    .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar, .modal-list-container::-webkit-scrollbar { display: none; }
-    
-    html { overflow-y: scroll; scrollbar-gutter: stable; scroll-behavior: smooth; }
-    body { background: #f5f7fa; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
-    body.modal-open { overflow: hidden; }
-    main { flex: 1; } 
-
-    /* ПРЕМИАЛЬНЫЙ HEADER (ПК) - Без теней и обводок */
-    .header {
-        position: sticky; top: 0; z-index: 100;
-        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        border-bottom: none; box-shadow: none;
-    }
-    .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
-    .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; height: 70px; }
-    
-    .header-left { display: flex; align-items: center; gap: 1.2rem; flex: 1; justify-content: flex-start; }
-    .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; user-select: none; }
-    .logo:active .logo-img { transform: scale(0.96); }
-
-    .header-center { display: flex; align-items: stretch; max-width: 750px; width: 100%; justify-content: center; flex: 2; margin: 0 1.5rem; height: 48px; }
-    
-    .ozon-catalog-btn {
-        display: flex; align-items: center; gap: 8px; background: #2563eb; color: #fff !important; 
-        padding: 0 1.4rem; border-radius: 12px; margin-right: 12px; font-weight: 700; flex-shrink: 0;
-        border: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; user-select: none;
-    }
-    @media (hover: hover) { .ozon-catalog-btn:hover { background: #1d4ed8 !important; } }
-    .ozon-catalog-btn:active { transform: scale(0.96); }
-
-    .ozon-search-box {
-        display: flex; align-items: center; background: #fff; border: 2px solid #2563eb; border-radius: 12px; flex: 1; position: relative; height: 100%;
-    }
-    .ozon-search-box input {
-        flex: 1; border: none; background: transparent; padding: 0.8rem 1.2rem; border-radius: 0; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; color: #0f172a;
-    }
-    .ozon-search-btn {
-        background: #2563eb; color: white; border: none; padding: 0 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; outline: none; height: 100%; border-radius: 0 9px 9px 0;
-    }
-    @media (hover: hover) { .ozon-search-btn:hover { background: #1d4ed8; } }
-    .ozon-search-btn:active { transform: scale(0.96); }
-    
-    .search-clear { position: absolute; right: 4.5rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
-    .search-clear.show { display: block; }
-
-    .header-right { display: flex; align-items: center; gap: 1rem; flex: 1; justify-content: flex-end; }
-    
-    .desktop-icon-btn {
-        position: relative; background: transparent; border: none;
-        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-        cursor: pointer; color: #64748b; transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; padding: 4px 8px; border-radius: 8px;
-    }
-    @media (hover: hover) { .desktop-icon-btn:hover { color: #2563eb; } }
-    .desktop-icon-btn:active { transform: scale(0.92); }
-    .desktop-icon-btn svg { width: 24px; height: 24px; }
-    .desktop-icon-btn-label { font-size: 0.75rem; font-weight: 600; }
-    
-    .header-badge {
-        position: absolute; top: -6px; right: -6px; background: #ef4444; color: white;
-        font-size: 10px; font-weight: 700; height: 18px; min-width: 18px; border-radius: 9px;
-        display: flex; align-items: center; justify-content: center;
-        line-height: 1; padding: 0 4px; box-sizing: border-box;
+    .product-view-container p, .product-view-container h1, .product-view-container h2, 
+    .product-view-container h3, .product-view-container .spec-value-text, .product-view-container .desc-text {
+        -webkit-user-select: text; user-select: text;
     }
 
-    .search-results {
-        position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: white; width: 100%;
-        border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: none;
-        z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
-        transition: all 0.3s; max-height: 400px; overflow-y: auto; padding: 0.5rem;
-    }
-    .search-results.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
-    .search-result-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer; border-radius: 1rem; transition: all 0.2s; }
-    @media (hover: hover) { .search-result-item:hover { background: #f8fafc; } }
-    .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: transparent; border: none; }
-    
-    /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК - Без теней и обводок */
-    .modal {
-        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        z-index: 9999; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.4s ease; padding: 1rem;
-    }
-    .modal.active { opacity: 1; }
-    .modal-content {
-        background: white; max-width: 440px; width: 100%; border-radius: 24px; padding: 24px;
-        max-height: 90vh; overflow-y: auto; overflow-x: hidden; box-shadow: none; border: none;
-        transform: scale(0.9) translateY(20px); opacity: 0; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .modal.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
-    .modal-content h3 { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; text-align: center; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; }
-    
-    .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid transparent; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f1f5f9; color: #0f172a; outline: none; }
-    .input-field:focus { background: #e2e8f0; }
-    .input-error { border-color: #ef4444 !important; }
-    
-    .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
-    @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; } }
-    .btn-submit:active { transform: scale(0.96); box-shadow: none; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    /* Глобальные стили инпутов для форм (оформление заказа, трекинг) */
+    .shared-box-style { border-radius: 24px; }
+
+    .top-header-group { margin-bottom: 1.25rem; animation: slideDown 0.4s ease; }
+    
+    .breadcrumbs-container { display: flex; justify-content: space-between; align-items: center; gap: 1rem; width: 100%; flex-wrap: nowrap; overflow: hidden; }
+    .breadcrumbs { 
+        display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 0; align-items: center; 
+        background: transparent; border: none; flex: 1 1 auto; min-width: 0; overflow: hidden;
+    }
+    .breadcrumbs li { display: inline-flex; align-items: center; font-size: 0.85rem; font-weight: 700; color: #64748b; white-space: nowrap; }
+    .breadcrumbs li.truncate-node { flex: 0 1 auto; min-width: 0; overflow: hidden; }
+    .breadcrumbs li.truncate-node a, .breadcrumbs li.truncate-node span { display: flex; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; outline: none; align-items: center; gap: 4px; }
+    
+    .breadcrumbs a { display: flex; align-items: center; gap: 4px; text-decoration: none; color: #484B61; transition: color 0.3s ease; outline: none; }
+    @media (hover: hover) { .breadcrumbs a:hover { color: #2563eb; } }
+    .breadcrumbs .separator { color: #cbd5e1; display: flex; align-items: center; flex-shrink: 0; }
+    .breadcrumbs .separator svg { width: 14px; height: 14px; }
+    
+    .sku-desktop { background: transparent; border: none; padding: 0; font-size: 0.85rem; font-weight: 400; color: #484B61; white-space: nowrap; flex-shrink: 0; height: fit-content; }
+    .sku-desktop b { color: #2563eb; font-weight: 400; }
+
+    /* Блок SKU и статуса для мобильных */
+    .mobile-top-meta { display: none; }
+
+    .product-title-h1 { font-size: 1.8rem; font-weight: 700; color: #1e293b; line-height: 1.2; letter-spacing: -0.5px; overflow-wrap: break-word; margin: 0 0 1rem 0; padding: 0; }
+    
+    .product-grid { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr); gap: 3rem; align-items: start; }
+    .product-grid > div, .product-details-grid > div { min-width: 0; }
+
+    .gallery-section { 
+        display: flex !important; flex-direction: row !important; position: relative;
+        opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.1s;
+    }
+    
+    @media (min-width: 1025px) {
+        .gallery-section { flex-direction: row; gap: 16px; align-items: flex-start; }
+        .thumb-strip { 
+            flex-direction: column; width: 72px; padding: 2px; gap: 10px;
+            order: -1; overflow-y: auto; overflow-x: hidden;
+            max-height: 520px; flex-shrink: 0;
+        }
+        .thumb-strip::-webkit-scrollbar { display: none; }
+        .main-gallery-viewport { flex: 1; margin-bottom: 0; width: calc(100% - 88px); min-height: 200px; }
+        .desktop-only-slide { display: flex !important; }
+        .main-gallery-dots { display: none !important; }
+    }
+    #thumbStrip { width: 80px !important; min-width: 80px !important; order: -1 !important; display: flex !important; flex-direction: column !important; }
+    
+    .main-gallery-viewport { 
+        aspect-ratio: 1 / 1; overflow: hidden; position: relative; flex-grow: 1 !important; min-width: 0 !important;
+        border-radius: 12px; border: none; background: transparent;
+    }
+    
+    .gallery-badges { position: absolute; top: 1rem; left: 1rem; z-index: 15; display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; pointer-events: none; }
+    .gallery-actions { position: absolute; top: 1rem; right: 1rem; z-index: 15; display: flex; gap: 10px; align-items: flex-start; }
+
+    .sale-badge-red { background: #ef4444; color: white; padding: 6px 12px; border-radius: 0.5rem; font-weight: 700; font-size: 0.8rem; box-shadow: 0 4px 15px rgba(239,68,68,0.3); border: 1px solid rgba(255,255,255,0.2); letter-spacing: 0.5px; }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; border: 1px solid transparent; }
+    .pill-stock-in { background: #0B652D; color: #F5FFF9; border-color: #bbf7d0; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.1); }
+    .pill-stock-out { background: #fef2f2; color: #ef4444; border-color: #fecaca; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
+    .pill-stock-soon { background: #fffbeb; color: #d97706; border-color: #fde68a; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.1); }
+
+    .btn-icon-round { background: #f8fafc; border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b; box-shadow: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    @media (hover: hover) { .btn-icon-round:hover { color: #0f172a; background: #f1f5f9; } .btn-fav:hover { color: #ef4444; } }
+    .btn-icon-round:active { transform: scale(0.9); }
+    .btn-fav.active { color: #ef4444; }
+    .btn-fav.active svg { fill: currentColor; }
+
+    .main-gallery-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; gap: 1px; }
+    .main-gallery-track::-webkit-scrollbar { display: none; }
+    
+    .main-gallery-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden; background: transparent; padding: 0px; }
+    .main-gallery-slide img { max-width: 100%; max-height: 100%; object-fit: contain; mix-blend-mode: multiply; cursor: zoom-in; user-select: none; -webkit-user-drag: none; transition: transform 0.3s ease; }
+    .main-gallery-slide img:active { transform: scale(0.97); transition: transform 0.15s ease-out !important; }
+    lite-youtube { width: 100%; height: 100%; max-width: 100%; border-radius: inherit; }
+
+    .video-thumb-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; backdrop-filter: blur(2px); transition: all 0.3s; pointer-events: none; }
+    
+    .thumb-strip { display: flex; gap: 0.6rem; overflow-x: auto; width: 100%; padding: 0.1rem; -ms-overflow-style: none; scrollbar-width: none; }
+    .thumb-strip::-webkit-scrollbar { display: none; }
+    
+    .thumb-card { width: 72px; height: 72px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; padding: 4px; background: transparent; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; }
+    .thumb-card.active { border-color: #2563eb; }
+    .thumb-card img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; mix-blend-mode: multiply; pointer-events: none; }
+    .thumb-card:active { transform: scale(0.94); }
+
+    .product-info-section { display: flex; flex-direction: column; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.2s; }
+    
+    .sticky-buy-box { position: sticky; top: 1.5rem; transition: box-shadow 0.3s; display: flex; flex-direction: column; gap: 1rem; }
+    
+    .modern-price-container {
+        display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center;
+        background: #eff6ff; padding: 1rem 1.4rem; border-radius: 16px; border: 2px dashed #bfdbfe; 
+        min-width: 120px; flex-shrink: 0; gap: 0.4rem; 
+    }
+    .modern-price-current { font-size: 1.8rem; font-weight: 700; color: #1d4ed8; line-height: 1; letter-spacing: -1px; display: flex; align-items: center; }
+    .modern-price-current .gel { font-size: inherit; font-weight: 700; margin-left: 2px; }
+    .modern-price-old { font-size: 1.1rem; font-weight: 700; margin-top: 0; display: flex; align-items: center; line-height: 1; letter-spacing: -1px; }
+
+    .designer-strike { text-decoration: line-through !important; text-decoration-color: #ef4444 !important; text-decoration-thickness: 3px !important; color: #94a3b8; }
+
+    .free-delivery-badge-desktop { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 700; color: #0A5733; background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 8px; margin-top: 4px; }
+
+    .btn-alta-order { width: 100%; background: #2563eb; color: white; border: none; padding: 1rem; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 10px; outline: none; user-select: none; }
+    @media (hover: hover) { .btn-alta-order:hover { background: #1d4ed8; box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); } }
+    .btn-alta-order:active { transform: scale(0.96) !important; box-shadow: none; }
+    
+    .btn-out-of-stock { background: #f1f5f9; color: #64748b; border: none; font-size: 0.95rem; }
+    @media (hover: hover) { .btn-out-of-stock:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; } }
+
     .input-wrapper {
         display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
         background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
-        transition: all 0.2s; overflow: hidden; width: 100%; box-sizing: border-box;
+        transition: all 0.2s; overflow: hidden;
     }
     .input-wrapper:focus-within { background: #ffffff; border-color: #2563eb; }
     .input-wrapper.error-border { border-color: #ef4444 !important; }
+    
     .input-wrapper svg { flex-shrink: 0; color: #94a3b8; width: 20px; height: 20px; }
     .input-wrapper .prefix { flex-shrink: 0; font-weight: 700; color: #64748b; font-size: 15px; }
     .clean-input {
@@ -192,6 +198,7 @@
         font-size: 15px; font-weight: 600; color: #0f172a; padding: 0; height: 100%;
     }
     .clean-input::placeholder { color: #94a3b8; font-weight: 500; }
+    
     .clean-input:-webkit-autofill, .clean-input:-webkit-autofill:hover, 
     .clean-input:-webkit-autofill:focus, .clean-input:-webkit-autofill:active {
         -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
@@ -202,966 +209,1134 @@
         -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
     }
 
-    /* МОДАЛКИ СПИСКОВ (Избранное, Заказы) */
-    .modal-list-container { max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding-bottom: 10px; }
-    .list-item-card {
-        display: flex; gap: 12px; background: transparent; border: none;
-        border-radius: 0; border-bottom: 1px solid #e2e8f0; padding: 16px 8px; position: relative; align-items: center; transition: all 0.2s;
-    }
-    .list-item-card:last-child { border-bottom: none; }
-    .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: transparent; border: none; flex-shrink: 0; }
-    .list-item-info { flex: 1; min-width: 0; }
-    .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
-    .list-item-price { font-weight: 700; color: #2563eb; font-size: 1.1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
-    .list-item-old-price { font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; text-decoration-color: #ef4444; font-weight: 700; }
-    .list-item-del-btn { background: transparent; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; flex-shrink: 0; }
-    .list-item-del-btn:active { transform: scale(0.85); background: #fee2e2; }
-    .list-item-col { flex-direction: column; align-items: flex-start; }
+    .payment-info-bottom { display: flex; justify-content: center; margin-bottom: 10px; color: #484B61; font-size: 0.9rem; font-weight: 500; text-align: center; border: 1px solid #e2e8f0; border-radius: 9px; background: #fbfdff; padding: 10px; }
 
-    /* МОДАЛКА КАТАЛОГА */
-    #navModal .modal-content { height: 70vh; min-height: 400px; max-height: 600px; display: flex; flex-direction: column; padding-bottom: 1.5rem; }
-    @media (min-width: 1024px) { #navModal .modal-content { max-width: 900px; } }
-    #navModal h3 { flex-shrink: 0; margin-bottom: 1rem; }
-    #dynamicNavAccordion {
-        flex: 1; overflow-y: auto; padding-right: 5px; padding-top: 1rem; padding-bottom: 1rem; margin-top: -1rem; margin-bottom: -1rem;
-        -ms-overflow-style: none; scrollbar-width: none;
-        -webkit-mask-image: linear-gradient(to bottom, transparent, black 1rem, black calc(100% - 1rem), transparent);
-        mask-image: linear-gradient(to bottom, transparent, black 1rem, black calc(100% - 1rem), transparent);
-    }
-    #dynamicNavAccordion::-webkit-scrollbar { display: none; }
-    .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
-    @media (min-width: 1024px) { .nav-accordion { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; } }
-    .nav-acc-item { flex-shrink: 0; background: transparent; border: none; border-radius: 12px; overflow: hidden; transition: all 0.3s; }
-    .nav-acc-item.active { background: #f8fafc; }
-    .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; transition: background 0.3s, transform 0.2s; }
-    .nav-acc-header:active { transform: scale(0.97); }
-    .nav-acc-header-left { display: flex; align-items: center; gap: 12px; }
-    .nav-acc-icon { width: 40px; height: 40px; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; transition: 0.3s; }
-    .nav-acc-item.active .nav-acc-icon { color: #2563eb; }
-    .nav-acc-icon svg { width: 20px; height: 20px; }
-    .acc-chevron { width: 20px; height: 20px; color: #94a3b8; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .nav-acc-item.active .acc-chevron { transform: rotate(180deg); color: #2563eb; }
-    .nav-acc-content { display: none; padding: 0 1.2rem 1.2rem 1.2rem; }
-    .nav-acc-item.active .nav-acc-content { display: block; animation: fadeIn 0.4s ease; }
-    .nav-sub-list { display: flex; flex-wrap: wrap; gap: 0.5rem; border-top: 1px dashed #e2e8f0; padding-top: 1rem; margin-top: 0.2rem; }
-    .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s, transform 0.2s; user-select: none; }
-    .nav-sub-link:active { transform: scale(0.97); }
-    @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; } }
+    #inlineOrderForm { order: 1; width: 100%; }
 
-    /* ПРЕМИАЛЬНЫЙ ФУТЕР */
-    .premium-footer { background: transparent; border-top: 1px solid #e2e8f0; padding: 3rem 1.5rem 1.5rem; margin-top: auto; }
-    .premium-footer .footer-content { max-width: 1280px; margin: 0 auto; }
-    .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2.5rem; margin-bottom: 3rem; }
-    .footer-col h3 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 1.25rem; letter-spacing: -0.5px; text-align: center; }
+    .content-section-box { margin-top: 1.5rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s; }
+    .section-title { font-size: 1.4rem; margin-bottom: 1.25rem; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
     
-    @media (min-width: 768px) {
-        .footer-col { padding: 0 1.5rem; border-right: 1px solid #e2e8f0; }
-        .footer-col:first-child { padding-left: 0; }
-        .footer-col:last-child { border-right: none; padding-right: 0; }
-    }
+    .expandable-block { position: relative; max-height: 280px; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+    .expandable-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background-image: linear-gradient(rgba(245, 247, 250, 0), rgb(245, 247, 250)); pointer-events: none; transition: opacity 0.3s; }
+    .expandable-block.expanded .expandable-overlay { opacity: 0; }
     
-    .footer-btn {
-        position: relative; overflow: hidden;
-        display: flex; align-items: stretch; text-decoration: none;
-        background: #ffffff; border: none; border-radius: 12px;
-        margin-bottom: 0.8rem; cursor: pointer; transition: all 0.2s; outline: none;
-        width: 100%; min-height: 48px; padding: 0;
-        border: 1px solid #cfdbe6;
-    }
-    @media (hover: hover) { .footer-btn:hover { background: #f8fafc; } }
-    .footer-btn:active { transform: scale(0.96); }
-    
-    .footer-btn-icon {
-        position: absolute; left: 0; top: 0; bottom: 0; width: 48px;
-        background: transparent; display: flex; align-items: center; justify-content: center; z-index: 1;
-    }
-    .footer-btn-icon svg { width: 20px; height: 20px; color: #2563eb; }
-    .footer-btn-text {
-        flex: 1; display: flex; align-items: center; justify-content: center;
-        padding: 0.8rem 48px;
-        font-size: 0.95rem; font-weight: 700; color: #475569; text-align: center; z-index: 2;
-    }
-    
-    .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px dashed #e2e8f0; color: #94a3b8; font-size: 0.85rem; font-weight: 600; }
+    .btn-expand { background: transparent; border: none; color: #2563eb; font-weight: 700; font-size: 0.95rem; cursor: pointer; margin-bottom: 0.5rem; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    @media (hover: hover) { .btn-expand:hover { color: #1d4ed8; } }
+    .btn-expand:active { transform: scale(0.96); }
 
-    /* МОБИЛЬНАЯ НИЖНЯЯ НАВИГАЦИЯ */
-    .mobile-bottom-nav {
-        display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
-        background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        border-top: 1px solid rgba(226, 232, 240, 0.8); z-index: 100; justify-content: space-around; align-items: center;
-        padding-bottom: env(safe-area-inset-bottom);
+    .spec-list-container { display: flex; flex-direction: column; gap: 0.4rem; }
+    .spec-item-row { display: flex; padding: 0.6rem 0; background: transparent; transition: background 0.3s; align-items: center; }
+    .spec-name-label { flex: 1; color: #484B61; font-size: 0.9rem; font-weight: 600; }
+    .spec-value-text { flex: 1; color: #1e293b; font-weight: 700; font-size: 0.9rem; text-align: right; }
+    .desc-text { line-height: 1.7; color: #475569; font-size: 1rem; font-weight: 500; white-space: pre-line; margin-top: 1rem; }
+
+    .video-review-container { margin-top: 2rem; }
+    .video-iframe-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .video-iframe-wrapper lite-youtube { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+    .similar-products-section { margin-top: 2rem; opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.4s; }
+    .title-highlight { position: relative; display: inline-block; z-index: 1; margin-bottom: 1.25rem; }
+    .similar-title { display: inline-flex; align-items: center; gap: 0px; font-size: 1.4rem; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; }
+    .similar-title .cat-icon-svg { color: #2563eb; stroke: #2563eb; }
+    .similar-title .cat-icon-svg path, .similar-title .cat-icon-svg rect, .similar-title .cat-icon-svg circle, .similar-title .cat-icon-svg polygon, .similar-title .cat-icon-svg polyline { stroke: #2563eb; }
+
+    .similar-wrapper { position: relative; width: 100%; }
+    
+    .similar-scroll-container { 
+        display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; 
+        -ms-overflow-style: none; scrollbar-width: none; align-items: stretch; width: 100%; padding: 0.5rem 0; box-sizing: border-box;
     }
-    .bottom-nav-item {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 20%; outline: none; transition: transform 0.2s;
-    }
-    .bottom-nav-item:active .bottom-nav-icon-wrap { transform: scale(0.85); }
-    .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; transition: transform 0.2s; }
-    .bottom-nav-badge {
-        position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
-        font-size: 9px; font-weight: 700; height: 16px; min-width: 16px; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center; padding: 0 4px;
+    .similar-scroll-container::-webkit-scrollbar { display: none; }
+
+    .similar-scroll-container .product-card {
+        flex: 0 0 calc(25% - 12px); scroll-snap-align: start; min-width: 0;
+        background: transparent; border-radius: 0; overflow: hidden; position: relative;
+        box-shadow: none; border: none; height: auto; display: flex; flex-direction: column;
     }
     
-    /* АДАПТИВ */
+    .sim-arrow { 
+        position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
+        display: flex; width: 44px; height: 44px; background: #f8fafc; border: none; border-radius: 50%; box-shadow: none; cursor: pointer; align-items: center; justify-content: center; color: #0f172a; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; 
+    }
+    @media (hover: hover) { .sim-arrow:hover { background: #f1f5f9; color: #2563eb; } }
+    .sim-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .sim-arrow.left { left: -22px; }
+    .sim-arrow.right { right: -22px; }
+
+    .product-card .btn-fav-card { position: absolute; top: 10px; right: 10px; z-index: 10; background: transparent; border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; box-shadow: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; }
+    .product-card .btn-fav-card.active { color: #ef4444; }
+    .product-card .btn-fav-card.active svg { fill: currentColor; }
+    .product-card .btn-fav-card:active { transform: scale(0.85); }
+
+    .product-image-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1; overflow: hidden; background: transparent; border-radius: 20px; border: none; }
+    
+    .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; opacity: 0; transition: all 0.2s; z-index: 20; box-shadow: none; outline: none; }
+    @media (hover: hover) { .product-card:hover .card-nav-arrow { opacity: 1; } .card-nav-arrow:hover { color: #2563eb; } }
+    .card-nav-arrow:active { transform: translateY(-50%) scale(0.85); }
+    .card-nav-arrow.prev { left: 8px; }
+    .card-nav-arrow.next { right: 8px; }
+
+    .product-images-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none; }
+    .product-images-track::-webkit-scrollbar { display: none; }
+    .product-slide { flex: 0 0 100%; width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
+    .product-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.15s ease-out; }
+    
+    .carousel-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 5px; z-index: 10; pointer-events: none; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(15, 23, 42, 0.25); backdrop-filter: blur(2px); transition: all 0.3s ease; }
+    .dot.active { background: #2563eb; transform: scale(1.3); }
+
+    .product-info { padding: 1rem 0; display: flex; flex-direction: column; flex: 1; }
+    .product-name-box { background: transparent; border: none; padding: 0; height: 2.6rem; display: flex; align-items: flex-start; margin-bottom: 0.6rem; transition: opacity 0.2s ease; cursor: pointer; }
+    @media (hover: hover) { .product-name-box:hover { opacity: 0.8; } }
+    .product-name { font-size: 1rem; font-weight: 700; color: #0f172a; line-height: 1.3; letter-spacing: -0.2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+    .discount-badge { position: absolute; top: 10px; left: 10px; background: #ef4444; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; z-index: 5; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25); pointer-events: none; }
+    
+    .product-price-container { display: flex; flex-direction: row; align-items: flex-end; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; min-height: 2.2rem; }
+    .product-price { font-size: 1.5rem; font-weight: 700; color: #2563eb; letter-spacing: -0.5px; line-height: 1; }
+    .old-price { font-size: 0.85rem; line-height: 1.3; margin-bottom: 2px; }
+
+    .btn-order { background: #2563eb; color: white; border: none; padding: 0.8rem; border-radius: 0.6rem; cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; gap: 6px; }
+    @media (hover: hover) { .btn-order:hover { background: #1d4ed8; box-shadow: 0 6px 12px rgba(37,99,235,0.25); } }
+    .btn-order:active { transform: scale(0.96); }
+
+    /* Островок для мобильных */
+    .mobile-bottom-bar { 
+        display: none; position: fixed; bottom: 1rem; left: 0.4rem; right: 0.4rem; background: rgba(255,255,255,0.95); 
+        backdrop-filter: blur(10px); border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.6rem; z-index: 999; 
+        align-items: center; gap: 8px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); 
+    }
+    .mobile-bottom-img { width: 40px; height: 40px; border-radius: 0.5rem; object-fit: contain; background: transparent; border: none; }
+    .mobile-bottom-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+    .mobile-bottom-price-row { display: flex; align-items: baseline; gap: 6px; }
+    .mobile-bottom-price { font-weight: 700; color: #2563eb; font-size: 1.1rem; line-height: 1; }
+    .mobile-bottom-old-price { font-size: 0.8rem; }
+    .mobile-bottom-actions { display: flex; gap: 6px; align-items: center; }
+    .mobile-bottom-btn { width: 36px; height: 36px; border-radius: 0.6rem; background: transparent; color: #64748b; display: flex; align-items: center; justify-content: center; border: none; outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .mobile-bottom-btn:active { transform: scale(0.9); }
+    .mobile-bottom-btn.active { color: #ef4444; }
+    .mobile-bottom-btn.active svg { fill: currentColor; }
+    .mobile-bottom-buy { background: #2563eb; color: white; border: none; border-radius: 0.6rem; padding: 0 1rem; height: 36px; font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+    .mobile-bottom-buy:active { transform: scale(0.94); }
+
+    /* Полноэкранная модалка галереи */
+    .modal-fullscreen { 
+        display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+        background: rgba(255, 255, 255, 0.98); z-index: 100000; flex-direction: column; 
+        opacity: 0; transition: opacity 0.3s ease; 
+    }
+    .modal-fullscreen.active { opacity: 1; display: flex; }
+    .modal-gallery-area { flex: 1; position: relative; display: flex; overflow: hidden; align-items: center; justify-content: center; width: 100%; }
+    .modal-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+    .modal-track::-webkit-scrollbar { display: none; }
+    .modal-slide { flex: 0 0 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: start; padding: 2rem; box-sizing: border-box; position: relative; }
+    .modal-img-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; max-height: 85vh; }
+    .modal-img-wrapper img, .modal-img-wrapper lite-youtube { width: 100%; height: 100%; max-height: 85vh; border-radius: 0.75rem; border: none; background: transparent; }
+    .modal-img-wrapper img { object-fit: contain; pointer-events: auto; user-select: none; }
+    
+    .modal-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: transparent; border: none; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #0f172a; transition: all 0.2s; z-index: 10; box-shadow: none; outline: none; }
+    @media (hover: hover) { .modal-nav-arrow:hover { color: #2563eb; } }
+    .modal-nav-arrow:active { transform: translateY(-50%) scale(0.9); }
+    .modal-nav-arrow.left { left: 20px; } .modal-nav-arrow.right { right: 20px; }
+    
+    .modal-thumb-area { padding: 1.5rem 1rem; background: #fff; text-align: center; box-sizing: border-box; width: 100%; }
+    .modal-thumb-strip { display: inline-flex; gap: 12px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 4px; text-align: left; }
+    .modal-thumb-strip::-webkit-scrollbar { display: none; }
+    .modal-thumb { width: 60px; height: 60px; border: 2px solid transparent; border-radius: 10px; cursor: pointer; opacity: 0.6; transition: all 0.2s; flex-shrink: 0; padding: 4px; box-sizing: border-box; background: #fff; }
+    .modal-thumb.active { border-color: #2563eb; opacity: 1; transform: scale(1.05); }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; pointer-events: none; }
+
+    @media (max-width: 1024px) {
+        .product-title-h1 { font-size: 1.6rem; margin-top: 0; }
+        .product-grid { grid-template-columns: 1fr; gap: 1rem; }
+        
+        /* Мобильный вид SKU и бейджа (над названием) */
+        .sku-desktop { display: none; }
+        .mobile-top-meta { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding-top: 10px; margin-top: 10px; border-top: 1px solid #e2e8f0; margin-bottom: 12px; 
+        }
+        .mobile-sku-text { font-size: 0.85rem; font-weight: 400; color: #484B61; }
+        
+        .gallery-badges, .gallery-actions { display: none !important; }
+        #thumbStrip { display: none !important; }
+        
+        .desktop-only-slide { display: none !important; }
+        
+        .main-gallery-dots {
+            display: flex; position: absolute; bottom: 12px; right: 12px; gap: 6px; z-index: 20;
+            background: rgba(255,255,255,0.75); backdrop-filter: blur(4px); padding: 5px 8px; border-radius: 12px;
+        }
+        .main-gallery-dots .dot { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; transition: all 0.3s; }
+        .main-gallery-dots .dot.active { background: #2563eb; transform: scale(1.4); }
+
+        .similar-scroll-container { padding: 0.5rem 1.5rem; margin: 0 -1.5rem; width: calc(100% + 3rem); scroll-padding: 1.5rem; gap: 12px; }
+        .similar-scroll-container .product-card { flex: 0 0 calc(33.333% - 8px); }
+        .sim-arrow, .carousel-dots, .card-nav-arrow { display: none !important; }
+        .similar-scroll-container .product-images-track { overflow-x: hidden !important; scroll-snap-type: none !important; }
+
+        .top-header-group { margin-bottom: 0rem; }
+        .content-section-box { margin-top: 1rem; }
+        .similar-products-section { margin-top: 1.5rem; }
+    }
+    
     @media (max-width: 640px) {
-        .header { display: none !important; } 
-        .mobile-bottom-nav { display: flex; }
-        body { padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } 
-        .mobile-bottom-bar { bottom: calc(75px + env(safe-area-inset-bottom)) !important; z-index: 90 !important; } 
+        .breadcrumb-text-home { display: none !important; }
+        
+        .spec-item-row { flex-direction: column; align-items: flex-start; gap: 0.2rem; padding: 0.8rem 0; }
+        .spec-value-text { text-align: left; font-size: 0.85rem; }
+        .mobile-bottom-bar { display: flex; } 
+        .product-title-h1 { font-size: 1.3rem; }
+        
+        .gallery-section { padding: 0; }
+        .main-gallery-viewport { margin-bottom: 0.5rem; border-radius: 8px; }
+
+        .breadcrumbs li a .cat-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 16px; height: 16px; margin-right: 4px; vertical-align: middle; overflow: hidden; }
+        .breadcrumbs li a .cat-icon svg { display: block; width: 16px; height: 16px; max-width: 16px; max-height: 16px; }
+        .breadcrumbs li a .cat-text { display: none; }
+        .breadcrumbs li a .cat-icon { margin-right: 0; }
+        
+        .similar-scroll-container .product-card { flex: 0 0 calc(50% - 6px); }
+        .similar-scroll-container .product-info { padding: 0.6rem 0; }
+        .similar-scroll-container .product-name-box { height: 2.3rem; margin-bottom: 0.4rem; }
+        .similar-scroll-container .product-name { font-size: 0.8rem; line-height: 1.3; }
+        .similar-scroll-container .product-price-container { margin-bottom: 0.6rem; padding: 0; min-height: auto; }
+        .similar-scroll-container .product-price { font-size: 1.1rem; letter-spacing: -0.5px; }
+        .similar-scroll-container .old-price { font-size: 0.75rem; margin-bottom: 2px; }
+        .similar-scroll-container .btn-order { padding: 0.5rem; font-size: 0.8rem; border-radius: 0.5rem; gap: 4px; }
+        .similar-scroll-container .btn-order svg { width: 14px; height: 14px; }
+        .product-card .btn-fav-card { width: 26px; height: 26px; top: 6px; right: 6px; }
+        
+        .modal-nav-arrow { display: none !important; }
+        .modal-slide { padding: 1rem; }
+        .modern-price-container.desktop-price-inline { display: none !important; }
     }
 
-    /* УМНЫЙ ТОСТ (УВЕДОМЛЕНИЯ ВВЕРХУ) */
-    .global-toast-wrapper {
-        position: fixed; top: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100000;
-        pointer-events: none; padding: 0 1.5rem;
-    }
-    .global-toast {
-        background: #1e293b; color: white; padding: 12px 24px; border-radius: 12px;
-        font-size: 0.95rem; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        display: inline-flex; align-items: center; justify-content: center; text-align: center; line-height: 1.4;
-    }
-    .global-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
-
-    /* ПРОЧИЕ СТИЛИ (Таймлайн, Трекинг) */
-    .order-confirm-icon-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
-    .order-confirm-circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; animation: statusPulse 2s infinite; }
-    .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; z-index: 2; }
-    .order-confirm-check-svg { width: 30px; height: 30px; color: white; stroke-width: 4; }
-    .order-confirm-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px dashed #f1f5f9; }
-    .order-confirm-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .order-confirm-label { color: #64748b; font-weight: 600; font-size: 0.9rem; }
-    .order-confirm-value { font-weight: 700; color: #0f172a; font-size: 0.95rem; text-align: right; max-width: 60%; }
-    .order-confirm-price { font-weight: 700; font-size: 1.4rem; color: #2563eb; }
-
-    .status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.85rem; font-weight: 700; line-height: 1; }
-    .status-badge-delivered { background: rgba(74, 222, 128, 0.15); color: #4ade80; }
-    .status-badge-processing { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
-    .status-badge-shipping { background: rgba(250, 204, 21, 0.15); color: #facc15; }
-    .status-badge-unknown { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
-
-    .timeline-vertical { display: flex; flex-direction: column; width: 100%; margin-top: 1.5rem; }
-    .timeline-step-v { display: flex; align-items: stretch; min-height: 50px; }
-    .timeline-indicator { display: flex; flex-direction: column; align-items: center; margin-right: 1rem; width: 14px; }
-    .timeline-dot-v { width: 12px; height: 12px; border-radius: 50%; border: 2px solid transparent; background: white; z-index: 1; flex-shrink: 0; }
-    .timeline-line { width: 2px; background: #e2e8f0; flex-grow: 1; margin-top: 4px; margin-bottom: 4px; }
-    .timeline-step-v:last-child .timeline-line { display: none; }
-    .timeline-content-v { padding-bottom: 1.5rem; display: flex; flex-direction: column; justify-content: flex-start; margin-top: -3px; }
-    .timeline-date-v { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
-    .timeline-text-v { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
-
-    .tracking-error-msg { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease; }
-    
-    .timeline-dot-v { background: #e2e8f0; }
-    .timeline-step-v.past .timeline-dot-v { background: #94a3b8; border-color: transparent; }
-    .timeline-step-v.past .timeline-line { background: #94a3b8; }
-    .timeline-step-v.current .timeline-dot-v { background: #2563eb; border-color: transparent; }
-    .timeline-step-v.current .timeline-text-v { color: #0f172a; }
-    .timeline-step-v.current .timeline-date-v { color: #2563eb; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-    .spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #ffffff; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    @keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+    .specs-desc-grid { display: flex; flex-direction: column; gap: 2rem; }
+    @media (min-width: 1024px) { .specs-desc-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; align-items: start; } }
+    .product-details-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+    .description-container { border-top: 1px solid #f1f5f9; padding-top: 1.5rem; }
+    @media (min-width: 1024px) { .product-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; } .description-container { border-top: none; padding-top: 0; } }
 </style>
-</head>
-<body>
-    <div id="topProgressBar"></div>
-    <script>
-        const np = document.getElementById('topProgressBar');
-        np.style.transform = 'scaleX(0.3)';
-        window.addEventListener('load', () => { 
-            np.style.transform = 'scaleX(1)'; 
-            setTimeout(() => np.style.opacity = '0', 400); 
-        });
-    </script>
 
-    <!-- Meta Pixel Code -->
-<script>
-  // Откладываем загрузку Meta Pixel на 3 секунды или после загрузки страницы
-  function initMetaPixel() {
-    !function(f,b,e,v,n,t,s)
-    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-    n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s)}(window, document,'script',
-    'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('set', 'autoConfig', 'false');
-    fbq('init', '1499689204986172');
-    fbq('track', 'PageView');
-  }
+<div class="product-view-container">
 
-  // Используем requestIdleCallback для наименьшего влияния на загрузку,
-  // с фолбэком на window.onload через 2 секунды
-  if (window.requestIdleCallback) {
-    requestIdleCallback(initMetaPixel, { timeout: 3000 });
-  } else {
-    setTimeout(initMetaPixel, 2000);
-  }
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
+    <div class="top-header-group">
+        <div class="breadcrumbs-container">
+            <ul class="breadcrumbs">
+                <li>
+                    <a href="/" draggable="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span class="breadcrumb-text-home">მთავარი</span>
+                    </a>
+                </li>
+                
+                {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
+                    <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
+                    <li class="truncate-node">
+                        <a href="/?category={{ first_cat }}" draggable="false">
+                            {% if cat_data and cat_data.icon %}
+                              {{ cat_data.icon | replace: '<svg', '<svg width="16" height="16"' }}
+                            {% endif %}
+                            <span class="cat-text">{{ cat_name | strip }}</span>
+                        </a>
+                    </li>
+                    
+                    {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
+                    <span class="separator"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span>
+                    <li class="truncate-node">
+                        <a href="/?category={{ first_cat }}&sub={{ first_sub }}" draggable="false">{{ sub_name | strip }}</a>
+                    </li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+            <div class="sku-desktop">კოდი: <b>{{ page.sku }}</b></div>
+        </div>
+        
+        <!-- Новый блок SKU и Статуса для мобильных -->
+        <div class="mobile-top-meta">
+            <div class="mobile-sku-text">SKU: {{ page.sku }}</div>
+            <div id="mobileDynamicStockBadgeTag"></div>
+        </div>
+    </div>
+
+    <h1 class="product-title-h1">{{ page.name }}</h1>
+
+    <div class="product-grid">
+        <div class="gallery-section shared-box-style">
+            
+            <div class="main-gallery-viewport">
+                <!-- Бейджи статуса и скидки (PC Only) -->
+                <div class="gallery-badges">
+                    <div id="dynamicStockBadgeTag"></div>
+                    <div class="sale-badge-red" id="saleBadge" style="display: none;"></div>
+                </div>
+
+                <!-- Избранное и Поделиться (PC Only) -->
+                <div class="gallery-actions">
+                    <button class="btn-icon-round btn-fav" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <button class="btn-icon-round" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
+                </div>
+
+                <!-- Точки для мобильной версии -->
+                <div class="main-gallery-dots" id="mainGalleryDots"></div>
+
+                <div class="main-gallery-track" id="mainGalleryTrack">
+                    {% assign photo_idx = 0 %}
+{% for img in page.images %}
+    {% assign is_vid = false %}
+    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+        {% assign is_vid = true %}
+        {% if img contains 'v=' %}
+            {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
+        {% else %}
+            {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+        {% endif %}
+    {% endif %}
     
-    <!-- ГЛОБАЛЬНЫЕ СКРИПТЫ ДО ЗАГРУЗКИ КОНТЕНТА -->
-    <script>
-        window.openAppModal = function(id) {
-            try {
-                const m = document.getElementById(id); if(!m) return;
-                document.body.classList.add('modal-open'); 
-                m.style.display = 'flex'; m.offsetHeight; m.classList.add('active');
-                if(id === 'searchModalMobile') { setTimeout(() => document.getElementById('mobileSearchInput').focus(), 100); }
-            } catch(e) { console.error(e); }
-        };
+    <div class="main-gallery-slide {% if is_vid %}desktop-only-slide{% endif %}">
+        {% if is_vid %}
+            <lite-youtube videoid="{{ vid_id }}" playlabel="Play Video"></lite-youtube>
+        {% else %}
+            <img src="{{ img }}" alt="{{ page.name }}" width="800" height="800"
+     sizes="(max-width: 768px) 100vw, 800px"
+     {% if photo_idx == 0 %}
+         fetchpriority="high"
+     {% else %}
+         loading="lazy"
+     {% endif %}
+                 onerror="this.src='/img/no-image.png'" draggable="false" 
+                 onclick="openImageZoom(this, {{ photo_idx }})" 
+                 onmousemove="zoomImagePC(event, this)" 
+                 onmouseleave="resetZoomPC(this)">
+            {% assign photo_idx = photo_idx | plus: 1 %}
+        {% endif %}
+    </div>
+{% endfor %}
+                </div>
+            </div>
 
-        window.closeAppModal = function(id) {
-            try {
-                const m = typeof id === 'string' ? document.getElementById(id) : id; if(!m) return;
-                m.classList.remove('active');
-                if (m.id === 'trackingModal') { const url = new URL(window.location); url.searchParams.delete('orderstatus'); history.pushState(null, '', url.pathname + url.search); }
-                if (!document.querySelector('.modal.active')) { document.body.classList.remove('modal-open'); }
-                setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
-            } catch(e) { console.error(e); }
-        };
+            {% if page.images.size > 1 %}
+            <div class="thumb-strip" id="thumbStrip">
+                {% for img in page.images %}
+                    {% assign is_video = false %}
+                    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                        {% assign is_video = true %}
+                        {% if img contains 'v=' %}
+                            {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
+                        {% else %}
+                            {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                        {% endif %}
+                    {% endif %}
 
-        window.globalToastTimeout = null;
-        window.showToast = function(msg, actionData = null) {
-            try {
-                const t = document.getElementById('globalToast'); if(!t) return;
-                t.innerHTML = msg;
-                if (actionData) {
-                    t.style.cursor = 'pointer';
-                    t.innerHTML += ' <svg width="18" height="18" style="margin-left:8px; opacity:0.9; flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>';
-                    t.onclick = function() {
-                        if(actionData === 'fav') { window.openFavorites(); } 
-                        else if (actionData && actionData.type === 'link') { 
-                            document.getElementById('copiedLinkText').innerText = actionData.url;
-                            window.openAppModal('linkModal');
-                        }
-                        t.classList.remove('show');
-                    };
-                } else {
-                    t.style.cursor = 'default';
-                    t.onclick = function() { t.classList.remove('show'); };
-                }
-                t.classList.add('show');
-                clearTimeout(window.globalToastTimeout);
-                window.globalToastTimeout = setTimeout(() => { t.classList.remove('show'); }, 4000);
-            } catch(e) { console.error(e); }
-        }
+                <div class="thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                    {% if is_video %}
+                        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; border-radius: 6px; overflow: hidden;">
+                            <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" style="object-fit: cover; width: 100%; height: 100%; mix-blend-mode: normal;">
+                            <div class="video-thumb-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" onerror="this.src='/img/no-image.png'" draggable="false">
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
 
-        window.updateBadges = function() {
-            try {
-                let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-                let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
-                document.querySelectorAll('.fav-badge').forEach(el => { el.innerText = favs.length; el.style.display = favs.length > 0 ? 'flex' : 'none'; });
-                document.querySelectorAll('.orders-badge').forEach(el => { el.innerText = orders.length; el.style.display = orders.length > 0 ? 'flex' : 'none'; });
-            } catch(e) { console.error(e); }
-        };
-
-        window.openFavorites = function(e) { if(e) e.preventDefault(); renderFavorites(); window.openAppModal('favModal'); };
-        window.openOrders = function(e) { if(e) e.preventDefault(); renderOrders(); window.openAppModal('ordersModal'); };
-
-        function renderFavorites() {
-            const list = document.getElementById('favList');
-            let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-            const countEl = document.getElementById('favModalCount');
-            if(countEl) countEl.innerText = favs.length > 0 ? `(${favs.length})` : '';
-            if (favs.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:3rem 0; font-weight:600;"><svg style="width:64px;height:64px;margin-bottom:1rem;color:#cbd5e1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><br>რჩეულები ცარიელია</div>'; return; }
-            list.innerHTML = favs.map((f, i) => {
-                let oldPHtml = (f.oldPrice && f.oldPrice !== 'null' && !f.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${f.oldPrice}</span>` : '';
-                return `<div class="list-item-card" onclick="location.href='${f.link}'" style="cursor:pointer;">
-                    <img class="list-item-img" src="${f.img || '/img/no-image.png'}" alt="">
-                    <div class="list-item-info">
-                        <div class="list-item-title">${f.name}</div>
-                        <div class="list-item-price">${f.price} ${oldPHtml}</div>
+        <div class="product-info-section">
+            <div class="sticky-buy-box shared-box-style" id="stickyBuyBox">
+                <form id="inlineOrderForm" novalidate style="display: flex; flex-direction: column; gap: 0.8rem; width: 100%;">
+                    
+                    <div class="submit-row" style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.5rem;">
+                        <div class="modern-price-container desktop-price-inline">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="modern-price-current">
+                                    {{ page.price | replace: '₾', '' }}<span class="gel">₾</span>
+                                </div>
+                                {% if page.oldPrice != "" and page.oldPrice != nil %}
+                                <div class="modern-price-old designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+                                {% endif %}
+                            </div>
+                            <div class="free-delivery-badge-desktop">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
+                                უფასო მიწოდება
+                            </div>
+                        </div>
                     </div>
-                    <button class="list-item-del-btn" onclick="event.stopPropagation(); removeFav(${i})"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
-                </div>`;
-            }).join('');
-        }
+                    
+                    <div id="dynamicFormInputs" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+                    <div id="dynamicBuyButton" style="width: 100%; display: flex; flex-direction: column; gap: 0.8rem;"></div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        window.removeFav = function(index) {
-            let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-            let removedLink = favs[index] ? favs[index].link : null;
-            favs.splice(index, 1);
-            localStorage.setItem('myFavs', JSON.stringify(favs));
-            renderFavorites(); updateBadges();
-            if (removedLink) {
-                document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
-                    let link = ""; let card = btn.closest('.product-card');
-                    if(card) { let a = card.querySelector('a'); if(a) link = a.getAttribute('href'); } else link = window.location.pathname;
-                    if(link === removedLink) btn.classList.remove('active');
-                });
+    <div class="content-section-box shared-box-style">
+        <div class="product-details-grid">
+            <div class="specs-container">
+                <h2 class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    სპეციფიკაციები
+                </h2>
+                <div class="expandable-block" id="specsBlock">
+                    <div class="spec-list-container">
+                        {% for spec in page.specs %}
+                        <div class="spec-item-row">
+                            <div class="spec-name-label">{{ spec[0] }}</div>
+                            <div class="spec-value-text">{{ spec[1] }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="expandable-overlay"></div>
+                </div>
+                <button class="btn-expand" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
+            </div>
+
+            <div class="description-container">
+                <h3 class="section-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    პროდუქტის აღწერა
+                </h3>
+                <div class="desc-text">{{ page.longDescription }}</div>
+                
+                {% if yt_id != "" %}
+                <div class="video-review-container">
+                    <h3 class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                        ვიდეო განხილვა
+                    </h3>
+                    <div class="video-iframe-wrapper">
+                        <lite-youtube videoid="{{ yt_id }}" playlabel="Play Video"></lite-youtube>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if first_sub and first_sub != empty and sub_name and sub_name != empty %}
+    <div class="similar-products-section" id="subcatSection" style="display: none;">
+        <div class="title-highlight">
+            <h2 class="similar-title">
+                {{ sub_name | strip }}
+            </h2>
+        </div>
+        <div class="similar-wrapper">
+            <button class="sim-arrow left" id="subcatArrowLeft" aria-label="წინა" onclick="scrollCarousel('subcatScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="similar-scroll-container" id="subcatScroll"></div>
+            <button class="sim-arrow right" id="subcatArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('subcatScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if first_cat and first_cat != empty and cat_name and cat_name != empty %}
+    <div class="similar-products-section" id="catSection" style="display: none;">
+        <div class="title-highlight">
+            <h2 class="similar-title">
+                {% if cat_data and cat_data.icon %}
+                    {{ cat_data.icon | replace: '<svg', '<svg class="cat-icon-svg" width="24" height="24" style="margin-right: 8px;"' }}
+                {% else %}
+                    <svg class="cat-icon-svg" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                {% endif %}
+                {{ cat_name | strip }}
+            </h2>
+        </div>
+        <div class="similar-wrapper">
+            <button class="sim-arrow left" id="catArrowLeft" aria-label="წინა" onclick="scrollCarousel('catScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="similar-scroll-container" id="catScroll"></div>
+            <button class="sim-arrow right" id="catArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('catScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="similar-products-section" id="recentlyViewedSection" style="display: none;">
+        <div class="title-highlight">
+            <h2 class="similar-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                ბოლოს ნანახი
+            </h2>
+        </div>
+        <div class="similar-wrapper">
+            <button class="sim-arrow left" id="recentArrowLeft" aria-label="წინა" onclick="scrollCarousel('recentScroll', -1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg></button>
+            <div class="similar-scroll-container" id="recentScroll"></div>
+            <button class="sim-arrow right" id="recentArrowRight" aria-label="შემდეგი" onclick="scrollCarousel('recentScroll', 1)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg></button>
+        </div>
+    </div>
+</div>
+
+<div class="mobile-bottom-bar" id="mobileBottomBar">
+    <img src="{{ page.images[0] }}" class="mobile-bottom-img" alt="Product" width="80" height="80" loading="lazy">
+    <div class="mobile-bottom-info">
+        <div class="mobile-bottom-price-row">
+            <div class="mobile-bottom-price">{{ page.price | replace: '₾', '' }}₾</div>
+            {% if page.oldPrice != "" and page.oldPrice != nil %}
+            <div class="mobile-bottom-old-price designer-strike">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+            {% endif %}
+        </div>
+        <div style="font-size: 0.6rem; color: #0A5733; font-weight: 700; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+           უფასო მიწოდება
+        </div>
+    </div>
+    <div class="mobile-bottom-actions">
+        <button class="mobile-bottom-btn" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+        </button>
+        <button class="mobile-bottom-btn btn-fav" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </button>
+        <button class="mobile-bottom-buy" aria-label="ყიდვა" onclick="scrollToForm()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+            ყიდვა
+        </button>
+    </div>
+</div>
+
+<div class="modal-fullscreen" id="imageZoomModal" onclick="closeImageZoom(event)">
+    <div class="modal-gallery-area">
+        <button class="modal-nav-arrow left" aria-label="წინა" onclick="scrollModalGallery(-1, event)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        
+        <div class="modal-track" id="modalTrack">
+            {% for img in page.images %}
+                <div class="modal-slide">
+                    <div class="modal-img-wrapper">
+                        {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                            {% if img contains 'v=' %}
+                                {% assign modal_vid = img | split: 'v=' | last | split: '&' | first %}
+                            {% else %}
+                                {% assign modal_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                            {% endif %}
+                            <lite-youtube videoid="{{ modal_vid }}" playlabel="Play Video"></lite-youtube>
+                        {% else %}
+                            <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button class="modal-nav-arrow right" aria-label="შემდეგი" onclick="scrollModalGallery(1, event)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+    </div>
+
+    <div class="modal-thumb-area">
+        <div class="modal-thumb-strip" id="modalThumbStrip">
+            {% for img in page.images %}
+                <div class="modal-thumb" onclick="scrollToModalSlide({{ forloop.index0 }}, event)">
+                    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                        {% if img contains 'v=' %}
+                            {% assign t_vid = img | split: 'v=' | last | split: '&' | first %}
+                        {% else %}
+                            {% assign t_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                        {% endif %}
+                        <div style="position: relative; width: 100%; height: 100%;">
+                            <img src="https://img.youtube.com/vi/{{ t_vid }}/default.jpg" alt="Thumb Video" width="320" height="180" loading="lazy">
+                            <div style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); width: 20px; height: 20px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="{{ img }}" alt="Thumb" width="800" height="800" loading="lazy">
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    window.showInputError = function(el) {
+        if (el) {
+            el.classList.add('error-border');
+            const input = el.querySelector('input');
+            if (input) {
+                const removeError = () => {
+                    el.classList.remove('error-border');
+                    input.removeEventListener('input', removeError);
+                };
+                input.addEventListener('input', removeError);
             }
-        };
+        }
+    };
 
-        function renderOrders() {
-            const list = document.getElementById('ordersList');
-            let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
-            const countEl = document.getElementById('ordersModalCount');
-            if(countEl) countEl.innerText = orders.length > 0 ? `(${orders.length})` : '';
-            if (orders.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:3rem 0; font-weight:600;"><svg style="width:64px;height:64px;margin-bottom:1rem;color:#cbd5e1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg><br>შეკვეთები არ გაქვთ</div>'; return; }
-            list.innerHTML = orders.map(o => {
-                let d = new Date(o.date);
-                let dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-                let priceFixed = String(o.price).includes('₾') ? o.price : String(o.price).trim() + ' ₾';
-                let oldPHtml = (o.oldPrice && o.oldPrice !== 'null' && !o.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${o.oldPrice}</span>` : '';
-                return `<div class="list-item-card list-item-col">
-                    <div style="display:flex; justify-content:space-between; width:100%; padding-bottom:4px; margin-bottom:4px;">
-                        <span style="font-size:0.8rem; color:#64748b; font-weight:600;">${dateStr}</span>
-                        <span style="font-size:1rem; color:#2563eb; font-weight:700; display:flex; align-items:center;">${priceFixed} ${oldPHtml}</span>
-                    </div>
-                    <div class="list-item-title" style="white-space:normal; line-height:1.3; font-size: 0.9rem;">${o.product}</div>
-                    <div style="font-size:0.8rem; color:#64748b; margin-top:4px; font-weight:600;">${o.name} • ${o.phone}</div>
-                </div>`;
-            }).join('');
+    window.createProductCardHTML = function(p, prefix = 'sim') {
+        let imgs = p.images || (p.image ? [p.image] : []);
+        imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
+        if (imgs.length === 0) imgs.push('/img/no-image.png');
+        
+        const hasMultipleImages = imgs.length > 1;
+        let discountBadge = '';
+        
+        if (p.oldPrice) {
+            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
+            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                discountBadge = `<div class="discount-badge">-${percent}%</div>`;
+            }
         }
         
-        window.copyProductLink = function(btn) {
-            if(btn) { btn.style.transform = "scale(0.9)"; setTimeout(() => btn.style.transform = "", 200); }
-            let url = window.location.href;
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(url).then(() => window.showToast('ბმული დაკოპირდა', {type: 'link', url: url}));
-            } else {
-                let textArea = document.createElement("textarea"); textArea.value = url;
-                textArea.style.position = "fixed"; textArea.style.left = "-999999px";
-                document.body.appendChild(textArea); textArea.focus(); textArea.select();
-                try { document.execCommand('copy'); window.showToast('ბმული დაკოპირდა', {type: 'link', url: url}); } catch (err) {}
-                textArea.remove();
+        const productDataAttr = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        const uniqueId = `${prefix}-${p.id}`;
+        
+        let dotsHtml = '';
+        let arrowsHtml = '';
+        if (hasMultipleImages) {
+            dotsHtml = `<div class="carousel-dots" id="dots-${uniqueId}">
+                ${imgs.map((_, i) => `<div class="dot ${i === 0 ? 'active' : ''}"></div>`).join('')}
+            </div>`;
+            arrowsHtml = `
+                <button class="card-nav-arrow prev" aria-label="წინა" onclick="scrollCardGallery('${uniqueId}', -1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"></path></svg></button>
+                <button class="card-nav-arrow next" aria-label="შემდეგი" onclick="scrollCardGallery('${uniqueId}', 1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"></path></svg></button>
+            `;
+        }
+
+        return `
+        <div class="product-card">
+            <div class="product-image-wrapper">
+                ${discountBadge}
+                <button class="btn-fav-card" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+                ${arrowsHtml}
+                <div class="product-images-track" id="track-${uniqueId}">
+                    ${imgs.map(img => `
+                        <div class="product-slide">
+                            <a href="/product/${p.id}/" style="display:contents;" draggable="false">
+                                <img class="product-image" src="${img}" alt="${p.name}" width="800" height="800" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+                ${dotsHtml}
+            </div>
+            <div class="product-info">
+                <div class="product-name-box" onclick="location.href='/product/${p.id}/'">
+                    <div class="product-name">${p.name}</div>
+                </div>
+                <div class="product-price-container">
+                    <div class="product-price">${String(p.price).replace(/₾/g, '')}₾</div>
+                    ${p.oldPrice ? `<span class="old-price designer-strike">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
+                </div>
+                <button class="btn-order" aria-label="ყიდვა" onclick='window.openOrderForm(${productDataAttr})'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    ყიდვა
+                </button>
+            </div>
+        </div>`;
+    };
+
+    window.updateDots = function(uniqueId, trackEl) {
+        if (trackEl._isUpdating) return;
+        trackEl._isUpdating = true;
+        window.requestAnimationFrame(() => {
+            const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+            const dots = document.querySelectorAll(`#dots-${uniqueId} .dot`);
+            dots.forEach((d, i) => {
+                if (i === index) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+            trackEl._isUpdating = false;
+        });
+    };
+
+    window.scrollCardGallery = function(id, dir, e) {
+        e.preventDefault(); e.stopPropagation();
+        const track = document.getElementById('track-' + id);
+        if(!track) return;
+        const width = track.clientWidth;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        
+        if (dir === 1 && track.scrollLeft >= maxScroll - 5) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else if (dir === -1 && track.scrollLeft <= 5) {
+            track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+        } else {
+            track.scrollBy({ left: dir * width, behavior: 'smooth' });
+        }
+    }
+
+    window.scrollCarousel = function(containerId, direction) {
+        const scroll = document.getElementById(containerId);
+        if(!scroll) return;
+        const card = scroll.querySelector('.product-card');
+        const scrollAmount = card ? card.offsetWidth + 16 : 300;
+        
+        const maxScroll = scroll.scrollWidth - scroll.clientWidth;
+        if (direction === 1 && scroll.scrollLeft >= maxScroll - 10) {
+            scroll.scrollTo({ left: 0, behavior: 'smooth' });
+        } else if (direction === -1 && scroll.scrollLeft <= 10) {
+            scroll.scrollTo({ left: scroll.scrollWidth, behavior: 'smooth' });
+        } else {
+            scroll.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    function scrollToGallerySlide(index) {
+        const track = document.getElementById('mainGalleryTrack');
+        const width = track.clientWidth;
+        track.scrollTo({ left: index * width, behavior: 'smooth' });
+    }
+
+    let overlaysCache = null;
+    function syncThumbsWithScroll() {
+        const track = document.getElementById('mainGalleryTrack');
+        
+        if (window.innerWidth <= 1024) {
+            const index = Math.round(track.scrollLeft / track.clientWidth);
+            const dots = document.querySelectorAll('#mainGalleryDots .dot');
+            dots.forEach((d, i) => {
+                if (i === index) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+        }
+
+        const index = Math.round(track.scrollLeft / track.clientWidth);
+        const slides = track.querySelectorAll('.main-gallery-slide');
+        
+        if (slides[index]) {
+            const hasVideo = slides[index].querySelector('lite-youtube') !== null;
+            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions');
+            overlaysCache.forEach(el => {
+                el.style.opacity = hasVideo ? '0' : '1';
+                el.style.pointerEvents = hasVideo ? 'none' : 'auto';
+                el.style.transition = 'opacity 0.3s ease';
+            });
+        }
+
+        const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
+        if (thumbs.length > 0) {
+            thumbs.forEach(t => t.classList.remove('active'));
+            if(thumbs[index]) {
+                thumbs[index].classList.add('active');
+                const strip = document.getElementById('thumbStrip');
+                const t = thumbs[index];
+                strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
             }
         }
-    </script>
+    }
 
-    <!-- ХЕДЕР ТОЛЬКО ДЛЯ ПК -->
-    <header class="header">
-        <div class="header-content">
-            <div class="header-main-layout">
-                <div class="header-left">
-                    <a href="/" class="logo" draggable="false">
-                        <img src="/img/logohead.webp" alt="ENKA Electronics" class="logo-img" draggable="false">
-                    </a>
-                </div>
-                
-                <div class="header-center">
-                    <button class="ozon-catalog-btn" onclick="window.openAppModal('navModal')" title="კატალოგი">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                        <span class="nav-btn-text">კატალოგი</span>
-                    </button>
-                    <div class="ozon-search-box">
-                        <input type="text" id="searchInput" placeholder="ძიება..." autocomplete="off">
-                        <span class="search-clear" id="desktopSearchClear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
-                        <button class="ozon-search-btn" id="desktopSearchBtn" aria-label="ძიება">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="header-right">
-                    <button class="desktop-icon-btn" onclick="window.openTracking()" title="შეკვეთის სტატუსი">
-                        <div style="position:relative; display:flex;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-                              <path d="m3.3 7 8.7 5 8.7-5"/>
-                              <path d="M12 22V12"/>
-                              <circle cx="18" cy="18" r="3"/>
-                              <path d="m22 22-1.5-1.5"/>
-                            </svg>
-                        </div>
-                        <span class="desktop-icon-btn-label">სტატუსი</span>
-                    </button>
-                    <button class="desktop-icon-btn" onclick="openFavorites(event)" title="რჩეულები">
-                        <div style="position:relative; display:flex;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            <span class="header-badge fav-badge" style="display:none;">0</span>
-                        </div>
-                        <span class="desktop-icon-btn-label">რჩეულები</span>
-                    </button>
-                    <button class="desktop-icon-btn" onclick="openOrders(event)" title="ჩემი შეკვეთები">
-                        <div style="position:relative; display:flex;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
-                            <span class="header-badge orders-badge" style="display:none;">0</span>
-                        </div>
-                        <span class="desktop-icon-btn-label">შეკვეთები</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
+    function initMobileDots() {
+        if (window.innerWidth > 1024) return;
+        const track = document.getElementById('mainGalleryTrack');
+        const slides = track.querySelectorAll('.main-gallery-slide:not(.desktop-only-slide)');
+        const dotsContainer = document.getElementById('mainGalleryDots');
+        if (dotsContainer && slides.length > 1) {
+            dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
+        }
+    }
+
+    let isZoomModalOpen = false;
+    function zoomImagePC(e, img) {
+        if (img.closest('#imageZoomModal')) return;
+        if(window.innerWidth < 1024) return;
+        img.style.transition = 'none'; 
+        const rect = img.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2.2)';
+    }
     
-    <main>{{ content }}</main>
+    function resetZoomPC(img) {
+        if (img.closest('#imageZoomModal')) return;
+        if(window.innerWidth < 1024) return;
+        img.style.transition = 'transform 0.3s ease'; 
+        img.style.transform = 'scale(1)';
+    }
+
+    function openImageZoom(img, index) {
+        isZoomModalOpen = true; 
+        if(img) {
+            img.style.transition = 'none'; 
+            img.style.transform = 'scale(1)';
+        }
+        const modal = document.getElementById('imageZoomModal');
+        modal.style.display = 'flex'; 
+        modal.offsetHeight; 
+        const modalTrack = document.getElementById('modalTrack');
+        if(modalTrack) {
+            modalTrack.style.scrollBehavior = 'auto';
+            modalTrack.scrollLeft = index * modalTrack.clientWidth;
+            void modalTrack.offsetWidth; 
+            modalTrack.style.scrollBehavior = 'smooth';
+            syncModalThumbs();
+        }
+        modal.classList.add('active'); 
+    }
     
-    <!-- ПРЕМИАЛЬНЫЙ ФУТЕР -->
-    <footer class="premium-footer">
-        <div class="footer-content">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h3>კონტაქტები</h3>
-                    <a href="tel:+995551178990" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="footer-btn-text">+995 551 17 89 90</div></a>
-                    <a href="https://wa.me/995551178990" target="_blank" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.662-2.06-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></div><div class="footer-btn-text">WhatsApp</div></a>
-                    <a href="mailto:enka.electronics.ge@gmail.com" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="footer-btn-text">ელ-ფოსტა</div></a>
-                    <a href="https://www.facebook.com/enkaelectronics" target="_blank" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div><div class="footer-btn-text">Facebook</div></a>
-                </div>
-                <div class="footer-col">
-                    <h3>ინფორმაცია</h3>
-                    <a href="/info/about" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div class="footer-btn-text">ჩვენ შესახებ</div></a>
-                    <a href="/info/contacts" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"></path></svg></div><div class="footer-btn-text">კონტაქტები</div></a>
-                    <a href="/info/delivery" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div><div class="footer-btn-text">მიწოდება</div></a>
-                    <a href="/info/warranty" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg></div><div class="footer-btn-text">გარანტია და დაბრუნება</div></a>
-                    <a href="/info/privacy" draggable="false" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div><div class="footer-btn-text">კონფიდენციალურობა</div></a>
-                </div>
-                <div class="footer-col">
-                    <h3>კაბინეტი</h3>
-                    <button onclick="openFavorites(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div class="footer-btn-text">რჩეულები</div></button>
-                    <button onclick="openOrders(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></div><div class="footer-btn-text">ჩემი შეკვეთები</div></button>
-                    <button id="footerTrackingBtn" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path><circle cx="18" cy="18" r="3"></circle><path d="m22 22-1.5-1.5"></path></svg></div><div class="footer-btn-text">შეკვეთის სტატუსი</div></button>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2026 ENKA Electronics. ყველა უფლება დაცულია.</p>
-            </div>
-        </div>
-    </footer>
+    function closeImageZoom(e) {
+        if (e) {
+            const isThumbArea = e.target.closest('.modal-thumb-area');
+            const isArrow = e.target.closest('.modal-nav-arrow');
+            const isThumb = e.target.closest('.modal-thumb');
+            if (isArrow || isThumbArea || isThumb) return;
+        }
+        isZoomModalOpen = false;
+        const modal = document.getElementById('imageZoomModal');
+        modal.classList.remove('active'); 
+        setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+    
+    function scrollModalGallery(dir, e) {
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        const track = document.getElementById('modalTrack');
+        if(!track) return;
+        const width = track.clientWidth;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (dir === 1 && track.scrollLeft >= maxScroll - 10) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+        else if (dir === -1 && track.scrollLeft <= 10) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+        else { track.scrollBy({ left: dir * width, behavior: 'smooth' }); }
+    }
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ ДЛЯ МОБИЛЬНЫХ -->
-    <nav class="mobile-bottom-nav">
-        <a href="/" class="bottom-nav-item">
-            <div class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-            <span>მთავარი</span>
-        </a>
-        <button class="bottom-nav-item" onclick="window.openAppModal('navModal')">
-            <div class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></div>
-            <span>კატალოგი</span>
-        </button>
-        <button class="bottom-nav-item" onclick="window.openAppModal('searchModalMobile')">
-            <div class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-            <span>ძიება</span>
-        </button>
-        <button class="bottom-nav-item" onclick="openFavorites(event)">
-            <div class="bottom-nav-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                <span class="bottom-nav-badge fav-badge" style="display:none;">0</span>
-            </div>
-            <span>რჩეულები</span>
-        </button>
-        <button class="bottom-nav-item" onclick="openOrders(event)">
-            <div class="bottom-nav-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
-                <span class="bottom-nav-badge orders-badge" style="display:none;">0</span>
-            </div>
-            <span>შეკვეთები</span>
-        </button>
-    </nav>
+    function scrollToModalSlide(index, e) {
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        const track = document.getElementById('modalTrack');
+        if(track) {
+            const width = track.clientWidth;
+            track.scrollTo({ left: index * width, behavior: 'smooth' });
+        }
+    }
 
-    <!-- ГЛОБАЛЬНЫЙ УМНЫЙ ТОСТ -->
-    <div class="global-toast-wrapper">
-        <div id="globalToast" class="global-toast"></div>
-    </div>
-
-    <!-- МОДАЛКА ДЛЯ ПОКАЗА СКОПИРОВАННОЙ ССЫЛКИ -->
-    <div class="modal" id="linkModal">
-        <div class="modal-content" style="text-align:center;">
-            <h3 style="margin-bottom:1rem; font-size: 1.3rem;">დაკოპირებული ბმული:</h3>
-            <div style="background:#f1f5f9; padding:1rem; border-radius:12px; word-break:break-all; font-size:0.9rem; color:#2563eb; margin-bottom:1.5rem; font-weight:600;" id="copiedLinkText"></div>
-            <button class="btn-submit" style="background: #f1f5f9; color: #0f172a;" onclick="closeAppModal('linkModal')">დახურვა</button>
-        </div>
-    </div>
-
-    <!-- МОДАЛКИ -->
-    <div class="modal" id="navModal">
-        <div class="modal-content">
-            <div class="nav-accordion" id="dynamicNavAccordion"></div>
-        </div>
-    </div>
-
-    <div class="modal" id="searchModalMobile" style="align-items: flex-start; padding-top: 1rem;">
-        <div class="modal-content" style="max-height: 95vh; display: flex; flex-direction: column;">
-            <div style="position:relative; display:flex; align-items:stretch; border: 2px solid #2563eb; border-radius: 12px; overflow: hidden; height: 48px; flex-shrink: 0;">
-                <input type="text" id="mobileSearchInput" placeholder="ძიება..." style="flex:1; border:none; padding: 0.8rem 1.2rem; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; background: transparent; margin: 0;">
-                <span class="search-clear" id="mobileSearchClear" style="right: 4rem; top: 50%; transform: translateY(-50%);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
-                <button class="ozon-search-btn" id="mobileSearchBtn" style="padding: 0 1.2rem; border-radius: 0;" aria-label="ძიება">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                </button>
-            </div>
-            <div id="mobileSearchResults" class="modal-list-container" style="flex:1; margin-top:1rem; display:none;"></div>
-        </div>
-    </div>
-
-    <div class="modal" id="favModal">
-        <div class="modal-content">
-            <h3>რჩეულები <span id="favModalCount" style="color:inherit; font-size:inherit;"></span></h3>
-            <div id="favList" class="modal-list-container"></div>
-        </div>
-    </div>
-
-    <div class="modal" id="ordersModal">
-        <div class="modal-content">
-            <h3>ჩემი შეკვეთები <span id="ordersModalCount" style="color:inherit; font-size:inherit;"></span></h3>
-            <div id="ordersList" class="modal-list-container"></div>
-        </div>
-    </div>
-
-    <div class="modal" id="trackingModal">
-        <div class="modal-content">
-            <h3>შეკვეთის სტატუსი</h3>
-            <div class="input-wrapper" id="trackingInputWrapper" style="margin-bottom: 1.2rem; width: 100%;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>    
-                <input type="text" id="trackingOrderId" class="clean-input" placeholder="თქვენი შეკვეთის კოდი...">
-            </div>
-            <button id="trackingCheckBtn" class="btn-submit" style="background: #3b82f6;">შემოწმება</button>
-            <div id="trackingResult" style="margin-top:1.5rem;display:none;"></div>
-        </div>
-    </div>
-
-    <div class="modal order-form-modal" id="orderFormModal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 1.5rem;">შეკვეთის გაფორმება</h3>
-            <form id="quickOrderForm" novalidate>
-                <input type="email" name="email_hp" id="quickEmailHp" style="display:none" tabindex="-1" autocomplete="off">
-                
-                <div class="input-wrapper" id="quickFormWrapperName" style="margin-bottom: 1rem; width: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <input type="text" id="quickName" class="clean-input" placeholder="თქვენი სახელი" autocomplete="name">
-                </div>
-                
-                <div class="input-wrapper" id="quickFormWrapperPhone" style="margin-bottom: 1.2rem; width: 100%;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    <span class="prefix">+995</span>
-                    <input type="tel" id="quickPhone" class="clean-input phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
-                </div>
-            
-                <button type="submit" class="btn-submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                    გაფორმება
-                </button>
-                <div style="margin-top:1rem;font-size:0.8rem;color:#64748b;font-weight:600;text-align:center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    მენეჯერი დაგიკავშირდებათ მალე
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal" id="orderConfirmModal">
-        <div class="modal-content">
-            <div class="order-confirm-icon-wrapper">
-                <div class="order-confirm-circle">
-                    <div class="order-confirm-inner">
-                        <svg class="order-confirm-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </div>
-                </div>
-            </div>
-            <h3 style="font-size:1.8rem;">შეკვეთა მიღებულია!</h3>
-            <p style="text-align:center;color:#64748b;font-size:1rem;font-weight:500;margin-bottom:1.5rem;line-height:1.5;">მალე დაგიკავშირდებით. <br>მადლობა, რომ აირჩიეთ ENKA Electronics!</p>
-            
-            <div class="order-confirm-details" style="background: transparent; padding: 1.2rem; margin-bottom: 1.5rem;">
-                <div class="order-confirm-row"><span class="order-confirm-label">სახელი:</span><span class="order-confirm-value" id="confirmName">-</span></div>
-                <div class="order-confirm-row"><span class="order-confirm-label">ტელეფონი:</span><span class="order-confirm-value" id="confirmPhone">-</span></div>
-                <div class="order-confirm-row"><span class="order-confirm-label">პროდუქტი:</span><span class="order-confirm-value" id="confirmProduct">-</span></div>
-                <div class="order-confirm-row" style="border:none; padding-top: 0.5rem;"><span class="order-confirm-label" style="font-size:1rem;">თანხა:</span><span class="order-confirm-price" id="confirmPrice">-</span></div>
-            </div>
-            
-            <button class="btn-submit" id="closeOrderConfirmModal" style="background: #2563eb; color: #ffffff;" onclick="window.closeAppModal('orderConfirmModal'); window.openOrders(event);">ჩემი შეკვეთები</button>
-        </div>
-    </div>
-
-<script>
-    // --- ОСНОВНЫЕ СКРИПТЫ ---
-    document.addEventListener('DOMContentLoaded', () => {
-        try { window.updateBadges(); } catch(e){}
-
-        try {
-            const navContainer = document.getElementById('dynamicNavAccordion');
-            if (navContainer && window.CATALOG_STRUCTURE) {
-                let html = '';
-                for (const [catId, catData] of Object.entries(window.CATALOG_STRUCTURE)) {
-                    let subLinks = catData.subs.map(sub => `<a href="/?category=${catId}&sub=${sub.id}" class="nav-sub-link" draggable="false">${sub.name}</a>`).join('');
-                    html += `
-                    <div class="nav-acc-item">
-                        <div class="nav-acc-header" onclick="this.parentElement.classList.toggle('active')">
-                            <div class="nav-acc-header-left"><div class="nav-acc-icon">${catData.icon}</div><span>${catData.title}</span></div>
-                            <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-                        </div>
-                        <div class="nav-acc-content"><div class="nav-sub-list"><a href="/?category=${catId}" class="nav-sub-link" draggable="false">ყველა</a>${subLinks}</div></div>
-                    </div>`;
-                }
-                navContainer.innerHTML = html;
+    function syncModalThumbs() {
+        const track = document.getElementById('modalTrack');
+        if(!track) return;
+        const index = Math.round(track.scrollLeft / track.clientWidth);
+        const thumbs = document.querySelectorAll('#modalThumbStrip .modal-thumb');
+        if (thumbs.length > 0) {
+            thumbs.forEach(t => t.classList.remove('active'));
+            if(thumbs[index]) {
+                thumbs[index].classList.add('active');
+                thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
             }
-        } catch(e) { console.error(e); }
-
-        try {
-            const params = new URLSearchParams(window.location.search);
-            if (params.has('orderstatus')) {
-                const orderId = params.get('orderstatus');
-                if (window.openTracking) window.openTracking(orderId);
-                if (orderId) { setTimeout(() => { const checkBtn = document.getElementById('trackingCheckBtn'); if (checkBtn) checkBtn.click(); }, 400); }
-            }
-            const searchQ = params.get('search');
-            if (searchQ) {
-                const s = document.getElementById('searchInput');
-                if (s) { s.value = searchQ; document.getElementById('desktopSearchClear')?.classList.add('show'); }
-            }
-        } catch(e) { console.error(e); }
-    });
-
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) window.closeAppModal(e.target);
-        if (e.target.closest('.mobile-bottom-img')) window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // --- ЛОГИКА ПОИСКА (ПК И МОБИЛЬНЫЙ) ---
-    function normalizeQuery(q) {
-        const map = {'a':'ა','b':'ბ','c':'ც','d':'დ','e':'ე','f':'ფ','g':'გ','h':'ჰ','i':'ი','j':'ჯ','k':'კ','l':'ლ','m':'მ','n':'ნ','o':'ო','p':'პ','q':'ქ','r':'რ','s':'ს','t':'ტ','u':'უ','v':'ვ','w':'წ','x':'ხ','y':'ყ','z':'ზ','A':'ა','B':'ბ','C':'ჩ','D':'დ','E':'ე','F':'ფ','G':'ღ','H':'ჰ','I':'ი','J':'ჟ','K':'კ','L':'ლ','M':'მ','N':'ნ','O':'ო','P':'პ','Q':'ქ','R':'ღ','S':'შ','T':'თ','U':'უ','V':'ვ','W':'ჭ','X':'ხ','Y':'ყ','Z':'ძ', 'а':'ა','б':'ბ','в':'ვ','г':'გ','д':'დ','е':'ე','ё':'ე','ж':'ჟ','з':'ზ','и':'ი','й':'ი','к':'კ','л':'ლ','м':'მ','н':'ნ','о':'ო','п':'პ','р':'რ','с':'ს','т':'ტ','у':'უ','ф':'ფ','х':'ხ','ц':'ც','ч':'ჩ','ш':'შ','щ':'შ','ъ':'','ы':'ი','ь':'','э':'ე','ю':'იუ','я':'ია'};
-        let res = '';
-        for(let char of q) { res += map[char] || char; }
-        return res.toLowerCase();
+        }
     }
 
-    function setupSearch(inputId, resultsId, clearId) {
-        try {
-            const s = document.getElementById(inputId); const r = document.getElementById(resultsId); const c = document.getElementById(clearId);
-            if (!s) return;
-
-            s.addEventListener('input', function () {
-                let q = this.value.trim(); 
-                if(c) { if(q.length > 0) c.classList.add('show'); else c.classList.remove('show'); }
-                if (!q) { if(r) { r.innerHTML = ''; r.classList.remove('show'); r.style.display = 'none'; } return; }
-                
-                fetch('https://api.enkaelectronics.com.ge/catalog').then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
-                    .then(d => {
-                        let normalizedQ = normalizeQuery(q);
-                        let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && p.name.toLowerCase().includes(normalizedQ));
-                        if(r) {
-                            if (inputId === 'mobileSearchInput') {
-                                r.innerHTML = f.length ? f.map(p => {
-                                    let catText = ''; let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
-                                    if (mainCatId && window.CATALOG_STRUCTURE && window.CATALOG_STRUCTURE[mainCatId]) catText = window.CATALOG_STRUCTURE[mainCatId].title;
-                                    let oldP = (p.oldPrice || p.old_price) ? `<span class="list-item-old-price" style="margin-left:6px;">${String(p.oldPrice || p.old_price).replace(/₾/g, '')}₾</span>` : '';
-                                    return `<div class="list-item-card" onclick="location.href='/product/${p.id}/'" style="cursor:pointer; margin-bottom:8px;"><img class="list-item-img" src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" onerror="this.src='/img/no-image.png'"><div class="list-item-info"><div class="list-item-title">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; margin-top:2px; font-weight:600;">${catText}</div><div class="list-item-price">${String(p.price).replace(/₾/g, '')}₾ ${oldP}</div></div></div>`;
-                                }).join('') : '<div style="text-align:center; padding:2rem; color:#94a3b8; font-weight:600;">ვერაფერი მოიძებნა</div>';
-                                r.style.display = 'flex';
-                            } else {
-                                r.innerHTML = f.length ? f.map(p => {
-                                    let catText = ''; let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
-                                    let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
-                                    if (mainCatId && window.CATALOG_STRUCTURE[mainCatId]) { catText = window.CATALOG_STRUCTURE[mainCatId].title; if (subCatId) { let sub = window.CATALOG_STRUCTURE[mainCatId].subs.find(sb => sb.id === subCatId); if (sub) catText += ` <span style="color:#cbd5e1; margin:0 4px;">&bull;</span> ${sub.name} `; } }
-                                    let oldPriceValue = p.oldPrice || p.old_price; let oldPriceHtml = oldPriceValue ? `<span style="font-size:0.8rem; color:#94a3b8; text-decoration:line-through; font-weight:600; margin-left:8px;">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
-                                    return `<div class="search-result-item" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="search-result-img" onerror="this.src='/img/no-image.png'"><div style="flex:1; min-width:0;"><div style="font-size:0.95rem;font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</div><div style="font-size:0.75rem; color:#94a3b8; font-weight:600; margin-top:2px;">${catText}</div><div style="font-weight:700;color:#2563eb;margin-top:2px; display:flex; align-items:center;"><span>${String(p.price).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
-                                }).join('') : '<div style="padding:2rem;text-align:center;color:#94a3b8;font-weight:600;">ვერაფერი მოიძებნა</div>';
-                                r.classList.add('show');
-                            }
-                        }
-                    }).catch(err => console.error(err));
-            });
-
-            if(c) { c.onclick = function(){ s.value=''; s.focus(); c.classList.remove('show'); s.dispatchEvent(new Event('input')); }; }
-            s.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); const q = this.value.trim(); if (q) window.location.href = '/?search=' + encodeURIComponent(q); } });
-            if (inputId === 'searchInput') { document.addEventListener('click', e => { if (!s.contains(e.target) && r && !r.contains(e.target) && !document.getElementById('desktopSearchBtn').contains(e.target)) r.classList.remove('show'); }); }
-        } catch(e) { console.error(e); }
+    function toggleExpand(blockId, btn) {
+        const block = document.getElementById(blockId);
+        if (block.classList.contains('expanded')) {
+            block.style.maxHeight = '280px';
+            block.classList.remove('expanded');
+            btn.innerText = "მეტის ნახვა";
+        } else {
+            block.style.maxHeight = block.scrollHeight + 'px';
+            block.classList.add('expanded');
+            btn.innerText = "ნაკლების ნახვა";
+        }
     }
 
-    try {
-        (function(){
-            let sr = document.createElement('div'); sr.className = 'search-results'; sr.id = 'desktopSearchResults';
-            let desktopInput = document.getElementById('searchInput');
-            if(desktopInput) document.querySelector('.ozon-search-box').appendChild(sr);
-            setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear');
-            setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear');
-            
-            ['desktopSearchBtn', 'mobileSearchBtn'].forEach(id => {
-                const btn = document.getElementById(id);
-                if(btn) {
-                    btn.addEventListener('click', () => {
-                        const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
-                        const q = document.getElementById(inputId).value.trim();
-                        if (q) window.location.href = '/?search=' + encodeURIComponent(q);
-                    });
-                }
-            });
-        })();
-    } catch(e){}
-
-    // --- ТРЕКИНГ ЗАКАЗОВ ---
-    const trackingOrderId = document.getElementById('trackingOrderId');
-    const trackingCheckBtn = document.getElementById('trackingCheckBtn');
-    const trackingResult = document.getElementById('trackingResult');
-    const footerTrackingBtn = document.getElementById('footerTrackingBtn');
-    const WORKER_URL_TRACKING = 'https://delivery-modal.enkaelectronics.com.ge';
-    const statusMap = { 'ასაღები': 'შეკვეთა მზად არის', 'საწყობშია': 'მივიდა საწყობში', 'გატანილია ჩასაბარებლად': 'კურიერი გზაშია', 'ჩაბარებულია': 'ჩაბარებულია' };
-    const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
-
-    function parseGeorgianDate(dateStr) {
-        if (!dateStr) return null;
-        try { 
-            const parts = String(dateStr).trim().split(' '); 
-            const dateParts = parts[0].split(/[./-]/); 
-            if (dateParts.length === 3) { 
-                const day = parseInt(dateParts[0]), month = parseInt(dateParts[1]) - 1, year = parseInt(dateParts[2]); 
-                let hours = 0, minutes = 0; 
-                if (parts.length > 1 && parts[1]) { 
-                    const timeParts = parts[1].split(':'); 
-                    if (timeParts.length >= 2) { hours = parseInt(timeParts[0]); minutes = parseInt(timeParts[1]); } 
-                } 
-                const d = new Date(year, month, day, hours, minutes); 
-                return isNaN(d.getTime()) ? null : d; 
-            } 
-            const d = new Date(dateStr);
-            return isNaN(d.getTime()) ? null : d;
-        } catch (e) { return null; }
+    function checkExpandableBlocks() {
+        const specs = document.getElementById('specsBlock');
+        const btnSpecs = document.getElementById('btnExpandSpecs');
+        if (specs && specs.scrollHeight > 300) { btnSpecs.style.display = 'block'; }
     }
 
-    function getStatusBadge(statusName) {
-        const iconBox = (svg) => `<span style="display:inline-flex;margin-right:8px;">${svg}</span>`;
-        const icons = { box: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>', truck: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>', check: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>', clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>' };
-        const badgeMap = { 'ჩაბარებულია': { class: 'status-badge-delivered', icon: icons.check, text: 'ჩაბარებულია' }, 'ასაღები': { class: 'status-badge-processing', icon: icons.clock, text: 'მზად არის' }, 'საწყობშია': { class: 'status-badge-processing', icon: icons.box, text: 'საწყობშია' }, 'გატანილია ჩასაბარებლად': { class: 'status-badge-shipping', icon: icons.truck, text: 'გზაშია' } };
-        const badge = badgeMap[statusName] || { class: 'status-badge-unknown', icon: icons.box, text: statusName || 'უცნობი' };
-        return `<span class="status-badge ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
+    function scrollToForm() {
+        document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
-    window.openTracking = (id = '') => {
-        const url = new URL(window.location);
-        if (id) { url.searchParams.set('orderstatus', id); } else { url.searchParams.set('orderstatus', ''); }
-        history.pushState(null, '', url.pathname + '?orderstatus' + (id ? '=' + id : ''));
-        window.openAppModal('trackingModal'); trackingOrderId.value = id; trackingResult.style.display = 'none'; trackingResult.innerHTML = ''; if(!id) setTimeout(() => trackingOrderId.focus(), 100);
-    };
+    // Делегирование событий прокрутки для оптимизации PageSpeed
+    document.addEventListener('DOMContentLoaded', function() {
+        checkExpandableBlocks();
+        initMobileDots();
 
-    if (footerTrackingBtn) { footerTrackingBtn.addEventListener('click', (e) => { e.preventDefault(); window.openTracking(); }); }
-
-    if (trackingCheckBtn) {
-        trackingCheckBtn.addEventListener('click', async () => {
-            let orderIdInput = trackingOrderId.value.trim();
-            if (!orderIdInput) { alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.'); return; }
-            const url = new URL(window.location); history.pushState(null, '', url.pathname + '?orderstatus=' + encodeURIComponent(orderIdInput));
-            let apiOrderId = orderIdInput; if (!apiOrderId.toUpperCase().startsWith('TNENKAELECTRONICS')) { apiOrderId = 'TNENKAElectronics' + apiOrderId; }
-            trackingResult.style.display = 'none'; trackingResult.innerHTML = ''; trackingCheckBtn.disabled = true; trackingCheckBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
-
-            try {
-                const response = await fetch(WORKER_URL_TRACKING, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: apiOrderId }) });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                trackingResult.style.display = 'block';
-                if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
-                   trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`; return;
-                }
-                const order = data.data[0]; const currentStatus = order.statusName || 'უცნობი'; const trackingEvents = [];
-                const addDate = parseGeorgianDate(order.formatted_add_date); if (addDate) trackingEvents.push({ status: 'ასაღები', created_at: addDate.toISOString() });
-                const safeDate = (dateString) => { return parseGeorgianDate(dateString) || new Date(); };
-                
-                if (currentStatus === 'საწყობშია' || currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') { let d = safeDate(order.delivery_date); trackingEvents.push({ status: 'საწყობშია', created_at: d.toISOString() }); }
-                if (currentStatus === 'გატანილია ჩასაბარებლად' || currentStatus === 'ჩაბარებულია') { let d = safeDate(order.delivery_date); trackingEvents.push({ status: 'გატანილია ჩასაბარებლად', created_at: d.toISOString() }); }
-                if (currentStatus && !trackingEvents.some(ev => ev.status === currentStatus)) { let d = safeDate(order.delivery_date); trackingEvents.push({ status: currentStatus, created_at: d.toISOString() }); }
-
-                trackingEvents.sort((a, b) => statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status));
-                const lastStatus = trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].status : null;
-                const statusDateMap = {}; trackingEvents.forEach(ev => statusDateMap[ev.status] = ev.created_at);
-
-                let timelineHtml = '';
-                statusOrder.forEach((status) => {
-                    const hasEvent = statusDateMap[status] !== undefined; const isPast = hasEvent && status !== lastStatus; const isCurrent = status === lastStatus;
-                    let stepClass = 'future'; if (isPast) stepClass = 'past'; else if (isCurrent) stepClass = 'current';
-                    let dateStr = hasEvent ? new Date(statusDateMap[status]).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'}) : '—';
-                    timelineHtml += `<div class="timeline-step-v ${stepClass}"><div class="timeline-indicator"><div class="timeline-dot-v"></div><div class="timeline-line"></div></div><div class="timeline-content-v"><div class="timeline-date-v">${dateStr}</div><div class="timeline-text-v">${statusMap[status] || status}</div></div></div>`;
+        // Оптимизированный слушатель для галереи (throttle)
+        const mainTrack = document.getElementById('mainGalleryTrack');
+        let mainScrollTimeout;
+        if (mainTrack) {
+            mainTrack.addEventListener('scroll', () => {
+                if (mainScrollTimeout) return;
+                mainScrollTimeout = window.requestAnimationFrame(() => {
+                    syncThumbsWithScroll();
+                    mainScrollTimeout = null;
                 });
+            }, { passive: true });
+        }
 
-                trackingResult.innerHTML = `<div style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0;"><p style="font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical">${timelineHtml}</div></div>`;
-            } catch (error) {
-                trackingResult.style.display = 'block'; trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
-            } finally { trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება'; }
+        // Оптимизированный слушатель для модальной галереи
+        const modalTrackEl = document.getElementById('modalTrack');
+        let modalScrollTimeout;
+        if (modalTrackEl) {
+            modalTrackEl.addEventListener('scroll', () => {
+                if (modalScrollTimeout) return;
+                modalScrollTimeout = window.requestAnimationFrame(() => {
+                    syncModalThumbs();
+                    modalScrollTimeout = null;
+                });
+            }, { passive: true });
+        }
+
+        // Делегирование событий прокрутки карточек товаров (через захват)
+        document.addEventListener('scroll', function(e) {
+            if (e.target && e.target.classList && e.target.classList.contains('product-images-track')) {
+                const id = e.target.id.replace('track-', '');
+                window.updateDots(id, e.target);
+            }
+        }, true);
+
+        const modalFullscreen = document.getElementById('imageZoomModal');
+        let tsY = 0, tsX = 0;
+        
+        modalFullscreen.addEventListener('touchstart', (e) => {
+            tsY = e.touches[0].clientY;
+            tsX = e.touches[0].clientX;
+        }, { passive: true });
+
+        modalFullscreen.addEventListener('touchmove', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('.modal-thumb-strip');
+            if (isTrack) {
+                const diffY = Math.abs(e.touches[0].clientY - tsY);
+                const diffX = Math.abs(e.touches[0].clientX - tsX);
+                if (diffY > diffX) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        modalFullscreen.addEventListener('wheel', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('.modal-thumb-strip');
+            if (isTrack) {
+                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        const oldPriceStr = "{{ page.oldPrice }}";
+        const priceStr = "{{ page.price }}";
+        if (oldPriceStr && oldPriceStr !== "") {
+            const oldVal = parseInt(oldPriceStr.replace(/[^0-9]/g, ''));
+            const newVal = parseInt(priceStr.replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                const badge = document.getElementById('saleBadge');
+                if (badge) {
+                    badge.innerHTML = `-${percent}%`;
+                    badge.style.display = 'block';
+                }
+            }
+        }
+
+        fetch('https://api.enkaelectronics.com.ge/catalog')
+        .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
+        .then(data => {
+            const currentSub = "{{ first_sub }}";
+            const currentCat = "{{ first_cat }}";
+            const currentSku = "{{ page.sku }}".trim();
+            const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop();
+            const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
+            const actualProductId = currentProduct ? currentProduct.id : null;
+            
+            if (actualProductId) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); 
+                recentIds.unshift(actualProductId); 
+                if (recentIds.length > 20) recentIds = recentIds.slice(0, 20);
+                localStorage.setItem('recentIds', JSON.stringify(recentIds));
+            }
+            
+            const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
+            const badgeTag = document.getElementById('dynamicStockBadgeTag');
+            const mobileBadgeTag = document.getElementById('mobileDynamicStockBadgeTag');
+            const btnContainer = document.getElementById('dynamicBuyButton');
+            const formInputs = document.getElementById('dynamicFormInputs');
+            
+            let stockHtml = '';
+            let btnHtml = '';
+
+            if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
+                stockHtml = `<div class="pill pill-stock-out"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
+                btnHtml = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+            } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
+                stockHtml = `<div class="pill pill-stock-soon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
+                btnHtml = `<button type="button" class="btn-alta-order btn-out-of-stock" style="height: 100%; border-radius: 16px; font-size: 1.15rem;" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+            } else {
+                stockHtml = `<div class="pill pill-stock-in"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
+                if (formInputs) formInputs.innerHTML = `
+                    <input type="email" name="email_hp" id="inlineEmailHp" style="display:none" tabindex="-1" autocomplete="off">
+                    <div class="input-wrapper" id="inlineNameWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="inlineName" class="clean-input" placeholder="თქვენი სახელი" autocomplete="name">
+                    </div>
+                    <div class="input-wrapper" id="inlinePhoneWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span class="prefix">+995</span>
+                        <input type="tel" id="inlinePhone" class="clean-input phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
+                    </div>
+                `;
+                btnHtml = `
+                    <button type="submit" id="submitInlineOrderBtn" aria-label="ყიდვა" class="btn-alta-order">
+                        <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span id="inlineOrderText">ყიდვა</span>
+                    </button>
+                    <div class="payment-info-bottom">
+                        შეუკვეთე ახლა, გადაიხადე მიღებისას
+                    </div>
+                `;
+            }
+
+            if (badgeTag) badgeTag.innerHTML = stockHtml;
+            if (mobileBadgeTag) mobileBadgeTag.innerHTML = stockHtml;
+            if (btnContainer) btnContainer.innerHTML = btnHtml;
+
+            const subcatSection = document.getElementById('subcatSection');
+            const subcatScroll = document.getElementById('subcatScroll');
+            let subcatProducts = [];
+            
+            if(subcatSection && subcatScroll && currentSub) {
+                subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).slice(0, 30);
+                if(subcatProducts.length > 0) {
+                    subcatSection.style.display = 'block';
+                    subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
+                    if(subcatProducts.length <= 4) {
+                        document.getElementById('subcatArrowLeft').style.display = 'none';
+                        document.getElementById('subcatArrowRight').style.display = 'none';
+                    }
+                }
+            }
+
+            const catSection = document.getElementById('catSection');
+            const catScroll = document.getElementById('catScroll');
+            
+            if(catSection && catScroll && currentCat) {
+                let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).slice(0, 30);
+                if(catProducts.length > 0) {
+                    catSection.style.display = 'block';
+                    catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
+                    if(catProducts.length <= 4) {
+                        document.getElementById('catArrowLeft').style.display = 'none';
+                        document.getElementById('catArrowRight').style.display = 'none';
+                    }
+                }
+            }
+
+            const recentSection = document.getElementById('recentlyViewedSection');
+            const recentScroll = document.getElementById('recentScroll');
+            if (recentSection && recentScroll) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); 
+                const recentProducts = recentIds.map(id => data.products.find(p => p.id === id)).filter(Boolean);
+                
+                if (recentProducts.length > 0) {
+                    recentSection.style.display = 'block';
+                    recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
+                    if (recentProducts.length <= 4) {
+                        document.getElementById('recentArrowLeft').style.display = 'none';
+                        document.getElementById('recentArrowRight').style.display = 'none';
+                    }
+                }
+            }
         });
-        if(trackingOrderId) trackingOrderId.addEventListener('keypress', (e) => { if (e.key === 'Enter') trackingCheckBtn.click(); });
-    }
+    });
 
-    if(typeof window.WORKER_URL==='undefined'){window.WORKER_URL='https://form-handler.enkaelectronics.com.ge';}
-    const quickForm = document.getElementById('quickOrderForm');
-    const quickName = document.getElementById('quickName');
-    const quickPhone = document.getElementById('quickPhone');
-
-    window.openOrderForm = function(product) {
-        try {
-            quickName.value = ''; quickPhone.value = '';
-            document.getElementById('quickFormWrapperName').classList.remove('error-border'); 
-            document.getElementById('quickFormWrapperPhone').classList.remove('error-border');
-            document.getElementById('orderFormModal').dataset.product = JSON.stringify(product);
-            window.openAppModal('orderFormModal');
-        } catch(e) { console.error(e); }
-    };
-
-    if(quickPhone) {
-        quickPhone.addEventListener('input', function() {
-            let val = this.value.replace(/\D/g, ''); if(val.startsWith('995')) val = val.substring(3);
-            if(val.length > 9) val = val.slice(0, 9); let formatted = '';
-            for(let i = 0; i < val.length; i++) { if(i === 3 || i === 5 || i === 7) formatted += ' '; formatted += val[i]; }
-            this.value = formatted;
-        });
-    }
-
-    if (quickForm) {
-        quickForm.addEventListener('submit', async function(e) {
+    window.addEventListener('keydown', (e) => {
+        if (isZoomModalOpen && [32, 33, 34, 38, 40].includes(e.keyCode)) {
             e.preventDefault();
+        }
+    }, { passive: false });
 
-            // Проверка honeypot (защита от ботов)
-            const hp = document.getElementById('quickEmailHp');
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'inlinePhone') {
+            let val = e.target.value.replace(/\D/g, '');
+            if(val.startsWith('995')) val = val.substring(3);
+            if(val.length > 9) val = val.slice(0, 9);
+            let formatted = '';
+            for(let i = 0; i < val.length; i++) {
+                if(i === 3 || i === 5 || i === 7) formatted += ' ';
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+        }
+    });
+
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'inlineOrderForm') {
+            e.preventDefault();
+            
+            const hp = document.getElementById('inlineEmailHp');
             if (hp && hp.value) return; 
 
-            const name = quickName.value.trim(); const phoneRaw = quickPhone.value.replace(/\s/g, '');
-            const phoneWrapper = document.getElementById('quickFormWrapperPhone');
-            const nameWrapper = document.getElementById('quickFormWrapperName');
-            
-            if(!name) { window.showInputError(nameWrapper); return; }
-            if(phoneRaw.length !== 9) { window.showInputError(phoneWrapper); return; }
-            
-            const product = JSON.parse(document.getElementById('orderFormModal').dataset.product || '{}');
-            const fullPhone = '+995' + phoneRaw; const submitBtn = quickForm.querySelector('.btn-submit');
-            const originalContent = submitBtn.innerHTML; submitBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>'; submitBtn.disabled = true;
-            
-            try {
-                const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-                const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-                const response = await fetch(window.WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, phone: fullPhone, product: product.name, price: product.price, product_id: product.id, event_id: eventId }) });
-                if (response.ok) {
-                    if (typeof fbq === 'function') { fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId }); }
-                    if (typeof window.sendCapiEvent === 'function') { window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); }
-                    window.closeAppModal('orderFormModal'); setTimeout(() => { if(window.showOrderConfirm) window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: product.oldPrice || product.old_price }); }, 400);
-                }
-            } catch(error) { console.error(error); }
-            submitBtn.innerHTML = originalContent; submitBtn.disabled = false;
-        });
-    }
+            const nameInput = document.getElementById('inlineName');
+            const phoneInput = document.getElementById('inlinePhone');
+            const btn = document.getElementById('submitInlineOrderBtn');
+            const icon = document.getElementById('inlineOrderIcon');
+            const text = document.getElementById('inlineOrderText');
 
-    // Сохранение заказа
-    window.showOrderConfirm = function(data) {
-        try {
-            document.getElementById('confirmName').textContent = data.name || '-';
-            document.getElementById('confirmPhone').textContent = data.phone || '-';
-            document.getElementById('confirmProduct').textContent = data.product || '-';
-            const rawConfirmPrice = String(data.price).replace(/₾/g, '').trim();
-            document.getElementById('confirmPrice').textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
+            if (!nameInput || !phoneInput) return;
+
+            const name = nameInput.value.trim();
+            let phoneRaw = phoneInput.value.replace(/\s/g, '');
+
+            if(!name) { window.showInputError(document.getElementById('inlineNameWrapper')); return; }
+            if(phoneRaw.length !== 9) { window.showInputError(document.getElementById('inlinePhoneWrapper')); return; }
+
+            const fullPhone = '+995' + phoneRaw;
             
-            let oldPrice = (data.oldPrice && data.oldPrice !== 'null' && data.oldPrice !== 'undefined') ? String(data.oldPrice).replace(/₾/g, '').trim() + ' ₾' : null;
+            const product = {
+                name: {{ page.name | jsonify }},
+                price: "{{ page.price }}",
+                id: "{{ page.sku }}"
+            };
+
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
+            const originalIcon = icon.outerHTML;
+            icon.outerHTML = `<div class="spinner" id="inlineOrderIcon" style="width:20px;height:20px;border-width:2px;margin:0; border-color: rgba(255,255,255,0.3); border-top-color: white;"></div>`;
+            text.innerText = 'იგზავნება...';
+
+            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+            const targetWorker = window.WORKER_URL || 'https://form-handler.enkaelectronics.com.ge';
             
-            let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
-            orders.unshift({ name: data.name, phone: data.phone, product: data.product, price: rawConfirmPrice + ' ₾', oldPrice: oldPrice, date: new Date().toISOString() });
-            localStorage.setItem('myOrders', JSON.stringify(orders));
-            window.updateBadges();
+            fetch(targetWorker, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: name, 
+                    phone: fullPhone, 
+                    product: product.name, 
+                    price: product.price,
+                    product_id: product.id,
+                    event_id: eventId
+                })
+            }).catch(console.error);
 
-            window.openAppModal('orderConfirmModal');
-        } catch(e) { console.error(e); }
-    };
+            setTimeout(() => {
+                try {
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId });
+                    }
+                    if (typeof window.sendCapiEvent === 'function') {
+                        window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); 
+                    }
+                } catch(err) { console.error(err); }
+            }, 50);
 
-    function formatPhoneInput(input) {
-        let value = input.value.replace(/\s/g, ''); if (value.startsWith('+995')) value = value.substring(4);
-        value = value.replace(/\D/g, ''); if (value.length > 9) value = value.slice(0, 9);
-        let formatted = ''; for (let i = 0; i < value.length; i++) { if (i === 3 || i === 5 || i === 7) formatted += ' '; formatted += value[i]; }
-        input.value = formatted;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.order-form').forEach(form => {
-            const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
-            const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
-            if (nameInput && phoneInput) {
-                if (!nameInput.id) nameInput.id = 'n' + Math.random().toString(36).substr(2, 5);
-                if (!phoneInput.id) phoneInput.id = 'p' + Math.random().toString(36).substr(2, 5);
-                phoneInput.addEventListener('input', function() { formatPhoneInput(this); });
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
+            text.innerText = 'ყიდვა';
+            
+            if(window.showOrderConfirm) {
+                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: '{{ page.oldPrice }}' });
             }
-        });
-    });
-</script>
-
-<script>
-    // --- ГЛОБАЛЬНЫЙ ПЕРЕХВАТ ИЗБРАННОГО ---
-    window.toggleFav = function(event, btn) {
-        if(event) { event.preventDefault(); event.stopPropagation(); }
-        try {
-            let name = "პროდუქტი", price = "0 ₾", oldPrice = null, img = "", link = window.location.pathname;
-            const card = btn.closest('.product-card');
-            
-            if (card) {
-                let nameEl = card.querySelector('.product-name'); if(nameEl) name = nameEl.innerText;
-                let priceEl = card.querySelector('.product-price'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                let oldPriceEl = card.querySelector('.old-price, .modern-price-old'); if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                let imgEl = card.querySelector('.product-image'); if(imgEl) img = imgEl.src;
-                let aEl = card.querySelector('a'); if(aEl) link = aEl.getAttribute('href');
-            } else {
-                let titleEl = document.querySelector('.title-desktop');
-if (!titleEl || titleEl.offsetParent === null) {
-  titleEl = document.querySelector('.title-mobile');
-}
-if (!titleEl || titleEl.offsetParent === null) {
-  titleEl = document.querySelector('h1.product-title-h1');
-}
-if (titleEl) name = titleEl.innerText;
-                let priceEl = document.querySelector('.modern-price-current'); if(priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                
-                let oldPriceEl = priceEl ? priceEl.parentNode.querySelector('.modern-price-old, .old-price') : null; 
-                if(oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-                
-                let imgEl = document.querySelector('.main-gallery-slide img, .product-main-img'); if(imgEl) img = imgEl.src;
-            }
-
-            let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-            let existingIdx = favs.findIndex(f => f.link === link);
-
-            if (existingIdx > -1) {
-                favs.splice(existingIdx, 1);
-                btn.classList.remove('active');
-                window.showToast('წაშლილია რჩეულებიდან');
-            } else {
-                favs.unshift({ name, price, oldPrice, img, link });
-                btn.classList.add('active');
-                window.showToast('დამატებულია რჩეულებში', 'fav');
-            }
-
-            localStorage.setItem('myFavs', JSON.stringify(favs));
-            window.updateBadges();
-
-            document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(otherBtn => {
-                let otherLink = ""; let otherCard = otherBtn.closest('.product-card');
-                if(otherCard) { let a = otherCard.querySelector('a'); if(a) otherLink = a.getAttribute('href'); } else otherLink = window.location.pathname;
-                if(otherLink === link) { if(existingIdx > -1) otherBtn.classList.remove('active'); else otherBtn.classList.add('active'); }
-            });
-        } catch(e) { console.error(e); }
-    };
-
-    const favObserver = new MutationObserver((mutations) => {
-        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-        let changed = false; mutations.forEach(m => { if (m.addedNodes.length) changed = true; });
-        if (changed) {
-            document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
-                if(btn.dataset.favInit) return;
-                let link = ""; let card = btn.closest('.product-card');
-                if(card) { let a = card.querySelector('a'); if(a) link = a.getAttribute('href'); } else link = window.location.pathname;
-                if (link && favs.some(f => f.link === link)) btn.classList.add('active');
-                btn.dataset.favInit = "true";
-            });
         }
     });
-    favObserver.observe(document.body, { childList: true, subtree: true });
-
-    window.addEventListener('load', () => {
-        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-        document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
-            let link = ""; let card = btn.closest('.product-card');
-            if(card) { let a = card.querySelector('a'); if(a) link = a.getAttribute('href'); } else link = window.location.pathname;
-            if (link && favs.some(f => f.link === link)) btn.classList.add('active');
-            btn.dataset.favInit = "true";
-        });
-    });
 </script>
 
 <script>
-    let _tsX = 0, _tsY = 0;
-    document.addEventListener('touchstart', function(e) { _tsX = e.changedTouches[0].screenX; _tsY = e.changedTouches[0].screenY; }, {passive: true});
-    window.addEventListener('contextmenu', function(e) { if (e.target.closest('button, a, .product-card, .category-btn, .sub-category-btn, .thumb-card, .similar-card')) { e.preventDefault(); } });
-    document.addEventListener('touchend', function(e) {
-        setTimeout(function() { if (document.activeElement && document.activeElement !== document.body) { const tag = document.activeElement.tagName; if (tag === 'BUTTON' || tag === 'A' || document.activeElement.closest('.product-card, .similar-card, .thumb-card')) { document.activeElement.blur(); } } }, 50);
-        let _teX = e.changedTouches[0].screenX; let _teY = e.changedTouches[0].screenY;
-        if (Math.abs(_teX - _tsX) < 10 && Math.abs(_teY - _tsY) < 10) { if (e.target.closest('input, textarea')) return; const sel = window.getSelection(); if (sel && sel.toString().length > 0) { const style = window.getComputedStyle(e.target); const userSel = style.userSelect || style.getPropertyValue('-webkit-user-select'); if (userSel === 'none') { sel.removeAllRanges(); } } }
-    }, {passive: true});
+  try {
+      if (typeof fbq === 'function') {
+        var rawPrice = "{{ page.price }}"; 
+        var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+        fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
+      }
+  } catch(e) {}
 </script>
-</body>
-</html>
