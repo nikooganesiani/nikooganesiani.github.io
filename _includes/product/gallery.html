@@ -36,7 +36,7 @@
                     {% else %}
                         <img src="{{ img }}" alt="{{ page.name }}" width="800" height="800" sizes="(max-width: 768px) 100vw, 800px"
                              {% if photo_idx == 0 %} fetchpriority="high" {% else %} loading="lazy" {% endif %}
-                             class="max-w-full max-h-full object-contain mix-blend-multiply cursor-zoom-in select-none [-webkit-user-drag:none] transition-transform duration-300 ease-out active:scale-95 active:duration-150"
+                             class="max-w-full max-h-full object-contain mix-blend-multiply cursor-zoom-in select-none [-webkit-user-drag:none] transition-transform duration-300 ease-out"
                              onerror="this.src='/img/no-image.png'" draggable="false" 
                              onclick="openImageZoom(this, {{ photo_idx }})" 
                              onmousemove="zoomImagePC(event, this)" 
