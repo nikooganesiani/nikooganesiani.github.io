@@ -1,0 +1,52 @@
+<header class="fixed top-0 left-0 w-full z-[100] bg-white/85 backdrop-blur-[20px] max-sm:hidden">
+    <div class="max-w-[1280px] mx-auto px-6">
+        <div class="flex items-center justify-between gap-6 relative h-[70px]">
+            <div class="flex items-center gap-6 shrink-0 justify-start">
+                <a href="/" class="group outline-none" draggable="false">
+                    <img src="/img/logohead.webp" alt="ENKA Electronics" class="h-[38px] w-auto max-w-[180px] object-contain transition-transform duration-300 select-none group-active:scale-95" draggable="false">
+                </a>
+                <button class="flex items-center gap-2 bg-blue-600 text-white px-5 rounded-xl font-bold h-12 shrink-0 border-none cursor-pointer transition-all duration-300 outline-none select-none hover:bg-blue-700 active:scale-95" onclick="window.openAppModal('navModal')" title="კატალოგი">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>კატალოგი</span>
+                </button>
+            </div>
+            
+            <div class="flex items-stretch max-w-[900px] w-full justify-center flex-1 mx-4 h-12">
+                <div class="flex items-center bg-white border-2 border-blue-600 rounded-xl flex-1 relative h-full relative group">
+                    <input type="text" id="searchInput" placeholder="ძიება..." autocomplete="off" class="flex-1 border-none bg-transparent py-3 pr-16 pl-5 rounded-none text-[0.95rem] font-medium outline-none min-w-0 text-slate-900">
+                    <span class="absolute right-[4.8rem] top-1/2 -translate-y-1/2 w-8 h-8 hidden items-center justify-center cursor-pointer text-slate-400 rounded-full bg-transparent transition-all duration-300 z-[5] hover:bg-slate-100 hover:text-red-500 active:-translate-y-1/2 active:scale-75 [&.show]:flex" id="desktopSearchClear">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-[18px] h-[18px] transition-transform duration-300 group-active:scale-75"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </span>
+                    <button class="bg-blue-600 text-white border-none px-6 flex items-center justify-center cursor-pointer transition-colors duration-300 outline-none h-full rounded-r-[9px] hover:bg-blue-700 active:scale-100 group/btn" id="desktopSearchBtn" aria-label="ძიება">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="transition-transform duration-300 group-active/btn:scale-85"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4 shrink-0 justify-end">
+                <button class="relative bg-transparent border-none flex flex-col items-center justify-center gap-1 cursor-pointer outline-none py-1 px-2 rounded-lg transition-transform duration-300 group" onclick="window.openTracking()" title="შეკვეთის სტატუსი">
+                    <div class="flex items-center justify-center relative transition-transform duration-300 group-active:scale-85">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-slate-600 transition-colors duration-300 group-hover:text-blue-600">
+                          <path d="M12 21.99L5 18V8l7-4 7 4v5.5"/><path d="M12 12L5 8"/><path d="M12 12v9.99"/><path d="M19 8l-7 4"/><circle cx="18" cy="18" r="3"/><line x1="20.2" y1="20.2" x2="22.5" y2="22.5"/>
+                        </svg>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-500 transition-colors duration-300 group-hover:text-blue-600">სტატუსი</span>
+                </button>
+                <button class="relative bg-transparent border-none flex flex-col items-center justify-center gap-1 cursor-pointer outline-none py-1 px-2 rounded-lg transition-transform duration-300 group" onclick="openFavorites(event)" title="რჩეულები">
+                    <div class="flex items-center justify-center relative transition-transform duration-300 group-active:scale-85">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-slate-600 transition-colors duration-300 group-hover:text-blue-600"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold h-[18px] min-w-[18px] rounded-full flex items-center justify-center leading-none px-1 border-2 border-white fav-badge" style="display:none;">0</span>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-500 transition-colors duration-300 group-hover:text-blue-600">რჩეულები</span>
+                </button>
+                <button class="relative bg-transparent border-none flex flex-col items-center justify-center gap-1 cursor-pointer outline-none py-1 px-2 rounded-lg transition-transform duration-300 group" onclick="openOrders(event)" title="ჩემი შეკვეთები">
+                    <div class="flex items-center justify-center relative transition-transform duration-300 group-active:scale-85">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-slate-600 transition-colors duration-300 group-hover:text-blue-600"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                        <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold h-[18px] min-w-[18px] rounded-full flex items-center justify-center leading-none px-1 border-2 border-white orders-badge" style="display:none;">0</span>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-500 transition-colors duration-300 group-hover:text-blue-600">შეკვეთები</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,28 @@
+<nav class="fixed bottom-0 left-0 w-full h-[65px] bg-white/95 backdrop-blur-[15px] border-t border-slate-200/80 z-[100] flex justify-around items-center pb-[env(safe-area-inset-bottom)] sm:hidden">
+    <a href="/" class="flex flex-col items-center justify-center text-slate-500 text-[0.65rem] font-bold gap-1 no-underline border-none bg-transparent w-1/5 outline-none transition-transform duration-300 group">
+        <div class="relative flex items-center justify-center w-6 h-6 text-current transition-transform duration-300 group-active:scale-85"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+        <span>მთავარი</span>
+    </a>
+    <button class="flex flex-col items-center justify-center text-slate-500 text-[0.65rem] font-bold gap-1 no-underline border-none bg-transparent w-1/5 outline-none transition-transform duration-300 group" onclick="window.openAppModal('navModal')">
+        <div class="relative flex items-center justify-center w-6 h-6 text-current transition-transform duration-300 group-active:scale-85"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></div>
+        <span>კატალოგი</span>
+    </button>
+    <button class="flex flex-col items-center justify-center text-slate-500 text-[0.65rem] font-bold gap-1 no-underline border-none bg-transparent w-1/5 outline-none transition-transform duration-300 group" onclick="window.openAppModal('searchModalMobile')">
+        <div class="relative flex items-center justify-center w-6 h-6 text-current transition-transform duration-300 group-active:scale-85"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+        <span>ძიება</span>
+    </button>
+    <button class="flex flex-col items-center justify-center text-slate-500 text-[0.65rem] font-bold gap-1 no-underline border-none bg-transparent w-1/5 outline-none transition-transform duration-300 group" onclick="openFavorites(event)">
+        <div class="relative flex items-center justify-center w-6 h-6 text-current transition-transform duration-300 group-active:scale-85">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <span class="absolute -top-[5px] -right-[8px] bg-red-500 text-white text-[9px] font-bold h-4 min-w-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white fav-badge" style="display:none;">0</span>
+        </div>
+        <span>რჩეულები</span>
+    </button>
+    <button class="flex flex-col items-center justify-center text-slate-500 text-[0.65rem] font-bold gap-1 no-underline border-none bg-transparent w-1/5 outline-none transition-transform duration-300 group" onclick="openOrders(event)">
+        <div class="relative flex items-center justify-center w-6 h-6 text-current transition-transform duration-300 group-active:scale-85">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            <span class="absolute -top-[5px] -right-[8px] bg-red-500 text-white text-[9px] font-bold h-4 min-w-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white orders-badge" style="display:none;">0</span>
+        </div>
+        <span>შეკვეთები</span>
+    </button>
+</nav>

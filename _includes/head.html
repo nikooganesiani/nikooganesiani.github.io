@@ -1,0 +1,53 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>
+        {%- assign is_file = false -%}
+        {%- if page.name -%}
+            {%- if page.name contains ".html" or page.name contains ".md" -%}
+                {%- assign is_file = true -%}
+            {%- endif -%}
+        {%- endif -%}
+
+        {%- if page.name and is_file == false -%}
+            {{ page.name }} – ENKA Electronics
+        {%- elsif page.title -%}
+            {{ page.title }} – ENKA Electronics
+        {%- else -%}
+            ENKA Electronics
+        {%- endif -%}
+    </title>
+{%- if page.description -%}
+  <meta name="description" content="{{ page.description | strip_html | escape }}">
+{%- elsif page.excerpt -%}
+  <meta name="description" content="{{ page.excerpt | strip_html | escape }}">
+{%- else -%}
+  <meta name="description" content="{{ site.description | strip_html | escape }}">
+{%- endif -%}
+    <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://img.enkaelectronics.com.ge" crossorigin>
+    {{ lcp_preload }}
+    <script src="/capi.js" defer></script>
+
+    <script>
+    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
+    </script>
+
+<style>
+@font-face {
+  font-family: 'Google Sans Variable';
+  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
+* { font-family: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
+@-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #ffffff; } }
+@keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+</style>
+</head>
