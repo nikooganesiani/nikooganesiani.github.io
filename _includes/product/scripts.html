@@ -57,7 +57,7 @@
                     ${imgs.map(img => `
                         <div class="flex-[0_0_100%] w-full h-full snap-start flex items-center justify-center">
                             <a href="/product/${p.id}/" style="display:contents;" draggable="false">
-                                <img class="w-full h-full object-cover transition-transform duration-150 ease-out" src="${img}" alt="${p.name}" width="800" height="800" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                                <img class="w-full h-full object-cover" src="${img}" alt="${p.name}" width="800" height="800" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
                             </a>
                         </div>
                     `).join('')}
@@ -210,6 +210,7 @@
         }
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('hidden'); 
+        modal.style.display = 'flex'; // Принудительный flex для отсутствия рывков
         modal.offsetHeight; 
         const modalTrack = document.getElementById('modalTrack');
         if(modalTrack) {
@@ -232,7 +233,7 @@
         isZoomModalOpen = false;
         const modal = document.getElementById('imageZoomModal');
         modal.classList.remove('active'); 
-        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        setTimeout(() => { modal.style.display = 'none'; modal.classList.add('hidden'); }, 300); // Тайм-аут обеспечивает красивую анимацию
     }
     
     function scrollModalGallery(dir, e) {
