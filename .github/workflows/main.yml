@@ -23,7 +23,9 @@ jobs:
         run: node generate_pages.js
 
       - name: Install & Build Tailwind CSS
-        run: npx @tailwindcss/cli -i ./assets/css/input.css -o ./assets/css/style.css --minify
+        run: |
+          npm install tailwindcss @tailwindcss/cli
+          npx @tailwindcss/cli -i ./assets/css/input.css -o ./assets/css/style.css --minify
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
