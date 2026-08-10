@@ -81,37 +81,37 @@
     
     html { overflow-y: scroll; scrollbar-gutter: stable; scroll-behavior: smooth; }
     html.modal-open { overflow: hidden !important; }
-    body { background: #f5f7fa; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
+    body { background: #f5f7fa; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; padding-top: 70px; }
     main { flex: 1; } 
 
     /* ПРЕМИАЛЬНЫЙ HEADER (ПК) - Без теней и обводок */
     .header {
-        position: sticky; top: 0; z-index: 100;
+        position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
         background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
         border-bottom: none; box-shadow: none;
     }
-    .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
+    .header-content { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
     .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; height: 70px; }
     
-    .header-left { display: flex; align-items: center; gap: 1.2rem; flex: 0 0 auto; justify-content: flex-start; }
+    .header-left { display: flex; align-items: center; gap: 1.5rem; flex: 0 0 auto; justify-content: flex-start; }
     .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; }
-    .logo:active .logo-img { transform: scale(0.96); }
+    .logo:active .logo-img { transform: scale(0.96); transition: transform 0.6s ease; }
 
-    .header-center { display: flex; align-items: stretch; max-width: 800px; width: 100%; justify-content: center; flex: 1; margin: 0 2rem; height: 48px; }
-    
     .ozon-catalog-btn {
         display: flex; align-items: center; gap: 8px; background: #2563eb; color: #fff !important; 
-        padding: 0 1.4rem; border-radius: 12px; margin-right: 12px; font-weight: 700; flex-shrink: 0;
+        padding: 0 1.4rem; border-radius: 12px; font-weight: 700; height: 48px; flex-shrink: 0;
         border: none; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; user-select: none;
     }
     @media (hover: hover) { .ozon-catalog-btn:hover { background: #1d4ed8 !important; } }
-    .ozon-catalog-btn:active { transform: scale(0.96); }
+    .ozon-catalog-btn:active { transform: scale(0.96); transition: transform 0.6s ease; }
 
+    .header-center { display: flex; align-items: stretch; max-width: 900px; width: 100%; justify-content: center; flex: 1; margin: 0 1rem; height: 48px; }
+    
     .ozon-search-box {
         display: flex; align-items: center; background: #fff; border: 2px solid #2563eb; border-radius: 12px; flex: 1; position: relative; height: 100%;
     }
     .ozon-search-box input {
-        flex: 1; border: none; background: transparent; padding: 0.8rem 1.2rem; border-radius: 0; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; color: #0f172a;
+        flex: 1; border: none; background: transparent; padding: 0.8rem 4rem 0.8rem 1.2rem; border-radius: 0; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; color: #0f172a;
     }
     .ozon-search-btn {
         background: #2563eb; color: white; border: none; padding: 0 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; height: 100%; border-radius: 0 9px 9px 0;
@@ -119,18 +119,19 @@
     @media (hover: hover) { .ozon-search-btn:hover { background: #1d4ed8; } }
     .ozon-search-btn:active { transform: none; }
     .ozon-search-btn svg { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .ozon-search-btn:active svg { transform: scale(0.85); }
+    .ozon-search-btn:active svg { transform: scale(0.85); transition: transform 0.6s ease; }
     
     .search-clear { 
-        position: absolute; right: 4.5rem; top: 50%; transform: translateY(-50%); 
+        position: absolute; right: 4.8rem; top: 50%; transform: translateY(-50%); 
         width: 32px; height: 32px; display: none; align-items: center; justify-content: center;
         cursor: pointer; color: #94a3b8; border-radius: 50%; background: transparent;
-        transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5;
+        transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 5;
     }
     .search-clear svg { width: 18px; height: 18px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .search-clear.show { display: flex; }
     @media (hover: hover) { .search-clear:hover { background: #f1f5f9; color: #ef4444; } }
-    .search-clear:active svg { transform: scale(0.75); }
+    .search-clear:active { transform: translateY(-50%); transition: transform 0.6s ease; }
+    .search-clear:active svg { transform: scale(0.75); transition: transform 0.6s ease; }
 
     .header-right { display: flex; align-items: center; gap: 1rem; flex: 0 0 auto; justify-content: flex-end; }
     
@@ -140,10 +141,16 @@
         cursor: pointer; outline: none; padding: 4px 8px; border-radius: 8px;
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .desktop-icon-btn svg { width: 24px; height: 24px; color: #475569; transition: transform 0.3s; }
+    .desktop-icon-btn:active { transform: none; }
+    .header-icon-container { display: flex; align-items: center; justify-content: center; position: relative; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .desktop-icon-btn:active .header-icon-container { transform: scale(0.85); transition: transform 0.6s ease; }
+    
+    .desktop-icon-btn svg { width: 24px; height: 24px; color: #475569; transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .desktop-icon-btn-label { font-size: 0.75rem; font-weight: 600; color: #64748b; transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    @media (hover: hover) { .desktop-icon-btn:hover .desktop-icon-btn-label { color: #2563eb; } }
-    .desktop-icon-btn:active { transform: scale(0.92); }
+    @media (hover: hover) { 
+        .desktop-icon-btn:hover .desktop-icon-btn-label { color: #2563eb; } 
+        .desktop-icon-btn:hover svg { color: #2563eb; }
+    }
     
     .header-badge {
         position: absolute; top: -6px; right: -6px; background: #ef4444; color: white;
@@ -184,7 +191,7 @@
     
     .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
     @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; } }
-    .btn-submit:active { transform: scale(0.96); box-shadow: none; }
+    .btn-submit:active { transform: scale(0.96); transition: transform 0.6s ease; box-shadow: none; }
 
     /* Глобальные стили инпутов для форм (оформление заказа, трекинг) */
     .input-wrapper {
@@ -223,8 +230,8 @@
     .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
     .list-item-price { font-weight: 700; color: #2563eb; font-size: 1.1rem; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;}
     .list-item-old-price { font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; text-decoration-color: #ef4444; font-weight: 700; }
-    .list-item-del-btn { background: transparent; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; outline: none; flex-shrink: 0; }
-    .list-item-del-btn:active { transform: scale(0.85); background: #fee2e2; }
+    .list-item-del-btn { background: transparent; color: #ef4444; border: none; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; flex-shrink: 0; }
+    .list-item-del-btn:active { transform: scale(0.85); background: #fee2e2; transition: transform 0.6s ease; }
     .list-item-col { flex-direction: column; align-items: flex-start; }
 
     /* МОДАЛКА КАТАЛОГА */
@@ -238,15 +245,18 @@
         mask-image: linear-gradient(to bottom, transparent, black 1rem, black calc(100% - 1rem), transparent);
     }
     #dynamicNavAccordion::-webkit-scrollbar { display: none; }
+    
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
+    .nav-col { display: contents; }
     @media (min-width: 1024px) { 
-        .nav-accordion { display: block; column-count: 3; column-gap: 1.5rem; } 
-        .nav-acc-item { break-inside: avoid; display: inline-block; width: 100%; margin-bottom: 1.5rem; }
+        .nav-accordion { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; } 
+        .nav-col { display: flex; flex-direction: column; gap: 1.5rem; }
     }
+    
     .nav-acc-item { flex-shrink: 0; background: transparent; border: none; border-radius: 12px; overflow: hidden; transition: all 0.3s; }
     .nav-acc-item.active { background: #f8fafc; }
-    .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; transition: background 0.3s, transform 0.2s; }
-    .nav-acc-header:active { transform: scale(0.97); }
+    .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; transition: background 0.3s, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .nav-acc-header:active { transform: scale(0.97); transition: transform 0.6s ease; }
     .nav-acc-header-left { display: flex; align-items: center; gap: 12px; }
     .nav-acc-icon { width: 40px; height: 40px; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; transition: 0.3s; }
     .nav-acc-item.active .nav-acc-icon { color: #2563eb; }
@@ -256,8 +266,8 @@
     .nav-acc-content { display: none; padding: 0 1.2rem 1.2rem 1.2rem; }
     .nav-acc-item.active .nav-acc-content { display: block; animation: fadeIn 0.4s ease; }
     .nav-sub-list { display: flex; flex-wrap: wrap; gap: 0.5rem; border-top: 1px dashed #e2e8f0; padding-top: 1rem; margin-top: 0.2rem; }
-    .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s, transform 0.2s; user-select: none; }
-    .nav-sub-link:active { transform: scale(0.97); }
+    .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); user-select: none; }
+    .nav-sub-link:active { transform: scale(0.95); transition: transform 0.6s ease; }
     @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; } }
 
     /* ПРЕМИАЛЬНЫЙ ФУТЕР */
@@ -268,7 +278,7 @@
     
     @media (min-width: 1024px) {
         .footer-grid { grid-template-columns: repeat(3, 1fr); gap: 0; }
-        .footer-col { padding: 0 2rem; border-right: 1px solid #e2e8f0; }
+        .footer-col { padding: 0 2.5rem; border-right: 1px solid #e2e8f0; }
         .footer-col:first-child { padding-left: 0; }
         .footer-col:last-child { border-right: none; padding-right: 0; }
     }
@@ -277,12 +287,12 @@
         position: relative; overflow: hidden;
         display: flex; align-items: stretch; text-decoration: none;
         background: #ffffff; border: none; border-radius: 12px;
-        margin-bottom: 0.8rem; cursor: pointer; transition: all 0.2s; outline: none;
+        margin-bottom: 0.8rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
         width: 100%; min-height: 48px; padding: 0;
         border: 1px solid #cfdbe6;
     }
     @media (hover: hover) { .footer-btn:hover { background: #f8fafc; } }
-    .footer-btn:active { transform: scale(0.96); }
+    .footer-btn:active { transform: scale(0.96); transition: transform 0.6s ease; }
     
     .footer-btn-icon {
         position: absolute; left: 0; top: 0; bottom: 0; width: 48px;
@@ -306,21 +316,22 @@
     }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 20%; outline: none; transition: transform 0.2s;
+        color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 20%; outline: none; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .bottom-nav-item:active .bottom-nav-icon-wrap { transform: scale(0.85); }
-    .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .bottom-nav-item:active { transform: none; }
+    .bottom-nav-item:active .bottom-nav-icon-wrap { transform: scale(0.85); transition: transform 0.6s ease; }
+    .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .bottom-nav-badge {
         position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
         font-size: 9px; font-weight: 700; height: 16px; min-width: 16px; border-radius: 8px;
-        display: flex; align-items: center; justify-content: center; padding: 0 4px;
+        display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid #fff;
     }
     
     /* АДАПТИВ */
     @media (max-width: 640px) {
         .header { display: none !important; } 
         .mobile-bottom-nav { display: flex; }
-        body { padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } 
+        body { padding-top: 0; padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important; } 
         .mobile-bottom-bar { bottom: calc(75px + env(safe-area-inset-bottom)) !important; z-index: 90 !important; } 
     }
 
@@ -558,16 +569,16 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                     <a href="/" class="logo" draggable="false">
                         <img src="/img/logohead.webp" alt="ENKA Electronics" class="logo-img" draggable="false">
                     </a>
-                </div>
-                
-                <div class="header-center">
                     <button class="ozon-catalog-btn" onclick="window.openAppModal('navModal')" title="კატალოგი">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                         <span class="nav-btn-text">კატალოგი</span>
                     </button>
+                </div>
+                
+                <div class="header-center">
                     <div class="ozon-search-box">
                         <input type="text" id="searchInput" placeholder="ძიება..." autocomplete="off">
-                        <span class="search-clear" id="desktopSearchClear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                        <span class="search-clear" id="desktopSearchClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
                         <button class="ozon-search-btn" id="desktopSearchBtn" aria-label="ძიება">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </button>
@@ -576,26 +587,27 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 
                 <div class="header-right">
                     <button class="desktop-icon-btn" onclick="window.openTracking()" title="შეკვეთის სტატუსი">
-                        <div style="position:relative; display:flex;">
+                        <div class="header-icon-container">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M21 11.5V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l1.5-.86"/>
-                              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                              <line x1="12" y1="22.08" x2="12" y2="12"/>
+                              <path d="M12 21.99L5 18V8l7-4 7 4v5.5"/>
+                              <path d="M12 12L5 8"/>
+                              <path d="M12 12v9.99"/>
+                              <path d="M19 8l-7 4"/>
                               <circle cx="18" cy="18" r="3"/>
-                              <line x1="20.5" y1="20.5" x2="22.5" y2="22.5"/>
+                              <line x1="20.2" y1="20.2" x2="22.5" y2="22.5"/>
                             </svg>
                         </div>
                         <span class="desktop-icon-btn-label">სტატუსი</span>
                     </button>
                     <button class="desktop-icon-btn" onclick="openFavorites(event)" title="რჩეულები">
-                        <div style="position:relative; display:flex;">
+                        <div class="header-icon-container">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                             <span class="header-badge fav-badge" style="display:none;">0</span>
                         </div>
                         <span class="desktop-icon-btn-label">რჩეულები</span>
                     </button>
                     <button class="desktop-icon-btn" onclick="openOrders(event)" title="ჩემი შეკვეთები">
-                        <div style="position:relative; display:flex;">
+                        <div class="header-icon-container">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                             <span class="header-badge orders-badge" style="display:none;">0</span>
                         </div>
@@ -631,7 +643,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                     <h3>კაბინეტი</h3>
                     <button onclick="openFavorites(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div class="footer-btn-text">რჩეულები</div></button>
                     <button onclick="openOrders(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div class="footer-btn-text">ჩემი შეკვეთები</div></button>
-                    <button id="footerTrackingBtn" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l1.5-.86"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/><circle cx="18" cy="18" r="3"/><line x1="20.5" y1="20.5" x2="22.5" y2="22.5"/></svg></div><div class="footer-btn-text">შეკვეთის სტატუსი</div></button>
+                    <button id="footerTrackingBtn" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.99L5 18V8l7-4 7 4v5.5"/><path d="M12 12L5 8"/><path d="M12 12v9.99"/><path d="M19 8l-7 4"/><circle cx="18" cy="18" r="3"/><line x1="20.2" y1="20.2" x2="22.5" y2="22.5"/></svg></div><div class="footer-btn-text">შეკვეთის სტატუსი</div></button>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -693,9 +705,9 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
 
     <div class="modal" id="searchModalMobile" style="align-items: flex-start; padding-top: 1rem;">
         <div class="modal-content" style="max-height: 95vh; display: flex; flex-direction: column;">
-            <div style="position:relative; display:flex; align-items:stretch; border: 2px solid #2563eb; border-radius: 12px; overflow: hidden; height: 48px; flex-shrink: 0;">
-                <input type="text" id="mobileSearchInput" placeholder="ძიება..." style="flex:1; border:none; padding: 0.8rem 1.2rem; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; background: transparent; margin: 0;">
-                <span class="search-clear" id="mobileSearchClear" style="right: 3.5rem; top: 50%; transform: translateY(-50%);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+            <div class="mobile-search-wrapper" style="position:relative; display:flex; align-items:stretch; border: 2px solid #2563eb; border-radius: 12px; overflow: hidden; height: 48px; flex-shrink: 0; width: 100%;">
+                <input type="text" id="mobileSearchInput" placeholder="ძიება..." style="flex:1; border:none; padding: 0.8rem 3.5rem 0.8rem 1.2rem; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; background: transparent; margin: 0; color: #0f172a;">
+                <span class="search-clear" id="mobileSearchClear" style="right: 3.8rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
                 <button class="ozon-search-btn" id="mobileSearchBtn" style="padding: 0 1.2rem; border-radius: 0;" aria-label="ძიება">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </button>
@@ -790,10 +802,11 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
         try {
             const navContainer = document.getElementById('dynamicNavAccordion');
             if (navContainer && window.CATALOG_STRUCTURE) {
-                let html = '';
+                const cols = [[], [], []];
+                let idx = 0;
                 for (const [catId, catData] of Object.entries(window.CATALOG_STRUCTURE)) {
                     let subLinks = catData.subs.map(sub => `<a href="/?category=${catId}&sub=${sub.id}" class="nav-sub-link" draggable="false">${sub.name}</a>`).join('');
-                    html += `
+                    let itemHtml = `
                     <div class="nav-acc-item">
                         <div class="nav-acc-header" onclick="this.parentElement.classList.toggle('active')">
                             <div class="nav-acc-header-left"><div class="nav-acc-icon">${catData.icon}</div><span>${catData.title}</span></div>
@@ -801,8 +814,10 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                         </div>
                         <div class="nav-acc-content"><div class="nav-sub-list"><a href="/?category=${catId}" class="nav-sub-link" draggable="false">ყველა</a>${subLinks}</div></div>
                     </div>`;
+                    cols[idx % 3].push(itemHtml);
+                    idx++;
                 }
-                navContainer.innerHTML = html;
+                navContainer.innerHTML = `<div class="nav-col">${cols[0].join('')}</div><div class="nav-col">${cols[1].join('')}</div><div class="nav-col">${cols[2].join('')}</div>`;
             }
         } catch(e) { console.error(e); }
 
@@ -835,11 +850,15 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
     }
 
     let _catalogCache = null;
+    let _catalogPromise = null;
     function fetchCatalogCached() {
         if (_catalogCache) return Promise.resolve(_catalogCache);
-        return fetch('https://api.enkaelectronics.com.ge/catalog')
-            .then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
-            .then(d => { _catalogCache = d; return d; });
+        if (!_catalogPromise) {
+            _catalogPromise = fetch('https://api.enkaelectronics.com.ge/catalog')
+                .then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
+                .then(d => { _catalogCache = d; return d; });
+        }
+        return _catalogPromise;
     }
 
     function setupSearch(inputId, resultsId, clearId) {
@@ -853,9 +872,13 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 if (!q) { if(r) { r.innerHTML = ''; r.classList.remove('show'); r.style.display = 'none'; } return; }
                 
                 fetchCatalogCached().then(d => {
-                    if (s.value.trim() !== q) return; // Prevent race conditions
+                    if (s.value.trim() !== q) return;
+                    let qLower = q.toLowerCase();
                     let normalizedQ = normalizeQuery(q);
-                    let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && (p.name || '').toLowerCase().includes(normalizedQ));
+                    let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && 
+                        ((p.name || '').toLowerCase().includes(qLower) || 
+                         (p.name || '').toLowerCase().includes(normalizedQ))
+                    );
                     
                     if(r) {
                         if (inputId === 'mobileSearchInput') {
