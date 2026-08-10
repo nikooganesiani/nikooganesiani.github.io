@@ -1,3 +1,5 @@
+--- START OF FILE Paste August 10, 2026 - 11:23AM ---
+
 ---
 # Этот блок обязателен для Jekyll, можно оставить пустым
 ---
@@ -79,8 +81,9 @@
     .search-results, .modal-content, .modal-list-container { -ms-overflow-style: none; scrollbar-width: none; }
     .search-results::-webkit-scrollbar, .modal-content::-webkit-scrollbar, .modal-list-container::-webkit-scrollbar { display: none; }
     
-    html { overflow-y: scroll; scroll-behavior: smooth; }
+    html { overflow-y: scroll; scrollbar-gutter: stable; scroll-behavior: smooth; }
     body { background: #f5f7fa; min-height: 100vh; display: flex; flex-direction: column; color: #0f172a; overflow-x: clip; }
+    body.modal-open { overflow: hidden; }
     main { flex: 1; } 
 
     /* ПРЕМИАЛЬНЫЙ HEADER (ПК) - Без теней и обводок */
@@ -90,62 +93,66 @@
         border-bottom: none; box-shadow: none;
     }
     .header-content { max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.5rem; }
-    .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; }
+    .header-main-layout { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; position: relative; height: 70px; }
     
     .header-left { display: flex; align-items: center; gap: 1.2rem; flex: 1; justify-content: flex-start; }
     .logo-img { height: 38px; width: auto; max-width: 180px; object-fit: contain; transition: all 0.3s; user-select: none; }
-    @media (hover: hover) { .logo:hover .logo-img { transform: translateY(-1px); } }
     .logo:active .logo-img { transform: scale(0.96); }
 
-    .nav-btn-header { 
-        display: flex; align-items: center; gap: 8px; background: transparent; border: none; 
-        padding: 0.6rem 1.2rem; border-radius: 2rem; font-weight: 700; color: #0f172a; cursor: pointer; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none; user-select: none;
+    .header-center { display: flex; align-items: stretch; max-width: 750px; width: 100%; justify-content: center; flex: 2; margin: 0 1.5rem; height: 48px; }
+    
+    .ozon-catalog-btn {
+        display: flex; align-items: center; gap: 8px; background: #2563eb; color: #fff !important; 
+        padding: 0 1.4rem; border-radius: 12px; margin-right: 12px; font-weight: 700; flex-shrink: 0;
+        border: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; user-select: none;
     }
-    @media (hover: hover) { .nav-btn-header:hover { background: #f1f5f9; color: #2563eb; } }
-    .nav-btn-header:active { transform: scale(0.92); }
-    .nav-burger-icon { width: 20px; height: 20px; }
+    @media (hover: hover) { .ozon-catalog-btn:hover { background: #1d4ed8 !important; } }
+    .ozon-catalog-btn:active { transform: scale(0.96); }
 
-    .header-center { flex: 1; max-width: 450px; position: relative; display: flex; align-items: center; justify-content: center; width: 100%; }
-    .search-box { position: relative; width: 100%; }
-    .search-box input {
-        width: 100%; padding: 0.8rem 1.2rem 0.8rem 3rem; border: none; border-radius: 2rem; 
-        font-size: 0.95rem; font-weight: 500; background: #f1f5f9; color: #0f172a; transition: all 0.3s; outline: none;
+    .ozon-search-box {
+        display: flex; align-items: center; background: #fff; border: 2px solid #2563eb; border-radius: 12px; flex: 1; position: relative; height: 100%;
     }
-    .search-box input:focus { background: #e2e8f0; }
-    .search-box input::placeholder { color: #94a3b8; font-weight: 500; }
-    .search-icon { position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #94a3b8; pointer-events: none; transition: all 0.4s; }
-    .search-icon.active { color: #2563eb; transform: translateY(-50%) scale(1.15) rotate(-3deg); }
+    .ozon-search-box input {
+        flex: 1; border: none; background: transparent; padding: 0.8rem 1.2rem; border-radius: 0; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; color: #0f172a;
+    }
+    .ozon-search-btn {
+        background: #2563eb; color: white; border: none; padding: 0 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; outline: none; height: 100%; border-radius: 0 9px 9px 0;
+    }
+    @media (hover: hover) { .ozon-search-btn:hover { background: #1d4ed8; } }
+    .ozon-search-btn:active { transform: scale(0.96); }
+    
+    .search-clear { position: absolute; right: 4.5rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
+    .search-clear.show { display: block; }
 
-    .header-right { display: flex; align-items: center; gap: 0.8rem; flex: 1; justify-content: flex-end; }
+    .header-right { display: flex; align-items: center; gap: 1rem; flex: 1; justify-content: flex-end; }
     
     .desktop-icon-btn {
-        position: relative; background: transparent; border: none; width: 44px; height: 44px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center; cursor: pointer; color: #64748b;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;
+        position: relative; background: transparent; border: none;
+        display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+        cursor: pointer; color: #64748b; transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; padding: 4px 8px; border-radius: 8px;
     }
-    @media (hover: hover) { .desktop-icon-btn:hover { background: #f1f5f9; color: #2563eb; transform: translateY(-2px); } }
+    @media (hover: hover) { .desktop-icon-btn:hover { color: #2563eb; } }
     .desktop-icon-btn:active { transform: scale(0.92); }
-    .desktop-icon-btn svg { width: 20px; height: 20px; }
+    .desktop-icon-btn svg { width: 24px; height: 24px; }
+    .desktop-icon-btn-label { font-size: 0.75rem; font-weight: 600; }
+    
     .header-badge {
-        position: absolute; top: 2px; right: 2px; background: #ef4444; color: white;
+        position: absolute; top: -6px; right: -6px; background: #ef4444; color: white;
         font-size: 10px; font-weight: 700; height: 18px; min-width: 18px; border-radius: 9px;
         display: flex; align-items: center; justify-content: center;
         line-height: 1; padding: 0 4px; box-sizing: border-box;
     }
 
     .search-results {
-        position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: white;
-        border-radius: 1.5rem; box-shadow: none; border: none;
+        position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: white; width: 100%;
+        border-radius: 1.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: none;
         z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(12px) scale(0.98);
         transition: all 0.3s; max-height: 400px; overflow-y: auto; padding: 0.5rem;
     }
     .search-results.show { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
     .search-result-item { display: flex; align-items: center; gap: 1rem; padding: 0.8rem; cursor: pointer; border-radius: 1rem; transition: all 0.2s; }
-    @media (hover: hover) { .search-result-item:hover { background: #f8fafc; transform: translateX(4px); } }
+    @media (hover: hover) { .search-result-item:hover { background: #f8fafc; } }
     .search-result-img { width: 48px; height: 48px; object-fit: contain; border-radius: 0.8rem; background: transparent; border: none; }
-    .search-clear { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; color: #cbd5e1; display: none; transition: color 0.2s; }
-    .search-clear.show { display: block; }
     
     /* ЕДИНЫЙ ДИЗАЙН-КОД МОДАЛОК - Без теней и обводок */
     .modal {
@@ -165,19 +172,43 @@
     .input-field { width: 100%; padding: 1.1rem 1.2rem; border: 2px solid transparent; border-radius: 12px; font-size: 1rem; font-weight: 600; margin-bottom: 1rem; transition: all 0.3s; background: #f1f5f9; color: #0f172a; outline: none; }
     .input-field:focus { background: #e2e8f0; }
     .input-error { border-color: #ef4444 !important; }
-    .phone-wrapper { border-radius: 12px; }
     
     .btn-submit { background: #2563eb; color: white; border: none; padding: 1.2rem; width: 100%; border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px; user-select: none; outline: none; }
     @media (hover: hover) { .btn-submit:hover { background: #1d4ed8; } }
     .btn-submit:active { transform: scale(0.96); box-shadow: none; }
 
+    /* Глобальные стили инпутов для форм (оформление заказа, трекинг) */
+    .input-wrapper {
+        display: flex; align-items: center; padding: 0 16px; gap: 10px; height: 50px;
+        background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px;
+        transition: all 0.2s; overflow: hidden; width: 100%; box-sizing: border-box;
+    }
+    .input-wrapper:focus-within { background: #ffffff; border-color: #2563eb; }
+    .input-wrapper.error-border { border-color: #ef4444 !important; }
+    .input-wrapper svg { flex-shrink: 0; color: #94a3b8; width: 20px; height: 20px; }
+    .input-wrapper .prefix { flex-shrink: 0; font-weight: 700; color: #64748b; font-size: 15px; }
+    .clean-input {
+        flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+        font-size: 15px; font-weight: 600; color: #0f172a; padding: 0; height: 100%;
+    }
+    .clean-input::placeholder { color: #94a3b8; font-weight: 500; }
+    .clean-input:-webkit-autofill, .clean-input:-webkit-autofill:hover, 
+    .clean-input:-webkit-autofill:focus, .clean-input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #f8fafc inset !important;
+        -webkit-text-fill-color: #0f172a !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    .input-wrapper:focus-within .clean-input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    }
+
     /* МОДАЛКИ СПИСКОВ (Избранное, Заказы) */
-    .modal-list-container { max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 10px; }
+    .modal-list-container { max-height: 55vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0; padding-bottom: 10px; }
     .list-item-card {
         display: flex; gap: 12px; background: transparent; border: none;
-        border-radius: 12px; padding: 12px; position: relative; align-items: center; transition: all 0.2s;
+        border-radius: 0; border-bottom: 1px solid #e2e8f0; padding: 16px 8px; position: relative; align-items: center; transition: all 0.2s;
     }
-    @media (hover: hover) { .list-item-card:hover { background: #f8fafc; } }
+    .list-item-card:last-child { border-bottom: none; }
     .list-item-img { width: 64px; height: 64px; border-radius: 8px; object-fit: contain; background: transparent; border: none; flex-shrink: 0; }
     .list-item-info { flex: 1; min-width: 0; }
     .list-item-title { font-weight: 700; font-size: 0.95rem; color: #0f172a; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
@@ -189,6 +220,7 @@
 
     /* МОДАЛКА КАТАЛОГА */
     #navModal .modal-content { height: 70vh; min-height: 400px; max-height: 600px; display: flex; flex-direction: column; padding-bottom: 1.5rem; }
+    @media (min-width: 1024px) { #navModal .modal-content { max-width: 900px; } }
     #navModal h3 { flex-shrink: 0; margin-bottom: 1rem; }
     #dynamicNavAccordion {
         flex: 1; overflow-y: auto; padding-right: 5px; padding-top: 1rem; padding-bottom: 1rem; margin-top: -1rem; margin-bottom: -1rem;
@@ -198,9 +230,11 @@
     }
     #dynamicNavAccordion::-webkit-scrollbar { display: none; }
     .nav-accordion { display: flex; flex-direction: column; gap: 0.8rem; }
+    @media (min-width: 1024px) { .nav-accordion { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; } }
     .nav-acc-item { flex-shrink: 0; background: transparent; border: none; border-radius: 12px; overflow: hidden; transition: all 0.3s; }
     .nav-acc-item.active { background: #f8fafc; }
-    .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; }
+    .nav-acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem; cursor: pointer; font-weight: 700; color: #1e293b; font-size: 1.05rem; user-select: none; transition: background 0.3s, transform 0.2s; }
+    .nav-acc-header:active { transform: scale(0.97); }
     .nav-acc-header-left { display: flex; align-items: center; gap: 12px; }
     .nav-acc-icon { width: 40px; height: 40px; background: transparent; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; transition: 0.3s; }
     .nav-acc-item.active .nav-acc-icon { color: #2563eb; }
@@ -210,7 +244,8 @@
     .nav-acc-content { display: none; padding: 0 1.2rem 1.2rem 1.2rem; }
     .nav-acc-item.active .nav-acc-content { display: block; animation: fadeIn 0.4s ease; }
     .nav-sub-list { display: flex; flex-wrap: wrap; gap: 0.5rem; border-top: 1px dashed #e2e8f0; padding-top: 1rem; margin-top: 0.2rem; }
-    .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s; user-select: none; }
+    .nav-sub-link { text-decoration: none; color: #475569; font-size: 0.85rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 2rem; background: #f1f5f9; transition: all 0.2s, transform 0.2s; user-select: none; }
+    .nav-sub-link:active { transform: scale(0.97); }
     @media (hover: hover) { .nav-sub-link:hover { color: white; background: #2563eb; } }
 
     /* ПРЕМИАЛЬНЫЙ ФУТЕР */
@@ -218,6 +253,12 @@
     .premium-footer .footer-content { max-width: 1280px; margin: 0 auto; }
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2.5rem; margin-bottom: 3rem; }
     .footer-col h3 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 1.25rem; letter-spacing: -0.5px; text-align: center; }
+    
+    @media (min-width: 768px) {
+        .footer-col { padding: 0 1.5rem; border-right: 1px solid #e2e8f0; }
+        .footer-col:first-child { padding-left: 0; }
+        .footer-col:last-child { border-right: none; padding-right: 0; }
+    }
     
     .footer-btn {
         position: relative; overflow: hidden;
@@ -227,7 +268,7 @@
         width: 100%; min-height: 48px; padding: 0;
         border: 1px solid #cfdbe6;
     }
-    @media (hover: hover) { .footer-btn:hover { background: #f8fafc; transform: translateY(-2px); } }
+    @media (hover: hover) { .footer-btn:hover { background: #f8fafc; } }
     .footer-btn:active { transform: scale(0.96); }
     
     .footer-btn-icon {
@@ -254,8 +295,8 @@
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         color: #64748b; font-size: 0.65rem; font-weight: 700; gap: 4px; text-decoration: none; border: none; background: transparent; width: 20%; outline: none; transition: transform 0.2s;
     }
-    .bottom-nav-item:active { transform: scale(0.9); }
-    .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; }
+    .bottom-nav-item:active .bottom-nav-icon-wrap { transform: scale(0.85); }
+    .bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; color: currentColor; transition: transform 0.2s; }
     .bottom-nav-badge {
         position: absolute; top: -5px; right: -8px; background: #ef4444; color: white;
         font-size: 9px; font-weight: 700; height: 16px; min-width: 16px; border-radius: 8px;
@@ -283,13 +324,7 @@
     }
     .global-toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-    /* ПРОЧИЕ СТИЛИ (Формы, Таймлайн, Трекинг) */
-    .phone-wrapper { display: flex; align-items: stretch; background: #f1f5f9; border: 2px solid transparent; border-radius: 12px; transition: all 0.3s; margin-bottom: 1rem; overflow: hidden; transform: translateZ(0); }
-    .phone-wrapper:focus-within { background: #e2e8f0; }
-    .phone-wrapper.error-border { border-color: #ef4444 !important; }
-    .phone-prefix { display: flex; align-items: center; padding: 1.1rem 0.5rem 1.1rem 1.2rem; font-size: 1rem; font-weight: 700; color: #64748b; border-radius: 12px 0 0 12px; }
-    .phone-input { border: none !important; padding: 1.1rem 1.2rem 1.1rem 0.2rem !important; margin-bottom: 0 !important; flex: 1; background: transparent !important; border-radius: 0 12px 12px 0 !important; outline: none; }
-
+    /* ПРОЧИЕ СТИЛИ (Таймлайн, Трекинг) */
     .order-confirm-icon-wrapper { position: relative; width: 100px; height: 100px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; }
     .order-confirm-circle { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: #dcfce7; display: flex; align-items: center; justify-content: center; animation: statusPulse 2s infinite; }
     .order-confirm-inner { width: 60px; height: 60px; border-radius: 50%; background: #16a34a; display: flex; align-items: center; justify-content: center; z-index: 2; }
@@ -316,34 +351,19 @@
     .timeline-date-v { font-size: 0.75rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
     .timeline-text-v { font-size: 0.95rem; font-weight: 600; color: #1e293b; }
 
-    #trackingModal .modal-content { background: #1e293b; color: #ffffff; }
-    #trackingModal h3 { color: #ffffff; }
-    #trackingModal .tracking-input-wrapper { position: relative; margin-bottom: 1.2rem; }
-    #trackingModal .tracking-input-wrapper svg { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-    #trackingModal .tracking-input-wrapper input { background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; color: #ffffff; padding-left: 3.2rem; margin-bottom: 0; }
-    #trackingModal .tracking-input-wrapper input:focus { background: rgba(255, 255, 255, 0.15); }
-    #trackingModal .tracking-input-wrapper input::placeholder { color: #94a3b8; }
-    #trackingModal .btn-submit { background: #3b82f6; color: #ffffff; border: none; }
-    @media (hover: hover) { #trackingModal .btn-submit:hover { background: #60a5fa; } }
-    .tracking-error-msg { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); color: #fca5a5; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease; }
+    .tracking-error-msg { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 600; animation: fadeIn 0.3s ease; }
     
-    .dark-timeline .timeline-line { background: rgba(255,255,255,0.1); }
-    .dark-timeline .timeline-dot-v { background: #1e293b; }
-    .dark-timeline .timeline-step-v.past .timeline-dot-v { background: #475569; border-color: transparent; }
-    .dark-timeline .timeline-step-v.past .timeline-line { background: #475569; }
-    .dark-timeline .timeline-step-v.current .timeline-dot-v { background: #3b82f6; border-color: transparent; }
-    .dark-timeline .timeline-date-v { color: #94a3b8; }
-    .dark-timeline .timeline-text-v { color: #cbd5e1; }
-    .dark-timeline .timeline-step-v.current .timeline-text-v { color: #ffffff; }
-    .dark-timeline .timeline-step-v.current .timeline-date-v { color: #60a5fa; }
-    .dark-spinner { border-color: rgba(255,255,255,0.1); border-top-color: #ffffff; }
+    .timeline-dot-v { background: #e2e8f0; }
+    .timeline-step-v.past .timeline-dot-v { background: #94a3b8; border-color: transparent; }
+    .timeline-step-v.past .timeline-line { background: #94a3b8; }
+    .timeline-step-v.current .timeline-dot-v { background: #2563eb; border-color: transparent; }
+    .timeline-step-v.current .timeline-text-v { color: #0f172a; }
+    .timeline-step-v.current .timeline-date-v { color: #2563eb; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
     .spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-top: 3px solid #ffffff; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.8s linear infinite; margin: 0 auto 1rem; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-    html.modal-open { overflow: hidden !important; padding-right: var(--sb-width, 0px) !important; }
-    html.modal-open .header { margin-right: calc(var(--sb-width, 0px) * -1) !important; padding-right: var(--sb-width, 0px) !important; }
 </style>
 </head>
 <body>
@@ -392,9 +412,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
         window.openAppModal = function(id) {
             try {
                 const m = document.getElementById(id); if(!m) return;
-                const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-                document.documentElement.style.setProperty('--sb-width', `${scrollbarWidth}px`);
-                document.documentElement.classList.add('modal-open'); 
+                document.body.classList.add('modal-open'); 
                 m.style.display = 'flex'; m.offsetHeight; m.classList.add('active');
                 if(id === 'searchModalMobile') { setTimeout(() => document.getElementById('mobileSearchInput').focus(), 100); }
             } catch(e) { console.error(e); }
@@ -405,24 +423,9 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 const m = typeof id === 'string' ? document.getElementById(id) : id; if(!m) return;
                 m.classList.remove('active');
                 if (m.id === 'trackingModal') { const url = new URL(window.location); url.searchParams.delete('orderstatus'); history.pushState(null, '', url.pathname + url.search); }
-                if (!document.querySelector('.modal.active')) { document.documentElement.classList.remove('modal-open'); }
+                if (!document.querySelector('.modal.active')) { document.body.classList.remove('modal-open'); }
                 setTimeout(() => { if(!m.classList.contains('active')) m.style.display = 'none'; }, 400); 
             } catch(e) { console.error(e); }
-        };
-
-        // Логика подсветки полей с ошибками
-        window.showInputError = function(el) {
-            if (el) {
-                el.classList.add('error-border');
-                const input = el.querySelector('input');
-                if (input) {
-                    const removeError = () => {
-                        el.classList.remove('error-border');
-                        input.removeEventListener('input', removeError);
-                    };
-                    input.addEventListener('input', removeError);
-                }
-            }
         };
 
         window.globalToastTimeout = null;
@@ -468,7 +471,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
             let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
             const countEl = document.getElementById('favModalCount');
             if(countEl) countEl.innerText = favs.length > 0 ? `(${favs.length})` : '';
-            if (favs.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:2rem 0; font-weight:600;">რჩეულები ცარიელია</div>'; return; }
+            if (favs.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:3rem 0; font-weight:600;"><svg style="width:64px;height:64px;margin-bottom:1rem;color:#cbd5e1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><br>რჩეულები ცარიელია</div>'; return; }
             list.innerHTML = favs.map((f, i) => {
                 let oldPHtml = (f.oldPrice && f.oldPrice !== 'null' && !f.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${f.oldPrice}</span>` : '';
                 return `<div class="list-item-card" onclick="location.href='${f.link}'" style="cursor:pointer;">
@@ -502,14 +505,14 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
             let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
             const countEl = document.getElementById('ordersModalCount');
             if(countEl) countEl.innerText = orders.length > 0 ? `(${orders.length})` : '';
-            if (orders.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:2rem 0; font-weight:600;">შეკვეთები არ გაქვთ</div>'; return; }
+            if (orders.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; padding:3rem 0; font-weight:600;"><svg style="width:64px;height:64px;margin-bottom:1rem;color:#cbd5e1;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg><br>შეკვეთები არ გაქვთ</div>'; return; }
             list.innerHTML = orders.map(o => {
                 let d = new Date(o.date);
                 let dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
                 let priceFixed = String(o.price).includes('₾') ? o.price : String(o.price).trim() + ' ₾';
                 let oldPHtml = (o.oldPrice && o.oldPrice !== 'null' && !o.oldPrice.includes('undefined')) ? `<span class="list-item-old-price" style="margin-left:6px;">${o.oldPrice}</span>` : '';
                 return `<div class="list-item-card list-item-col">
-                    <div style="display:flex; justify-content:space-between; width:100%; border-bottom:1px dashed #e2e8f0; padding-bottom:8px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; width:100%; padding-bottom:4px; margin-bottom:4px;">
                         <span style="font-size:0.8rem; color:#64748b; font-weight:600;">${dateStr}</span>
                         <span style="font-size:1rem; color:#2563eb; font-weight:700; display:flex; align-items:center;">${priceFixed} ${oldPHtml}</span>
                     </div>
@@ -542,28 +545,48 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                     <a href="/" class="logo" draggable="false">
                         <img src="/img/logohead.webp" alt="ENKA Electronics" class="logo-img" draggable="false">
                     </a>
-                    <button class="nav-btn-header" onclick="window.openAppModal('navModal')" title="კატალოგი">
-                        <svg class="nav-burger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
-                        <span class="nav-btn-text">ნავიგაცია</span>
-                    </button>
                 </div>
                 
                 <div class="header-center">
-                    <div class="search-box">
-                        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <button class="ozon-catalog-btn" onclick="window.openAppModal('navModal')" title="კატალოგი">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        <span class="nav-btn-text">კატალოგი</span>
+                    </button>
+                    <div class="ozon-search-box">
                         <input type="text" id="searchInput" placeholder="ძიება..." autocomplete="off">
                         <span class="search-clear" id="desktopSearchClear"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                        <button class="ozon-search-btn" id="desktopSearchBtn" aria-label="ძიება">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </button>
                     </div>
                 </div>
                 
                 <div class="header-right">
+                    <button class="desktop-icon-btn" onclick="window.openTracking()" title="შეკვეთის სტატუსი">
+                        <div style="position:relative; display:flex;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                              <path d="m3.3 7 8.7 5 8.7-5"/>
+                              <path d="M12 22V12"/>
+                              <circle cx="18" cy="18" r="3"/>
+                              <path d="m22 22-1.5-1.5"/>
+                            </svg>
+                        </div>
+                        <span class="desktop-icon-btn-label">სტატუსი</span>
+                    </button>
                     <button class="desktop-icon-btn" onclick="openFavorites(event)" title="რჩეულები">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        <span class="header-badge fav-badge" style="display:none;">0</span>
+                        <div style="position:relative; display:flex;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <span class="header-badge fav-badge" style="display:none;">0</span>
+                        </div>
+                        <span class="desktop-icon-btn-label">რჩეულები</span>
                     </button>
                     <button class="desktop-icon-btn" onclick="openOrders(event)" title="ჩემი შეკვეთები">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                        <span class="header-badge orders-badge" style="display:none;">0</span>
+                        <div style="position:relative; display:flex;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+                            <span class="header-badge orders-badge" style="display:none;">0</span>
+                        </div>
+                        <span class="desktop-icon-btn-label">შეკვეთები</span>
                     </button>
                 </div>
             </div>
@@ -594,8 +617,8 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 <div class="footer-col">
                     <h3>კაბინეტი</h3>
                     <button onclick="openFavorites(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div class="footer-btn-text">რჩეულები</div></button>
-                    <button onclick="openOrders(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg></div><div class="footer-btn-text">ჩემი შეკვეთები</div></button>
-                    <button id="footerTrackingBtn" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg></div><div class="footer-btn-text">შეკვეთის სტატუსი</div></button>
+                    <button onclick="openOrders(event)" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg></div><div class="footer-btn-text">ჩემი შეკვეთები</div></button>
+                    <button id="footerTrackingBtn" class="footer-btn"><div class="footer-btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path><circle cx="18" cy="18" r="3"></circle><path d="m22 22-1.5-1.5"></path></svg></div><div class="footer-btn-text">შეკვეთის სტატუსი</div></button>
                 </div>
             </div>
             <div class="footer-bottom">
@@ -627,7 +650,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
         </button>
         <button class="bottom-nav-item" onclick="openOrders(event)">
             <div class="bottom-nav-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
                 <span class="bottom-nav-badge orders-badge" style="display:none;">0</span>
             </div>
             <span>შეკვეთები</span>
@@ -657,10 +680,12 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
 
     <div class="modal" id="searchModalMobile" style="align-items: flex-start; padding-top: 1rem;">
         <div class="modal-content" style="max-height: 95vh; display: flex; flex-direction: column;">
-            <div style="position:relative;">
-                <svg style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="mobileSearchInput" class="input-field" placeholder="ძიება..." style="margin-bottom:0; padding-left:2.5rem;">
-                <span class="search-clear" id="mobileSearchClear" style="right:1rem;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+            <div style="position:relative; display:flex; align-items:stretch; border: 2px solid #2563eb; border-radius: 12px; overflow: hidden; height: 48px; flex-shrink: 0;">
+                <input type="text" id="mobileSearchInput" placeholder="ძიება..." style="flex:1; border:none; padding: 0.8rem 1.2rem; font-size: 0.95rem; font-weight: 500; outline: none; min-width: 0; background: transparent; margin: 0;">
+                <span class="search-clear" id="mobileSearchClear" style="right: 4rem; top: 50%; transform: translateY(-50%);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
+                <button class="ozon-search-btn" id="mobileSearchBtn" style="padding: 0 1.2rem; border-radius: 0;" aria-label="ძიება">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
             </div>
             <div id="mobileSearchResults" class="modal-list-container" style="flex:1; margin-top:1rem; display:none;"></div>
         </div>
@@ -683,9 +708,9 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
     <div class="modal" id="trackingModal">
         <div class="modal-content">
             <h3>შეკვეთის სტატუსი</h3>
-            <div class="tracking-input-wrapper">
+            <div class="input-wrapper" id="trackingInputWrapper" style="margin-bottom: 1.2rem; width: 100%;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><polyline points="3.29 7 12 12 20.71 7"/><path d="m7.5 4.27 9 5.15"/></svg>    
-                <input type="text" id="trackingOrderId" class="input-field" style="background: rgba(255, 255, 255, 0.1); border: 2px solid transparent; color: #ffffff;" placeholder="თქვენი შეკვეთის კოდი...">
+                <input type="text" id="trackingOrderId" class="clean-input" placeholder="თქვენი შეკვეთის კოდი...">
             </div>
             <button id="trackingCheckBtn" class="btn-submit" style="background: #3b82f6;">შემოწმება</button>
             <div id="trackingResult" style="margin-top:1.5rem;display:none;"></div>
@@ -694,22 +719,21 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
 
     <div class="modal order-form-modal" id="orderFormModal">
         <div class="modal-content">
-            <div style="background: transparent; border-radius: 12px; padding: 1.5rem 0; margin-bottom: 0.5rem; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                <img style="max-width: 140px; max-height: 140px; object-fit: contain; margin-bottom: 0.8rem; border-radius: 12px; background: transparent;" id="formProductImage" src="" alt="პროდუქტი">
-                <div style="font-size: 1.1rem; font-weight: 700; color: #1e293b;" id="formProductName">პროდუქტი</div>
-                <div id="modalThumbnails" style="display:none; gap: 8px; justify-content: center; margin-top: 10px; overflow-x: auto; padding-bottom: 5px;"></div>
-                <div style="font-size: 1.8rem; font-weight: 700; color: #2563eb;" id="formProductPrice">0 ₾</div>
-            </div>
-
+            <h3 style="margin-bottom: 1.5rem;">შეკვეთის გაფორმება</h3>
             <form id="quickOrderForm" novalidate>
                 <input type="email" name="email_hp" id="quickEmailHp" style="display:none" tabindex="-1" autocomplete="off">
-                <div id="quickFormWrapperName" style="width: 100%;">
-                    <input type="text" id="quickName" class="input-field" placeholder="თქვენი სახელი" autocomplete="name">
+                
+                <div class="input-wrapper" id="quickFormWrapperName" style="margin-bottom: 1rem; width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input type="text" id="quickName" class="clean-input" placeholder="თქვენი სახელი" autocomplete="name">
                 </div>
-                <div class="phone-wrapper" id="quickFormWrapperPhone">
-                    <span class="phone-prefix">+995</span>
-                    <input type="tel" id="quickPhone" class="input-field phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
+                
+                <div class="input-wrapper" id="quickFormWrapperPhone" style="margin-bottom: 1.2rem; width: 100%;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span class="prefix">+995</span>
+                    <input type="tel" id="quickPhone" class="clean-input phone-input" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
                 </div>
+            
                 <button type="submit" class="btn-submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
                     გაფორმება
@@ -779,7 +803,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
             const searchQ = params.get('search');
             if (searchQ) {
                 const s = document.getElementById('searchInput');
-                if (s) { s.value = searchQ; s.placeholder = ''; document.querySelector('.search-icon')?.classList.add('active'); document.getElementById('desktopSearchClear')?.classList.add('show'); }
+                if (s) { s.value = searchQ; document.getElementById('desktopSearchClear')?.classList.add('show'); }
             }
         } catch(e) { console.error(e); }
     });
@@ -790,19 +814,17 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
     });
 
     // --- ЛОГИКА ПОИСКА (ПК И МОБИЛЬНЫЙ) ---
+    function normalizeQuery(q) {
+        const map = {'a':'ა','b':'ბ','c':'ც','d':'დ','e':'ე','f':'ფ','g':'გ','h':'ჰ','i':'ი','j':'ჯ','k':'კ','l':'ლ','m':'მ','n':'ნ','o':'ო','p':'პ','q':'ქ','r':'რ','s':'ს','t':'ტ','u':'უ','v':'ვ','w':'წ','x':'ხ','y':'ყ','z':'ზ','A':'ა','B':'ბ','C':'ჩ','D':'დ','E':'ე','F':'ფ','G':'ღ','H':'ჰ','I':'ი','J':'ჟ','K':'კ','L':'ლ','M':'მ','N':'ნ','O':'ო','P':'პ','Q':'ქ','R':'ღ','S':'შ','T':'თ','U':'უ','V':'ვ','W':'ჭ','X':'ხ','Y':'ყ','Z':'ძ', 'а':'ა','б':'ბ','в':'ვ','г':'გ','д':'დ','е':'ე','ё':'ე','ж':'ჟ','з':'ზ','и':'ი','й':'ი','к':'კ','л':'ლ','м':'მ','н':'ნ','о':'ო','п':'პ','р':'რ','с':'ს','т':'ტ','у':'უ','ф':'ფ','х':'ხ','ц':'ც','ч':'ჩ','ш':'შ','щ':'შ','ъ':'','ы':'ი','ь':'','э':'ე','ю':'იუ','я':'ია'};
+        let res = '';
+        for(let char of q) { res += map[char] || char; }
+        return res.toLowerCase();
+    }
+
     function setupSearch(inputId, resultsId, clearId) {
         try {
             const s = document.getElementById(inputId); const r = document.getElementById(resultsId); const c = document.getElementById(clearId);
             if (!s) return;
-            
-            if (inputId === 'searchInput') {
-                const ic = document.querySelector('.search-icon');
-                const w = ["სასწორი","მტვერსასრუტი","ყავის აპარატი","აეროგრილი","ტოსტერი","საათი","პროექტორი","ბლენდერი","ღუმელი", "გრილი", "მადუღარა", "ჩოფერი", "წვენსაწური", "უთო", "საპარსი", "ტრიმერი", "ყურსასმენები", "სმარტ საათი", "ხორცსაკეპი", "ელექტრო ტაფა", "გაზქურა", "ფრის აპარატი", "მიქსერი"];
-                let wi = Math.floor(Math.random() * w.length), ci = 0, del = 0, to = null, act = 1;
-                const tp = () => { if(!s||!act) return; let cw = w[wi]; if(del){ ci--; s.placeholder = cw.substring(0,ci); if(ci===0){ del=0; wi=(wi+1)%w.length; to=setTimeout(tp,500); } else to=setTimeout(tp,30); } else { ci++; s.placeholder = cw.substring(0,ci); if(ci===cw.length){ del=1; to=setTimeout(tp,2500); } else to=setTimeout(tp,80); } };
-                if (s.value.length > 0) { act = 0; s.placeholder = ''; if (ic) ic.classList.add('active'); } else { tp(); }
-                s.addEventListener('input', function() { if(this.value.length){ if(act){ act=0; clearTimeout(to); s.placeholder=''; } document.querySelector('.search-icon')?.classList.add('active'); } else { document.querySelector('.search-icon')?.classList.remove('active'); if(!act){ if(s.placeholder===''){del=0; ci=0;} act=1; tp(); } } });
-            }
 
             s.addEventListener('input', function () {
                 let q = this.value.trim(); 
@@ -811,7 +833,8 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                 
                 fetch('https://api.enkaelectronics.com.ge/catalog').then(res => { if (!res.ok) throw new Error('Network error'); return res.json(); })
                     .then(d => {
-                        let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && (p.name.toLowerCase().includes(q.toLowerCase()) || (p.description && p.description.toLowerCase().includes(q.toLowerCase()))));
+                        let normalizedQ = normalizeQuery(q);
+                        let f = d.products.filter(p => p.stockStatus !== 'out_of_stock' && p.name.toLowerCase().includes(normalizedQ));
                         if(r) {
                             if (inputId === 'mobileSearchInput') {
                                 r.innerHTML = f.length ? f.map(p => {
@@ -837,7 +860,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
 
             if(c) { c.onclick = function(){ s.value=''; s.focus(); c.classList.remove('show'); s.dispatchEvent(new Event('input')); }; }
             s.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); const q = this.value.trim(); if (q) window.location.href = '/?search=' + encodeURIComponent(q); } });
-            if (inputId === 'searchInput') { document.addEventListener('click', e => { if (!s.contains(e.target) && r && !r.contains(e.target)) r.classList.remove('show'); }); }
+            if (inputId === 'searchInput') { document.addEventListener('click', e => { if (!s.contains(e.target) && r && !r.contains(e.target) && !document.getElementById('desktopSearchBtn').contains(e.target)) r.classList.remove('show'); }); }
         } catch(e) { console.error(e); }
     }
 
@@ -845,9 +868,20 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
         (function(){
             let sr = document.createElement('div'); sr.className = 'search-results'; sr.id = 'desktopSearchResults';
             let desktopInput = document.getElementById('searchInput');
-            if(desktopInput) desktopInput.parentNode.appendChild(sr);
+            if(desktopInput) document.querySelector('.ozon-search-box').appendChild(sr);
             setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear');
             setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear');
+            
+            ['desktopSearchBtn', 'mobileSearchBtn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if(btn) {
+                    btn.addEventListener('click', () => {
+                        const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
+                        const q = document.getElementById(inputId).value.trim();
+                        if (q) window.location.href = '/?search=' + encodeURIComponent(q);
+                    });
+                }
+            });
         })();
     } catch(e){}
 
@@ -903,7 +937,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
             if (!orderIdInput) { alert('გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.'); return; }
             const url = new URL(window.location); history.pushState(null, '', url.pathname + '?orderstatus=' + encodeURIComponent(orderIdInput));
             let apiOrderId = orderIdInput; if (!apiOrderId.toUpperCase().startsWith('TNENKAELECTRONICS')) { apiOrderId = 'TNENKAElectronics' + apiOrderId; }
-            trackingResult.style.display = 'none'; trackingResult.innerHTML = ''; trackingCheckBtn.disabled = true; trackingCheckBtn.innerHTML = '<div class="spinner dark-spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
+            trackingResult.style.display = 'none'; trackingResult.innerHTML = ''; trackingCheckBtn.disabled = true; trackingCheckBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;margin:0;"></div>';
 
             try {
                 const response = await fetch(WORKER_URL_TRACKING, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ order_id: apiOrderId }) });
@@ -933,7 +967,7 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
                     timelineHtml += `<div class="timeline-step-v ${stepClass}"><div class="timeline-indicator"><div class="timeline-dot-v"></div><div class="timeline-line"></div></div><div class="timeline-content-v"><div class="timeline-date-v">${dateStr}</div><div class="timeline-text-v">${statusMap[status] || status}</div></div></div>`;
                 });
 
-                trackingResult.innerHTML = `<div style="background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);"><p style="font-size: 0.85rem; font-weight: 700; color: #94a3b8; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical dark-timeline">${timelineHtml}</div></div>`;
+                trackingResult.innerHTML = `<div style="background: #f8fafc; padding: 1.5rem; border-radius: 16px; border: 1px solid #e2e8f0;"><p style="font-size: 0.85rem; font-weight: 700; color: #64748b; margin-bottom: 1rem; text-align: center; text-transform: uppercase; letter-spacing: 1px;">შეკვეთა #${order.tracking_code || apiOrderId}</p><div style="text-align: center; margin-bottom: 2rem;">${getStatusBadge(currentStatus)}</div><div class="timeline-vertical">${timelineHtml}</div></div>`;
             } catch (error) {
                 trackingResult.style.display = 'block'; trackingResult.innerHTML = `<div class="tracking-error-msg"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> სერვერის შეცდომა. (იხ. კონსოლი)</div>`;
             } finally { trackingCheckBtn.disabled = false; trackingCheckBtn.textContent = 'შემოწმება'; }
@@ -948,31 +982,9 @@ src="https://www.facebook.com/tr?id=1499689204986172&ev=PageView&noscript=1"
 
     window.openOrderForm = function(product) {
         try {
-            document.getElementById('formProductName').textContent = product.name;
-            const rawPrice = String(product.price).replace(/₾/g, '').trim(); document.getElementById('formProductPrice').textContent = rawPrice ? `${rawPrice} ₾` : '0 ₾';
-            const mainImg = document.getElementById('formProductImage'); const thumbContainer = document.getElementById('modalThumbnails');
-            const imgs = product.images || (product.image ? [product.image] : []);
-            if (imgs.length > 0) {
-                mainImg.src = imgs[0]; thumbContainer.innerHTML = '';
-                if (imgs.length > 1) {
-                    thumbContainer.style.display = 'flex';
-                    imgs.forEach(src => {
-                        const imgThumb = document.createElement('img'); imgThumb.src = src;
-                        imgThumb.style = "width: 44px; height: 44px; object-fit: contain; cursor: pointer; border: 2px solid transparent; border-radius: 8px; padding: 4px; background: transparent; transition: 0.2s; flex-shrink: 0;";
-                        imgThumb.onclick = function() { 
-                            mainImg.style.opacity = '0'; mainImg.style.transform = 'scale(0.95)';
-                            setTimeout(() => { mainImg.src = src; mainImg.style.opacity = '1'; mainImg.style.transform = 'scale(1)'; }, 250);
-                            Array.from(thumbContainer.children).forEach(c=>c.style.borderColor='transparent'); imgThumb.style.borderColor='#2563eb'; 
-                            imgThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                        };
-                        thumbContainer.appendChild(imgThumb);
-                    });
-                    if(thumbContainer.children.length > 0) thumbContainer.children[0].style.borderColor = '#2563eb';
-                } else { thumbContainer.style.display = 'none'; }
-            } else { mainImg.src = "/img/no-image.png"; }
             quickName.value = ''; quickPhone.value = '';
-            
-            quickName.classList.remove('input-error'); if(document.querySelector('.phone-wrapper')) document.querySelector('.phone-wrapper').classList.remove('error-border');
+            document.getElementById('quickFormWrapperName').classList.remove('error-border'); 
+            document.getElementById('quickFormWrapperPhone').classList.remove('error-border');
             document.getElementById('orderFormModal').dataset.product = JSON.stringify(product);
             window.openAppModal('orderFormModal');
         } catch(e) { console.error(e); }
