@@ -1,0 +1,54 @@
+<div class="fixed inset-0 bg-white/98 z-[100000] flex-col opacity-0 transition-opacity duration-300 hidden [&.active]:flex [&.active]:opacity-100" id="imageZoomModal" onclick="closeImageZoom(event)">
+    <div class="flex-1 relative flex overflow-hidden items-center justify-center w-full">
+        <button class="absolute top-1/2 -translate-y-1/2 left-5 bg-transparent border-none w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer text-slate-900 transition-all z-10 outline-none hover:text-blue-600 active:scale-90 max-sm:hidden modal-nav-arrow" aria-label="წინა" onclick="scrollModalGallery(-1, event)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="w-8 h-8"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        
+        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" id="modalTrack">
+            {% for img in page.images %}
+                <div class="flex-[0_0_100%] h-full flex items-center justify-center snap-start p-8 max-sm:p-4 box-border relative modal-slide">
+                    <div class="flex items-center justify-center w-full h-full max-h-[85vh]">
+                        {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                            {% if img contains 'v=' %}
+                                {% assign modal_vid = img | split: 'v=' | last | split: '&' | first %}
+                            {% else %}
+                                {% assign modal_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                            {% endif %}
+                            <lite-youtube videoid="{{ modal_vid }}" playlabel="Play Video" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent"></lite-youtube>
+                        {% else %}
+                            <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain pointer-events-auto select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button class="absolute top-1/2 -translate-y-1/2 right-5 bg-transparent border-none w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer text-slate-900 transition-all z-10 outline-none hover:text-blue-600 active:scale-90 max-sm:hidden modal-nav-arrow" aria-label="შემდეგი" onclick="scrollModalGallery(1, event)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="w-8 h-8"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+    </div>
+
+    <div class="p-6 max-sm:py-6 max-sm:px-4 bg-white text-center box-border w-full modal-thumb-area">
+        <div class="inline-flex gap-3 overflow-x-auto [scrollbar-width:none] max-w-full p-1 text-left" id="modalThumbStrip">
+            {% for img in page.images %}
+                <div class="w-[60px] h-[60px] border-2 border-transparent rounded-xl cursor-pointer opacity-60 transition-all duration-200 shrink-0 p-1 box-border bg-white modal-thumb [&.active]:border-blue-600 [&.active]:opacity-100 [&.active]:scale-105" onclick="scrollToModalSlide({{ forloop.index0 }}, event)">
+                    {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                        {% if img contains 'v=' %}
+                            {% assign t_vid = img | split: 'v=' | last | split: '&' | first %}
+                        {% else %}
+                            {% assign t_vid = img | split: 'youtu.be/' | last | split: '?' | first %}
+                        {% endif %}
+                        <div class="relative w-full h-full">
+                            <img src="https://img.youtube.com/vi/{{ t_vid }}/default.jpg" alt="Thumb Video" width="320" height="180" loading="lazy" class="w-full h-full object-contain rounded-md pointer-events-none">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    {% else %}
+                        <img src="{{ img }}" alt="Thumb" width="800" height="800" loading="lazy" class="w-full h-full object-contain rounded-md pointer-events-none">
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

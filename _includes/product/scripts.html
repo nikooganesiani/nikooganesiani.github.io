@@ -1,0 +1,586 @@
+<script>
+    window.showInputError = function(el) {
+        if (el) {
+            el.classList.add('error-border');
+            const input = el.querySelector('input');
+            if (input) {
+                const removeError = () => {
+                    el.classList.remove('error-border');
+                    input.removeEventListener('input', removeError);
+                };
+                input.addEventListener('input', removeError);
+            }
+        }
+    };
+
+    window.createProductCardHTML = function(p, prefix = 'sim') {
+        let imgs = p.images || (p.image ? [p.image] : []);
+        imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
+        if (imgs.length === 0) imgs.push('/img/no-image.png');
+        
+        const hasMultipleImages = imgs.length > 1;
+        let discountBadge = '';
+        
+        if (p.oldPrice) {
+            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
+            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                discountBadge = `<div class="absolute top-2.5 left-2.5 bg-red-500 text-white px-2 py-1 rounded-md text-[0.75rem] font-bold z-[5] shadow-[0_4px_12px_rgba(239,68,68,0.25)] pointer-events-none">-${percent}%</div>`;
+            }
+        }
+        
+        const productDataAttr = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+        const uniqueId = `${prefix}-${p.id}`;
+        
+        let dotsHtml = '';
+        let arrowsHtml = '';
+        if (hasMultipleImages) {
+            dotsHtml = `<div class="absolute bottom-2.5 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none max-lg:hidden" id="dots-${uniqueId}">
+                ${imgs.map((_, i) => `<div class="w-1.5 h-1.5 rounded-full bg-slate-900/25 backdrop-blur-[2px] transition-all duration-300 dot ${i === 0 ? 'active !bg-blue-600 scale-[1.3]' : ''}"></div>`).join('')}
+            </div>`;
+            arrowsHtml = `
+                <button class="absolute top-1/2 -translate-y-1/2 left-2 w-7 h-7 bg-white/95 border-none rounded-full flex items-center justify-center cursor-pointer text-slate-900 opacity-0 transition-all duration-200 z-20 outline-none hover:text-blue-600 active:scale-85 max-lg:hidden card-nav-arrow prev group-hover/card:opacity-100" aria-label="წინა" onclick="scrollCardGallery('${uniqueId}', -1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4"><path d="m15 18-6-6 6-6"></path></svg></button>
+                <button class="absolute top-1/2 -translate-y-1/2 right-2 w-7 h-7 bg-white/95 border-none rounded-full flex items-center justify-center cursor-pointer text-slate-900 opacity-0 transition-all duration-200 z-20 outline-none hover:text-blue-600 active:scale-85 max-lg:hidden card-nav-arrow next group-hover/card:opacity-100" aria-label="შემდეგი" onclick="scrollCardGallery('${uniqueId}', 1, event)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="w-4 h-4"><path d="m9 18 6-6-6-6"></path></svg></button>
+            `;
+        }
+
+        return `
+        <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] snap-start min-w-0 flex flex-col relative bg-transparent group/card product-card">
+            <div class="relative w-full aspect-square overflow-hidden bg-transparent rounded-2xl border-none">
+                ${discountBadge}
+                <button class="absolute top-2.5 right-2.5 max-sm:top-1.5 max-sm:right-1.5 max-sm:w-[26px] max-sm:h-[26px] bg-transparent border-none w-[30px] h-[30px] rounded-full flex items-center justify-center cursor-pointer text-slate-400 transition-all duration-200 outline-none z-10 active:scale-85 btn-fav-card [&.active]:text-red-500 [&.active>svg]:fill-current" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+                ${arrowsHtml}
+                <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden product-images-track max-lg:overflow-x-hidden max-lg:snap-none" id="track-${uniqueId}">
+                    ${imgs.map(img => `
+                        <div class="flex-[0_0_100%] w-full h-full snap-start flex items-center justify-center">
+                            <a href="/product/${p.id}/" style="display:contents;" draggable="false">
+                                <img class="w-full h-full object-cover transition-transform duration-150 ease-out" src="${img}" alt="${p.name}" width="800" height="800" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+                ${dotsHtml}
+            </div>
+            <div class="py-4 max-sm:py-2.5 flex flex-col flex-1 product-info">
+                <div class="bg-transparent border-none p-0 h-[2.6rem] max-sm:h-[2.3rem] flex items-start mb-2 max-sm:mb-1.5 transition-opacity duration-200 cursor-pointer hover:opacity-80" onclick="location.href='/product/${p.id}/'">
+                    <div class="text-[1rem] max-sm:text-[0.8rem] font-bold text-slate-900 leading-snug tracking-tight line-clamp-2 overflow-hidden text-ellipsis">${p.name}</div>
+                </div>
+                <div class="flex flex-row items-end gap-1.5 flex-wrap mb-4 max-sm:mb-2.5 min-h-[2.2rem] max-sm:min-h-auto max-sm:p-0">
+                    <div class="text-[1.5rem] max-sm:text-[1.1rem] font-bold text-blue-600 tracking-tight leading-none">${String(p.price).replace(/₾/g, '')}₾</div>
+                    ${p.oldPrice ? `<span class="text-[0.85rem] max-sm:text-[0.75rem] leading-snug mb-[2px] line-through decoration-red-500 decoration-[3px] text-slate-400">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
+                </div>
+                <button class="bg-blue-600 text-white border-none p-3 max-sm:p-2 rounded-xl max-sm:rounded-lg cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full" aria-label="ყიდვა" onclick='window.openOrderForm(${productDataAttr})'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="max-sm:w-3.5 max-sm:h-3.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    ყიდვა
+                </button>
+            </div>
+        </div>`;
+    };
+
+    window.updateDots = function(uniqueId, trackEl) {
+        if (trackEl._isUpdating) return;
+        trackEl._isUpdating = true;
+        window.requestAnimationFrame(() => {
+            const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
+            const dots = document.querySelectorAll(`#dots-${uniqueId} .dot`);
+            dots.forEach((d, i) => {
+                if (i === index) {
+                    d.classList.add('active', '!bg-blue-600', 'scale-[1.3]');
+                } else {
+                    d.classList.remove('active', '!bg-blue-600', 'scale-[1.3]');
+                }
+            });
+            trackEl._isUpdating = false;
+        });
+    };
+
+    window.scrollCardGallery = function(id, dir, e) {
+        e.preventDefault(); e.stopPropagation();
+        const track = document.getElementById('track-' + id);
+        if(!track) return;
+        const width = track.clientWidth;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        
+        if (dir === 1 && track.scrollLeft >= maxScroll - 5) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else if (dir === -1 && track.scrollLeft <= 5) {
+            track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' });
+        } else {
+            track.scrollBy({ left: dir * width, behavior: 'smooth' });
+        }
+    }
+
+    window.scrollCarousel = function(containerId, direction) {
+        const scroll = document.getElementById(containerId);
+        if(!scroll) return;
+        const card = scroll.querySelector('.product-card');
+        const scrollAmount = card ? card.offsetWidth + 16 : 300;
+        
+        const maxScroll = scroll.scrollWidth - scroll.clientWidth;
+        if (direction === 1 && scroll.scrollLeft >= maxScroll - 10) {
+            scroll.scrollTo({ left: 0, behavior: 'smooth' });
+        } else if (direction === -1 && scroll.scrollLeft <= 10) {
+            scroll.scrollTo({ left: scroll.scrollWidth, behavior: 'smooth' });
+        } else {
+            scroll.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    function scrollToGallerySlide(index) {
+        const track = document.getElementById('mainGalleryTrack');
+        const width = track.clientWidth;
+        track.scrollTo({ left: index * width, behavior: 'smooth' });
+    }
+
+    let overlaysCache = null;
+    function syncThumbsWithScroll() {
+        const track = document.getElementById('mainGalleryTrack');
+        
+        if (window.innerWidth <= 1024) {
+            const index = Math.round(track.scrollLeft / track.clientWidth);
+            const dots = document.querySelectorAll('#mainGalleryDots .dot');
+            dots.forEach((d, i) => {
+                if (i === index) d.classList.add('active', '!bg-blue-600', 'scale-[1.4]');
+                else d.classList.remove('active', '!bg-blue-600', 'scale-[1.4]');
+            });
+        }
+
+        const index = Math.round(track.scrollLeft / track.clientWidth);
+        const slides = track.querySelectorAll('.main-gallery-slide');
+        
+        if (slides[index]) {
+            const hasVideo = slides[index].querySelector('lite-youtube') !== null;
+            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions');
+            overlaysCache.forEach(el => {
+                el.style.opacity = hasVideo ? '0' : '1';
+                el.style.pointerEvents = hasVideo ? 'none' : 'auto';
+                el.style.transition = 'opacity 0.3s ease';
+            });
+        }
+
+        const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
+        if (thumbs.length > 0) {
+            thumbs.forEach(t => t.classList.remove('active', 'border-blue-600'));
+            if(thumbs[index]) {
+                thumbs[index].classList.add('active', 'border-blue-600');
+                const strip = document.getElementById('thumbStrip');
+                const t = thumbs[index];
+                strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
+            }
+        }
+    }
+
+    function initMobileDots() {
+        if (window.innerWidth > 1024) return;
+        const track = document.getElementById('mainGalleryTrack');
+        const slides = track.querySelectorAll('.main-gallery-slide:not(.desktop-only-slide)');
+        const dotsContainer = document.getElementById('mainGalleryDots');
+        if (dotsContainer && slides.length > 1) {
+            dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="w-1.5 h-1.5 rounded-full bg-slate-400 transition-all duration-300 dot ${i===0?'active !bg-blue-600 scale-[1.4]':''}"></div>`).join('');
+        }
+    }
+
+    let isZoomModalOpen = false;
+    function zoomImagePC(e, img) {
+        if (img.closest('#imageZoomModal')) return;
+        if(window.innerWidth < 1024) return;
+        img.style.transition = 'none'; 
+        const rect = img.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        img.style.transformOrigin = `${x}% ${y}%`;
+        img.style.transform = 'scale(2.2)';
+    }
+    
+    function resetZoomPC(img) {
+        if (img.closest('#imageZoomModal')) return;
+        if(window.innerWidth < 1024) return;
+        img.style.transition = 'transform 0.3s ease'; 
+        img.style.transform = 'scale(1)';
+    }
+
+    function openImageZoom(img, index) {
+        isZoomModalOpen = true; 
+        if(img) {
+            img.style.transition = 'none'; 
+            img.style.transform = 'scale(1)';
+        }
+        const modal = document.getElementById('imageZoomModal');
+        modal.classList.remove('hidden'); 
+        modal.offsetHeight; 
+        const modalTrack = document.getElementById('modalTrack');
+        if(modalTrack) {
+            modalTrack.style.scrollBehavior = 'auto';
+            modalTrack.scrollLeft = index * modalTrack.clientWidth;
+            void modalTrack.offsetWidth; 
+            modalTrack.style.scrollBehavior = 'smooth';
+            syncModalThumbs();
+        }
+        modal.classList.add('active'); 
+    }
+    
+    function closeImageZoom(e) {
+        if (e) {
+            const isThumbArea = e.target.closest('.modal-thumb-area');
+            const isArrow = e.target.closest('.modal-nav-arrow');
+            const isThumb = e.target.closest('.modal-thumb');
+            if (isArrow || isThumbArea || isThumb) return;
+        }
+        isZoomModalOpen = false;
+        const modal = document.getElementById('imageZoomModal');
+        modal.classList.remove('active'); 
+        setTimeout(() => { modal.classList.add('hidden'); }, 300);
+    }
+    
+    function scrollModalGallery(dir, e) {
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        const track = document.getElementById('modalTrack');
+        if(!track) return;
+        const width = track.clientWidth;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (dir === 1 && track.scrollLeft >= maxScroll - 10) { track.scrollTo({ left: 0, behavior: 'smooth' }); } 
+        else if (dir === -1 && track.scrollLeft <= 10) { track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); } 
+        else { track.scrollBy({ left: dir * width, behavior: 'smooth' }); }
+    }
+
+    function scrollToModalSlide(index, e) {
+        if(e) { e.preventDefault(); e.stopPropagation(); }
+        const track = document.getElementById('modalTrack');
+        if(track) {
+            const width = track.clientWidth;
+            track.scrollTo({ left: index * width, behavior: 'smooth' });
+        }
+    }
+
+    function syncModalThumbs() {
+        const track = document.getElementById('modalTrack');
+        if(!track) return;
+        const index = Math.round(track.scrollLeft / track.clientWidth);
+        const thumbs = document.querySelectorAll('#modalThumbStrip .modal-thumb');
+        if (thumbs.length > 0) {
+            thumbs.forEach(t => t.classList.remove('active', 'border-blue-600', 'opacity-100', 'scale-105'));
+            if(thumbs[index]) {
+                thumbs[index].classList.add('active', 'border-blue-600', 'opacity-100', 'scale-105');
+                thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
+    }
+
+    function toggleExpand(blockId, btn) {
+        const block = document.getElementById(blockId);
+        if (block.classList.contains('expanded')) {
+            block.classList.remove('expanded');
+            btn.innerText = "მეტის ნახვა";
+        } else {
+            block.classList.add('expanded');
+            btn.innerText = "ნაკლების ნახვა";
+        }
+    }
+
+    function checkExpandableBlocks() {
+        const specs = document.getElementById('specsBlock');
+        const btnSpecs = document.getElementById('btnExpandSpecs');
+        if (specs && specs.scrollHeight > 300) { btnSpecs.classList.remove('hidden'); btnSpecs.classList.add('block'); }
+    }
+
+    function scrollToForm() {
+        document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        checkExpandableBlocks();
+        initMobileDots();
+
+        const mainTrack = document.getElementById('mainGalleryTrack');
+        let mainScrollTimeout;
+        if (mainTrack) {
+            mainTrack.addEventListener('scroll', () => {
+                if (mainScrollTimeout) return;
+                mainScrollTimeout = window.requestAnimationFrame(() => {
+                    syncThumbsWithScroll();
+                    mainScrollTimeout = null;
+                });
+            }, { passive: true });
+        }
+
+        const modalTrackEl = document.getElementById('modalTrack');
+        let modalScrollTimeout;
+        if (modalTrackEl) {
+            modalTrackEl.addEventListener('scroll', () => {
+                if (modalScrollTimeout) return;
+                modalScrollTimeout = window.requestAnimationFrame(() => {
+                    syncModalThumbs();
+                    modalScrollTimeout = null;
+                });
+            }, { passive: true });
+        }
+
+        document.addEventListener('scroll', function(e) {
+            if (e.target && e.target.classList && e.target.classList.contains('product-images-track')) {
+                const id = e.target.id.replace('track-', '');
+                window.updateDots(id, e.target);
+            }
+        }, true);
+
+        const modalFullscreen = document.getElementById('imageZoomModal');
+        let tsY = 0, tsX = 0;
+        
+        modalFullscreen.addEventListener('touchstart', (e) => {
+            tsY = e.touches[0].clientY;
+            tsX = e.touches[0].clientX;
+        }, { passive: true });
+
+        modalFullscreen.addEventListener('touchmove', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
+            if (isTrack) {
+                const diffY = Math.abs(e.touches[0].clientY - tsY);
+                const diffX = Math.abs(e.touches[0].clientX - tsX);
+                if (diffY > diffX) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        modalFullscreen.addEventListener('wheel', (e) => {
+            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
+            if (isTrack) {
+                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
+            } else {
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        const oldPriceStr = "{{ page.oldPrice }}";
+        const priceStr = "{{ page.price }}";
+        if (oldPriceStr && oldPriceStr !== "") {
+            const oldVal = parseInt(oldPriceStr.replace(/[^0-9]/g, ''));
+            const newVal = parseInt(priceStr.replace(/[^0-9]/g, ''));
+            if (oldVal > newVal) {
+                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
+                const badge = document.getElementById('saleBadge');
+                if (badge) {
+                    badge.innerHTML = `-${percent}%`;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('block');
+                }
+            }
+        }
+
+        fetch('https://api.enkaelectronics.com.ge/catalog')
+        .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
+        .then(data => {
+            const currentSub = "{{ first_sub }}";
+            const currentCat = "{{ first_cat }}";
+            const currentSku = "{{ page.sku }}".trim();
+            const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop();
+            const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
+            const actualProductId = currentProduct ? currentProduct.id : null;
+            
+            if (actualProductId) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); 
+                recentIds.unshift(actualProductId); 
+                if (recentIds.length > 20) recentIds = recentIds.slice(0, 20);
+                localStorage.setItem('recentIds', JSON.stringify(recentIds));
+            }
+            
+            const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
+            const badgeTag = document.getElementById('dynamicStockBadgeTag');
+            const mobileBadgeTag = document.getElementById('mobileDynamicStockBadgeTag');
+            const btnContainer = document.getElementById('dynamicBuyButton');
+            const formInputs = document.getElementById('dynamicFormInputs');
+            
+            let stockHtml = '';
+            let btnHtml = '';
+
+            if (rawStock === 'out_of_stock' || rawStock === 'მარაგი ამოიწურა') {
+                stockHtml = `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.8rem] font-bold bg-[#fef2f2] text-red-500 border border-red-200 shadow-[0_4px_15px_rgba(239,68,68,0.1)]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> მარაგი ამოიწურა</div>`;
+                btnHtml = `<button type="button" class="w-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 border-none p-4 rounded-xl text-[1.1rem] font-bold cursor-pointer transition-all duration-300 flex items-center justify-center gap-2.5 outline-none active:scale-95 h-full" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+            } else if (rawStock === 'soon' || rawStock.includes('მალე')) {
+                stockHtml = `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.8rem] font-bold bg-[#fffbeb] text-amber-600 border border-amber-200 shadow-[0_4px_15px_rgba(217,119,6,0.1)]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> მალე იქნება</div>`;
+                btnHtml = `<button type="button" class="w-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 border-none p-4 rounded-xl text-[1.1rem] font-bold cursor-pointer transition-all duration-300 flex items-center justify-center gap-2.5 outline-none active:scale-95 h-full" onclick="document.getElementById('recentScroll').scrollIntoView({behavior: 'smooth', block: 'center'})"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> იხილეთ მსგავსი</button>`;
+            } else {
+                stockHtml = `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[0.8rem] font-bold bg-[#0B652D] text-[#F5FFF9] border border-green-200 shadow-[0_4px_15px_rgba(22,163,74,0.1)]"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> მარაგშია</div>`;
+                if (formInputs) formInputs.innerHTML = `
+                    <input type="email" name="email_hp" id="inlineEmailHp" class="hidden" tabindex="-1" autocomplete="off">
+                    <div class="flex items-center px-4 gap-2.5 h-[50px] bg-slate-50 border border-slate-200 rounded-xl transition-all duration-200 overflow-hidden w-full box-border focus-within:bg-white focus-within:border-blue-600 group/input [&.error-border]:border-red-500 [&.error-border]:border-2" id="inlineNameWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 shrink-0 text-slate-400"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="inlineName" class="flex-1 min-w-0 bg-transparent border-none outline-none text-[15px] font-semibold text-slate-900 p-0 h-full placeholder:text-slate-400 placeholder:font-medium [&:-webkit-autofill]:shadow-[0_0_0_1000px_#f8fafc_inset] [&:-webkit-autofill]:text-slate-900 group-focus-within/input:[&:-webkit-autofill]:shadow-[0_0_0_1000px_#ffffff_inset]" placeholder="თქვენი სახელი" autocomplete="name">
+                    </div>
+                    <div class="flex items-center px-4 gap-2.5 h-[50px] bg-slate-50 border border-slate-200 rounded-xl transition-all duration-200 overflow-hidden w-full box-border focus-within:bg-white focus-within:border-blue-600 group/input [&.error-border]:border-red-500 [&.error-border]:border-2" id="inlinePhoneWrapper">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 shrink-0 text-slate-400"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span class="shrink-0 font-bold text-slate-500 text-[15px]">+995</span>
+                        <input type="tel" id="inlinePhone" class="flex-1 min-w-0 bg-transparent border-none outline-none text-[15px] font-semibold text-slate-900 p-0 h-full placeholder:text-slate-400 placeholder:font-medium [&:-webkit-autofill]:shadow-[0_0_0_1000px_#f8fafc_inset] [&:-webkit-autofill]:text-slate-900 group-focus-within/input:[&:-webkit-autofill]:shadow-[0_0_0_1000px_#ffffff_inset]" placeholder="555 55 55 55" inputmode="numeric" autocomplete="tel">
+                    </div>
+                `;
+                btnHtml = `
+                    <button type="submit" id="submitInlineOrderBtn" aria-label="ყიდვა" class="w-full bg-blue-600 text-white border-none p-4 rounded-xl text-[1.1rem] font-bold cursor-pointer transition-all duration-300 flex items-center justify-center gap-2.5 outline-none hover:bg-blue-700 hover:shadow-[0_10px_20px_rgba(37,99,235,0.3)] active:scale-95 active:shadow-none">
+                        <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span id="inlineOrderText">ყიდვა</span>
+                    </button>
+                    <div class="flex justify-center mb-2.5 text-slate-600 text-[0.9rem] font-semibold text-center border border-slate-200 rounded-[9px] bg-[#fbfdff] p-2.5">
+                        შეუკვეთე ახლა, გადაიხადე მიღებისას
+                    </div>
+                `;
+            }
+
+            if (badgeTag) badgeTag.innerHTML = stockHtml;
+            if (mobileBadgeTag) mobileBadgeTag.innerHTML = stockHtml;
+            if (btnContainer) btnContainer.innerHTML = btnHtml;
+
+            const subcatSection = document.getElementById('subcatSection');
+            const subcatScroll = document.getElementById('subcatScroll');
+            let subcatProducts = [];
+            
+            if(subcatSection && subcatScroll && currentSub) {
+                subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).slice(0, 30);
+                if(subcatProducts.length > 0) {
+                    subcatSection.style.display = 'block';
+                    subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
+                    if(subcatProducts.length <= 4) {
+                        document.getElementById('subcatArrowLeft').style.display = 'none';
+                        document.getElementById('subcatArrowRight').style.display = 'none';
+                    }
+                }
+            }
+
+            const catSection = document.getElementById('catSection');
+            const catScroll = document.getElementById('catScroll');
+            
+            if(catSection && catScroll && currentCat) {
+                let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).slice(0, 30);
+                if(catProducts.length > 0) {
+                    catSection.style.display = 'block';
+                    catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
+                    if(catProducts.length <= 4) {
+                        document.getElementById('catArrowLeft').style.display = 'none';
+                        document.getElementById('catArrowRight').style.display = 'none';
+                    }
+                }
+            }
+
+            const recentSection = document.getElementById('recentlyViewedSection');
+            const recentScroll = document.getElementById('recentScroll');
+            if (recentSection && recentScroll) {
+                let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+                recentIds = recentIds.filter(id => id !== actualProductId); 
+                const recentProducts = recentIds.map(id => data.products.find(p => p.id === id)).filter(Boolean);
+                
+                if (recentProducts.length > 0) {
+                    recentSection.style.display = 'block';
+                    recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
+                    if (recentProducts.length <= 4) {
+                        document.getElementById('recentArrowLeft').style.display = 'none';
+                        document.getElementById('recentArrowRight').style.display = 'none';
+                    }
+                }
+            }
+        });
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (isZoomModalOpen && [32, 33, 34, 38, 40].includes(e.keyCode)) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'inlinePhone') {
+            let val = e.target.value.replace(/\D/g, '');
+            if(val.startsWith('995')) val = val.substring(3);
+            if(val.length > 9) val = val.slice(0, 9);
+            let formatted = '';
+            for(let i = 0; i < val.length; i++) {
+                if(i === 3 || i === 5 || i === 7) formatted += ' ';
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+        }
+    });
+
+    document.addEventListener('submit', function(e) {
+        if (e.target && e.target.id === 'inlineOrderForm') {
+            e.preventDefault();
+            
+            const hp = document.getElementById('inlineEmailHp');
+            if (hp && hp.value) return; 
+
+            const nameInput = document.getElementById('inlineName');
+            const phoneInput = document.getElementById('inlinePhone');
+            const btn = document.getElementById('submitInlineOrderBtn');
+            const icon = document.getElementById('inlineOrderIcon');
+            const text = document.getElementById('inlineOrderText');
+
+            if (!nameInput || !phoneInput) return;
+
+            const name = nameInput.value.trim();
+            let phoneRaw = phoneInput.value.replace(/\s/g, '');
+
+            if(!name) { window.showInputError(document.getElementById('inlineNameWrapper')); return; }
+            if(phoneRaw.length !== 9) { window.showInputError(document.getElementById('inlinePhoneWrapper')); return; }
+
+            const fullPhone = '+995' + phoneRaw;
+            
+            const product = {
+                name: {{ page.name | jsonify }},
+                price: "{{ page.price }}",
+                id: "{{ page.sku }}"
+            };
+
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.8';
+            const originalIcon = icon.outerHTML;
+            icon.outerHTML = `<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-5 h-5" id="inlineOrderIcon"></div>`;
+            text.innerText = 'იგზავნება...';
+
+            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+            const targetWorker = window.WORKER_URL || 'https://form-handler.enkaelectronics.com.ge';
+            
+            fetch(targetWorker, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: name, 
+                    phone: fullPhone, 
+                    product: product.name, 
+                    price: product.price,
+                    product_id: product.id,
+                    event_id: eventId
+                })
+            }).catch(console.error);
+
+            setTimeout(() => {
+                try {
+                    if (typeof fbq === 'function') {
+                        fbq('track', 'Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product', num_items: 1 }, { eventID: eventId });
+                    }
+                    if (typeof window.sendCapiEvent === 'function') {
+                        window.sendCapiEvent('Purchase', { value: numericPrice, currency: 'GEL', content_name: product.name, content_ids: product.id ? [String(product.id)] : [], content_type: 'product' }, eventId); 
+                    }
+                } catch(err) { console.error(err); }
+            }, 50);
+
+            btn.style.pointerEvents = 'auto';
+            btn.style.opacity = '1';
+            document.getElementById('inlineOrderIcon').outerHTML = originalIcon;
+            text.innerText = 'ყიდვა';
+            
+            if(window.showOrderConfirm) {
+                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: '{{ page.oldPrice }}' });
+            }
+        }
+    });
+</script>
+
+<script>
+  try {
+      if (typeof fbq === 'function') {
+        var rawPrice = "{{ page.price }}"; 
+        var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+        fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
+      }
+  } catch(e) {}
+</script>

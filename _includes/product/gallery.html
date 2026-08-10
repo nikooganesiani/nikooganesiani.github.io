@@ -1,0 +1,79 @@
+<div class="flex flex-row max-lg:flex-col gap-4 max-lg:gap-0 lg:items-start relative opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.1s]">
+    
+    <div class="aspect-square overflow-hidden relative flex-1 min-w-0 rounded-xl max-sm:rounded-lg border-none bg-transparent max-lg:mb-2">
+        <div class="absolute top-4 left-4 z-15 flex gap-2 items-start flex-wrap pointer-events-none max-lg:hidden">
+            <div id="dynamicStockBadgeTag"></div>
+            <div class="bg-red-500 text-white px-3 py-1.5 rounded-lg font-bold text-[0.8rem] shadow-[0_4px_15px_rgba(239,68,68,0.3)] border border-white/20 tracking-wide hidden" id="saleBadge"></div>
+        </div>
+
+        <div class="absolute top-4 right-4 z-15 flex gap-2.5 items-start max-lg:hidden">
+            <button class="w-11 h-11 bg-slate-50 hover:bg-slate-100 border-none rounded-full flex items-center justify-center cursor-pointer text-slate-500 hover:text-red-500 transition-all active:scale-90 outline-none btn-fav group [&.active]:text-red-500" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)" title="დამატება რჩეულებში">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-[.active]:fill-current"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button class="w-11 h-11 bg-slate-50 hover:bg-slate-100 border-none rounded-full flex items-center justify-center cursor-pointer text-slate-500 hover:text-slate-900 transition-all active:scale-90 outline-none" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            </button>
+        </div>
+
+        <div class="hidden max-lg:flex absolute bottom-3 right-3 gap-1.5 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl" id="mainGalleryDots"></div>
+
+        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px]" id="mainGalleryTrack">
+            {% assign photo_idx = 0 %}
+            {% for img in page.images %}
+                {% assign is_vid = false %}
+                {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                    {% assign is_vid = true %}
+                    {% if img contains 'v=' %}
+                        {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
+                    {% else %}
+                        {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                    {% endif %}
+                {% endif %}
+                
+                <div class="flex-[0_0_100%] w-full h-full snap-start flex justify-center items-center relative overflow-hidden bg-transparent p-0 {% if is_vid %}max-lg:hidden{% endif %} main-gallery-slide">
+                    {% if is_vid %}
+                        <lite-youtube videoid="{{ vid_id }}" playlabel="Play Video"></lite-youtube>
+                    {% else %}
+                        <img src="{{ img }}" alt="{{ page.name }}" width="800" height="800" sizes="(max-width: 768px) 100vw, 800px"
+                             {% if photo_idx == 0 %} fetchpriority="high" {% else %} loading="lazy" {% endif %}
+                             class="max-w-full max-h-full object-contain mix-blend-multiply cursor-zoom-in select-none [-webkit-user-drag:none] transition-transform duration-300 ease-out active:scale-95 active:duration-150"
+                             onerror="this.src='/img/no-image.png'" draggable="false" 
+                             onclick="openImageZoom(this, {{ photo_idx }})" 
+                             onmousemove="zoomImagePC(event, this)" 
+                             onmouseleave="resetZoomPC(this)">
+                        {% assign photo_idx = photo_idx | plus: 1 %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if page.images.size > 1 %}
+    <div class="flex flex-col w-[80px] min-w-[80px] p-[2px] gap-2.5 order-[-1] overflow-y-auto overflow-x-hidden max-h-[520px] shrink-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-lg:hidden" id="thumbStrip">
+        {% for img in page.images %}
+            {% assign is_video = false %}
+            {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                {% assign is_video = true %}
+                {% if img contains 'v=' %}
+                    {% assign vid_id = img | split: 'v=' | last | split: '&' | first %}
+                {% else %}
+                    {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
+                {% endif %}
+            {% endif %}
+
+        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+            {% if is_video %}
+                <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
+                    <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" class="object-cover w-full h-full mix-blend-normal pointer-events-none">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white backdrop-blur-[2px] pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </div>
+                </div>
+            {% else %}
+                <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain rounded-[6px] mix-blend-multiply pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
