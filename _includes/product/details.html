@@ -10,7 +10,8 @@
             <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group [&.expanded]:max-h-[3000px]" id="specsBlock">
                 <div class="flex flex-col gap-1.5">
                     {% for spec in page.specs %}
-                    <div class="flex max-sm:flex-col max-sm:align-start max-sm:gap-1 items-center py-2.5 max-sm:py-3 bg-transparent transition-colors duration-300">
+                    <!-- Исправлено на max-sm:items-start -->
+                    <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-center py-2.5 max-sm:py-3 bg-transparent transition-colors duration-300">
                         <div class="flex-1 text-slate-600 text-[0.9rem] font-semibold">{{ spec[0] }}</div>
                         <div class="flex-1 text-slate-900 font-bold text-[0.9rem] max-sm:text-[0.85rem] text-right max-sm:text-left">{{ spec[1] }}</div>
                     </div>
