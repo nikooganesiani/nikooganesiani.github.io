@@ -1,10 +1,11 @@
-<div class="fixed inset-0 bg-white/98 z-[100000] flex-col opacity-0 transition-opacity duration-300 hidden [&.active]:flex [&.active]:opacity-100" id="imageZoomModal" onclick="closeImageZoom(event)">
+<div class="fixed inset-0 bg-white/98 z-[100000] flex-col opacity-0 transition-opacity duration-300 hidden [&.active]:opacity-100" id="imageZoomModal" onclick="closeImageZoom(event)">
     <div class="flex-1 relative flex overflow-hidden items-center justify-center w-full">
         <button class="absolute top-1/2 -translate-y-1/2 left-5 bg-transparent border-none w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer text-slate-900 transition-all z-10 outline-none hover:text-blue-600 active:scale-90 max-sm:hidden modal-nav-arrow" aria-label="წინა" onclick="scrollModalGallery(-1, event)">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="w-8 h-8"><path d="m15 18-6-6 6-6"></path></svg>
         </button>
         
-        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" id="modalTrack">
+        <!-- Обязательно добавлен класс modal-track для работы скролла через JS -->
+        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden modal-track" id="modalTrack">
             {% for img in page.images %}
                 <div class="flex-[0_0_100%] h-full flex items-center justify-center snap-start p-8 max-sm:p-4 box-border relative modal-slide">
                     <div class="flex items-center justify-center w-full h-full max-h-[85vh]">
@@ -16,7 +17,7 @@
                             {% endif %}
                             <lite-youtube videoid="{{ modal_vid }}" playlabel="Play Video" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent"></lite-youtube>
                         {% else %}
-                            <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain pointer-events-auto select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                            <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                         {% endif %}
                     </div>
                 </div>
