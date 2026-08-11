@@ -1,6 +1,7 @@
 <div class="mt-6 opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.3s]">
     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
         
+        <!-- Спецификации -->
         <div>
             <h2 class="text-[1.4rem] mb-5 font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -20,6 +21,7 @@
             <button class="bg-transparent border-none text-blue-600 font-bold text-[0.95rem] cursor-pointer mb-2 hidden transition-all duration-300 outline-none hover:text-blue-700 active:scale-95" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
         </div>
 
+        <!-- Описание и Видео -->
         <div class="max-lg:border-t max-lg:border-slate-100 max-lg:pt-6">
             <h3 class="text-[1.4rem] mb-5 font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -27,17 +29,50 @@
             </h3>
             <div class="leading-relaxed text-slate-600 text-[1rem] font-medium whitespace-pre-line mt-4 selection:bg-blue-200/50">{{ page.longDescription }}</div>
             
-            {% if page.yt_id and page.yt_id != "" %}
+            {% if yt_id != "" %}
             <div class="mt-8">
                 <h3 class="text-[1.4rem] mb-5 font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
                     ვიდეო განხილვა
                 </h3>
                 <div class="relative pb-[56.25%] h-0 overflow-hidden rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
-                    <lite-youtube videoid="{{ page.yt_id }}" playlabel="Play Video" class="absolute top-0 left-0 w-full h-full"></lite-youtube>
+                    <iframe 
+                        class="absolute top-0 left-0 w-full h-full"
+                        src="https://www.youtube.com/embed/{{ yt_id }}"
+                        title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                    ></iframe>
                 </div>
             </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<!-- Скрипт для кнопки "Показать больше" -->
+<script>
+function toggleExpand(blockId, button) {
+    const block = document.getElementById(blockId);
+    if (block) {
+        block.classList.toggle('expanded');
+        if (button) {
+            button.textContent = block.classList.contains('expanded') ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
+        }
+    }
+}
+
+// Показать кнопку "Показать больше", если контент превышает максимальную высоту
+document.addEventListener('DOMContentLoaded', function() {
+    const specBlock = document.getElementById('specsBlock');
+    const btnExpand = document.getElementById('btnExpandSpecs');
+    
+    if (specBlock && btnExpand) {
+        // Проверяем, превышает ли контент максимальную высоту
+        if (specBlock.scrollHeight > 280) {
+            btnExpand.style.display = 'block';
+        }
+    }
+});
+</script>
