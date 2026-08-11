@@ -1,3 +1,7 @@
+<!-- Подключаем скрипт lite-youtube в head или в начало body -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.js" defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.css" />
+
 <div class="mt-6 opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.3s]">
     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
         
@@ -35,15 +39,12 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
                     ვიდეო განხილვა
                 </h3>
-                <div class="relative pb-[56.25%] h-0 overflow-hidden rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
-                    <iframe 
-                        class="absolute top-0 left-0 w-full h-full"
-                        src="https://www.youtube.com/embed/{{ yt_id }}"
-                        title="YouTube video player"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                    ></iframe>
+                <div class="rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.1)]">
+                    <lite-youtube 
+                        videoid="{{ yt_id }}" 
+                        playlabel="Play Video"
+                        style="background-image: url('https://i.ytimg.com/vi/{{ yt_id }}/maxresdefault.jpg');"
+                    ></lite-youtube>
                 </div>
             </div>
             {% endif %}
@@ -51,7 +52,6 @@
     </div>
 </div>
 
-<!-- Скрипт для кнопки "Показать больше" -->
 <script>
 function toggleExpand(blockId, button) {
     const block = document.getElementById(blockId);
@@ -69,10 +69,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnExpand = document.getElementById('btnExpandSpecs');
     
     if (specBlock && btnExpand) {
-        // Проверяем, превышает ли контент максимальную высоту
         if (specBlock.scrollHeight > 280) {
             btnExpand.style.display = 'block';
         }
+    }
+    
+    // Инициализация lite-youtube для динамического контента
+    if (window.liteYoutube) {
+        window.liteYoutube.init();
     }
 });
 </script>
