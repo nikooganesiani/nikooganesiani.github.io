@@ -1,6 +1,19 @@
-<!-- Подключаем скрипт lite-youtube в head или в начало body -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.js" defer></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.css" />
+<!-- Подключаем скрипт lite-youtube с проверкой -->
+<script>
+// Проверяем, не зарегистрирован ли уже компонент
+if (!customElements.get('lite-youtube')) {
+    const script = document.createElement('script');
+    script.type = 'module';
+    script.src = 'https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.js';
+    script.defer = true;
+    document.head.appendChild(script);
+    
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.3/src/lite-yt-embed.css';
+    document.head.appendChild(link);
+}
+</script>
 
 <div class="mt-6 opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.3s]">
     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
@@ -63,7 +76,6 @@ function toggleExpand(blockId, button) {
     }
 }
 
-// Показать кнопку "Показать больше", если контент превышает максимальную высоту
 document.addEventListener('DOMContentLoaded', function() {
     const specBlock = document.getElementById('specsBlock');
     const btnExpand = document.getElementById('btnExpandSpecs');
@@ -72,11 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (specBlock.scrollHeight > 280) {
             btnExpand.style.display = 'block';
         }
-    }
-    
-    // Инициализация lite-youtube для динамического контента
-    if (window.liteYoutube) {
-        window.liteYoutube.init();
     }
 });
 </script>
