@@ -72,7 +72,15 @@
             const renderResults = () => {
                 let q = s.value.trim();
                 if(c) { if(q.length > 0) c.classList.add('show'); else c.classList.remove('show'); }
-                if (!q) { if(r) { r.innerHTML = ''; r.classList.remove('show'); r.style.display = 'none'; } return; }
+                if (!q) { 
+    if(r) { 
+        r.innerHTML = ''; 
+        r.classList.remove('show'); 
+        if (inputId === 'mobileSearchInput') r.style.display = 'none'; 
+        else r.style.display = ''; 
+    } 
+    return; 
+}
                 
                 fetchCatalogCached().then(d => {
                     if (s.value.trim() !== q) return;
@@ -100,6 +108,7 @@
                                 let oldPriceValue = p.oldPrice || p.old_price; let oldPriceHtml = oldPriceValue ? `<span class="text-[0.8rem] text-slate-400 line-through font-semibold ml-2">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
                                 return `<div class="flex items-center gap-4 p-3 cursor-pointer rounded-2xl transition-all duration-200 hover:bg-slate-50" onclick="location.href='/product/${p.id}/'"><img src="${(p.images && p.images.length > 0) ? p.images[0] : p.image}" class="w-12 h-12 object-contain rounded-2xl bg-transparent shrink-0" onerror="this.src='/img/no-image.png'"><div class="flex-1 min-w-0"><div class="text-[0.95rem] font-bold whitespace-nowrap overflow-hidden text-ellipsis text-slate-900">${p.name}</div><div class="text-[0.75rem] text-slate-400 font-semibold mt-0.5">${catText}</div><div class="font-bold text-blue-600 mt-0.5 flex items-center"><span>${String(p.price).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
                             }).join('') : '<div class="p-8 text-center text-slate-400 font-semibold">ვერაფერი მოიძებნა</div>';
+                            r.style.display = '';
                             r.classList.add('show');
                         }
                     }
@@ -109,9 +118,12 @@
             s.addEventListener('input', renderResults);
             s.addEventListener('focus', function() {
                 if(this.value.trim().length > 0 && r && r.innerHTML !== '') {
-                    if (inputId === 'mobileSearchInput') r.style.display = 'flex';
-                    else r.classList.add('show');
-                }
+                    if (inputId === 'mobileSearchInput') {
+    r.style.display = 'flex';
+} else {
+    r.style.display = ''; 
+    r.classList.add('show');
+}
             });
 
             if(c) { c.onclick = function(){ s.value=''; s.focus(); c.classList.remove('show'); renderResults(); }; }
