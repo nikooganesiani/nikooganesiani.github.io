@@ -584,4 +584,43 @@
         fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
       }
   } catch(e) {}
+    // ========== CAPI: автоматическая отправка событий ==========
+(function() {
+    function waitForCapi(callback) {
+        if (typeof window.sendCapiEvent === 'function') {
+            callback();
+        } else {
+            var attempts = 0;
+            var interval = setInterval(function() {
+                attempts++;
+                if (typeof window.sendCapiEvent === 'function') {
+                    clearInterval(interval);
+                    callback();
+                } else if (attempts > 50) {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+    }
+
+    waitForCapi(function() {
+        // --- PageView на всех страницах ---
+        window.sendCapiEvent('PageView');
+
+        // --- ViewContent на страницах товаров ---
+        {% if page.sku %}
+        (function() {
+            var rawPrice = "{{ page.price }}";
+            var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+            window.sendCapiEvent('ViewContent', {
+                content_ids: ['{{ page.sku }}'],
+                content_name: {{ page.name | jsonify }},
+                content_type: 'product',
+                value: numericPrice,
+                currency: 'GEL'
+            });
+        })();
+        {% endif %}
+    });
+})();
 </script>
