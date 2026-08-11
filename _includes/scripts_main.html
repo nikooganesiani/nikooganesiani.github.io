@@ -72,15 +72,7 @@
             const renderResults = () => {
                 let q = s.value.trim();
                 if(c) { if(q.length > 0) c.classList.add('show'); else c.classList.remove('show'); }
-                if (!q) { 
-    if(r) { 
-        r.innerHTML = ''; 
-        r.classList.remove('show'); 
-        if (inputId === 'mobileSearchInput') r.style.display = 'none'; 
-        else r.style.display = ''; 
-    } 
-    return; 
-}
+                if (!q) { if(r) { r.innerHTML = ''; r.classList.remove('show'); if (inputId === 'mobileSearchInput') r.style.display = 'none'; else r.style.display = ''; } return; }
                 
                 fetchCatalogCached().then(d => {
                     if (s.value.trim() !== q) return;
@@ -119,11 +111,12 @@
             s.addEventListener('focus', function() {
                 if(this.value.trim().length > 0 && r && r.innerHTML !== '') {
                     if (inputId === 'mobileSearchInput') {
-    r.style.display = 'flex';
-} else {
-    r.style.display = ''; 
-    r.classList.add('show');
-}
+                        r.style.display = 'flex';
+                    } else {
+                        r.style.display = '';
+                        r.classList.add('show');
+                    }
+                }
             });
 
             if(c) { c.onclick = function(){ s.value=''; s.focus(); c.classList.remove('show'); renderResults(); }; }
