@@ -37,8 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const spans = form.querySelectorAll('span');
             spans.forEach(span => {
                 if (span.textContent.trim() === '+995') {
-                    span.style.display = 'inline-block';
-                    span.style.transform = 'translateY(1.5px)';
+                    span.remove();
                 }
             });
         });
