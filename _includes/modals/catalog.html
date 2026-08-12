@@ -1,7 +1,8 @@
 <div class="modal fixed inset-0 bg-slate-900/40 backdrop-blur-[8px] z-[9999] hidden justify-center items-center opacity-0 transition-opacity duration-400 p-4 [&.active]:opacity-100 group" id="navModal">
     <style>
         @media (min-width: 1024px) {
-            #dynamicNavAccordion .lg\:grid-cols-3 {
+            #dynamicNavAccordion > div, 
+            #dynamicNavAccordion [class*="grid-cols-"] {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             }
         }
