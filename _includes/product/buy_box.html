@@ -1,9 +1,9 @@
-<style>
-    #dynamicFormInputs span.absolute {
-        margin-top: 1.5px;
-    }
-</style>
 <div class="flex flex-col opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.2s]">
+    <style>
+        #dynamicFormInputs .relative span.absolute {
+            transform: translateY(calc(-50% + 2px)) !important;
+        }
+    </style>
     <div class="sticky top-6 flex flex-col gap-4 rounded-3xl" id="stickyBuyBox">
         <form id="inlineOrderForm" novalidate class="flex flex-col gap-3 w-full">
             <div class="flex flex-col gap-2.5 mb-1">
