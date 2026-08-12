@@ -82,7 +82,7 @@
             </div>
         {% endfor %}
         {% if total_images > 4 %}
-            <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-black/5 shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 bg-black/40 border-black/20" onclick="scrollToGallerySlide(3)">
+            <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-black/5 shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 bg-black/40 border-black/20" onclick="openImageZoom(document.querySelector('.main-gallery-slide:nth-child(4) img'), 3)">
                 <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
                     <img src="{{ page.images[3] }}" alt="More photos" width="800" height="800" loading="lazy" class="object-cover w-full h-full opacity-40 pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/20 text-white font-bold text-xl pointer-events-none">
@@ -94,3 +94,30 @@
     </div>
     {% endif %}
 </div>
+
+<script>
+function scrollToGallerySlide(index) {
+    const track = document.getElementById('mainGalleryTrack');
+    const slideWidth = track.clientWidth || window.innerWidth;
+    track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+    
+    const thumbCards = document.querySelectorAll('.thumb-card');
+    thumbCards.forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('mainGalleryTrack');
+    if (track) {
+        const thumbCards = document.querySelectorAll('.thumb-card');
+        track.addEventListener('scroll', function() {
+            const slideWidth = track.clientWidth || window.innerWidth;
+            const currentIndex = Math.round(track.scrollLeft / slideWidth);
+            thumbCards.forEach((card, i) => {
+                card.classList.toggle('active', i === currentIndex);
+            });
+        });
+    }
+});
+</script>
