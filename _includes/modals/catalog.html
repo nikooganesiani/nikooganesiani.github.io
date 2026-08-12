@@ -1,8 +1,8 @@
 <div class="modal fixed inset-0 bg-slate-900/40 backdrop-blur-[8px] z-[9999] hidden justify-center items-center opacity-0 transition-opacity duration-400 p-4 [&.active]:opacity-100 group" id="navModal">
     <style>
         @media (min-width: 1024px) {
-            #dynamicNavAccordion > div, 
-            #dynamicNavAccordion [class*="grid-cols-"] {
+            #dynamicNavAccordion [class*="grid-cols-3"],
+            #dynamicNavAccordion .lg\:grid-cols-3 {
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             }
         }
@@ -12,3 +12,18 @@
         <div class="flex-1 overflow-y-auto pr-1 pt-4 pb-4 -mt-4 -mb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_bottom,transparent,black_1rem,black_calc(100%-1rem),transparent)]" id="dynamicNavAccordion"></div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const acc = document.getElementById('dynamicNavAccordion');
+    if (acc) {
+        const observer = new MutationObserver(() => {
+            acc.querySelectorAll('.lg\\:grid-cols-3, .grid-cols-3').forEach(el => {
+                el.classList.remove('lg:grid-cols-3', 'grid-cols-3');
+                el.classList.add('lg:grid-cols-2');
+            });
+        });
+        observer.observe(acc, { childList: true, subtree: true });
+    }
+});
+</script>
