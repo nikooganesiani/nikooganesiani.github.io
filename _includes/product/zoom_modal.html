@@ -6,9 +6,13 @@
         
         <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden modal-track" id="modalTrack">
             {% for img in page.images %}
+                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
                 <div class="flex-[0_0_100%] h-full flex items-center justify-center snap-start p-8 max-sm:p-4 box-border relative modal-slide">
-                    <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="max-w-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                    <div class="flex items-center justify-center w-full h-full max-h-[85vh]">
+                        <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
+                    </div>
                 </div>
+                {% endunless %}
             {% endfor %}
         </div>
         
@@ -19,10 +23,14 @@
 
     <div class="p-6 max-sm:py-6 max-sm:px-4 bg-white text-center box-border w-full modal-thumb-area">
         <div class="inline-flex gap-3 overflow-x-auto [scrollbar-width:none] max-w-full p-1 text-left" id="modalThumbStrip">
+            {% assign modal_idx = 0 %}
             {% for img in page.images %}
-                <div class="w-[60px] h-[60px] border-2 border-transparent rounded-xl cursor-pointer opacity-60 transition-all duration-200 shrink-0 p-1 box-border bg-white modal-thumb [&.active]:border-blue-600 [&.active]:opacity-100 [&.active]:scale-105" onclick="scrollToModalSlide({{ forloop.index0 }}, event)">
+                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
+                <div class="w-[60px] h-[60px] border-2 border-transparent rounded-xl cursor-pointer opacity-60 transition-all duration-200 shrink-0 p-1 box-border bg-white modal-thumb [&.active]:border-blue-600 [&.active]:opacity-100 [&.active]:scale-105" onclick="scrollToModalSlide({{ modal_idx }}, event)">
                     <img src="{{ img }}" alt="Thumb" width="800" height="800" loading="lazy" class="w-full h-full object-contain rounded-md pointer-events-none">
                 </div>
+                {% assign modal_idx = modal_idx | plus: 1 %}
+                {% endunless %}
             {% endfor %}
         </div>
     </div>
