@@ -18,7 +18,7 @@
         <button class="w-9 h-9 rounded-lg bg-transparent text-slate-500 flex items-center justify-center border-none outline-none transition-all duration-200 cursor-pointer active:scale-90 btn-fav [&.active]:text-red-500" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="[&.active>svg]:fill-current"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
-        <button class="bg-blue-600 text-white border-none rounded-lg px-4 h-9 font-bold flex items-center gap-1.5 text-[0.9rem] transition-all duration-300 cursor-pointer active:scale-95 origin-right" id="buyButton" aria-label="ყიდვა" onclick="scrollToForm()" style="max-width: 0; padding: 0; margin: 0; opacity: 0; overflow: hidden; white-space: nowrap;">
+        <button class="bg-blue-600 text-white border-none rounded-lg px-4 h-9 font-bold flex items-center gap-1.5 text-[0.9rem] transition-all duration-300 cursor-pointer active:scale-95 origin-right" id="buyButton" aria-label="ყიდვა" onclick="scrollToForm()" style="width: 0; padding-left: 0; padding-right: 0; margin: 0; opacity: 0; overflow: hidden; white-space: nowrap; border: none; min-width: 0;">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
             <span class="flex-shrink-0">ყიდვა</span>
         </button>
@@ -28,18 +28,16 @@
 <script>
 (function() {
     const buyButton = document.getElementById('buyButton');
-    const actionButtons = document.getElementById('actionButtons');
-    if (!buyButton || !actionButtons) return;
+    if (!buyButton) return;
 
-    const buyButtonForm = document.querySelector('form[data-buy-form], #orderForm, form.order-form');
-    let observer = null;
     let isButtonVisible = false;
 
     function showBuyButton() {
         if (isButtonVisible) return;
         isButtonVisible = true;
-        buyButton.style.maxWidth = '120px';
-        buyButton.style.padding = '';
+        buyButton.style.width = '';
+        buyButton.style.paddingLeft = '';
+        buyButton.style.paddingRight = '';
         buyButton.style.margin = '';
         buyButton.style.opacity = '1';
         buyButton.style.overflow = 'visible';
@@ -48,56 +46,49 @@
     function hideBuyButton() {
         if (!isButtonVisible) return;
         isButtonVisible = false;
-        buyButton.style.maxWidth = '0';
-        buyButton.style.padding = '0';
+        buyButton.style.width = '0';
+        buyButton.style.paddingLeft = '0';
+        buyButton.style.paddingRight = '0';
         buyButton.style.margin = '0';
         buyButton.style.opacity = '0';
         buyButton.style.overflow = 'hidden';
     }
 
     function checkScroll() {
-        if (!buyButtonForm) {
-            const bar = document.getElementById('mobileBottomBar');
-            if (bar) {
-                const rect = bar.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.5) {
-                    showBuyButton();
-                } else {
-                    hideBuyButton();
-                }
-            }
-            return;
-        }
+        const bar = document.getElementById('mobileBottomBar');
+        if (!bar) return;
 
-        const formRect = buyButtonForm.getBoundingClientRect();
+        const barRect = bar.getBoundingClientRect();
         const windowHeight = window.innerHeight;
+        
+        const buyButtonForm = document.querySelector('form[data-buy-form], #orderForm, form.order-form, .order-form, #buyForm, form');
 
-        if (formRect.top < windowHeight && formRect.bottom > 0) {
-            hideBuyButton();
-        } else if (formRect.top > windowHeight) {
-            showBuyButton();
+        if (buyButtonForm) {
+            const formRect = buyButtonForm.getBoundingClientRect();
+            if (formRect.top < windowHeight && formRect.bottom > 0) {
+                hideBuyButton();
+            } else if (formRect.top >= windowHeight || formRect.bottom <= 0) {
+                showBuyButton();
+            }
+        } else {
+            if (barRect.top < windowHeight && barRect.bottom > windowHeight * 0.3) {
+                showBuyButton();
+            } else if (barRect.bottom <= windowHeight * 0.3) {
+                hideBuyButton();
+            }
         }
     }
 
     window.addEventListener('scroll', checkScroll, { passive: true });
     window.addEventListener('resize', checkScroll, { passive: true });
 
-    if (buyButtonForm) {
-        observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    hideBuyButton();
-                } else {
-                    showBuyButton();
-                }
-            });
-        }, {
-            root: null,
-            threshold: 0
-        });
-        observer.observe(buyButtonForm);
-    }
+    setTimeout(checkScroll, 100);
+    setTimeout(checkScroll, 500);
+    setTimeout(checkScroll, 1000);
 
-    checkScroll();
+    document.addEventListener('DOMContentLoaded', checkScroll);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        checkScroll();
+    }
 })();
 </script>
