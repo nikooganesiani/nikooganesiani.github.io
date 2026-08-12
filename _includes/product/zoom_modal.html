@@ -7,9 +7,7 @@
         <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden modal-track" id="modalTrack">
             {% for img in page.images %}
                 <div class="flex-[0_0_100%] h-full flex items-center justify-center snap-start p-8 max-sm:p-4 box-border relative modal-slide">
-                    <div class="flex items-center justify-center w-full h-full max-h-[85vh]">
-                        <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
-                    </div>
+                    <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="max-w-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
                 </div>
             {% endfor %}
         </div>
