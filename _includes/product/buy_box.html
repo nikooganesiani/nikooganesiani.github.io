@@ -1,7 +1,7 @@
 <div class="flex flex-col opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.2s]">
     <style>
-        #dynamicFormInputs .relative span.absolute {
-            transform: translateY(calc(-50% + 2px)) !important;
+        #dynamicFormInputs .relative > span.absolute {
+            margin-top: 2px !important;
         }
     </style>
     <div class="sticky top-6 flex flex-col gap-4 rounded-3xl" id="stickyBuyBox">
@@ -28,3 +28,21 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('inlineOrderForm');
+    if (form) {
+        const observer = new MutationObserver(() => {
+            const spans = form.querySelectorAll('span');
+            spans.forEach(span => {
+                if (span.textContent.trim() === '+995') {
+                    span.style.display = 'inline-block';
+                    span.style.transform = 'translateY(1.5px)';
+                }
+            });
+        });
+        observer.observe(form, { childList: true, subtree: true });
+    }
+});
+</script>
