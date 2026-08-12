@@ -17,6 +17,18 @@
 
         <div class="hidden max-lg:flex absolute bottom-3 right-3 gap-1.5 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl" id="mainGalleryDots"></div>
 
+        {% assign slide_idx = 1 %}
+        {% for img in page.images %}
+            {% if img contains 'youtube.com' or img contains 'youtu.be' %}
+                <style>
+                    @media (max-width: 1024px) {
+                        #mainGalleryDots > *:nth-child({{ slide_idx }}) { display: none !important; }
+                    }
+                </style>
+            {% endif %}
+            {% assign slide_idx = slide_idx | plus: 1 %}
+        {% endfor %}
+
         <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px]" id="mainGalleryTrack">
             {% assign photo_idx = 0 %}
             {% for img in page.images %}
@@ -72,8 +84,8 @@
                 {% else %}
                     {% assign vid_id = img | split: 'youtu.be/' | last | split: '?' | first %}
                 {% endif %}
-                <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
-                    <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
+                <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 overflow-hidden [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                    <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
                         <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" class="object-cover w-full h-full mix-blend-normal pointer-events-none">
                         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white backdrop-blur-[2px] pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -84,12 +96,12 @@
                 {% assign img_shown = img_shown | plus: 1 %}
                 {% if image_count > 4 %}
                     {% if img_shown <= 3 %}
-                        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
-                            <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain rounded-[6px] mix-blend-multiply pointer-events-none">
+                        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 overflow-hidden [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                            <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain mix-blend-multiply pointer-events-none">
                         </div>
                     {% elsif img_shown == 4 %}
-                        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 bg-black/5 border-black/20 thumb-card" onclick="openImageZoom(document.querySelector('.main-gallery-slide:nth-child({{ forloop.index }}) img'), 3)">
-                            <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
+                        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 bg-black/5 border-black/20 overflow-hidden thumb-card" onclick="openImageZoom(document.querySelector('.main-gallery-slide:nth-child({{ forloop.index }}) img'), 3)">
+                            <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
                                 <img src="{{ img }}" alt="More photos" width="800" height="800" loading="lazy" class="object-cover w-full h-full opacity-40 pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
                                 <div class="absolute inset-0 flex items-center justify-center bg-black/20 text-white font-bold text-xl pointer-events-none">
                                     +{{ image_count | minus: 3 }}
@@ -100,8 +112,8 @@
                         <div class="hidden thumb-card" onclick="scrollToGallerySlide({{ forloop.index0 }})"></div>
                     {% endif %}
                 {% else %}
-                    <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
-                        <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain rounded-[6px] mix-blend-multiply pointer-events-none">
+                    <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 overflow-hidden [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                        <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain mix-blend-multiply pointer-events-none">
                     </div>
                 {% endif %}
             {% endif %}
