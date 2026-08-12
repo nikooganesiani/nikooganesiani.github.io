@@ -46,11 +46,18 @@
                 </div>
             {% endfor %}
         </div>
+
+        <div class="absolute bottom-4 left-4 z-10 flex gap-1.5 max-lg:hidden" id="mainGalleryDotsDesktop"></div>
     </div>
 
     {% if page.images.size > 1 %}
     <div class="flex flex-col w-[80px] min-w-[80px] p-[2px] gap-2.5 order-[-1] overflow-y-auto overflow-x-hidden max-h-[520px] shrink-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden max-lg:hidden" id="thumbStrip">
-        {% for img in page.images %}
+        {% assign total_images = page.images | size %}
+        {% assign limit = 4 %}
+        {% if total_images > 4 %}
+            {% assign limit = 3 %}
+        {% endif %}
+        {% for img in page.images limit: limit %}
             {% assign is_video = false %}
             {% if img contains 'youtube.com' or img contains 'youtu.be' %}
                 {% assign is_video = true %}
@@ -61,19 +68,29 @@
                 {% endif %}
             {% endif %}
 
-        <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
-            {% if is_video %}
+            <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-transparent shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 [&.active]:border-blue-600 thumb-card {% if forloop.first %}active{% endif %}" onclick="scrollToGallerySlide({{ forloop.index0 }})">
+                {% if is_video %}
+                    <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
+                        <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" class="object-cover w-full h-full mix-blend-normal pointer-events-none">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white backdrop-blur-[2px] pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        </div>
+                    </div>
+                {% else %}
+                    <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain rounded-[6px] mix-blend-multiply pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% if total_images > 4 %}
+            <div class="w-[72px] h-[72px] border-2 border-slate-200 rounded-xl cursor-pointer p-1 bg-black/5 shrink-0 flex items-center justify-center transition-all duration-300 relative active:scale-95 bg-black/40 border-black/20" onclick="scrollToGallerySlide(3)">
                 <div class="relative w-full h-full flex items-center justify-center rounded-[6px] overflow-hidden">
-                    <img src="https://img.youtube.com/vi/{{ vid_id }}/mqdefault.jpg" alt="Video Thumb" width="320" height="180" loading="lazy" class="object-cover w-full h-full mix-blend-normal pointer-events-none">
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-black/60 rounded-full flex items-center justify-center text-white backdrop-blur-[2px] pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <img src="{{ page.images[3] }}" alt="More photos" width="800" height="800" loading="lazy" class="object-cover w-full h-full opacity-40 pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/20 text-white font-bold text-xl pointer-events-none">
+                        +{{ total_images | minus: 3 }}
                     </div>
                 </div>
-            {% else %}
-                <img src="{{ img }}" alt="Photo Thumb" width="800" height="800" loading="lazy" class="max-w-full max-h-full object-contain rounded-[6px] mix-blend-multiply pointer-events-none" onerror="this.src='/img/no-image.png'" draggable="false">
-            {% endif %}
-        </div>
-        {% endfor %}
+            </div>
+        {% endif %}
     </div>
     {% endif %}
 </div>
