@@ -7,18 +7,19 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 სპეციფიკაციები
             </h2>
-            <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group [&.expanded]:max-h-[3000px]" id="specsBlock">
+            <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group" id="specsBlock">
                 <div class="flex flex-col gap-1.5">
                     {% for spec in page.specs %}
-                    <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-center py-2.5 max-sm:py-3 bg-transparent transition-colors duration-300">
-                        <div class="flex-1 text-slate-600 text-[0.9rem] font-semibold">{{ spec[0] }}</div>
-                        <div class="flex-1 text-slate-900 font-bold text-[0.9rem] max-sm:text-[0.85rem] text-right max-sm:text-left">{{ spec[1] }}</div>
+                    <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-baseline py-2 max-sm:py-3 bg-transparent transition-colors duration-300 w-full">
+                        <div class="text-slate-600 text-[0.9rem] font-semibold shrink-0">{{ spec[0] }}</div>
+                        <div class="flex-1 border-b-[2px] border-dotted border-slate-200 mx-3 relative -top-[4px] max-sm:hidden"></div>
+                        <div class="text-slate-900 font-bold text-[0.9rem] max-sm:text-[0.85rem] text-right max-sm:text-left shrink-0">{{ spec[1] }}</div>
                     </div>
                     {% endfor %}
                 </div>
                 <div class="absolute bottom-0 left-0 right-0 h-[100px] bg-gradient-to-t from-slate-50 to-transparent pointer-events-none transition-opacity duration-300 group-[.expanded]:opacity-0"></div>
             </div>
-            <button class="bg-transparent border-none text-blue-600 font-bold text-[0.95rem] cursor-pointer mb-2 hidden transition-all duration-300 outline-none hover:text-blue-700 active:scale-95" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
+            <button class="bg-transparent border-none text-blue-600 font-bold text-[0.95rem] cursor-pointer mt-3 mb-2 hidden transition-all duration-300 outline-none hover:text-blue-800 active:scale-95" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
         </div>
 
         <!-- Описание и Видео -->
@@ -52,7 +53,14 @@
 function toggleExpand(blockId, button) {
     const block = document.getElementById(blockId);
     if (block) {
-        block.classList.toggle('expanded');
+        if (block.classList.contains('expanded')) {
+            block.classList.remove('expanded');
+            block.style.maxHeight = '280px';
+        } else {
+            block.classList.add('expanded');
+            block.style.maxHeight = block.scrollHeight + 'px';
+        }
+        
         if (button) {
             button.textContent = block.classList.contains('expanded') ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
         }
