@@ -6,7 +6,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 სპეციფიკაციები
             </h2>
-            <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group" id="specsBlock">
+            <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group [&.expanded]:max-h-[3000px]" id="specsBlock">
                 <div class="flex flex-col gap-1.5 w-full">
                     {% for spec in page.specs %}
                     <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-end py-1.5 max-sm:py-3 bg-transparent transition-colors duration-300 w-full">
@@ -54,20 +54,26 @@ function toggleExpand(blockId, button) {
         const isExpanded = block.classList.contains('expanded');
         
         if (isExpanded) {
+            block.style.transition = 'none';
             block.style.maxHeight = block.scrollHeight + 'px';
             void block.offsetHeight;
-            block.style.maxHeight = '280px';
+            block.style.transition = '';
+            
             block.classList.remove('expanded');
-        } else {
-            block.style.maxHeight = block.scrollHeight + 'px';
-            block.classList.add('expanded');
-            setTimeout(() => { 
-                if(block.classList.contains('expanded')) block.style.maxHeight = 'max-content'; 
+            block.style.maxHeight = '280px';
+            
+            setTimeout(() => {
+                if (!block.classList.contains('expanded')) {
+                    block.style.maxHeight = '';
+                }
             }, 400);
+        } else {
+            block.style.maxHeight = '';
+            block.classList.add('expanded');
         }
         
         if (button) {
-            button.textContent = isExpanded ? 'მეტის ნახვა' : 'ნაკლების ნახვა';
+            button.textContent = block.classList.contains('expanded') ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
         }
     }
 }
