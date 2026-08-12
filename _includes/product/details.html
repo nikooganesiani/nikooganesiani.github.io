@@ -1,19 +1,18 @@
 <div class="mt-6 opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.3s]">
     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-10 items-start">
         
-        <!-- Спецификации -->
-        <div>
+        <div class="w-full">
             <h2 class="text-[1.4rem] mb-5 font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 სპეციფიკაციები
             </h2>
             <div class="relative max-h-[280px] overflow-hidden transition-[max-height] duration-400 ease-in-out group" id="specsBlock">
-                <div class="flex flex-col gap-1.5">
+                <div class="flex flex-col gap-1.5 w-full">
                     {% for spec in page.specs %}
-                    <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-baseline py-2 max-sm:py-3 bg-transparent transition-colors duration-300 w-full">
+                    <div class="flex max-sm:flex-col max-sm:items-start max-sm:gap-1 items-end py-1.5 max-sm:py-3 bg-transparent transition-colors duration-300 w-full">
                         <div class="text-slate-600 text-[0.9rem] font-semibold shrink-0">{{ spec[0] }}</div>
-                        <div class="flex-1 border-b-[2px] border-dotted border-slate-200 mx-3 relative -top-[4px] max-sm:hidden"></div>
-                        <div class="text-slate-900 font-bold text-[0.9rem] max-sm:text-[0.85rem] text-right max-sm:text-left shrink-0">{{ spec[1] }}</div>
+                        <div class="flex-1 border-b-2 border-dotted border-slate-300 mx-3 mb-[5px] max-sm:hidden"></div>
+                        <div class="text-slate-900 font-bold text-[0.9rem] max-sm:text-[0.85rem] text-right max-sm:text-left shrink-0 leading-tight">{{ spec[1] }}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -22,8 +21,7 @@
             <button class="bg-transparent border-none text-blue-600 font-bold text-[0.95rem] cursor-pointer mt-3 mb-2 hidden transition-all duration-300 outline-none hover:text-blue-800 active:scale-95" id="btnExpandSpecs" aria-label="მეტის ნახვა" onclick="toggleExpand('specsBlock', this)">მეტის ნახვა</button>
         </div>
 
-        <!-- Описание и Видео -->
-        <div class="max-lg:border-t max-lg:border-slate-100 max-lg:pt-6">
+        <div class="max-lg:border-t max-lg:border-slate-100 max-lg:pt-6 w-full">
             <h3 class="text-[1.4rem] mb-5 font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 პროდუქტის აღწერა
@@ -53,16 +51,23 @@
 function toggleExpand(blockId, button) {
     const block = document.getElementById(blockId);
     if (block) {
-        if (block.classList.contains('expanded')) {
-            block.classList.remove('expanded');
-            block.style.maxHeight = '280px';
-        } else {
-            block.classList.add('expanded');
+        const isExpanded = block.classList.contains('expanded');
+        
+        if (isExpanded) {
             block.style.maxHeight = block.scrollHeight + 'px';
+            void block.offsetHeight;
+            block.style.maxHeight = '280px';
+            block.classList.remove('expanded');
+        } else {
+            block.style.maxHeight = block.scrollHeight + 'px';
+            block.classList.add('expanded');
+            setTimeout(() => { 
+                if(block.classList.contains('expanded')) block.style.maxHeight = 'max-content'; 
+            }, 400);
         }
         
         if (button) {
-            button.textContent = block.classList.contains('expanded') ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
+            button.textContent = isExpanded ? 'მეტის ნახვა' : 'ნაკლების ნახვა';
         }
     }
 }
