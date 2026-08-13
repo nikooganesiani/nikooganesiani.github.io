@@ -128,30 +128,54 @@
 
 <script>
 (function() {
-    const trackId = 'mainGalleryTrack';
-    const dotId = 'activeGalleryDot';
+    const track = document.getElementById('mainGalleryTrack');
+    const activeDot = document.getElementById('activeGalleryDot');
+    const dotsContainer = document.getElementById('mainGalleryDots');
     const numSlides = {{ mobile_slides_count | default: 0 }};
     
-    if (numSlides <= 1) return;
+    if (!track || !activeDot || numSlides <= 1) return;
     
-    const track = document.getElementById(trackId);
-    const activeDot = document.getElementById(dotId);
+    console.log('=== GALLERY DEBUG ===');
+    console.log('numSlides:', numSlides);
+    console.log('track found:', !!track);
+    console.log('activeDot found:', !!activeDot);
+    console.log('dotsContainer found:', !!dotsContainer);
     
-    if (!track || !activeDot) return;
-    
-    if (track._galleryInit) {
-        track._galleryInit();
-        return;
+    if (dotsContainer) {
+        const style = window.getComputedStyle(dotsContainer);
+        console.log('dotsContainer display:', style.display);
+        console.log('dotsContainer visibility:', style.visibility);
+        console.log('dotsContainer opacity:', style.opacity);
+        console.log('dotsContainer width:', dotsContainer.offsetWidth);
+        console.log('dotsContainer height:', dotsContainer.offsetHeight);
     }
     
+    if (activeDot) {
+        const style = window.getComputedStyle(activeDot);
+        console.log('activeDot display:', style.display);
+        console.log('activeDot parent display:', style.display);
+        console.log('activeDot offsetWidth:', activeDot.offsetWidth);
+        console.log('activeDot offsetHeight:', activeDot.offsetHeight);
+    }
+    
+    const slide = track.querySelector('.main-gallery-slide');
+    if (slide) {
+        console.log('slide rect:', slide.getBoundingClientRect());
+    } else {
+        console.log('NO SLIDES FOUND');
+    }
+    
+    console.log('window.innerWidth:', window.innerWidth);
+    console.log('document.documentElement.clientWidth:', document.documentElement.clientWidth);
+    console.log('=== END DEBUG ===');
+    
     let rafId = null;
-    let ro = null;
     
     function getSlideWidth() {
-        const slide = track.querySelector('.main-gallery-slide');
-        if (!slide) return 0;
-        const rect = slide.getBoundingClientRect();
-        return rect.width || window.innerWidth || 1;
+        const s = track.querySelector('.main-gallery-slide');
+        if (!s) return window.innerWidth || 1;
+        const rect = s.getBoundingClientRect();
+        return rect.width > 0 ? rect.width : (window.innerWidth || 1);
     }
     
     function updateState() {
@@ -161,7 +185,6 @@
             const slideWidth = getSlideWidth();
             const scrollLeft = track.scrollLeft;
             const idx = scrollLeft / slideWidth;
-            
             const clampedIdx = Math.max(0, Math.min(idx, numSlides - 1));
             const base = Math.floor(clampedIdx);
             const frac = clampedIdx - base;
@@ -183,44 +206,17 @@
         });
     }
     
-    function onScroll() {
-        updateState();
-    }
-    
-    function onResize() {
-        updateState();
-    }
-    
-    track.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onResize);
+    track.addEventListener('scroll', updateState, { passive: true });
+    window.addEventListener('resize', updateState);
     
     if ('ResizeObserver' in window) {
-        ro = new ResizeObserver(onResize);
+        const ro = new ResizeObserver(updateState);
         ro.observe(track);
     }
     
-    track._galleryInit = function() {
-        track.removeEventListener('scroll', onScroll);
-        window.removeEventListener('resize', onResize);
-        if (ro) ro.disconnect();
-        if (rafId) cancelAnimationFrame(rafId);
-        delete track._galleryInit;
-    };
-    
-    function boot() {
-        updateState();
-    }
-    
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot);
-    } else {
-        boot();
-    }
-    
-    setTimeout(boot, 0);
-    setTimeout(boot, 50);
-    setTimeout(boot, 100);
-    setTimeout(boot, 200);
-    setTimeout(boot, 500);
+    updateState();
+    setTimeout(updateState, 0);
+    setTimeout(updateState, 100);
+    setTimeout(updateState, 500);
 })();
 </script>
