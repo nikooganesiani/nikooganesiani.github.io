@@ -2,11 +2,11 @@
 {% assign promo_items = site.data.promo_stories %}
 
 {% if promo_items %}
-<section class="w-full py-3 select-none overflow-hidden">
-  <!-- Скролл-контейнер с отступами по краям (px-3.5) -->
+<section class="w-full py-3 select-none">
+  <!-- Скролл-контейнер с отрицательными margin для работы с сейфзоной -->
   <div
     id="promo-slider-track"
-    class="flex items-center gap-2.5 sm:gap-3 px-3.5 md:px-6 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing snap-x snap-mandatory md:snap-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+    class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing snap-x snap-mandatory md:snap-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full py-2 box-border px-3.5 -mx-3.5 w-[calc(100%+1.75rem)] scroll-pl-3.5 md:px-6 md:-mx-6 md:w-[calc(100%+3rem)] md:scroll-pl-6"
   >
     {% for promo in promo_items %}
       <a
