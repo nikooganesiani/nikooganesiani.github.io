@@ -129,14 +129,6 @@
         }
     };
 
-    function scrollToGallerySlide(index) {
-        const track = document.getElementById('mainGalleryTrack');
-        const width = track.clientWidth;
-        track.scrollTo({ left: index * width, behavior: 'smooth' });
-    }
-
-    let overlaysCache = null;
-
     let isZoomModalOpen = false;
     function zoomImagePC(e, img) {
         if (img.closest('#imageZoomModal')) return;
@@ -247,19 +239,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         checkExpandableBlocks();
-        initMobileDots();
-
-        const mainTrack = document.getElementById('mainGalleryTrack');
-        let mainScrollTimeout;
-        if (mainTrack) {
-            mainTrack.addEventListener('scroll', () => {
-                if (mainScrollTimeout) return;
-                mainScrollTimeout = window.requestAnimationFrame(() => {
-                    syncThumbsWithScroll();
-                    mainScrollTimeout = null;
-                });
-            }, { passive: true });
-        }
 
         const modalTrackEl = document.getElementById('modalTrack');
         let modalScrollTimeout;
