@@ -134,13 +134,13 @@ function scrollToGallerySlide(index) {
     track.scrollTo({ left: index * (slideWidth + 1), behavior: 'smooth' });
 }
 
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
     const track = document.getElementById('mainGalleryTrack');
     const activeDot = document.getElementById('activeGalleryDot');
     const thumbCards = document.querySelectorAll('.thumb-card');
     const numSlides = {{ mobile_slides_count | default: 0 }};
     
-    if (!track) return;
+    if (!track || !activeDot || numSlides <= 1) return;
     
     let rafId = null;
     
@@ -149,46 +149,49 @@ function scrollToGallerySlide(index) {
         rafId = requestAnimationFrame(() => {
             rafId = null;
             const slideWidth = track.clientWidth || window.innerWidth;
-            const scrollLeft = track.scrollLeft;
             const slideStep = slideWidth + 1;
+            const scrollLeft = track.scrollLeft;
             
-            const desktopCurrentIndex = Math.round(scrollLeft / slideStep);
+            const currentIndex = Math.round(scrollLeft / slideStep);
             thumbCards.forEach((card, i) => {
-                if (card) card.classList.toggle('active', i === desktopCurrentIndex);
+                if (card) card.classList.toggle('active', i === currentIndex);
             });
             
-            if (activeDot && numSlides > 1) {
-                let index = scrollLeft / slideStep;
-                
-                if (index < 0) index = 0;
-                if (index > numSlides - 1) index = numSlides - 1;
-                
-                const baseIndex = Math.floor(index);
-                const fraction = index - baseIndex;
-                
-                const dotW = 6;
-                const advance = 12;
-                
-                let w = dotW;
-                let x = baseIndex * advance;
-                
-                if (fraction <= 0.5) {
-                    w = dotW + (fraction * 2 * advance);
-                } else {
-                    w = dotW + ((1 - fraction) * 2 * advance);
-                    x = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
-                }
-                
-                activeDot.style.transform = `translateX(${x}px)`;
-                activeDot.style.width = `${w}px`;
+            let index = scrollLeft / slideStep;
+            if (index < 0) index = 0;
+            if (index > numSlides - 1) index = numSlides - 1;
+            
+            const baseIndex = Math.floor(index);
+            const fraction = index - baseIndex;
+            const dotW = 6;
+            const advance = 12;
+            
+            let w = dotW;
+            let x = baseIndex * advance;
+            
+            if (fraction <= 0.5) {
+                w = dotW + (fraction * 2 * advance);
+            } else {
+                w = dotW + ((1 - fraction) * 2 * advance);
+                x = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
             }
+            
+            activeDot.style.transform = `translateX(${x}px)`;
+            activeDot.style.width = `${w}px`;
         });
     }
 
     track.addEventListener('scroll', updateGalleryState, { passive: true });
     window.addEventListener('resize', updateGalleryState);
     
+    if ('ResizeObserver' in window) {
+        const ro = new ResizeObserver(() => updateGalleryState());
+        ro.observe(track);
+    }
+    
     updateGalleryState();
+    setTimeout(updateGalleryState, 0);
     setTimeout(updateGalleryState, 100);
-})();
+    setTimeout(updateGalleryState, 300);
+});
 </script>
