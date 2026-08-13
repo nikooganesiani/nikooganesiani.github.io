@@ -1,3 +1,13 @@
+<!-- _includes/promo_stories.html -->
+{% assign promo_items = site.data.promo_stories | default: site.promo_stories %}
+
+{% unless promo_items %}
+  {% assign promo_items = "" | split: "" %}
+  {% comment %} Демо-данные по умолчанию, если нет _data/promo_stories.yml {% endcomment %}
+  {% assign item1 = '{"id":"promo-1", "title":"უფასო მიწოდება", "image":"img/banners/images.jpg", "url":"info/delivery/"}' | parse_json %}
+  {% assign promo_items = promo_items | push: item1 %}
+{% endunless %}
+
 <section class="py-3.5 sm:py-4 select-none">
   <div class="max-w-7xl mx-auto px-3 sm:px-4">
     <div
@@ -16,6 +26,7 @@
                  lg:w-[calc((100%-6*14px)/7.3)] lg:max-w-[145px] lg:h-[180px]
                  p-[3px] rounded-[22px] sm:rounded-[26px] border-2 border-blue-700 transition-all duration-300 transform active:scale-95"
         >
+          <!-- Внутренний контейнер изображения -->
           <div class="w-full h-full rounded-[17px] sm:rounded-[21px] overflow-hidden bg-zinc-900 relative">
             <img
               src="{{ promo.image | relative_url }}"
@@ -45,6 +56,7 @@
     const track = document.getElementById('promo-slider-track');
     if (!track) return;
 
+    // 1. Управление статусом "Просмотрено" через localStorage
     const STORAGE_KEY = 'viewed_promo_stories';
     let viewedCards = [];
 
@@ -78,6 +90,7 @@
       }
     }
 
+    // 2. Drag-to-scroll для Desktop мыши + предотвращение перехода при свайпе
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
@@ -108,6 +121,7 @@
       track.scrollLeft = scrollLeft - walk;
     });
 
+    // Обработка клика
     cards.forEach((card) => {
       card.addEventListener('click', (e) => {
         if (hasMoved) {
