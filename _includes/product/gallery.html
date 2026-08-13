@@ -121,72 +121,63 @@ document.addEventListener('DOMContentLoaded', function() {
     const track = document.getElementById('mainGalleryTrack');
     const mobileDotsContainer = document.getElementById('mainGalleryDots');
     
-    if (track) {
+    if (track && mobileDotsContainer) {
         const thumbCards = document.querySelectorAll('.thumb-card');
+        const slides = Array.from(track.querySelectorAll('.main-gallery-slide')).filter(s => !s.classList.contains('max-lg:hidden'));
+        const numSlides = slides.length;
         
-        if (mobileDotsContainer) {
-            const slides = Array.from(track.querySelectorAll('.main-gallery-slide')).filter(s => !s.classList.contains('max-lg:hidden'));
-            const numSlides = slides.length;
+        if (numSlides > 1) {
+            mobileDotsContainer.innerHTML = '';
             
-            if (numSlides > 1) {
-                mobileDotsContainer.innerHTML = '';
+            for (let i = 0; i < numSlides; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0';
+                mobileDotsContainer.appendChild(dot);
+            }
+            
+            const activeDot = document.createElement('div');
+            activeDot.className = 'absolute top-1.5 left-2 h-1.5 rounded-full bg-blue-600 pointer-events-none transition-none z-10';
+            activeDot.style.width = '6px';
+            mobileDotsContainer.appendChild(activeDot);
+            
+            function updateDots() {
+                const slideWidth = slides[0]?.offsetWidth || track.clientWidth || window.innerWidth;
+                const desktopCurrentIndex = Math.round(track.scrollLeft / slideWidth);
                 
-                for (let i = 0; i < numSlides; i++) {
-                    const dot = document.createElement('div');
-                    dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0';
-                    mobileDotsContainer.appendChild(dot);
+                thumbCards.forEach((card, i) => {
+                    card.classList.toggle('active', i === desktopCurrentIndex);
+                });
+                
+                const maxScroll = (numSlides - 1) * slideWidth;
+                const currentScroll = Math.max(0, Math.min(track.scrollLeft, maxScroll));
+                const scrollRatio = slideWidth > 0 ? currentScroll / slideWidth : 0;
+                
+                const baseIndex = Math.floor(scrollRatio);
+                const fraction = scrollRatio - baseIndex;
+                
+                const dotWidth = 6;
+                const gap = 6;
+                const advance = dotWidth + gap;
+                
+                let width = dotWidth;
+                let offset = baseIndex * advance;
+                
+                if (fraction <= 0.5) {
+                    width = dotWidth + (fraction * 2 * advance);
+                } else {
+                    width = dotWidth + ((1 - fraction) * 2 * advance);
+                    offset = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
                 }
                 
-                const activeDot = document.createElement('div');
-                activeDot.className = 'absolute top-1.5 left-2 h-1.5 rounded-full bg-blue-600 pointer-events-none transition-none z-10';
-                activeDot.style.width = '6px';
-                mobileDotsContainer.appendChild(activeDot);
-                
-                track.addEventListener('scroll', function() {
-                    const slideWidth = track.clientWidth || window.innerWidth;
-                    const desktopCurrentIndex = Math.round(track.scrollLeft / slideWidth);
-                    
-                    thumbCards.forEach((card, i) => {
-                        card.classList.toggle('active', i === desktopCurrentIndex);
-                    });
-                    
-                    const maxScroll = (numSlides - 1) * slideWidth;
-                    const currentScroll = Math.max(0, Math.min(track.scrollLeft, maxScroll));
-                    const scrollRatio = currentScroll / slideWidth;
-                    
-                    const baseIndex = Math.floor(scrollRatio);
-                    const fraction = scrollRatio - baseIndex;
-                    
-                    const dotWidth = 6;
-                    const gap = 6;
-                    const advance = dotWidth + gap;
-                    
-                    let width = dotWidth;
-                    let offset = baseIndex * advance;
-                    
-                    if (fraction <= 0.5) {
-                        width = dotWidth + (fraction * 2 * advance);
-                    } else {
-                        width = dotWidth + ((1 - fraction) * 2 * advance);
-                        offset = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
-                    }
-                    
-                    activeDot.style.transform = `translateX(${offset}px)`;
-                    activeDot.style.width = `${width}px`;
-                });
-                
-                track.dispatchEvent(new Event('scroll'));
-            } else {
-                mobileDotsContainer.style.display = 'none';
+                activeDot.style.transform = `translateX(${offset}px)`;
+                activeDot.style.width = `${width}px`;
             }
+            
+            track.addEventListener('scroll', updateDots, { passive: true });
+            window.addEventListener('resize', updateDots);
+            updateDots();
         } else {
-            track.addEventListener('scroll', function() {
-                const slideWidth = track.clientWidth || window.innerWidth;
-                const currentIndex = Math.round(track.scrollLeft / slideWidth);
-                thumbCards.forEach((card, i) => {
-                    card.classList.toggle('active', i === currentIndex);
-                });
-            });
+            mobileDotsContainer.style.display = 'none';
         }
     }
 });
