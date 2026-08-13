@@ -113,8 +113,14 @@
 <script>
 function scrollToGallerySlide(index) {
     const track = document.getElementById('mainGalleryTrack');
-    const slideWidth = track.clientWidth || window.innerWidth;
-    track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+    if (!track) return;
+    const slides = Array.from(track.querySelectorAll('.main-gallery-slide'));
+    if (slides[index]) {
+        slides[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    } else {
+        const slideWidth = track.clientWidth || window.innerWidth;
+        track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -136,8 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const activeDot = document.createElement('div');
-            activeDot.className = 'absolute top-1.5 left-2 h-1.5 rounded-full bg-blue-600 pointer-events-none z-10';
+            activeDot.className = 'absolute top-[6px] left-[8px] h-1.5 rounded-full bg-blue-600 pointer-events-none z-10';
             activeDot.style.width = '6px';
+            activeDot.style.transition = 'none';
             mobileDotsContainer.appendChild(activeDot);
             
             function updateDots() {
