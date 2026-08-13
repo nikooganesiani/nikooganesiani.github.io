@@ -136,52 +136,6 @@
     }
 
     let overlaysCache = null;
-    function syncThumbsWithScroll() {
-        const track = document.getElementById('mainGalleryTrack');
-        
-        if (window.innerWidth <= 1024) {
-            const index = Math.round(track.scrollLeft / track.clientWidth);
-            const dots = document.querySelectorAll('#mainGalleryDots .dot');
-            dots.forEach((d, i) => {
-                if (i === index) d.classList.add('active', '!bg-blue-600', 'scale-[1.4]');
-                else d.classList.remove('active', '!bg-blue-600', 'scale-[1.4]');
-            });
-        }
-
-        const index = Math.round(track.scrollLeft / track.clientWidth);
-        const slides = track.querySelectorAll('.main-gallery-slide');
-        
-        if (slides[index]) {
-            const hasVideo = slides[index].querySelector('lite-youtube') !== null;
-            if (!overlaysCache) overlaysCache = document.querySelectorAll('.gallery-badges, .gallery-actions');
-            overlaysCache.forEach(el => {
-                el.style.opacity = hasVideo ? '0' : '1';
-                el.style.pointerEvents = hasVideo ? 'none' : 'auto';
-                el.style.transition = 'opacity 0.3s ease';
-            });
-        }
-
-        const thumbs = document.querySelectorAll('#thumbStrip .thumb-card');
-        if (thumbs.length > 0) {
-            thumbs.forEach(t => t.classList.remove('active', 'border-blue-600'));
-            if(thumbs[index]) {
-                thumbs[index].classList.add('active', 'border-blue-600');
-                const strip = document.getElementById('thumbStrip');
-                const t = thumbs[index];
-                strip.scrollTo({ top: t.offsetTop - strip.clientHeight / 2 + t.clientHeight / 2, behavior: 'smooth' });
-            }
-        }
-    }
-
-    function initMobileDots() {
-        if (window.innerWidth > 1024) return;
-        const track = document.getElementById('mainGalleryTrack');
-        const slides = track.querySelectorAll('.main-gallery-slide:not(.desktop-only-slide)');
-        const dotsContainer = document.getElementById('mainGalleryDots');
-        if (dotsContainer && slides.length > 1) {
-            dotsContainer.innerHTML = Array.from(slides).map((_, i) => `<div class="w-1.5 h-1.5 rounded-full bg-slate-400 transition-all duration-300 dot ${i===0?'active !bg-blue-600 scale-[1.4]':''}"></div>`).join('');
-        }
-    }
 
     let isZoomModalOpen = false;
     function zoomImagePC(e, img) {
