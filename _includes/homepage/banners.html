@@ -1,25 +1,22 @@
-<!-- _includes/homepage/banners.html -->
 {% assign promo_items = site.data.promo_stories %}
 
 {% if promo_items %}
 <section class="w-full py-3 select-none">
-  <!-- На мобилках (до lg) — вылетает на всю ширину экрана (100vw). На ПК (lg+) — работает через аккуратные negative margins -->
   <div
   id="promo-slider-track"
-  class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing snap-x snap-mandatory md:snap-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-2 box-border px-3.5 scroll-pl-3.5 w-screen relative left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-6 lg:pr-12 lg:scroll-pl-6 lg:scroll-pr-6"
+  class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-2 box-border px-3.5 scroll-pl-3.5 w-screen relative left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-6 lg:pr-12 lg:scroll-pl-6 lg:scroll-pr-6"
 >
     {% for promo in promo_items %}
       <a
-        href="{{ promo.url | relative_url }}"
-        data-promo-id="{{ promo.id }}"
-        class="promo-card shrink-0 snap-start flex flex-col justify-center items-center
+  href="{{ promo.url | relative_url }}"
+  data-promo-id="{{ promo.id }}"
+  class="promo-card shrink-0 flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-2 border-blue-700 rounded-[20px] sm:rounded-[24px] transition-all duration-200 active:scale-95"
                w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36]
                sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36]
                md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px]
                p-[3px] border-2 border-blue-700 rounded-[20px] sm:rounded-[24px]
                transition-all duration-200 active:scale-95"
       >
-        <!-- Внутренний контейнер с математически согласованным радиусом: R_inner = 20px - (3px pad + 2px border) = 15px -->
         <div class="w-full h-full rounded-[15px] sm:rounded-[19px] overflow-hidden relative">
           <img
             src="{{ promo.image | relative_url }}"
@@ -41,7 +38,6 @@
     const track = document.getElementById('promo-slider-track');
     if (!track) return;
 
-    // 1. Проверка и сохранение статуса просмотра в localStorage
     const STORAGE_KEY = 'viewed_promo_stories';
     let viewedCards = [];
 
@@ -75,7 +71,6 @@
       }
     }
 
-    // 2. Скроллинг мышью на ПК без ложного срабатывания клика при перетаскивании
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
