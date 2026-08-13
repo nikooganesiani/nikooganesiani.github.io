@@ -1,4 +1,4 @@
-<div class="flex flex-row max-lg:flex-col gap-4 max-lg:gap-0 lg:items-start relative opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.1s] w-full max-w-full overflow-x-hidden">
+<div class="flex flex-row max-lg:flex-col gap-4 max-lg:gap-0 lg:items-start relative opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.1s] w-full min-w-0 max-w-full">
     
     <div class="aspect-square overflow-hidden relative flex-1 min-w-0 max-lg:w-full rounded-xl max-sm:rounded-lg border-none bg-transparent max-lg:mb-2">
         <div class="absolute top-4 left-4 z-15 flex gap-2 items-start flex-wrap pointer-events-none max-lg:hidden">
@@ -15,9 +15,9 @@
             </button>
         </div>
 
-        <div class="flex lg:hidden empty:hidden absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl pointer-events-none" id="mainGalleryDots"></div>
+        <div class="hidden max-lg:flex absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl pointer-events-none" id="mainGalleryDots"></div>
 
-        <div class="relative flex w-full h-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px] touch-pan-x overscroll-x-contain [-webkit-overflow-scrolling:touch]" id="mainGalleryTrack">
+        <div class="relative flex w-full h-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px] overscroll-x-contain [-webkit-overflow-scrolling:touch]" id="mainGalleryTrack">
             {% assign photo_idx = 0 %}
             {% for img in page.images %}
                 {% assign is_vid = false %}
@@ -122,143 +122,168 @@ function scrollToGallerySlide(index) {
 }
 
 (function () {
-    var track = document.getElementById('mainGalleryTrack');
-    if (!track) return;
+    function killLegacyDots() {
+        window.initMobileDots = function () {};
+    }
+    killLegacyDots();
 
-    var mobileDotsContainer = document.getElementById('mainGalleryDots');
-    var thumbCards = document.querySelectorAll('.thumb-card');
+    var track = null;
+    var box = null;
     var worm = null;
-    var dotsInner = null;
-    var builtFor = -1;
+    var inner = null;
+    var thumbs = null;
+    var built = -1;
     var ticking = false;
+    var bound = false;
 
-    function getVisibleSlides() {
-        return Array.prototype.slice.call(track.querySelectorAll('.main-gallery-slide')).filter(function (s) {
+    function visibleSlides() {
+        return Array.prototype.filter.call(track.querySelectorAll('.main-gallery-slide'), function (s) {
             return window.getComputedStyle(s).display !== 'none';
         });
     }
 
-    function slideOffset(slide) {
-        return slide.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+    function slideLeft(el) {
+        return el.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
     }
 
     function buildDots() {
-        if (!mobileDotsContainer) return;
-        var n = getVisibleSlides().length;
+        if (!box) return;
+        var n = visibleSlides().length;
         if (n <= 1) {
-            mobileDotsContainer.innerHTML = '';
+            box.innerHTML = '';
+            box.style.display = 'none';
             worm = null;
-            dotsInner = null;
-            builtFor = n;
+            inner = null;
+            built = n;
             return;
         }
-        if (builtFor === n && dotsInner && worm) return;
+        box.style.display = '';
+        if (built === n && inner && worm && inner.parentNode === box) return;
 
-        mobileDotsContainer.innerHTML = '';
-        dotsInner = document.createElement('div');
-        dotsInner.className = 'relative flex items-center gap-1.5';
+        box.innerHTML = '';
+        inner = document.createElement('div');
+        inner.style.cssText = 'position:relative;display:flex;align-items:center;gap:6px;';
 
         for (var i = 0; i < n; i++) {
             var dot = document.createElement('div');
-            dot.className = 'gallery-dot h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300';
-            dotsInner.appendChild(dot);
+            dot.className = 'gallery-snake-dot';
+            dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;';
+            inner.appendChild(dot);
         }
 
         worm = document.createElement('div');
-        worm.className = 'pointer-events-none absolute left-0 top-0 h-1.5 rounded-full bg-blue-600';
-        worm.style.width = '6px';
-        worm.style.willChange = 'transform, width';
-        dotsInner.appendChild(worm);
-        mobileDotsContainer.appendChild(dotsInner);
-        builtFor = n;
+        worm.style.cssText = 'position:absolute;left:0;top:0;height:6px;width:6px;border-radius:9999px;background:#2563eb;pointer-events:none;will-change:transform,width;';
+        inner.appendChild(worm);
+        box.appendChild(inner);
+        built = n;
     }
 
-    function update() {
+    function paint() {
         ticking = false;
-        var vis = getVisibleSlides();
-        var all = Array.prototype.slice.call(track.querySelectorAll('.main-gallery-slide'));
+        if (!track) return;
+
+        var vis = visibleSlides();
+        var all = track.querySelectorAll('.main-gallery-slide');
 
         if (vis.length) {
             var center = track.scrollLeft + track.clientWidth / 2;
             var best = 0;
             var bestD = Infinity;
             for (var i = 0; i < vis.length; i++) {
-                var mid = slideOffset(vis[i]) + vis[i].offsetWidth / 2;
+                var mid = slideLeft(vis[i]) + vis[i].offsetWidth / 2;
                 var d = Math.abs(mid - center);
                 if (d < bestD) {
                     bestD = d;
                     best = i;
                 }
             }
-            var fullIdx = all.indexOf(vis[best]);
-            for (var t = 0; t < thumbCards.length; t++) {
-                thumbCards[t].classList.toggle('active', t === fullIdx);
+            var full = Array.prototype.indexOf.call(all, vis[best]);
+            if (thumbs) {
+                for (var t = 0; t < thumbs.length; t++) {
+                    thumbs[t].classList.toggle('active', t === full);
+                }
             }
         }
 
-        if (!worm || !dotsInner) return;
-        var dots = dotsInner.querySelectorAll('.gallery-dot');
+        if (!worm || !inner) return;
+        var dots = inner.querySelectorAll('.gallery-snake-dot');
         var n = dots.length;
         if (n < 2 || vis.length < 2) return;
 
-        var maxScroll = slideOffset(vis[vis.length - 1]);
+        var maxScroll = slideLeft(vis[vis.length - 1]);
+        if (maxScroll < 1) maxScroll = (vis.length - 1) * (track.clientWidth || 1);
         var ratio = maxScroll > 0 ? Math.max(0, Math.min(track.scrollLeft, maxScroll)) / maxScroll : 0;
         var pos = ratio * (n - 1);
         var base = Math.min(Math.floor(pos + 1e-6), n - 2);
         var frac = Math.min(Math.max(pos - base, 0), 1);
 
-        var innerRect = dotsInner.getBoundingClientRect();
-        if (innerRect.width < 1) return;
+        var ir = inner.getBoundingClientRect();
+        if (ir.width < 1) return;
 
-        var r1 = dots[base].getBoundingClientRect();
-        var r2 = dots[base + 1].getBoundingClientRect();
-        var x1 = r1.left - innerRect.left;
-        var x2 = r2.left - innerRect.left;
-        var dw = r1.width;
-        var advance = x2 - x1;
+        var a = dots[base].getBoundingClientRect();
+        var b = dots[base + 1].getBoundingClientRect();
+        var x1 = a.left - ir.left;
+        var x2 = b.left - ir.left;
+        var dw = a.width;
+        var adv = x2 - x1;
         var width = dw;
-        var offset = x1;
+        var off = x1;
 
         if (frac <= 0.5) {
-            width = dw + frac * 2 * advance;
+            width = dw + frac * 2 * adv;
         } else {
-            width = dw + (1 - frac) * 2 * advance;
-            offset = x1 + (frac - 0.5) * 2 * advance;
+            width = dw + (1 - frac) * 2 * adv;
+            off = x1 + (frac - 0.5) * 2 * adv;
         }
 
-        worm.style.transform = 'translate3d(' + offset + 'px,0,0)';
+        worm.style.transform = 'translate3d(' + off + 'px,0,0)';
         worm.style.width = width + 'px';
     }
 
-    function requestUpdate() {
+    function requestPaint() {
         if (!ticking) {
             ticking = true;
-            window.requestAnimationFrame(update);
+            window.requestAnimationFrame(paint);
         }
     }
 
     function refresh() {
+        killLegacyDots();
         buildDots();
-        requestUpdate();
+        requestPaint();
     }
 
-    buildDots();
-    track.addEventListener('scroll', requestUpdate, { passive: true });
-    track.addEventListener('touchstart', requestUpdate, { passive: true });
-    track.addEventListener('touchmove', requestUpdate, { passive: true });
-    track.addEventListener('touchend', requestUpdate, { passive: true });
-    window.addEventListener('resize', refresh);
-    window.addEventListener('orientationchange', refresh);
-    window.addEventListener('pageshow', refresh);
-
-    if (typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(refresh).observe(track);
+    function bind() {
+        if (bound || !track) return;
+        bound = true;
+        track.addEventListener('scroll', requestPaint, { passive: true });
+        window.addEventListener('resize', refresh);
+        window.addEventListener('orientationchange', refresh);
+        window.addEventListener('pageshow', refresh);
+        if (typeof ResizeObserver !== 'undefined') {
+            new ResizeObserver(refresh).observe(track);
+        }
     }
 
-    requestUpdate();
-
-    if (document.readyState !== 'complete') {
-        window.addEventListener('load', refresh);
+    function boot() {
+        killLegacyDots();
+        track = document.getElementById('mainGalleryTrack');
+        box = document.getElementById('mainGalleryDots');
+        thumbs = document.querySelectorAll('.thumb-card');
+        if (!track) return;
+        bind();
+        refresh();
     }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            boot();
+            setTimeout(boot, 0);
+        });
+    } else {
+        boot();
+        setTimeout(boot, 0);
+    }
+    window.addEventListener('load', boot);
 })();
 </script>
