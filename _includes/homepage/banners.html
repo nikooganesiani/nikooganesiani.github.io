@@ -5,7 +5,7 @@
   {% assign promo_items = "" | split: "" %}
   {% comment %} Демо-данные по умолчанию, если нет _data/promo_stories.yml {% endcomment %}
   {% assign item1 = '{"id":"promo-1", "title":"უფასო მიწოდება", "image":"/img/banners/images.jpg", "url":"/info/delivery/"}' | parse_json %}
-  {% assign promo_items = promo_items | push: item1 | push: item2 | push: item3 | push: item4 | push: item5 | push: item6 | push: item7 | push: item8 %}
+  {% assign promo_items = promo_items | push: item1 %}
 {% endunless %}
 
 <section class="py-3.5 sm:py-4 select-none">
