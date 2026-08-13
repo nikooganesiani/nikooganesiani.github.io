@@ -13,7 +13,7 @@
                             {{ page.price | replace: '₾', '' }}<span class="text-inherit font-bold ml-0.5">₾</span>
                         </div>
                         {% if page.oldPrice != "" and page.oldPrice != nil %}
-                        <div class="text-[1.1rem] font-bold flex items-center leading-none tracking-tight line-through decoration-red-500 decoration-[3px] text-slate-400 m-0">{{ page.oldPrice | replace: '₾', '' }}₾</div>
+                        <div class="text-[1.8rem] font-bold flex items-center leading-none tracking-tight line-through decoration-slate-400 decoration-[1px] text-slate-400 m-0">{{ page.oldPrice | replace: '₾', '' }}₾</div>
                         {% endif %}
                     </div>
                     <div class="flex items-center gap-1.5 text-[0.85rem] font-bold text-[#0A5733] bg-green-600/10 px-2.5 py-1 rounded-lg mt-1">
