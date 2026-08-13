@@ -1,6 +1,6 @@
-<div class="flex flex-row max-lg:flex-col gap-4 max-lg:gap-0 lg:items-start relative opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.1s]">
+<div class="flex flex-row max-lg:flex-col gap-4 max-lg:gap-0 lg:items-start relative opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.1s] w-full max-w-full overflow-x-hidden">
     
-    <div class="aspect-square overflow-hidden relative flex-1 min-w-0 rounded-xl max-sm:rounded-lg border-none bg-transparent max-lg:mb-2">
+    <div class="aspect-square overflow-hidden relative flex-1 min-w-0 max-lg:w-full rounded-xl max-sm:rounded-lg border-none bg-transparent max-lg:mb-2">
         <div class="absolute top-4 left-4 z-15 flex gap-2 items-start flex-wrap pointer-events-none max-lg:hidden">
             <div id="dynamicStockBadgeTag"></div>
             <div class="bg-red-500 text-white px-3 py-1.5 rounded-lg font-bold text-[0.8rem] shadow-[0_4px_15px_rgba(239,68,68,0.3)] border border-white/20 tracking-wide hidden" id="saleBadge"></div>
@@ -15,25 +15,9 @@
             </button>
         </div>
 
-        {% assign mobile_slides_count = 0 %}
-        {% for img in page.images %}
-            {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
-                {% assign mobile_slides_count = mobile_slides_count | plus: 1 %}
-            {% endunless %}
-        {% endfor %}
+        <div class="flex lg:hidden empty:hidden absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl pointer-events-none" id="mainGalleryDots"></div>
 
-        {% if mobile_slides_count > 1 %}
-        <div class="hidden max-lg:flex absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl items-center justify-center pointer-events-none">
-            <div class="relative flex items-center gap-1.5 h-1.5" id="mainGalleryDots">
-                {% for i in (1..mobile_slides_count) %}
-                    <div class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></div>
-                {% endfor %}
-                <div class="absolute top-0 left-0 h-1.5 rounded-full bg-blue-600 pointer-events-none transition-none will-change-[width,transform]" id="activeGalleryDot" style="width: 6px; transform: translateX(0px);"></div>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px]" id="mainGalleryTrack">
+        <div class="relative flex w-full h-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden gap-[1px] touch-pan-x overscroll-x-contain [-webkit-overflow-scrolling:touch]" id="mainGalleryTrack">
             {% assign photo_idx = 0 %}
             {% for img in page.images %}
                 {% assign is_vid = false %}
@@ -46,7 +30,7 @@
                     {% endif %}
                 {% endif %}
                 
-                <div class="flex-[0_0_100%] w-full h-full snap-start flex justify-center items-center relative overflow-hidden bg-transparent p-0 {% if is_vid %}max-lg:hidden{% endif %} main-gallery-slide">
+                <div class="flex-[0_0_100%] w-full min-w-full h-full snap-start flex justify-center items-center relative overflow-hidden bg-transparent p-0 {% if is_vid %}max-lg:hidden{% endif %} main-gallery-slide">
                     {% if is_vid %}
                         <lite-youtube videoid="{{ vid_id }}" playlabel="Play Video"></lite-youtube>
                     {% else %}
@@ -127,96 +111,154 @@
 </div>
 
 <script>
-(function() {
-    const track = document.getElementById('mainGalleryTrack');
-    const activeDot = document.getElementById('activeGalleryDot');
-    const dotsContainer = document.getElementById('mainGalleryDots');
-    const numSlides = {{ mobile_slides_count | default: 0 }};
-    
-    if (!track || !activeDot || numSlides <= 1) return;
-    
-    console.log('=== GALLERY DEBUG ===');
-    console.log('numSlides:', numSlides);
-    console.log('track found:', !!track);
-    console.log('activeDot found:', !!activeDot);
-    console.log('dotsContainer found:', !!dotsContainer);
-    
-    if (dotsContainer) {
-        const style = window.getComputedStyle(dotsContainer);
-        console.log('dotsContainer display:', style.display);
-        console.log('dotsContainer visibility:', style.visibility);
-        console.log('dotsContainer opacity:', style.opacity);
-        console.log('dotsContainer width:', dotsContainer.offsetWidth);
-        console.log('dotsContainer height:', dotsContainer.offsetHeight);
-    }
-    
-    if (activeDot) {
-        const style = window.getComputedStyle(activeDot);
-        console.log('activeDot display:', style.display);
-        console.log('activeDot parent display:', style.display);
-        console.log('activeDot offsetWidth:', activeDot.offsetWidth);
-        console.log('activeDot offsetHeight:', activeDot.offsetHeight);
-    }
-    
-    const slide = track.querySelector('.main-gallery-slide');
-    if (slide) {
-        console.log('slide rect:', slide.getBoundingClientRect());
-    } else {
-        console.log('NO SLIDES FOUND');
-    }
-    
-    console.log('window.innerWidth:', window.innerWidth);
-    console.log('document.documentElement.clientWidth:', document.documentElement.clientWidth);
-    console.log('=== END DEBUG ===');
-    
-    let rafId = null;
-    
-    function getSlideWidth() {
-        const s = track.querySelector('.main-gallery-slide');
-        if (!s) return window.innerWidth || 1;
-        const rect = s.getBoundingClientRect();
-        return rect.width > 0 ? rect.width : (window.innerWidth || 1);
-    }
-    
-    function updateState() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(() => {
-            rafId = null;
-            const slideWidth = getSlideWidth();
-            const scrollLeft = track.scrollLeft;
-            const idx = scrollLeft / slideWidth;
-            const clampedIdx = Math.max(0, Math.min(idx, numSlides - 1));
-            const base = Math.floor(clampedIdx);
-            const frac = clampedIdx - base;
-            const dotW = 6;
-            const advance = 12;
-            
-            let w = dotW;
-            let x = base * advance;
-            
-            if (frac <= 0.5) {
-                w = dotW + frac * 2 * advance;
-            } else {
-                w = dotW + (1 - frac) * 2 * advance;
-                x = base * advance + (frac - 0.5) * 2 * advance;
-            }
-            
-            activeDot.style.transform = `translateX(${x}px)`;
-            activeDot.style.width = `${w}px`;
+function scrollToGallerySlide(index) {
+    var track = document.getElementById('mainGalleryTrack');
+    if (!track) return;
+    var slides = track.querySelectorAll('.main-gallery-slide');
+    var target = slides[index];
+    if (!target) return;
+    var left = target.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+    track.scrollTo({ left: left, behavior: 'smooth' });
+}
+
+(function () {
+    var track = document.getElementById('mainGalleryTrack');
+    if (!track) return;
+
+    var mobileDotsContainer = document.getElementById('mainGalleryDots');
+    var thumbCards = document.querySelectorAll('.thumb-card');
+    var worm = null;
+    var dotsInner = null;
+    var builtFor = -1;
+    var ticking = false;
+
+    function getVisibleSlides() {
+        return Array.prototype.slice.call(track.querySelectorAll('.main-gallery-slide')).filter(function (s) {
+            return window.getComputedStyle(s).display !== 'none';
         });
     }
-    
-    track.addEventListener('scroll', updateState, { passive: true });
-    window.addEventListener('resize', updateState);
-    
-    if ('ResizeObserver' in window) {
-        const ro = new ResizeObserver(updateState);
-        ro.observe(track);
+
+    function slideOffset(slide) {
+        return slide.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
     }
-    
-    updateState();
-    setTimeout(updateState, 0);
-    setTimeout(updateState, 100);
-    setTimeout(updateState, 500);
+
+    function buildDots() {
+        if (!mobileDotsContainer) return;
+        var n = getVisibleSlides().length;
+        if (n <= 1) {
+            mobileDotsContainer.innerHTML = '';
+            worm = null;
+            dotsInner = null;
+            builtFor = n;
+            return;
+        }
+        if (builtFor === n && dotsInner && worm) return;
+
+        mobileDotsContainer.innerHTML = '';
+        dotsInner = document.createElement('div');
+        dotsInner.className = 'relative flex items-center gap-1.5';
+
+        for (var i = 0; i < n; i++) {
+            var dot = document.createElement('div');
+            dot.className = 'gallery-dot h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300';
+            dotsInner.appendChild(dot);
+        }
+
+        worm = document.createElement('div');
+        worm.className = 'pointer-events-none absolute left-0 top-0 h-1.5 rounded-full bg-blue-600';
+        worm.style.width = '6px';
+        worm.style.willChange = 'transform, width';
+        dotsInner.appendChild(worm);
+        mobileDotsContainer.appendChild(dotsInner);
+        builtFor = n;
+    }
+
+    function update() {
+        ticking = false;
+        var vis = getVisibleSlides();
+        var all = Array.prototype.slice.call(track.querySelectorAll('.main-gallery-slide'));
+
+        if (vis.length) {
+            var center = track.scrollLeft + track.clientWidth / 2;
+            var best = 0;
+            var bestD = Infinity;
+            for (var i = 0; i < vis.length; i++) {
+                var mid = slideOffset(vis[i]) + vis[i].offsetWidth / 2;
+                var d = Math.abs(mid - center);
+                if (d < bestD) {
+                    bestD = d;
+                    best = i;
+                }
+            }
+            var fullIdx = all.indexOf(vis[best]);
+            for (var t = 0; t < thumbCards.length; t++) {
+                thumbCards[t].classList.toggle('active', t === fullIdx);
+            }
+        }
+
+        if (!worm || !dotsInner) return;
+        var dots = dotsInner.querySelectorAll('.gallery-dot');
+        var n = dots.length;
+        if (n < 2 || vis.length < 2) return;
+
+        var maxScroll = slideOffset(vis[vis.length - 1]);
+        var ratio = maxScroll > 0 ? Math.max(0, Math.min(track.scrollLeft, maxScroll)) / maxScroll : 0;
+        var pos = ratio * (n - 1);
+        var base = Math.min(Math.floor(pos + 1e-6), n - 2);
+        var frac = Math.min(Math.max(pos - base, 0), 1);
+
+        var innerRect = dotsInner.getBoundingClientRect();
+        if (innerRect.width < 1) return;
+
+        var r1 = dots[base].getBoundingClientRect();
+        var r2 = dots[base + 1].getBoundingClientRect();
+        var x1 = r1.left - innerRect.left;
+        var x2 = r2.left - innerRect.left;
+        var dw = r1.width;
+        var advance = x2 - x1;
+        var width = dw;
+        var offset = x1;
+
+        if (frac <= 0.5) {
+            width = dw + frac * 2 * advance;
+        } else {
+            width = dw + (1 - frac) * 2 * advance;
+            offset = x1 + (frac - 0.5) * 2 * advance;
+        }
+
+        worm.style.transform = 'translate3d(' + offset + 'px,0,0)';
+        worm.style.width = width + 'px';
+    }
+
+    function requestUpdate() {
+        if (!ticking) {
+            ticking = true;
+            window.requestAnimationFrame(update);
+        }
+    }
+
+    function refresh() {
+        buildDots();
+        requestUpdate();
+    }
+
+    buildDots();
+    track.addEventListener('scroll', requestUpdate, { passive: true });
+    track.addEventListener('touchstart', requestUpdate, { passive: true });
+    track.addEventListener('touchmove', requestUpdate, { passive: true });
+    track.addEventListener('touchend', requestUpdate, { passive: true });
+    window.addEventListener('resize', refresh);
+    window.addEventListener('orientationchange', refresh);
+    window.addEventListener('pageshow', refresh);
+
+    if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(refresh).observe(track);
+    }
+
+    requestUpdate();
+
+    if (document.readyState !== 'complete') {
+        window.addEventListener('load', refresh);
+    }
 })();
 </script>
