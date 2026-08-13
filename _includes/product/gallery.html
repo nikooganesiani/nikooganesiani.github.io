@@ -131,28 +131,34 @@ function scrollToGallerySlide(index) {
     const track = document.getElementById('mainGalleryTrack');
     if (!track) return;
     const slideWidth = track.clientWidth || window.innerWidth;
-    track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
+    track.scrollTo({ left: index * (slideWidth + 1), behavior: 'smooth' });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
     const track = document.getElementById('mainGalleryTrack');
     const activeDot = document.getElementById('activeGalleryDot');
     const thumbCards = document.querySelectorAll('.thumb-card');
-    
     const numSlides = {{ mobile_slides_count | default: 0 }};
     
-    if (track) {
-        function updateGalleryState() {
+    if (!track) return;
+    
+    let rafId = null;
+    
+    function updateGalleryState() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
             const slideWidth = track.clientWidth || window.innerWidth;
             const scrollLeft = track.scrollLeft;
+            const slideStep = slideWidth + 1;
             
-            const desktopCurrentIndex = Math.round(scrollLeft / slideWidth);
+            const desktopCurrentIndex = Math.round(scrollLeft / slideStep);
             thumbCards.forEach((card, i) => {
                 if (card) card.classList.toggle('active', i === desktopCurrentIndex);
             });
             
             if (activeDot && numSlides > 1) {
-                let index = scrollLeft / slideWidth;
+                let index = scrollLeft / slideStep;
                 
                 if (index < 0) index = 0;
                 if (index > numSlides - 1) index = numSlides - 1;
@@ -160,10 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const baseIndex = Math.floor(index);
                 const fraction = index - baseIndex;
                 
-                // Строгие пиксельные значения из классов Tailwind:
-                // w-1.5 = 6px, gap-1.5 = 6px
                 const dotW = 6;
-                const advance = 12; // Точка (6) + отступ (6)
+                const advance = 12;
                 
                 let w = dotW;
                 let x = baseIndex * advance;
@@ -178,13 +182,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 activeDot.style.transform = `translateX(${x}px)`;
                 activeDot.style.width = `${w}px`;
             }
-        }
-
-        track.addEventListener('scroll', updateGalleryState, { passive: true });
-        window.addEventListener('resize', updateGalleryState);
-        
-        updateGalleryState();
-        setTimeout(updateGalleryState, 100);
+        });
     }
-});
+
+    track.addEventListener('scroll', updateGalleryState, { passive: true });
+    window.addEventListener('resize', updateGalleryState);
+    
+    updateGalleryState();
+    setTimeout(updateGalleryState, 100);
+})();
 </script>
