@@ -4,18 +4,11 @@
 {% unless promo_items %}
   {% assign promo_items = "" | split: "" %}
   {% comment %} Демо-данные по умолчанию, если нет _data/promo_stories.yml {% endcomment %}
-  {% assign item1 = '{"id":"promo-1", "title":"Скидки", "image":"/img/promo1.webp", "url":"/catalog/discounts/"}' | parse_json %}
-  {% assign item2 = '{"id":"promo-2", "title":"Новинки", "image":"/img/promo2.webp", "url":"/catalog/new/"}' | parse_json %}
-  {% assign item3 = '{"id":"promo-3", "title":"Хиты", "image":"/img/promo3.webp", "url":"/catalog/bestsellers/"}' | parse_json %}
-  {% assign item4 = '{"id":"promo-4", "title":"Кэшбэк", "image":"/img/promo4.webp", "url":"/pages/cashback/"}' | parse_json %}
-  {% assign item5 = '{"id":"promo-5", "title":"Акции", "image":"/img/promo5.webp", "url":"/catalog/sale/"}' | parse_json %}
-  {% assign item6 = '{"id":"promo-6", "title":"Бренды", "image":"/img/promo6.webp", "url":"/brands/"}' | parse_json %}
-  {% assign item7 = '{"id":"promo-7", "title":"Подарки", "image":"/img/promo7.webp", "url":"/pages/gifts/"}' | parse_json %}
-  {% assign item8 = '{"id":"promo-8", "title":"Бонусы", "image":"/img/promo8.webp", "url":"/pages/bonus/"}' | parse_json %}
+  {% assign item1 = '{"id":"promo-1", "title":"უფასო მიწოდება", "image":"/img/banners/images.jpg", "url":"/info/delivery/"}' | parse_json %}
   {% assign promo_items = promo_items | push: item1 | push: item2 | push: item3 | push: item4 | push: item5 | push: item6 | push: item7 | push: item8 %}
 {% endunless %}
 
-<section class="w-full bg-[#121212] py-3.5 sm:py-4 select-none">
+<section class="py-3.5 sm:py-4 select-none">
   <div class="max-w-7xl mx-auto px-3 sm:px-4">
     <div
       id="promo-slider-track"
