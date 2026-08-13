@@ -23,12 +23,12 @@
         {% endfor %}
 
         {% if mobile_slides_count > 1 %}
-        <div class="hidden max-lg:flex absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl items-center justify-center">
-            <div class="flex flex-row items-center gap-1.5 relative" id="mainGalleryDots">
+        <div class="hidden max-lg:flex absolute bottom-3 right-3 z-20 bg-white/75 backdrop-blur-sm px-2 py-1.5 rounded-xl items-center justify-center pointer-events-none">
+            <div class="flex flex-row flex-nowrap items-center gap-1.5 relative" id="mainGalleryDots">
                 {% for i in (1..mobile_slides_count) %}
-                    <div class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0 gallery-dot"></div>
                 {% endfor %}
-                <div class="absolute top-0 left-0 h-1.5 rounded-full bg-blue-600 pointer-events-none will-change-[width,transform] transition-none" id="activeGalleryDot" style="width: 6px;"></div>
+                <div class="absolute top-0 left-0 h-1.5 rounded-full bg-blue-600 pointer-events-none will-change-[width,transform] transition-none origin-left" id="activeGalleryDot"></div>
             </div>
         </div>
         {% endif %}
@@ -129,6 +129,7 @@
 <script>
 function scrollToGallerySlide(index) {
     const track = document.getElementById('mainGalleryTrack');
+    if (!track) return;
     const slideWidth = track.clientWidth || window.innerWidth;
     track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
 }
@@ -136,58 +137,68 @@ function scrollToGallerySlide(index) {
 document.addEventListener('DOMContentLoaded', function() {
     const track = document.getElementById('mainGalleryTrack');
     const activeDot = document.getElementById('activeGalleryDot');
+    const dotElements = document.querySelectorAll('.gallery-dot');
+    const thumbCards = document.querySelectorAll('.thumb-card');
     
     if (track) {
-        const thumbCards = document.querySelectorAll('.thumb-card');
-        const numSlides = {{ mobile_slides_count | default: 0 }};
-        
         let isScrolling = false;
+        
+        function updateGalleryState() {
+            const slideWidth = track.clientWidth || window.innerWidth;
+            const desktopCurrentIndex = Math.round(track.scrollLeft / slideWidth);
+            
+            thumbCards.forEach((card, i) => {
+                card.classList.toggle('active', i === desktopCurrentIndex);
+            });
+            
+            if (activeDot && dotElements.length > 1) {
+                const numSlides = dotElements.length;
+                
+                const dotWidth = dotElements[0].offsetWidth;
+                const advance = dotElements[1].offsetLeft - dotElements[0].offsetLeft;
+                
+                const maxScroll = track.scrollWidth - track.clientWidth;
+                const currentScroll = Math.max(0, Math.min(track.scrollLeft, maxScroll));
+                
+                const scrollProgress = maxScroll > 0 ? (currentScroll / maxScroll) : 0;
+                const scrollRatio = scrollProgress * (numSlides - 1);
+                
+                const baseIndex = Math.floor(scrollRatio);
+                let fraction = scrollRatio - baseIndex;
+                
+                if (fraction >= 0.999) fraction = 0;
+
+                let width = dotWidth;
+                let offset = baseIndex * advance;
+                
+                if (fraction <= 0.5) {
+                    width = dotWidth + (fraction * 2 * advance);
+                } else {
+                    width = dotWidth + ((1 - fraction) * 2 * advance);
+                    offset = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
+                }
+                
+                activeDot.style.transform = `translateX(${offset}px)`;
+                activeDot.style.width = `${width}px`;
+            }
+        }
+
         track.addEventListener('scroll', function() {
             if (!isScrolling) {
+                isScrolling = true;
                 window.requestAnimationFrame(() => {
-                    const slideWidth = track.clientWidth || window.innerWidth;
-                    
-                    const desktopCurrentIndex = Math.round(track.scrollLeft / slideWidth);
-                    thumbCards.forEach((card, i) => {
-                        card.classList.toggle('active', i === desktopCurrentIndex);
-                    });
-                    
-                    if (activeDot && numSlides > 1) {
-                        const maxScroll = (numSlides - 1) * slideWidth;
-                        const currentScroll = Math.max(0, Math.min(track.scrollLeft, maxScroll));
-                        const scrollRatio = currentScroll / slideWidth;
-                        
-                        const baseIndex = Math.floor(scrollRatio);
-                        const fraction = scrollRatio - baseIndex;
-                        
-                        // Из Tailwind w-1.5 = 6px, gap-1.5 = 6px
-                        const dotWidth = 6;
-                        const gap = 6;
-                        const advance = dotWidth + gap;
-                        
-                        let width = dotWidth;
-                        let offset = baseIndex * advance;
-                        
-                        if (fraction <= 0.5) {
-                            width = dotWidth + (fraction * 2 * advance);
-                        } else {
-                            width = dotWidth + ((1 - fraction) * 2 * advance);
-                            offset = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
-                        }
-                        
-                        activeDot.style.transform = `translateX(${offset}px)`;
-                        activeDot.style.width = `${width}px`;
-                    }
-                    
+                    updateGalleryState();
                     isScrolling = false;
                 });
-                isScrolling = true;
             }
         }, { passive: true });
         
-        if (activeDot && numSlides > 1) {
-            track.dispatchEvent(new Event('scroll'));
-        }
+        window.addEventListener('resize', () => {
+            window.requestAnimationFrame(updateGalleryState);
+        });
+        
+        setTimeout(updateGalleryState, 50);
+        setTimeout(updateGalleryState, 300);
     }
 });
 </script>
