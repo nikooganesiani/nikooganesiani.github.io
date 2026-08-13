@@ -136,21 +136,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const activeDot = document.createElement('div');
-            activeDot.className = 'absolute top-1.5 left-2 h-1.5 rounded-full bg-blue-600 pointer-events-none transition-none z-10';
+            activeDot.className = 'absolute top-1.5 left-2 h-1.5 rounded-full bg-blue-600 pointer-events-none z-10';
             activeDot.style.width = '6px';
             mobileDotsContainer.appendChild(activeDot);
             
             function updateDots() {
-                const slideWidth = slides[0]?.offsetWidth || track.clientWidth || window.innerWidth;
-                const desktopCurrentIndex = Math.round(track.scrollLeft / slideWidth);
-                
-                thumbCards.forEach((card, i) => {
-                    card.classList.toggle('active', i === desktopCurrentIndex);
-                });
-                
-                const maxScroll = (numSlides - 1) * slideWidth;
+                const maxScroll = track.scrollWidth - track.clientWidth;
                 const currentScroll = Math.max(0, Math.min(track.scrollLeft, maxScroll));
-                const scrollRatio = slideWidth > 0 ? currentScroll / slideWidth : 0;
+                const scrollRatio = maxScroll > 0 ? (currentScroll / maxScroll) * (numSlides - 1) : 0;
                 
                 const baseIndex = Math.floor(scrollRatio);
                 const fraction = scrollRatio - baseIndex;
@@ -171,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 activeDot.style.transform = `translateX(${offset}px)`;
                 activeDot.style.width = `${width}px`;
+
+                const desktopCurrentIndex = Math.round(scrollRatio);
+                thumbCards.forEach((card, i) => {
+                    card.classList.toggle('active', i === desktopCurrentIndex);
+                });
             }
             
             track.addEventListener('scroll', updateDots, { passive: true });
