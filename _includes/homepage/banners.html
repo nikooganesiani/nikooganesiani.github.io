@@ -6,7 +6,7 @@
   <!-- Скролл-контейнер с отрицательными margin для работы с сейфзоной -->
   <div
   id="promo-slider-track"
-  class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing snap-x snap-mandatory md:snap-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-screen relative left-1/2 -translate-x-1/2 px-3.5 md:px-6 scroll-pl-3.5 md:scroll-pl-6"
+  class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing snap-x snap-mandatory md:snap-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full py-2 box-border px-4 -mx-4 w-[calc(100%+2rem)] sm:px-6 sm:-mx-6 sm:w-[calc(100%+3rem)] lg:px-12 lg:-mx-12 lg:w-[calc(100%+6rem)] scroll-pl-4 sm:scroll-pl-6"
 >
     {% for promo in promo_items %}
       <a
