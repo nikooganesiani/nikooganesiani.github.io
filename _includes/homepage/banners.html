@@ -1,13 +1,3 @@
-<!-- _includes/promo_stories.html -->
-{% assign promo_items = site.data.promo_stories | default: site.promo_stories %}
-
-{% unless promo_items %}
-  {% assign promo_items = "" | split: "" %}
-  {% comment %} Демо-данные по умолчанию, если нет _data/promo_stories.yml {% endcomment %}
-  {% assign item1 = '{"id":"promo-1", "title":"უფასო მიწოდება", "image":"img/banners/images.jpg", "url":"info/delivery/"}' | parse_json %}
-  {% assign promo_items = promo_items | push: item1 %}
-{% endunless %}
-
 <section class="py-3.5 sm:py-4 select-none">
   <div class="max-w-7xl mx-auto px-3 sm:px-4">
     <div
