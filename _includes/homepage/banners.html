@@ -2,9 +2,9 @@
 {% if promo_items %}
 <section class="w-full py-3 select-none">
   <div
-  id="promo-slider-track"
-  class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 lg:px-12"
->
+    id="promo-slider-track"
+    class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-6 lg:pr-12"
+  >
     {% for promo in promo_items %}
     <a
       href="{{ promo.url | relative_url }}"
