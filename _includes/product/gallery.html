@@ -127,13 +127,13 @@
 </div>
 
 <script>
-
-window.scrollToGallerySlide = function(index) {
+function scrollToGallerySlide(index) {
     const track = document.getElementById('mainGalleryTrack');
     if (!track) return;
     const slideWidth = track.clientWidth || window.innerWidth;
-    track.scrollTo({ left: slideWidth * index, behavior: 'smooth' });
-};
+    if (slideWidth <= 0) return;
+    track.scrollTo({ left: index * (slideWidth + 1), behavior: 'smooth' });
+}
 
 (function() {
     const track = document.getElementById('mainGalleryTrack');
@@ -141,31 +141,33 @@ window.scrollToGallerySlide = function(index) {
     const thumbCards = document.querySelectorAll('.thumb-card');
     const numSlides = {{ mobile_slides_count | default: 0 }};
     
-
-    if (!track || track.dataset.galleryInitialized) return;
-    track.dataset.galleryInitialized = 'true';
-
+    if (!track || !activeDot || numSlides <= 1) return;
+    
+    let slideWidth = 0;
+    let rafId = null;
+    
     function updateGalleryState() {
-        const slideWidth = track.clientWidth;
-        if (!slideWidth) return;
-        
-        const scrollLeft = track.scrollLeft;
-        const desktopCurrentIndex = Math.round(scrollLeft / slideWidth);
-        
-        thumbCards.forEach((card, i) => {
-            if (card) card.classList.toggle('active', i === desktopCurrentIndex);
-        });
-        
-        if (activeDot && numSlides > 1) {
-            let index = scrollLeft / slideWidth;
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            if (slideWidth <= 0) return;
+            
+            const scrollLeft = track.scrollLeft;
+            const slideStep = slideWidth + 1;
+            
+            const desktopCurrentIndex = Math.round(scrollLeft / slideStep);
+            thumbCards.forEach((card, i) => {
+                if (card) card.classList.toggle('active', i === desktopCurrentIndex);
+            });
+            
+            let index = scrollLeft / slideStep;
             if (index < 0) index = 0;
             if (index > numSlides - 1) index = numSlides - 1;
             
             const baseIndex = Math.floor(index);
             const fraction = index - baseIndex;
-            
             const dotW = 6;
-            const advance = 12; 
+            const advance = 12;
             
             let w = dotW;
             let x = baseIndex * advance;
@@ -179,19 +181,29 @@ window.scrollToGallerySlide = function(index) {
             
             activeDot.style.transform = `translateX(${x}px)`;
             activeDot.style.width = `${w}px`;
+        });
+    }
+    
+    function recalcWidth() {
+        const newWidth = track.clientWidth || window.innerWidth;
+        if (newWidth > 0) {
+            slideWidth = newWidth;
+            updateGalleryState();
         }
     }
-
-    track.addEventListener('scroll', () => {
-        window.requestAnimationFrame(updateGalleryState);
-    }, { passive: true });
     
-    window.addEventListener('resize', () => {
-        window.requestAnimationFrame(updateGalleryState);
-    });
+    if ('ResizeObserver' in window) {
+        const ro = new ResizeObserver(recalcWidth);
+        ro.observe(track);
+    } else {
+        window.addEventListener('resize', recalcWidth);
+    }
     
-    updateGalleryState();
-    setTimeout(updateGalleryState, 50);
-    setTimeout(updateGalleryState, 200);
+    track.addEventListener('scroll', updateGalleryState, { passive: true });
+    
+    recalcWidth();
+    setTimeout(recalcWidth, 50);
+    setTimeout(recalcWidth, 150);
+    setTimeout(recalcWidth, 300);
 })();
 </script>
