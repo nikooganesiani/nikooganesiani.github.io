@@ -127,62 +127,55 @@
 </div>
 
 <script>
-function scrollToGallerySlide(index) {
-    const track = document.getElementById('mainGalleryTrack');
-    if (!track) return;
-    const slide = track.querySelector('.main-gallery-slide');
-    if (!slide) return;
-    const slideWidth = slide.getBoundingClientRect().width;
-    if (slideWidth <= 0) return;
-    track.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
-}
-
 (function() {
-    const track = document.getElementById('mainGalleryTrack');
-    const activeDot = document.getElementById('activeGalleryDot');
-    const thumbCards = document.querySelectorAll('.thumb-card');
+    const trackId = 'mainGalleryTrack';
+    const dotId = 'activeGalleryDot';
     const numSlides = {{ mobile_slides_count | default: 0 }};
     
-    if (!track || !activeDot || numSlides <= 1) return;
+    if (numSlides <= 1) return;
+    
+    const track = document.getElementById(trackId);
+    const activeDot = document.getElementById(dotId);
+    
+    if (!track || !activeDot) return;
+    
+    if (track._galleryInit) {
+        track._galleryInit();
+        return;
+    }
     
     let rafId = null;
+    let ro = null;
     
     function getSlideWidth() {
         const slide = track.querySelector('.main-gallery-slide');
         if (!slide) return 0;
-        return slide.getBoundingClientRect().width;
+        const rect = slide.getBoundingClientRect();
+        return rect.width || window.innerWidth || 1;
     }
     
-    function updateGalleryState() {
+    function updateState() {
         if (rafId) return;
         rafId = requestAnimationFrame(() => {
             rafId = null;
             const slideWidth = getSlideWidth();
-            if (slideWidth <= 0) return;
-            
             const scrollLeft = track.scrollLeft;
-            const desktopCurrentIndex = Math.round(scrollLeft / slideWidth);
-            thumbCards.forEach((card, i) => {
-                if (card) card.classList.toggle('active', i === desktopCurrentIndex);
-            });
+            const idx = scrollLeft / slideWidth;
             
-            let index = scrollLeft / slideWidth;
-            if (index < 0) index = 0;
-            if (index > numSlides - 1) index = numSlides - 1;
-            
-            const baseIndex = Math.floor(index);
-            const fraction = index - baseIndex;
+            const clampedIdx = Math.max(0, Math.min(idx, numSlides - 1));
+            const base = Math.floor(clampedIdx);
+            const frac = clampedIdx - base;
             const dotW = 6;
             const advance = 12;
             
             let w = dotW;
-            let x = baseIndex * advance;
+            let x = base * advance;
             
-            if (fraction <= 0.5) {
-                w = dotW + (fraction * 2 * advance);
+            if (frac <= 0.5) {
+                w = dotW + frac * 2 * advance;
             } else {
-                w = dotW + ((1 - fraction) * 2 * advance);
-                x = baseIndex * advance + ((fraction - 0.5) * 2 * advance);
+                w = dotW + (1 - frac) * 2 * advance;
+                x = base * advance + (frac - 0.5) * 2 * advance;
             }
             
             activeDot.style.transform = `translateX(${x}px)`;
@@ -190,20 +183,44 @@ function scrollToGallerySlide(index) {
         });
     }
     
-    function forceUpdate() {
-        updateGalleryState();
+    function onScroll() {
+        updateState();
     }
     
-    track.addEventListener('scroll', updateGalleryState, { passive: true });
-    window.addEventListener('resize', forceUpdate);
+    function onResize() {
+        updateState();
+    }
     
-    const ro = new ResizeObserver(forceUpdate);
-    ro.observe(track);
+    track.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onResize);
     
-    forceUpdate();
-    setTimeout(forceUpdate, 50);
-    setTimeout(forceUpdate, 150);
-    setTimeout(forceUpdate, 300);
-    setTimeout(forceUpdate, 600);
+    if ('ResizeObserver' in window) {
+        ro = new ResizeObserver(onResize);
+        ro.observe(track);
+    }
+    
+    track._galleryInit = function() {
+        track.removeEventListener('scroll', onScroll);
+        window.removeEventListener('resize', onResize);
+        if (ro) ro.disconnect();
+        if (rafId) cancelAnimationFrame(rafId);
+        delete track._galleryInit;
+    };
+    
+    function boot() {
+        updateState();
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+    } else {
+        boot();
+    }
+    
+    setTimeout(boot, 0);
+    setTimeout(boot, 50);
+    setTimeout(boot, 100);
+    setTimeout(boot, 200);
+    setTimeout(boot, 500);
 })();
 </script>
