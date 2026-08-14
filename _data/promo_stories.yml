@@ -10,8 +10,8 @@
 
 - id: "promo-3"
   title: "უფასო მიწოდება"
-  image: "/img/banners/images.jpg"
-  url: "/info/delivery"
+  image: "/img/banners/3followusfacebook.webp"
+  url: "https://www.facebook.com/enkaelectronics"
 
 - id: "promo-4"
   title: "უფასო მიწოდება"
