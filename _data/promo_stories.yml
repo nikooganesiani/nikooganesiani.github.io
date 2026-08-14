@@ -1,6 +1,6 @@
 - id: "promo-1"
   title: "უფასო მიწოდება"
-  image: "/img/banners/images.jpg"
+  image: "/img/banners/1freeshipping.jpg"
   url: "/info/delivery"
 
 - id: "promo-2"
