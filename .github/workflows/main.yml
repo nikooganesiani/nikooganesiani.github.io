@@ -22,23 +22,10 @@ jobs:
       - name: Generate product pages
         run: node generate_pages.js
 
-      # ⚡ Оптимизация 1: Кэшируем node_modules для Tailwind CLI
-      - name: Cache node_modules
-        id: node-cache
-        uses: actions/cache@v6
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
-      # Устанавливаем только если нет кэша, иначе сразу компилируем
-      - name: Install & Build Tailwind CSS
+      # Скачиваем и сразу компилируем через автономный Tailwind v4 CLI (без долгого npm install)
+      - name: Build Tailwind CSS
         run: |
-          if [ "${{ steps.node-cache.outputs.cache-hit }}" != 'true' ]; then
-            npm install tailwindcss @tailwindcss/cli
-          fi
-          npx @tailwindcss/cli -i ./assets/css/input.css -o ./assets/css/style.css --minify
+          npx --yes @tailwindcss/cli -i ./assets/css/input.css -o ./assets/css/style.css --minify
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -70,7 +57,6 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      # ⚡ Оптимизация 2: Загружаем артефакт Cloudflare ТОЛЬКО при ручном запуске
       - name: Upload Build Artifact for Cloudflare
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v7
