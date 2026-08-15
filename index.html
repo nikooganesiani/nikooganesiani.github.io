@@ -7,31 +7,25 @@ title: "მთავარი"
 
   {% include homepage/banners.html %}
 
-<div id="viewSearch" style="display: none;">
-    {% include homepage/searchpage.html %}
-</div>
+  <div id="viewCategory" style="display: none;">
+      {% include homepage/categorypage.html %}
+  </div>
 
-<div id="viewCategory" style="display: none;">
-    {% include homepage/categorypage.html %}
-</div>
+  <div id="viewHome">
+      <!-- Здесь блоки вашей главной страницы (товары, секции и т.д.) -->
+  </div>
 
-<div id="viewHome">
 </div>
 
 <script>
     (function() {
         const params = new URLSearchParams(window.location.search);
-        const hasSearch = params.has('search');
         const hasCategory = params.has('category');
 
-        const vSearch = document.getElementById('viewSearch');
         const vCategory = document.getElementById('viewCategory');
         const vHome = document.getElementById('viewHome');
 
-        if (hasSearch && vSearch) {
-            vSearch.style.display = 'block';
-            if (vHome) vHome.style.display = 'none';
-        } else if (hasCategory && vCategory) {
+        if (hasCategory && vCategory) {
             vCategory.style.display = 'block';
             if (vHome) vHome.style.display = 'none';
         } else {
