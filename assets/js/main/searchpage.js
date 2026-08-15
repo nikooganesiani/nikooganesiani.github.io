@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${imgs.map(img => `
                         <div class="shrink-0 w-full h-full snap-start flex items-center justify-center">
                             <a href="/product/${p.id}/" class="contents" draggable="false">
-                                <img class="w-full h-full object-cover select-none" src="${img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
+                                <img class="w-full h-full object-cover select-none" src="${img}" alt="${p.name}" width="280" height="280" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
                             </a>
                         </div>
                     `).join('')}
