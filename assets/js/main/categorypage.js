@@ -1,16 +1,85 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasSearch = urlParams.has('search');
-    const hasCategory = urlParams.has('category');
     const container = document.getElementById('catalogContainer');
+    if (!container) return;
 
-    if (hasSearch || !hasCategory || !container) return;
+    function getRouteParams() {
+        const params = new URLSearchParams(window.location.search);
+        const reservedKeys = new Set(['sub', 'search', 'sort', 'min', 'max', 'page', 'category', 'order']);
+        
+        let category = params.get('category') || '';
+        
+        if (!category) {
+            for (const key of params.keys()) {
+                if (!reservedKeys.has(key) && key.trim() !== '') {
+                    category = key.trim();
+                    break;
+                }
+            }
+        }
+
+        return {
+            category: category || 'all',
+            sub: params.get('sub') || 'all',
+            search: params.get('search') || ''
+        };
+    }
+
+    const { category: currentCategory, sub: currentSubcategory, search: currentSearch } = getRouteParams();
+
+    function updateBreadcrumbs() {
+        const breadcrumbLabel = document.getElementById('breadcrumbCategoryName');
+        const breadcrumbsList = document.getElementById('categoryBreadcrumbsList');
+        if (!breadcrumbLabel || !breadcrumbsList) return;
+
+        if (currentCategory === 'all' && !currentSearch) {
+            breadcrumbLabel.textContent = 'ყველა პროდუქტი';
+            return;
+        }
+
+        if (currentSearch) {
+            breadcrumbLabel.textContent = `ძიება: "${currentSearch}"`;
+            return;
+        }
+
+        const catData = window.CATALOG_STRUCTURE ? window.CATALOG_STRUCTURE[currentCategory] : null;
+        const categoryTitle = catData?.title || currentCategory;
+
+        if (currentSubcategory === 'all') {
+            breadcrumbLabel.textContent = categoryTitle;
+        } else {
+            let subTitle = currentSubcategory;
+            if (catData && catData.subs) {
+                const subObj = catData.subs.find(s => String(s.id).toLowerCase() === String(currentSubcategory).toLowerCase());
+                if (subObj) subTitle = subObj.name;
+            }
+
+            breadcrumbsList.innerHTML = `
+                <li class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
+                    <a href="/" aria-label="მთავარი" draggable="false" class="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors outline-none no-underline">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span class="max-sm:hidden">მთავარი</span>
+                    </a>
+                </li>
+                <li class="flex items-center shrink-0 text-slate-300">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                </li>
+                <li class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
+                    <a href="/category/?${encodeURIComponent(currentCategory)}" class="text-slate-600 hover:text-blue-600 transition-colors no-underline">${categoryTitle}</a>
+                </li>
+                <li class="flex items-center shrink-0 text-slate-300">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                </li>
+                <li class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
+                    <span class="text-slate-900 truncate">${subTitle}</span>
+                </li>
+            `;
+        }
+    }
+
+    updateBreadcrumbs();
 
     let currentPage = 1;
     const itemsPerPage = 16;
-
-    const currentCategory = urlParams.get('category');
-    const currentSubcategory = urlParams.get('sub') || 'all';
 
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
@@ -35,8 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let discountBadge = '';
         
         if (p.oldPrice) {
-            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
-            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
+            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''), 10);
+            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''), 10);
             if (oldVal > newVal) {
                 const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
                 discountBadge = `<div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[0.7rem] sm:text-xs font-extrabold z-10 shadow-md pointer-events-none">-${percent}%</div>`;
@@ -83,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="text-lg sm:text-2xl font-black text-blue-600 tracking-tight">${String(p.price).replace(/₾/g, '')}₾</div>
                     ${p.oldPrice ? `<span class="line-through text-slate-500 text-xs sm:text-sm font-semibold opacity-80">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
                 </div>
-                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm(${productDataAttr})'>
+                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm ? window.openOrderForm(${productDataAttr}) : null'>
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     შეკვეთა
                 </button>
@@ -113,14 +182,23 @@ document.addEventListener('DOMContentLoaded', () => {
         track.scrollBy({ left: direction * track.clientWidth, behavior: 'smooth' });
     };
 
+    function checkMatch(itemValues, targetSlug) {
+        if (!targetSlug || targetSlug === 'all') return true;
+        if (!itemValues) return false;
+        if (Array.isArray(itemValues)) {
+            return itemValues.some(val => String(val).trim().toLowerCase() === targetSlug.trim().toLowerCase());
+        }
+        return String(itemValues).trim().toLowerCase() === targetSlug.trim().toLowerCase();
+    }
+
     function renderCategoryProducts(isLoadMore = false) {
         if (!isLoadMore) currentPage = 1;
 
         const products = window.allProducts || [];
         let filtered = [...products];
         
-        const minVal = minPriceInput ? parseInt(minPriceInput.value) : NaN;
-        const maxVal = maxPriceInput ? parseInt(maxPriceInput.value) : NaN;
+        const minVal = minPriceInput && minPriceInput.value !== '' ? parseInt(minPriceInput.value, 10) : NaN;
+        const maxVal = maxPriceInput && maxPriceInput.value !== '' ? parseInt(maxPriceInput.value, 10) : NaN;
 
         if (resetBtn && sortSelect && minPriceInput && maxPriceInput) {
             if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
@@ -133,38 +211,42 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
 
         if (currentCategory !== 'all') {
-            filtered = filtered.filter(p => p.categories && p.categories.includes(currentCategory));
+            filtered = filtered.filter(p => checkMatch(p.categories || p.category, currentCategory));
         }
+
         if (currentSubcategory !== 'all') {
-            filtered = filtered.filter(p => p.subcategories && p.subcategories.includes(currentSubcategory));
+            filtered = filtered.filter(p => checkMatch(p.subcategories || p.subcategory || p.sub, currentSubcategory));
+        }
+
+        if (currentSearch) {
+            const normalizedSearch = window.normalizeQuery ? window.normalizeQuery(currentSearch) : currentSearch.toLowerCase();
+            filtered = filtered.filter(p => {
+                const targetText = window.normalizeQuery ? window.normalizeQuery(p.name || '') : (p.name || '').toLowerCase();
+                return targetText.includes(normalizedSearch);
+            });
         }
 
         if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
         if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
         
         const sortBy = sortSelect ? sortSelect.value : 'name-asc';
-        if (sortBy === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
-        if (sortBy === 'name-desc') filtered.sort((a, b) => b.name.localeCompare(a.name));
+        if (sortBy === 'name-asc') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ka'));
+        if (sortBy === 'name-desc') filtered.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'ka'));
         if (sortBy === 'price-asc') filtered.sort((a, b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a, b) => b.priceValue - a.priceValue);
 
         if (filtered.length === 0) {
-            if (container.dataset.empty !== "true") {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center text-center py-16 sm:py-20 text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
-                        </svg>
-                        <div class="text-lg sm:text-2xl font-extrabold text-slate-600 tracking-tight">პროდუქტები ვერ მოიძებნა</div>
-                        <div class="text-sm font-medium text-slate-400 mt-2">სცადეთ სხვა ფილტრები</div>
-                    </div>`;
-                container.dataset.empty = "true";
-                if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
-            }
+            container.innerHTML = `
+                <div class="col-span-full flex flex-col items-center text-center py-16 sm:py-20 text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
+                    </svg>
+                    <div class="text-lg sm:text-2xl font-extrabold text-slate-600 tracking-tight">პროდუქტები ვერ მოიძებნა</div>
+                    <div class="text-sm font-medium text-slate-400 mt-2">სცადეთ სხვა ფილტრები</div>
+                </div>`;
+            if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
             return;
         }
-        
-        container.dataset.empty = "false";
         
         const startIndex = isLoadMore ? (currentPage - 1) * itemsPerPage : 0;
         const endIndex = currentPage * itemsPerPage;
@@ -181,10 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loadMoreContainer) {
             if (filtered.length > endIndex) {
                 loadMoreContainer.classList.remove('hidden');
-                loadMoreContainer.classList.add('block');
             } else {
                 loadMoreContainer.classList.add('hidden');
-                loadMoreContainer.classList.remove('block');
             }
         }
     }
@@ -192,34 +272,57 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderRecentlyViewed(products) {
         const section = document.getElementById('recentlyViewedSection');
         const scroll = document.getElementById('recentScroll');
+        const arrowLeft = document.getElementById('recentArrowLeft');
+        const arrowRight = document.getElementById('recentArrowRight');
         if (!section || !scroll) return;
 
-        let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-        if (recentIds.length === 0) {
+        let recentIds = [];
+        try {
+            recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
+        } catch(e) {}
+
+        if (!Array.isArray(recentIds) || recentIds.length === 0) {
             section.classList.add('hidden');
             return;
         }
 
-        const recentProducts = recentIds.map(id => products.find(p => p.id === id)).filter(Boolean);
+        const recentProducts = recentIds.map(id => products.find(p => String(p.id) === String(id))).filter(Boolean);
         if (recentProducts.length === 0) {
             section.classList.add('hidden');
             return;
         }
 
         section.classList.remove('hidden');
-        scroll.innerHTML = recentProducts.map(p => `
-            <div class="shrink-0 w-[240px] sm:w-[280px]">
-                ${createCardHTML(p)}
-            </div>
-        `).join('');
+        scroll.innerHTML = recentProducts.map(p => createCardHTML(p)).join('');
+
+        if (arrowLeft && arrowRight) {
+            const updateArrows = () => {
+                if (scroll.scrollLeft > 20) {
+                    arrowLeft.classList.add('visible');
+                } else {
+                    arrowLeft.classList.remove('visible');
+                }
+
+                if (scroll.scrollLeft < scroll.scrollWidth - scroll.clientWidth - 20) {
+                    arrowRight.classList.add('visible');
+                } else {
+                    arrowRight.classList.remove('visible');
+                }
+            };
+
+            scroll.addEventListener('scroll', updateArrows);
+            arrowLeft.addEventListener('click', () => scroll.scrollBy({ left: -300, behavior: 'smooth' }));
+            arrowRight.addEventListener('click', () => scroll.scrollBy({ left: 300, behavior: 'smooth' }));
+            setTimeout(updateArrows, 100);
+        }
     }
 
     if (minPriceInput) {
         minPriceInput.addEventListener('input', () => {
-            let min = parseInt(minPriceInput.value);
-            let max = parseInt(maxPriceInput.value);
-            if (!isNaN(min) && !isNaN(max) && max !== 0) {
-                if (min > max) minPriceInput.value = max;
+            let min = parseInt(minPriceInput.value, 10);
+            let max = parseInt(maxPriceInput.value, 10);
+            if (!isNaN(min) && !isNaN(max) && max !== 0 && min > max) {
+                minPriceInput.value = max;
             }
             renderCategoryProducts();
         });
@@ -227,19 +330,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (maxPriceInput) {
         maxPriceInput.addEventListener('input', () => {
-            let min = parseInt(minPriceInput.value);
-            let max = parseInt(maxPriceInput.value);
-            if (!isNaN(min) && !isNaN(max)) {
-                if (max < min) maxPriceInput.value = min;
+            let min = parseInt(minPriceInput.value, 10);
+            let max = parseInt(maxPriceInput.value, 10);
+            if (!isNaN(min) && !isNaN(max) && max < min) {
+                maxPriceInput.value = min;
             }
             renderCategoryProducts();
         });
     }
 
-    if (sortSelect) sortSelect.addEventListener('change', () => renderCategoryProducts());
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => renderCategoryProducts());
+    }
 
     if (resetBtn) {
-        resetBtn.addEventListener('click', function() {
+        resetBtn.addEventListener('click', () => {
             if (minPriceInput) minPriceInput.value = '';
             if (maxPriceInput) maxPriceInput.value = '';
             if (sortSelect) sortSelect.value = 'name-asc';
@@ -280,15 +385,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    fetch('https://api.enkaelectronics.com.ge/catalog')
-        .then(res => res.json())
+    const fetchPromise = window.fetchCatalogCached ? window.fetchCatalogCached() : fetch('https://api.enkaelectronics.com.ge/catalog').then(r => r.json());
+
+    fetchPromise
         .then(data => {
-            window.allProducts = data.products.map(p => ({
+            const rawList = Array.isArray(data) ? data : (data.products || []);
+            window.allProducts = rawList.map(p => ({
                 ...p,
-                priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
+                priceValue: parseInt(String(p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
             renderCategoryProducts();
             renderRecentlyViewed(window.allProducts);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            if (container) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-slate-400 font-semibold">
+                        დაფიქსირდა შეცდომა მონაცემების ჩატვირთვისას
+                    </div>`;
+            }
+        });
 });
