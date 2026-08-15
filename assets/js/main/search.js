@@ -1,276 +1,151 @@
-// assets/js/searchpage.js
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchQ = (urlParams.get('result') || urlParams.get('search') || '').trim();
-    const queryDisplay = document.getElementById('searchQueryDisplay');
-    const container = document.getElementById('catalogContainer');
-
-    if (!container) return;
-
-    if (!searchQ) {
-        if (queryDisplay) queryDisplay.textContent = '""';
-        container.innerHTML = `
-            <div class="col-span-full flex flex-col items-center text-center py-16 sm:py-20 text-slate-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <div class="text-lg sm:text-2xl font-extrabold text-slate-600">შეიყვანეთ საძიებო სიტყვა</div>
-            </div>`;
-        return;
-    }
-
-    if (queryDisplay) queryDisplay.textContent = `"${searchQ}"`;
-
-    let currentPage = 1;
-    const itemsPerPage = 16;
-
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const loadMoreContainer = document.getElementById('loadMoreContainer');
-    const minPriceInput = document.getElementById('minPrice');
-    const maxPriceInput = document.getElementById('maxPrice');
-    const sortSelect = document.getElementById('sortSelect');
-    const resetBtn = document.getElementById('resetFilters');
-    const countDisplay = document.getElementById('searchResultCount');
-
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-            currentPage++;
-            renderSearchResults(true);
-        });
-    }
-
-    function createCardHTML(p) {
-        let imgs = p.images || (p.image ? [p.image] : []);
-        imgs = imgs.filter(img => !img.includes('youtube.com') && !img.includes('youtu.be'));
-        if (imgs.length === 0) imgs.push('/img/no-image.png');
+function setupSearch(inputId, resultsId, clearId) {
+    try {
+        const s = document.getElementById(inputId);
+        const r = document.getElementById(resultsId);
+        const c = document.getElementById(clearId);
+        if (!s) return;
         
-        const hasMultipleImages = imgs.length > 1;
-        let discountBadge = '';
-        
-        if (p.oldPrice) {
-            const oldVal = parseInt(String(p.oldPrice).replace(/[^0-9]/g, ''));
-            const newVal = parseInt(String(p.price).replace(/[^0-9]/g, ''));
-            if (oldVal > newVal) {
-                const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
-                discountBadge = `<div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-500 text-white px-1.5 py-1 sm:px-2.5 sm:py-1 rounded-md sm:rounded-lg text-[0.7rem] sm:text-xs font-extrabold z-10 shadow-md pointer-events-none">-${percent}%</div>`;
+        const renderResults = () => {
+            let q = s.value.trim();
+            if (c) {
+                if (q.length > 0) c.classList.add('show');
+                else c.classList.remove('show');
             }
-        }
-        
-        const productDataAttr = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-        
-        let dotsHtml = '';
-        if (hasMultipleImages) {
-            dotsHtml = `<div class="absolute bottom-3 inset-x-0 flex justify-center gap-1.5 z-10 pointer-events-none" id="dots-${p.id}">
-                ${imgs.map((_, i) => `<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-slate-900/30 backdrop-blur-xs transition-all duration-300 dot ${i === 0 ? '!bg-blue-600 scale-125' : ''}"></div>`).join('')}
-            </div>`;
-        }
-
-        return `
-        <div class="product-card group bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-slate-100 hover:border-slate-200 h-full w-full min-w-0 select-none">
-            <div class="relative w-full aspect-square overflow-hidden bg-white rounded-t-2xl sm:rounded-t-[2rem] border-b border-slate-100">
-                ${discountBadge}
-                <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" id="track-${p.id}" onscroll="updateDots('${p.id}', this)">
-                    ${imgs.map(img => `
-                        <div class="shrink-0 w-full h-full snap-start flex items-center justify-center">
-                            <a href="/product/${p.id}/" class="contents" draggable="false">
-                                <img class="w-full h-full object-cover select-none" src="${img}" alt="${p.name}" loading="lazy" onerror="this.onerror=null; this.src='/img/no-image.png'" draggable="false">
-                            </a>
-                        </div>
-                    `).join('')}
-                </div>
-                ${dotsHtml}
-                ${hasMultipleImages ? `
-                    <button type="button" class="hidden sm:flex absolute top-1/2 -translate-y-1/2 left-3 bg-white/95 border border-slate-100 w-9 h-9 rounded-full items-center justify-center cursor-pointer z-10 text-slate-900 opacity-0 group-hover:opacity-100 hover:text-blue-600 hover:bg-white hover:scale-110 active:scale-90 transition-all duration-300 shadow-md outline-none" onclick="changeSlide('${p.id}', -1, event)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
-                    </button>
-                    <button type="button" class="hidden sm:flex absolute top-1/2 -translate-y-1/2 right-3 bg-white/95 border border-slate-100 w-9 h-9 rounded-full items-center justify-center cursor-pointer z-10 text-slate-900 opacity-0 group-hover:opacity-100 hover:text-blue-600 hover:bg-white hover:scale-110 active:scale-90 transition-all duration-300 shadow-md outline-none" onclick="changeSlide('${p.id}', 1, event)">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
-                    </button>
-                ` : ''}
-            </div>
-            <div class="p-3 sm:p-5 flex flex-col flex-1">
-                <div class="bg-transparent border-0 p-0 h-10 sm:h-12 flex items-start mb-2 sm:mb-3 cursor-pointer hover:opacity-80 active:scale-[0.98] transition-all" onclick="location.href='/product/${p.id}/'">
-                    <div class="text-xs sm:text-base font-bold text-slate-900 leading-snug line-clamp-2">${p.name}</div>
-                </div>
-                <div class="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2.5 mb-3 sm:mb-4 px-0 sm:px-1">
-                    <div class="text-lg sm:text-2xl font-black text-blue-600 tracking-tight">${String(p.price).replace(/₾/g, '')}₾</div>
-                    ${p.oldPrice ? `<span class="line-through text-slate-500 text-xs sm:text-sm font-semibold opacity-80">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
-                </div>
-                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm ? window.openOrderForm(${productDataAttr}) : null'>
-                    <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                    შეკვეთა
-                </button>
-            </div>
-        </div>`;
-    }
-
-    window.updateDots = function(productId, trackEl) {
-        const index = Math.round(trackEl.scrollLeft / trackEl.clientWidth);
-        const dots = document.querySelectorAll(`#dots-${productId} .dot`);
-        dots.forEach((d, i) => {
-            if (i === index) {
-                d.classList.add('!bg-blue-600', 'scale-125');
-            } else {
-                d.classList.remove('!bg-blue-600', 'scale-125');
-            }
-        });
-    };
-
-    window.changeSlide = function(productId, direction, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        const track = document.getElementById(`track-${productId}`);
-        if (!track) return;
-        track.scrollBy({ left: direction * track.clientWidth, behavior: 'smooth' });
-    };
-
-    function renderSearchResults(isLoadMore = false) {
-        if (!isLoadMore) currentPage = 1;
-
-        const products = window.allProducts || [];
-        let filtered = [...products];
-        
-        const minVal = minPriceInput ? parseInt(minPriceInput.value) : NaN;
-        const maxVal = maxPriceInput ? parseInt(maxPriceInput.value) : NaN;
-
-        if (resetBtn && sortSelect && minPriceInput && maxPriceInput) {
-            if (minPriceInput.value !== '' || maxPriceInput.value !== '' || sortSelect.value !== 'name-asc') {
-                resetBtn.classList.add('show');
-            } else {
-                resetBtn.classList.remove('show');
-            }
-        }
-
-        filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
-        const sq = searchQ.toLowerCase();
-        filtered = filtered.filter(p => p.name.toLowerCase().includes(sq) || (p.description && p.description.toLowerCase().includes(sq)));
-
-        if (!isNaN(minVal)) filtered = filtered.filter(p => p.priceValue >= minVal);
-        if (!isNaN(maxVal)) filtered = filtered.filter(p => p.priceValue <= maxVal);
-        
-        const sortBy = sortSelect ? sortSelect.value : 'name-asc';
-        if (sortBy === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
-        if (sortBy === 'name-desc') filtered.sort((a, b) => b.name.localeCompare(a.name));
-        if (sortBy === 'price-asc') filtered.sort((a, b) => a.priceValue - b.priceValue);
-        if (sortBy === 'price-desc') filtered.sort((a, b) => b.priceValue - a.priceValue);
-
-        if (countDisplay) countDisplay.textContent = `(${filtered.length})`;
-
-        if (filtered.length === 0) {
-            if (container.dataset.empty !== "true") {
-                container.innerHTML = `
-                    <div class="col-span-full flex flex-col items-center text-center py-16 sm:py-20 text-slate-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 sm:mb-6 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
-                        </svg>
-                        <div class="text-lg sm:text-2xl font-extrabold text-slate-600 tracking-tight">შედეგი ვერ მოიძებნა</div>
-                        <div class="text-sm font-medium text-slate-400 mt-2">სცადეთ სხვა საძიებო სიტყვა ან შეცვალეთ ფილტრები</div>
-                    </div>`;
-                container.dataset.empty = "true";
-                if (loadMoreContainer) loadMoreContainer.classList.add('hidden');
-            }
-            return;
-        }
-        
-        container.dataset.empty = "false";
-        
-        const startIndex = isLoadMore ? (currentPage - 1) * itemsPerPage : 0;
-        const endIndex = currentPage * itemsPerPage;
-        const paginatedProducts = filtered.slice(startIndex, endIndex);
-
-        const html = paginatedProducts.map(p => createCardHTML(p)).join('');
-
-        if (isLoadMore) {
-            container.insertAdjacentHTML('beforeend', html);
-        } else {
-            container.innerHTML = html;
-        }
-
-        if (loadMoreContainer) {
-            if (filtered.length > endIndex) {
-                loadMoreContainer.classList.remove('hidden');
-                loadMoreContainer.classList.add('block');
-            } else {
-                loadMoreContainer.classList.add('hidden');
-                loadMoreContainer.classList.remove('block');
-            }
-        }
-    }
-
-    if (minPriceInput) {
-        minPriceInput.addEventListener('input', () => {
-            let min = parseInt(minPriceInput.value);
-            let max = parseInt(maxPriceInput.value);
-            if (!isNaN(min) && !isNaN(max) && max !== 0) {
-                if (min > max) minPriceInput.value = max;
-            }
-            renderSearchResults();
-        });
-    }
-
-    if (maxPriceInput) {
-        maxPriceInput.addEventListener('input', () => {
-            let min = parseInt(minPriceInput.value);
-            let max = parseInt(maxPriceInput.value);
-            if (!isNaN(min) && !isNaN(max)) {
-                if (max < min) maxPriceInput.value = min;
-            }
-            renderSearchResults();
-        });
-    }
-
-    if (sortSelect) sortSelect.addEventListener('change', () => renderSearchResults());
-
-    if (resetBtn) {
-        resetBtn.addEventListener('click', function() {
-            if (minPriceInput) minPriceInput.value = '';
-            if (maxPriceInput) maxPriceInput.value = '';
-            if (sortSelect) sortSelect.value = 'name-asc';
-            const selVal = document.getElementById('selectedValue');
-            if (selVal) selVal.textContent = 'დალაგება';
-            renderSearchResults();
-        });
-    }
-
-    const selectTrigger = document.getElementById('selectTrigger');
-    const selectOptions = document.getElementById('selectOptions');
-    const selectArrow = selectTrigger ? selectTrigger.querySelector('.select-arrow-svg') : null;
-
-    if (selectTrigger && selectOptions) {
-        selectTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectOptions.classList.toggle('hidden');
-            if (selectArrow) selectArrow.classList.toggle('rotate-180');
-        });
-
-        document.querySelectorAll('.select-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const value = option.dataset.value;
-                const selVal = document.getElementById('selectedValue');
-                if (selVal) selVal.textContent = option.textContent;
-                if (sortSelect) {
-                    sortSelect.value = value;
-                    sortSelect.dispatchEvent(new Event('change'));
+            if (!q) {
+                if (r) {
+                    r.innerHTML = '';
+                    r.classList.remove('show');
+                    if (inputId === 'mobileSearchInput') r.style.display = 'none';
+                    else r.style.display = '';
                 }
-                selectOptions.classList.add('hidden');
-                if (selectArrow) selectArrow.classList.remove('rotate-180');
-            });
+                return;
+            }
+            
+            window.fetchCatalogCached().then(d => {
+                if (s.value.trim() !== q) return;
+                if (!d || !Array.isArray(d.products)) return;
+
+                let qLower = q.toLowerCase();
+                let normalizedQ = window.normalizeQuery ? window.normalizeQuery(q) : qLower;
+                let f = d.products.filter(p => p && p.stockStatus !== 'out_of_stock' && 
+                    (((p.name || '').toLowerCase().includes(qLower)) || 
+                     ((p.name || '').toLowerCase().includes(normalizedQ)))
+                );
+                
+                if (r) {
+                    if (inputId === 'mobileSearchInput') {
+                        r.innerHTML = f.length ? f.map(p => {
+                            let catText = '';
+                            let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
+                            if (mainCatId && window.CATALOG_STRUCTURE?.[mainCatId]) {
+                                catText = window.CATALOG_STRUCTURE[mainCatId].title || '';
+                            }
+                            let oldP = (p.oldPrice || p.old_price) ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${String(p.oldPrice || p.old_price).replace(/₾/g, '')}₾</span>` : '';
+                            let imgSrc = (Array.isArray(p.images) && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
+                            return `<div class="flex gap-3 bg-transparent border-b border-slate-200 py-4 px-2 relative items-center transition-all duration-200 last:border-none cursor-pointer mb-2 hover:bg-slate-50" onclick="location.href='/product/${p.id}/'"><img class="w-16 h-16 rounded-lg object-contain bg-transparent shrink-0" src="${imgSrc}" onerror="this.src='/img/no-image.png'"><div class="flex-1 min-w-0"><div class="font-bold text-[0.95rem] text-slate-900 leading-snug mb-0.5 line-clamp-2 overflow-hidden text-ellipsis">${p.name || ''}</div><div class="text-[0.75rem] text-slate-400 mt-0.5 font-semibold">${catText}</div><div class="font-bold text-blue-600 text-[1.1rem] flex items-center flex-wrap gap-1.5">${String(p.price || 0).replace(/₾/g, '')}₾ ${oldP}</div></div></div>`;
+                        }).join('') : '<div class="text-center p-8 text-slate-400 font-semibold">ვერაფერი მოიძებნა</div>';
+                        r.style.display = 'flex';
+                    } else {
+                        r.innerHTML = f.length ? f.map(p => {
+                            let catText = '';
+                            let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
+                            let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
+                            if (mainCatId && window.CATALOG_STRUCTURE?.[mainCatId]) {
+                                catText = window.CATALOG_STRUCTURE[mainCatId].title || '';
+                                if (subCatId) {
+                                    let sub = window.CATALOG_STRUCTURE[mainCatId].subs?.find(sb => sb.id === subCatId);
+                                    if (sub) catText += ` <span class="text-slate-300 mx-1">&bull;</span> ${sub.name} `;
+                                }
+                            }
+                            let oldPriceValue = p.oldPrice || p.old_price;
+                            let oldPriceHtml = oldPriceValue ? `<span class="text-[0.8rem] text-slate-400 line-through font-semibold ml-2">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
+                            let imgSrc = (Array.isArray(p.images) && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
+                            return `<div class="flex items-center gap-4 p-3 cursor-pointer rounded-2xl transition-all duration-200 hover:bg-slate-50" onclick="location.href='/product/${p.id}/'"><img src="${imgSrc}" class="w-12 h-12 object-contain rounded-2xl bg-transparent shrink-0" onerror="this.src='/img/no-image.png'"><div class="flex-1 min-w-0"><div class="text-[0.95rem] font-bold whitespace-nowrap overflow-hidden text-ellipsis text-slate-900">${p.name || ''}</div><div class="text-[0.75rem] text-slate-400 font-semibold mt-0.5">${catText}</div><div class="font-bold text-blue-600 mt-0.5 flex items-center"><span>${String(p.price || 0).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
+                        }).join('') : '<div class="p-8 text-center text-slate-400 font-semibold">ვერაფერი მოიძებნა</div>';
+                        r.style.display = '';
+                        r.classList.add('show');
+                    }
+                }
+            }).catch(err => console.error(err));
+        };
+
+        s.addEventListener('input', renderResults);
+        s.addEventListener('focus', function() {
+            if (this.value.trim().length > 0 && r && r.innerHTML !== '') {
+                if (inputId === 'mobileSearchInput') {
+                    r.style.display = 'flex';
+                } else {
+                    r.style.display = '';
+                    r.classList.add('show');
+                }
+            }
         });
 
-        document.addEventListener('click', () => {
-            selectOptions.classList.add('hidden');
-            if (selectArrow) selectArrow.classList.remove('rotate-180');
-        });
-    }
+        if (c) {
+            c.onclick = function() {
+                s.value = '';
+                s.focus();
+                c.classList.remove('show');
+                renderResults();
+            };
+        }
 
-    fetch('https://api.enkaelectronics.com.ge/catalog')
-        .then(res => res.json())
-        .then(data => {
-            window.allProducts = data.products.map(p => ({
-                ...p,
-                priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
-            }));
-            renderSearchResults();
-        })
-        .catch(err => console.error(err));
+        s.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const q = this.value.trim();
+                if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
+            }
+        });
+        
+        if (inputId === 'searchInput') { 
+            document.addEventListener('click', e => { 
+                const desktopBtn = document.getElementById('desktopSearchBtn');
+                if (!s.contains(e.target) && r && !r.contains(e.target) && (!desktopBtn || !desktopBtn.contains(e.target)) && (!c || !c.contains(e.target))) {
+                    r.classList.remove('show'); 
+                }
+            }); 
+        }
+    } catch(e) { console.error(e); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQ = urlParams.get('result') || urlParams.get('search');
+        if (searchQ) {
+            const s = document.getElementById('searchInput');
+            if (s) {
+                s.value = searchQ;
+                document.getElementById('desktopSearchClear')?.classList.add('show');
+            }
+        }
+    } catch(e) { console.error(e); }
+
+    try {
+        let desktopInput = document.getElementById('searchInput');
+        let parentContainer = document.querySelector('.group.relative.h-full') || desktopInput?.parentElement;
+        
+        if (desktopInput && parentContainer && !document.getElementById('desktopSearchResults')) {
+            let sr = document.createElement('div');
+            sr.className = 'absolute top-[calc(100%+10px)] left-0 right-0 bg-white w-full rounded-[1.5rem] shadow-[0_10px_25px_rgba(0,0,0,0.1)] border-none z-[1000] opacity-0 invisible scale-[0.98] -translate-y-3 transition-all duration-300 max-h-[400px] overflow-y-auto p-2 [&.show]:opacity-100 [&.show]:visible [&.show]:translate-y-0 [&.show]:scale-100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden';
+            sr.id = 'desktopSearchResults';
+            parentContainer.appendChild(sr);
+        }
+
+        setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear');
+        setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear');
+        
+        ['desktopSearchBtn', 'mobileSearchBtn'].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
+                    const inputEl = document.getElementById(inputId);
+                    const q = inputEl?.value?.trim();
+                    if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
+                });
+            }
+        });
+    } catch(e){}
 });
