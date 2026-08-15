@@ -1,0 +1,64 @@
+<main class="w-full">
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-6">
+        {% include product/breadcrumbs.html %}
+
+        <div class="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4 items-center justify-between mt-2 mb-8 bg-white p-3 sm:p-5 rounded-2xl sm:rounded-3xl shadow-xs border border-slate-100 relative z-30" id="filtersBar">
+            <div class="flex items-center sm:mr-auto min-w-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-50 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full border border-slate-200 transition-all focus-within:border-blue-600 focus-within:bg-white focus-within:shadow-md">
+                    <label for="minPrice" class="text-slate-400 font-extrabold text-[0.65rem] sm:text-xs uppercase tracking-wider">ფასი</label>
+                    <input type="number" id="minPrice" placeholder="დან" min="0" class="border-0 bg-transparent text-xs sm:text-sm font-bold outline-none w-10 sm:w-16 text-slate-900 text-center placeholder:text-slate-400">
+                    <span class="text-slate-300 font-light">|</span>
+                    <input type="number" id="maxPrice" placeholder="მდე" min="0" aria-label="მაქსიმალური ფასი" class="border-0 bg-transparent text-xs sm:text-sm font-bold outline-none w-10 sm:w-16 text-slate-900 text-center placeholder:text-slate-400">
+                </div>
+            </div>
+            
+            <div class="relative min-w-[100px] sm:min-w-[200px] flex-1 sm:flex-initial" id="customSortSelect">
+                <div class="bg-white border border-slate-200 px-3.5 sm:px-5 py-2 sm:py-3 rounded-full text-xs sm:text-sm cursor-pointer font-bold text-slate-900 flex justify-between items-center transition-all select-none hover:border-slate-300 active:scale-[0.98]" id="selectTrigger">
+                    <span id="selectedValue">დალაგება</span>
+                    <svg class="w-4 h-4 transition-transform duration-300 select-arrow-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+                <div class="absolute top-[calc(100%+8px)] left-0 right-0 bg-white rounded-2xl shadow-xl z-50 hidden border border-slate-100 overflow-hidden" id="selectOptions">
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-asc">ყველა</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="price-desc">კლებადობით</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="price-asc">ზრდადობით</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-asc">A-Z</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-desc">Z-A</div>
+                </div>
+            </div>
+
+            <button class="reset-filters bg-red-50 text-red-500 rounded-full flex items-center justify-center shrink-0 w-0 h-0 opacity-0 overflow-hidden invisible pointer-events-none transition-all duration-300 transform scale-75 rotate-45 hover:bg-red-100 hover:scale-105 active:scale-90 active:-rotate-90 [&.show]:w-9 [&.show]:h-9 sm:[&.show]:w-10 sm:[&.show]:h-10 [&.show]:opacity-100 [&.show]:visible [&.show]:pointer-events-auto [&.show]:scale-100 [&.show]:rotate-0" id="resetFilters" title="გასუფთავება">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+            
+            <select id="sortSelect" class="hidden">
+                <option value="name-asc">ყველა</option>
+                <option value="price-desc">კლებადობით</option>
+                <option value="price-asc">ზრდადობით</option>
+                <option value="name-asc">A-Z</option>
+                <option value="name-desc">Z-A</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-7 mb-8 sm:mb-12" id="catalogContainer"></div>
+
+        <div id="loadMoreContainer" class="hidden text-center mb-12">
+            <button id="loadMoreBtn" type="button" class="inline-flex items-center justify-center min-w-[200px] mx-auto py-3.5 px-6 rounded-2xl bg-white border border-slate-200 text-slate-900 font-extrabold text-sm sm:text-base shadow-xs hover:bg-slate-50 hover:border-slate-300 hover:-translate-y-0.5 active:scale-95 transition-all outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                მეტის ნახვა
+            </button>
+        </div>
+
+        <div class="hidden mb-12" id="recentlyViewedSection">
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-4 sm:mb-6 tracking-tight">ბოლოს ნანახი</h2>
+            <div class="relative max-w-[1280px] mx-auto z-20">
+                <button type="button" class="hidden lg:flex items-center justify-center absolute top-1/2 -translate-y-1/2 -left-5 w-11 h-11 bg-white border border-slate-200 rounded-full shadow-md cursor-pointer z-10 text-slate-900 transition-all hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-110 active:scale-90 outline-none invisible opacity-0 [&.visible]:visible [&.visible]:opacity-100" id="recentArrowLeft">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <div class="flex gap-3 sm:gap-6 overflow-x-auto py-4 px-0.5 scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden items-stretch snap-x snap-mandatory [&>.product-card]:snap-start [&>.product-card]:shrink-0 [&>.product-card]:w-[240px] sm:[&>.product-card]:w-[280px]" id="recentScroll"></div>
+                <button type="button" class="hidden lg:flex items-center justify-center absolute top-1/2 -translate-y-1/2 -right-5 w-11 h-11 bg-white border border-slate-200 rounded-full shadow-md cursor-pointer z-10 text-slate-900 transition-all hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-110 active:scale-90 outline-none invisible opacity-0 [&.visible]:visible [&.visible]:opacity-100" id="recentArrowRight">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m9 18 6-6-6-6"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
