@@ -26,7 +26,7 @@ function setupSearch(inputId, resultsId, clearId) {
                 if (!d || !Array.isArray(d.products)) return;
 
                 let qLower = q.toLowerCase();
-                let normalizedQ = window.normalizeQuery(q);
+                let normalizedQ = window.normalizeQuery ? window.normalizeQuery(q) : qLower;
                 let f = d.products.filter(p => p && p.stockStatus !== 'out_of_stock' && 
                     (((p.name || '').toLowerCase().includes(qLower)) || 
                      ((p.name || '').toLowerCase().includes(normalizedQ)))
@@ -90,12 +90,11 @@ function setupSearch(inputId, resultsId, clearId) {
             };
         }
 
-        // Перенаправление на страницу поиска при нажатии Enter
         s.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const q = this.value.trim();
-                if (q) window.location.href = '/search/?search=' + encodeURIComponent(q);
+                if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
             }
         });
         
@@ -112,7 +111,8 @@ function setupSearch(inputId, resultsId, clearId) {
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
-        const searchQ = new URLSearchParams(window.location.search).get('search');
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQ = urlParams.get('result') || urlParams.get('search');
         if (searchQ) {
             const s = document.getElementById('searchInput');
             if (s) {
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
                     const inputEl = document.getElementById(inputId);
                     const q = inputEl?.value?.trim();
-                    if (q) window.location.href = '/search/' + encodeURIComponent(q);
+                    if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
                 });
             }
         });
