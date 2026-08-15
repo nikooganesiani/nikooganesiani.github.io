@@ -33,7 +33,7 @@ jobs:
           ruby-version: '4.0.6'
           bundler-cache: true
 
-      # Кэширование Jekyll (строго после Ruby и перед Jekyll build)
+      # Кэширование Jekyll
       - name: Cache Jekyll build
         uses: actions/cache@v6
         with:
@@ -44,8 +44,9 @@ jobs:
           restore-keys: |
             jekyll-${{ runner.os }}-
 
+      # Сборка Jekyll с учетом инкрементального кэша
       - name: Build Jekyll site
-        run: bundle exec jekyll build
+        run: bundle exec jekyll build --incremental
         env:
           JEKYLL_ENV: production
 
@@ -83,7 +84,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy _site --project-name nikooganesiani-github-io
 
-      # Очистка кэша зоны срабатывает только при боевом деплое на Cloudflare
+      # Очистка кэша зоны срабатывает только здесь (при ручном релизе)
       - name: Purge cache (via curl)
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
