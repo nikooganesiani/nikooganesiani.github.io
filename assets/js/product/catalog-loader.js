@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    fetch('https://api.enkaelectronics.com.ge/catalog')
+    fetch(window.CATALOG_API_URL)
     .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
     .then(data => {
         const currentSub = pDataset.subcat || "";
