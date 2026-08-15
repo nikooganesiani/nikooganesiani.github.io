@@ -1,3 +1,4 @@
+// assets/js/searchpage.js
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const searchQ = (urlParams.get('result') || urlParams.get('search') || '').trim();
@@ -196,31 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderRecentlyViewed(products) {
-        const section = document.getElementById('recentlyViewedSection');
-        const scroll = document.getElementById('recentScroll');
-        if (!section || !scroll) return;
-
-        let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-        if (recentIds.length === 0) {
-            section.classList.add('hidden');
-            return;
-        }
-
-        const recentProducts = recentIds.map(id => products.find(p => p.id === id)).filter(Boolean);
-        if (recentProducts.length === 0) {
-            section.classList.add('hidden');
-            return;
-        }
-
-        section.classList.remove('hidden');
-        scroll.innerHTML = recentProducts.map(p => `
-            <div class="shrink-0 w-[240px] sm:w-[280px]">
-                ${createCardHTML(p)}
-            </div>
-        `).join('');
-    }
-
     if (minPriceInput) {
         minPriceInput.addEventListener('input', () => {
             let min = parseInt(minPriceInput.value);
@@ -295,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceValue: parseInt((p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
             renderSearchResults();
-            renderRecentlyViewed(window.allProducts);
         })
         .catch(err => console.error(err));
 });
