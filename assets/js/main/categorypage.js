@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return `
-        <div class="product-card group bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-slate-100 hover:border-slate-200 h-full w-full min-w-0 select-none">
+        <div class="product-card group bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col border border-slate-100 hover:border-slate-200 w-full min-w-0 select-none">
             <div class="relative w-full aspect-square overflow-hidden bg-white rounded-t-2xl sm:rounded-t-[2rem] border-b border-slate-100">
                 ${discountBadge}
                 <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" id="track-${p.id}" onscroll="updateDots('${p.id}', this)">
@@ -144,15 +144,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                 ` : ''}
             </div>
-            <div class="p-3 sm:p-5 flex flex-col flex-1">
-                <div class="bg-transparent border-0 p-0 h-10 sm:h-12 flex items-start mb-2 sm:mb-3 cursor-pointer hover:opacity-80 active:scale-[0.98] transition-all" onclick="location.href='/product/${p.id}/'">
-                    <div class="text-xs sm:text-base font-bold text-slate-900 leading-snug line-clamp-2">${p.name}</div>
+            <div class="p-3 sm:p-5 flex flex-col flex-grow justify-between">
+                <div>
+                    <div class="bg-transparent border-0 p-0 h-10 sm:h-12 flex items-start mb-2 sm:mb-3 cursor-pointer hover:opacity-80 active:scale-[0.98] transition-all" onclick="location.href='/product/${p.id}/'">
+                        <div class="text-xs sm:text-base font-bold text-slate-900 leading-snug line-clamp-2">${p.name}</div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2.5 mb-3 sm:mb-4 px-0 sm:px-1">
+                        <div class="text-lg sm:text-2xl font-black text-blue-600 tracking-tight">${String(p.price).replace(/₾/g, '')}₾</div>
+                        ${p.oldPrice ? `<span class="line-through text-slate-500 text-xs sm:text-sm font-semibold opacity-80">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
+                    </div>
                 </div>
-                <div class="flex flex-col sm:flex-row sm:items-baseline gap-0 sm:gap-2.5 mb-3 sm:mb-4 px-0 sm:px-1">
-                    <div class="text-lg sm:text-2xl font-black text-blue-600 tracking-tight">${String(p.price).replace(/₾/g, '')}₾</div>
-                    ${p.oldPrice ? `<span class="line-through text-slate-500 text-xs sm:text-sm font-semibold opacity-80">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
-                </div>
-                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm ? window.openOrderForm(${productDataAttr}) : null'>
+                <button type="button" class="w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm ? window.openOrderForm(${productDataAttr}) : null'>
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     შეკვეთა
                 </button>
