@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    // Берем параметр result (или search для совместимости)
     const searchQ = (urlParams.get('result') || urlParams.get('search') || '').trim();
     const queryDisplay = document.getElementById('searchQueryDisplay');
     const container = document.getElementById('catalogContainer');
@@ -17,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    if (queryDisplay) queryDisplay.textContent = `"${searchQ}"`;
+
     let currentPage = 1;
     const itemsPerPage = 16;
 
@@ -27,8 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortSelect = document.getElementById('sortSelect');
     const resetBtn = document.getElementById('resetFilters');
     const countDisplay = document.getElementById('searchResultCount');
-
-    queryDisplay.textContent = `"${searchQ}"`;
 
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', () => {
@@ -94,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="text-lg sm:text-2xl font-black text-blue-600 tracking-tight">${String(p.price).replace(/₾/g, '')}₾</div>
                     ${p.oldPrice ? `<span class="line-through text-slate-500 text-xs sm:text-sm font-semibold opacity-80">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
                 </div>
-                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm(${productDataAttr})'>
+                <button type="button" class="mt-auto w-full bg-blue-600 text-white border-0 py-2 sm:py-3.5 px-3 rounded-xl sm:rounded-2xl cursor-pointer font-extrabold text-xs sm:text-base transition-all duration-300 flex items-center justify-center gap-1.5 sm:gap-2 outline-none shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:scale-95 active:shadow-none" onclick='window.openOrderForm ? window.openOrderForm(${productDataAttr}) : null'>
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     შეკვეთა
                 </button>
