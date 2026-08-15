@@ -4,4 +4,39 @@ title: "მთავარი"
 ---
 
 <div class="max-w-[1280px] w-full mx-auto px-6 py-4 pb-16 animate-[fadeIn_0.6s_ease] overflow-x-hidden selection:bg-blue-200">
-{% include homepage/banners.html %}
+
+  {% include homepage/banners.html %}
+
+<div id="viewSearch" style="display: none;">
+    {% include search.html %}
+</div>
+
+<div id="viewCategory" style="display: none;">
+    {% include category.html %}
+</div>
+
+<div id="viewHome">
+    <!-- Ваш контент главной страницы (баннеры, сетка категорий, промо-блоки и т.д.) -->
+</div>
+
+<script>
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const hasSearch = params.has('search');
+        const hasCategory = params.has('category');
+
+        const vSearch = document.getElementById('viewSearch');
+        const vCategory = document.getElementById('viewCategory');
+        const vHome = document.getElementById('viewHome');
+
+        if (hasSearch && vSearch) {
+            vSearch.style.display = 'block';
+            if (vHome) vHome.style.display = 'none';
+        } else if (hasCategory && vCategory) {
+            vCategory.style.display = 'block';
+            if (vHome) vHome.style.display = 'none';
+        } else {
+            if (vHome) vHome.style.display = 'block';
+        }
+    })();
+</script>
