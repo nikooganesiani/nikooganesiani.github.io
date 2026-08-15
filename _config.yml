@@ -1,23 +1,30 @@
 title: ENKA Electronics
 description: ENKA Electronics - ხარისხიანი ტექნიკა საქართველოში უფასო მიტანით და ადგილზე გადახდით.
 
-url: "https://enkaelectronics.com.ge"   # 👈 твой кастомный домен
+url: "https://enkaelectronics.com.ge"
 baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
 
-# Исключаем лишние папки
+# Включаем инкрементальную сборку по умолчанию
+incremental: true
+
+# Исключаем служебные файлы и папки из итогового билда
 exclude:
   - vendor
   - node_modules
   - Gemfile
   - Gemfile.lock
+  - package.json
+  - package-lock.json
   - README.md
   - generate_pages.js
+  - assets/css/input.css
   - .github
   - .gitignore
   - .git
   - .bundle
+  - .jekyll-cache
 
 # Коллекция товаров
 collections:
@@ -25,14 +32,15 @@ collections:
     output: true
     permalink: /product/:title/
 
-# Настройки по умолчанию для товаров
+# Настройки по умолчанию для коллекции товаров
 defaults:
   - scope:
-      path: "_products/*.md"
+      path: ""
+      type: "products"
     values:
       layout: "product"
 
-# Плагины (стандартные для GitHub Pages)
+# Плагины
 plugins:
   - jekyll-feed
   - jekyll-sitemap
