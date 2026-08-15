@@ -1,6 +1,24 @@
 <main class="w-full">
     <div class="max-w-[1280px] mx-auto px-4 sm:px-6">
-        {% include product/breadcrumbs.html %}
+        
+        <nav aria-label="Breadcrumb" class="mb-5 max-lg:mb-0">
+            <div class="flex justify-between items-center gap-4 w-full flex-nowrap overflow-hidden">
+                <ul class="flex gap-2 items-center flex-1 min-w-0 overflow-hidden m-0 p-0 list-none">
+                    <li class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
+                        <a href="/" aria-label="მთავარი" draggable="false" class="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors outline-none no-underline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            <span class="max-sm:hidden">მთავარი</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center shrink-0 text-slate-300" aria-hidden="true">
+                        <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </li>
+                    <li class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
+                        <span class="text-slate-600 truncate">ძიება</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
         <div class="flex items-center gap-2 mb-6 text-slate-800">
             <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">ძიების შედეგები:</h1>
