@@ -90,11 +90,12 @@ function setupSearch(inputId, resultsId, clearId) {
             };
         }
 
+        // Перенаправление на страницу поиска при нажатии Enter
         s.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 const q = this.value.trim();
-                if (q) window.location.href = '/?search=' + encodeURIComponent(q);
+                if (q) window.location.href = '/search/?search=' + encodeURIComponent(q);
             }
         });
         
@@ -142,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
                     const inputEl = document.getElementById(inputId);
                     const q = inputEl?.value?.trim();
-                    if (q) window.location.href = '/?search=' + encodeURIComponent(q);
+                    if (q) window.location.href = '/search/' + encodeURIComponent(q);
                 });
             }
         });
