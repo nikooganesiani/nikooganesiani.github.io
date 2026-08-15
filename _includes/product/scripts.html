@@ -111,7 +111,7 @@
         } else {
             track.scrollBy({ left: dir * width, behavior: 'smooth' });
         }
-    }
+    };
 
     window.scrollCarousel = function(containerId, direction) {
         const scroll = document.getElementById(containerId);
@@ -216,30 +216,11 @@
         }
     }
 
-    function toggleExpand(blockId, btn) {
-        const block = document.getElementById(blockId);
-        if (block.classList.contains('expanded')) {
-            block.classList.remove('expanded');
-            btn.innerText = "მეტის ნახვა";
-        } else {
-            block.classList.add('expanded');
-            btn.innerText = "ნაკლების ნახვა";
-        }
-    }
-
-    function checkExpandableBlocks() {
-        const specs = document.getElementById('specsBlock');
-        const btnSpecs = document.getElementById('btnExpandSpecs');
-        if (specs && specs.scrollHeight > 300) { btnSpecs.classList.remove('hidden'); btnSpecs.classList.add('block'); }
-    }
-
     function scrollToForm() {
         document.getElementById('dynamicBuyButton').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        checkExpandableBlocks();
-
         const modalTrackEl = document.getElementById('modalTrack');
         let modalScrollTimeout;
         if (modalTrackEl) {
