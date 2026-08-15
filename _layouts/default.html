@@ -24,5 +24,15 @@
     {% include modals/order_confirm.html %}
 
     {% include scripts_main.html %}
+
+    <div id="productData" class="hidden" 
+     data-sku="{{ page.sku }}" 
+     data-name="{{ page.name | escape }}" 
+     data-price="{{ page.price }}" 
+     data-old-price="{{ page.oldPrice }}" 
+     data-subcat="{{ first_sub }}" 
+     data-cat="{{ first_cat }}">
+    </div>
+    
 </body>
 </html>
