@@ -22,14 +22,13 @@ jobs:
       - name: Generate product pages
         run: node generate_pages.js
 
-      # ⚡ Скачиваем автономный бинарник Tailwind v4 напрямую (0.3 сек вместо 7.5 сек через npm)
+      # ⚡ Скачиваем в /tmp/tailwindcss, чтобы файл не попадал в сборку Jekyll
       - name: Build Tailwind CSS
         run: |
-          curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
-          chmod +x tailwindcss-linux-x64
-          ./tailwindcss-linux-x64 -i ./assets/css/input.css -o ./assets/css/style.css --minify
+          curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o /tmp/tailwindcss
+          chmod +x /tmp/tailwindcss
+          /tmp/tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify
 
-      # ⚡ bundler: default использует встроенный Bundler без лишней установки
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
