@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch: # Ручной запуск для прод-деплоя на Cloudflare
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,9 +22,22 @@ jobs:
       - name: Generate product pages
         run: node generate_pages.js
 
+      # ⚡ Оптимизация 1: Кэшируем node_modules для Tailwind CLI
+      - name: Cache node_modules
+        id: node-cache
+        uses: actions/cache@v6
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      # Устанавливаем только если нет кэша, иначе сразу компилируем
       - name: Install & Build Tailwind CSS
         run: |
-          npm install tailwindcss @tailwindcss/cli
+          if [ "${{ steps.node-cache.outputs.cache-hit }}" != 'true' ]; then
+            npm install tailwindcss @tailwindcss/cli
+          fi
           npx @tailwindcss/cli -i ./assets/css/input.css -o ./assets/css/style.css --minify
 
       - name: Setup Ruby
@@ -33,7 +46,6 @@ jobs:
           ruby-version: '4.0.6'
           bundler-cache: true
 
-      # Кэширование Jekyll
       - name: Cache Jekyll build
         uses: actions/cache@v6
         with:
@@ -44,7 +56,6 @@ jobs:
           restore-keys: |
             jekyll-${{ runner.os }}-
 
-      # Сборка Jekyll с учетом инкрементального кэша
       - name: Build Jekyll site
         run: bundle exec jekyll build --incremental
         env:
@@ -59,7 +70,9 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
+      # ⚡ Оптимизация 2: Загружаем артефакт Cloudflare ТОЛЬКО при ручном запуске
       - name: Upload Build Artifact for Cloudflare
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v7
         with:
           name: site-build
@@ -84,7 +97,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy _site --project-name nikooganesiani-github-io
 
-      # Очистка кэша зоны срабатывает только здесь (при ручном релизе)
       - name: Purge cache (via curl)
         run: |
           curl -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE_ID }}/purge_cache" \
