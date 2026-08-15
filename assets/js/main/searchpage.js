@@ -1,10 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const searchQ = (urlParams.get('search') || '').trim();
+    // Берем параметр result (или search для совместимости)
+    const searchQ = (urlParams.get('result') || urlParams.get('search') || '').trim();
     const queryDisplay = document.getElementById('searchQueryDisplay');
     const container = document.getElementById('catalogContainer');
 
-    if (!searchQ || !queryDisplay || !container) return;
+    if (!container) return;
+
+    if (!searchQ) {
+        if (queryDisplay) queryDisplay.textContent = '""';
+        container.innerHTML = `
+            <div class="col-span-full flex flex-col items-center text-center py-16 sm:py-20 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mb-4 opacity-30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <div class="text-lg sm:text-2xl font-extrabold text-slate-600">შეიყვანეთ საძიებო სიტყვა</div>
+            </div>`;
+        return;
+    }
 
     let currentPage = 1;
     const itemsPerPage = 16;
