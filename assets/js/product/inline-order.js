@@ -64,7 +64,7 @@ document.addEventListener('submit', function(e) {
 
         const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
         const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-        const targetWorker = window.WORKER_URL || 'https://form-handler.enkaelectronics.com.ge';
+        const targetWorker = window.WORKER_URL;
         
         fetch(targetWorker, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
