@@ -81,7 +81,6 @@
         transform-origin: left center;
         opacity: 0;
         background: linear-gradient(90deg, #60a5fa 0%, var(--tpb-color) 55%, #1d4ed8 100%);
-        box-shadow: 0 0 8px rgba(37, 99, 235, 0.55);
         will-change: auto;
       }
       .tpb-bar.is-on { will-change: transform, opacity; }
@@ -93,7 +92,6 @@
         height: 100%;
         transform: rotate(2.5deg) translateY(-3px);
         background: linear-gradient(90deg, transparent, rgba(191, 219, 254, 0.85));
-        box-shadow: 0 0 12px 2px var(--tpb-color), 0 0 6px var(--tpb-color);
         opacity: 0.9;
       }
       @media (prefers-color-scheme: dark) {
