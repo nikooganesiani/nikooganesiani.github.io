@@ -269,54 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderRecentlyViewed(products) {
-        const section = document.getElementById('recentlyViewedSection');
-        const scroll = document.getElementById('recentScroll');
-        const arrowLeft = document.getElementById('recentArrowLeft');
-        const arrowRight = document.getElementById('recentArrowRight');
-        if (!section || !scroll) return;
-
-        let recentIds = [];
-        try {
-            recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-        } catch(e) {}
-
-        if (!Array.isArray(recentIds) || recentIds.length === 0) {
-            section.classList.add('hidden');
-            return;
-        }
-
-        const recentProducts = recentIds.map(id => products.find(p => String(p.id) === String(id))).filter(Boolean);
-        if (recentProducts.length === 0) {
-            section.classList.add('hidden');
-            return;
-        }
-
-        section.classList.remove('hidden');
-        scroll.innerHTML = recentProducts.map(p => createCardHTML(p)).join('');
-
-        if (arrowLeft && arrowRight) {
-            const updateArrows = () => {
-                if (scroll.scrollLeft > 20) {
-                    arrowLeft.classList.add('visible');
-                } else {
-                    arrowLeft.classList.remove('visible');
-                }
-
-                if (scroll.scrollLeft < scroll.scrollWidth - scroll.clientWidth - 20) {
-                    arrowRight.classList.add('visible');
-                } else {
-                    arrowRight.classList.remove('visible');
-                }
-            };
-
-            scroll.addEventListener('scroll', updateArrows);
-            arrowLeft.addEventListener('click', () => scroll.scrollBy({ left: -300, behavior: 'smooth' }));
-            arrowRight.addEventListener('click', () => scroll.scrollBy({ left: 300, behavior: 'smooth' }));
-            setTimeout(updateArrows, 100);
-        }
-    }
-
     if (minPriceInput) {
         minPriceInput.addEventListener('input', () => {
             let min = parseInt(minPriceInput.value, 10);
@@ -395,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 priceValue: parseInt(String(p.price || '').replace(/[^0-9]/g, ''), 10) || 0
             }));
             renderCategoryProducts();
-            renderRecentlyViewed(window.allProducts);
         })
         .catch(err => {
             console.error(err);
