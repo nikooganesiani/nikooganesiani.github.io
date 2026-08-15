@@ -1,22 +1,21 @@
-(() => {
-    const initProgressBar = () => {
-        const progressBar = document.getElementById('topProgressBar');
-        if (!progressBar) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const np = document.getElementById('topProgressBar');
+  if (!np) return;
 
-        progressBar.style.transform = 'scaleX(0.3)';
+  // Шаг 1: Показываем старт загрузки (30%)
+  np.style.transform = 'scaleX(0.3)';
 
-        window.addEventListener('load', () => {
-            if (!progressBar) return;
-            progressBar.style.transform = 'scaleX(1)';
-            setTimeout(() => {
-                if (progressBar) progressBar.style.opacity = '0';
-            }, 400);
-        });
-    };
+  // Шаг 2: Когда всё (картинки, стили) полностью догрузилось — доводим до 100% и скрываем
+  if (document.readyState === 'complete') {
+    finishProgress(np);
+  } else {
+    window.addEventListener('load', () => finishProgress(np));
+  }
+});
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initProgressBar);
-    } else {
-        initProgressBar();
-    }
-})();
+function finishProgress(np) {
+  np.style.transform = 'scaleX(1)';
+  setTimeout(() => {
+    np.style.opacity = '0';
+  }, 400);
+}
