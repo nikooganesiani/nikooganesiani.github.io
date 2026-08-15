@@ -1,3 +1,12 @@
+<div id="productData" class="hidden" 
+     data-sku="{{ page.sku }}" 
+     data-name="{{ page.name | escape }}" 
+     data-price="{{ page.price }}" 
+     data-old-price="{{ page.oldPrice }}" 
+     data-subcat="{{ first_sub }}" 
+     data-cat="{{ first_cat }}">
+</div>
+
 <div class="flex flex-col opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.2s]">
     <style>
         #dynamicFormInputs .relative > span.absolute {
