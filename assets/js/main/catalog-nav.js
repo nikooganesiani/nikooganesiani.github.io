@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const [catId, catData] of Object.entries(window.CATALOG_STRUCTURE)) {
                 if (!catData) continue;
                 let subLinks = (catData.subs || []).map(sub => 
-                    `<a href="/?category=${catId}&sub=${sub.id}" class="no-underline text-slate-600 text-[0.85rem] font-semibold py-2 px-4 rounded-full bg-slate-100 transition-all duration-300 select-none active:scale-95 hover:text-white hover:bg-blue-600" draggable="false">${sub.name}</a>`
+                    `<a href="?${catId}&sub=${sub.id}" class="no-underline text-slate-600 text-[0.85rem] font-semibold py-2 px-4 rounded-full bg-slate-100 transition-all duration-300 select-none active:scale-95 hover:text-white hover:bg-blue-600" draggable="false">${sub.name}</a>`
                 ).join('');
                 
                 let itemHtml = `
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="hidden px-5 pb-5 group-[.active]/item:block animate-[fadeIn_0.4s_ease]">
                         <div class="flex flex-wrap gap-2 border-t border-dashed border-slate-200 pt-4 mt-1">
-                            <a href="/?category=${catId}" class="no-underline text-slate-600 text-[0.85rem] font-semibold py-2 px-4 rounded-full bg-slate-100 transition-all duration-300 select-none active:scale-95 hover:text-white hover:bg-blue-600" draggable="false">ყველა</a>
+                            <a href="?${catId}" class="no-underline text-slate-600 text-[0.85rem] font-semibold py-2 px-4 rounded-full bg-slate-100 transition-all duration-300 select-none active:scale-95 hover:text-white hover:bg-blue-600" draggable="false">ყველა</a>
                             ${subLinks}
                         </div>
                     </div>
