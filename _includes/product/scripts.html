@@ -243,33 +243,37 @@
         const modalFullscreen = document.getElementById('imageZoomModal');
         let tsY = 0, tsX = 0;
         
-        modalFullscreen.addEventListener('touchstart', (e) => {
-            tsY = e.touches[0].clientY;
-            tsX = e.touches[0].clientX;
-        }, { passive: true });
+        if (modalFullscreen) {
+            modalFullscreen.addEventListener('touchstart', (e) => {
+                tsY = e.touches[0].clientY;
+                tsX = e.touches[0].clientX;
+            }, { passive: true });
 
-        modalFullscreen.addEventListener('touchmove', (e) => {
-            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
-            if (isTrack) {
-                const diffY = Math.abs(e.touches[0].clientY - tsY);
-                const diffX = Math.abs(e.touches[0].clientX - tsX);
-                if (diffY > diffX) e.preventDefault();
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
+            modalFullscreen.addEventListener('touchmove', (e) => {
+                const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
+                if (isTrack) {
+                    const diffY = Math.abs(e.touches[0].clientY - tsY);
+                    const diffX = Math.abs(e.touches[0].clientX - tsX);
+                    if (diffY > diffX) e.preventDefault();
+                } else {
+                    e.preventDefault();
+                }
+            }, { passive: false });
 
-        modalFullscreen.addEventListener('wheel', (e) => {
-            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
-            if (isTrack) {
-                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
+            modalFullscreen.addEventListener('wheel', (e) => {
+                const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
+                if (isTrack) {
+                    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
+                } else {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
         
-        const oldPriceStr = "{{ page.oldPrice }}";
-        const priceStr = "{{ page.price }}";
+        const pDataset = document.getElementById('productData')?.dataset || {};
+        const oldPriceStr = pDataset.oldPrice || "";
+        const priceStr = pDataset.price || "";
+
         if (oldPriceStr && oldPriceStr !== "") {
             const oldVal = parseInt(oldPriceStr.replace(/[^0-9]/g, ''));
             const newVal = parseInt(priceStr.replace(/[^0-9]/g, ''));
@@ -287,9 +291,9 @@
         fetch('https://api.enkaelectronics.com.ge/catalog')
         .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
         .then(data => {
-            const currentSub = "{{ first_sub }}";
-            const currentCat = "{{ first_cat }}";
-            const currentSku = "{{ page.sku }}".trim();
+            const currentSub = pDataset.subcat || "";
+            const currentCat = pDataset.cat || "";
+            const currentSku = (pDataset.sku || "").trim();
             const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop();
             const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
             const actualProductId = currentProduct ? currentProduct.id : null;
@@ -356,8 +360,10 @@
                     subcatSection.style.display = 'block';
                     subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
                     if(subcatProducts.length <= 4) {
-                        document.getElementById('subcatArrowLeft').style.display = 'none';
-                        document.getElementById('subcatArrowRight').style.display = 'none';
+                        const arrowL = document.getElementById('subcatArrowLeft');
+                        const arrowR = document.getElementById('subcatArrowRight');
+                        if (arrowL) arrowL.style.display = 'none';
+                        if (arrowR) arrowR.style.display = 'none';
                     }
                 }
             }
@@ -371,8 +377,10 @@
                     catSection.style.display = 'block';
                     catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
                     if(catProducts.length <= 4) {
-                        document.getElementById('catArrowLeft').style.display = 'none';
-                        document.getElementById('catArrowRight').style.display = 'none';
+                        const arrowL = document.getElementById('catArrowLeft');
+                        const arrowR = document.getElementById('catArrowRight');
+                        if (arrowL) arrowL.style.display = 'none';
+                        if (arrowR) arrowR.style.display = 'none';
                     }
                 }
             }
@@ -388,8 +396,10 @@
                     recentSection.style.display = 'block';
                     recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
                     if (recentProducts.length <= 4) {
-                        document.getElementById('recentArrowLeft').style.display = 'none';
-                        document.getElementById('recentArrowRight').style.display = 'none';
+                        const arrowL = document.getElementById('recentArrowLeft');
+                        const arrowR = document.getElementById('recentArrowRight');
+                        if (arrowL) arrowL.style.display = 'none';
+                        if (arrowR) arrowR.style.display = 'none';
                     }
                 }
             }
@@ -438,11 +448,12 @@
             if(phoneRaw.length !== 9) { window.showInputError(document.getElementById('inlinePhoneWrapper')); return; }
 
             const fullPhone = '+995' + phoneRaw;
+            const pDataset = document.getElementById('productData')?.dataset || {};
             
             const product = {
-                name: {{ page.name | jsonify }},
-                price: "{{ page.price }}",
-                id: "{{ page.sku }}"
+                name: pDataset.name || "",
+                price: pDataset.price || "",
+                id: pDataset.sku || ""
             };
 
             btn.style.pointerEvents = 'none';
@@ -484,22 +495,28 @@
             text.innerText = 'ყიდვა';
             
             if(window.showOrderConfirm) {
-                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: '{{ page.oldPrice }}' });
+                window.showOrderConfirm({ name: name, phone: fullPhone, product: product.name, price: product.price, oldPrice: pDataset.oldPrice || "" });
             }
         }
     });
 </script>
 
 <script>
-  try {
-      if (typeof fbq === 'function') {
-        var rawPrice = "{{ page.price }}"; 
-        var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
-        fbq('track', 'ViewContent', { content_ids: ['{{ page.sku }}'], content_name: {{ page.name | jsonify }}, content_type: 'product', value: numericPrice, currency: 'GEL' });
-      }
-  } catch(e) {}
-
 (function() {
+    const pDataset = document.getElementById('productData')?.dataset || {};
+    const sku = (pDataset.sku || "").trim();
+    const name = pDataset.name || "";
+    const rawPrice = pDataset.price || "";
+    const numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+
+    if (sku) {
+        try {
+            if (typeof fbq === 'function') {
+                fbq('track', 'ViewContent', { content_ids: [sku], content_name: name, content_type: 'product', value: numericPrice, currency: 'GEL' });
+            }
+        } catch(e) {}
+    }
+
     function waitForCapi(callback) {
         if (typeof window.sendCapiEvent === 'function') {
             callback();
@@ -520,19 +537,15 @@
     waitForCapi(function() {
         window.sendCapiEvent('PageView');
 
-        {% if page.sku %}
-        (function() {
-            var rawPrice = "{{ page.price }}";
-            var numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, '')) || 0;
+        if (sku) {
             window.sendCapiEvent('ViewContent', {
-                content_ids: ['{{ page.sku }}'],
-                content_name: {{ page.name | jsonify }},
+                content_ids: [sku],
+                content_name: name,
                 content_type: 'product',
                 value: numericPrice,
                 currency: 'GEL'
             });
-        })();
-        {% endif %}
+        }
     });
 })();
 </script>
