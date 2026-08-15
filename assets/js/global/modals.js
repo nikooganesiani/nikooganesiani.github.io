@@ -5,7 +5,7 @@ window.openAppModal = function(id) {
 
         document.documentElement?.classList.add('modal-open');
         modal.style.display = 'flex';
-        void modal.offsetHeight; // Принудительный reflow для плавной анимации
+        void modal.offsetHeight;
         modal.classList.add('active');
 
         if (id === 'searchModalMobile') {
