@@ -1,0 +1,9 @@
+- id: "promo-1"
+  title: "უფასო მიწოდება"
+  image: "/img/banners/1freeshipping.webp"
+  url: "/info/delivery"
+
+- id: "promo-2"
+  title: "აქცია"
+  image: "/img/banners/1freeshipping.webp"
+  url: "/catalog"
