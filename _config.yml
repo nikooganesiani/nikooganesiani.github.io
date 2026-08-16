@@ -46,10 +46,6 @@ defaults:
 plugins:
   - jekyll-feed
   - jekyll-sitemap
-  - jekyll-seo-tag
-
-jekyll-seo-tag:
-  json_ld: false
 
 # Настройки для sitemap
 sitemap:
