@@ -198,4 +198,62 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   };
 
-  // Mouse Drag Events (Полн
+  // Mouse Drag Events (Полноценный свайп мышью на ПК)
+  track.addEventListener('mousedown', (e) => {
+    isMouseDown = true;
+    hasDragged = false;
+    startMouseX = e.pageX - track.offsetLeft;
+    scrollStartLeft = track.scrollLeft;
+    track.style.scrollSnapType = 'none';
+    stopAutoplay();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isMouseDown) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startMouseX) * 1.2;
+    if (Math.abs(walk) > 5) {
+      hasDragged = true;
+    }
+    track.scrollLeft = scrollStartLeft - walk;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isMouseDown) return;
+    isMouseDown = false;
+    track.style.scrollSnapType = 'x mandatory';
+
+    if (hasDragged) {
+      // Подтягиваем к ближайшему слайду после перетаскивания
+      scrollToSlide(currentIndex);
+    }
+    restartAutoplay();
+  });
+
+  // Защита от открытия ссылки при перетаскивании мышью
+  track.addEventListener('click', (e) => {
+    if (hasDragged) {
+      e.preventDefault();
+      e.stopPropagation();
+      hasDragged = false;
+    }
+  }, true);
+
+  // Touch & Scroll Events
+  track.addEventListener('scroll', requestPaint, { passive: true });
+  track.addEventListener('touchstart', stopAutoplay, { passive: true });
+  track.addEventListener('touchend', restartAutoplay, { passive: true });
+  track.addEventListener('mouseenter', stopAutoplay);
+  track.addEventListener('mouseleave', restartAutoplay);
+
+  window.addEventListener('resize', () => requestPaint());
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => requestPaint()).observe(track);
+  }
+
+  // Init
+  buildDots();
+  requestPaint();
+  startAutoplay();
+});
