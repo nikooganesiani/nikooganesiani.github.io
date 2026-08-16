@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isAnimating = false;
   const AUTOPLAY_DELAY = 5000;
 
-  // Mouse Drag Variables (ПК свайп)
+  // Mouse Drag State
   let isMouseDown = false;
   let startMouseX = 0;
   let scrollStartLeft = 0;
@@ -27,15 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   };
 
-  const slideLeft = (el) => {
-    return el.offsetLeft - track.offsetLeft;
+  const getTrackPaddingLeft = () => {
+    return parseFloat(window.getComputedStyle(track).paddingLeft) || 0;
   };
 
-  // Custom Smooth Scroll without Snap Interference
+  const slideTargetLeft = (el) => {
+    return el.offsetLeft - getTrackPaddingLeft();
+  };
+
+  // Custom Smooth Scroll with EaseInOutQuad
   const smoothScrollTo = (targetX, duration = 600) => {
     if (isAnimating) return;
-    
-    // Временно отключаем CSS Snap, чтобы не было дерганий на ПК
+
     track.style.scrollSnapType = 'none';
     track.style.scrollBehavior = 'auto';
 
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const scrollToSlide = (index) => {
     const target = slides[index];
     if (!target) return;
-    smoothScrollTo(slideLeft(target));
+    smoothScrollTo(slideTargetLeft(target));
   };
 
   const buildDots = () => {
@@ -75,13 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
     dotsBox.innerHTML = '';
 
     dotsInner = document.createElement('div');
-    dotsInner.style.cssText = 'position:relative;display:flex;align-items:center;gap:6px;';
+    dotsInner.style.cssText = 'position:relative;display:flex;align-items:center;gap:10px;';
 
+    // Увеличенные в 2 раза точки (12px)
     for (let i = 0; i < totalSlides; i++) {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'promo-snake-dot';
-      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background 0.3s;';
+      dot.style.cssText = 'width:12px;height:12px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background 0.3s;';
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
 
       dot.addEventListener('click', (e) => {
@@ -93,8 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
       dotsInner.appendChild(dot);
     }
 
+    // Увеличенный в 2 раза активный индикатор
     worm = document.createElement('div');
-    worm.style.cssText = 'position:absolute;left:0;top:0;height:6px;width:6px;border-radius:9999px;background:#155dfc;pointer-events:none;will-change:transform,width;';
+    worm.style.cssText = 'position:absolute;left:0;top:0;height:12px;width:12px;border-radius:9999px;background:#155dfc;pointer-events:none;will-change:transform,width;';
 
     dotsInner.appendChild(worm);
     dotsBox.appendChild(dotsInner);
@@ -108,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let best = 0;
     let bestDist = Infinity;
 
-    // Плавная анимация картинки внутри карточки без вылета за border-radius
+    // Плавный параллакс изображений без потери border-radius
     slides.forEach((slide, i) => {
-      const slideCenter = slideLeft(slide) + slide.offsetWidth / 2;
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
       const diff = (slideCenter - trackCenter) / track.clientWidth;
       const dist = Math.abs(slideCenter - trackCenter);
 
@@ -123,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (img) {
         const clampedDiff = Math.max(-1, Math.min(1, diff));
         const easeOffset = easeInOutQuad(Math.abs(clampedDiff)) * (clampedDiff < 0 ? -1 : 1);
-        const parallaxX = easeOffset * 8; // Смещение картинки
-        const scale = 1 - Math.abs(easeOffset) * 0.03; // Масштабирование
+        const parallaxX = easeOffset * 8;
+        const scale = 1 - Math.abs(easeOffset) * 0.03;
 
         img.style.transform = `translate3d(${parallaxX}%, 0, 0) scale(${scale})`;
       }
@@ -132,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentIndex = best;
 
-    // Расчет анимации worm/snake для точек
+    // Анимация worm-индикатора с EaseInOutQuad
     if (!worm || !dotsInner) return;
     const dots = dotsInner.querySelectorAll('.promo-snake-dot');
     const n = dots.length;
@@ -198,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   };
 
-  // Mouse Drag Events (Полноценный свайп мышью на ПК)
+  // Mouse Drag на ПК
   track.addEventListener('mousedown', (e) => {
     isMouseDown = true;
     hasDragged = false;
@@ -225,13 +230,11 @@ document.addEventListener('DOMContentLoaded', () => {
     track.style.scrollSnapType = 'x mandatory';
 
     if (hasDragged) {
-      // Подтягиваем к ближайшему слайду после перетаскивания
       scrollToSlide(currentIndex);
     }
     restartAutoplay();
   });
 
-  // Защита от открытия ссылки при перетаскивании мышью
   track.addEventListener('click', (e) => {
     if (hasDragged) {
       e.preventDefault();
