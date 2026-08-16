@@ -16,17 +16,29 @@ document.addEventListener('DOMContentLoaded', () => {
   let isAnimating = false;
   const AUTOPLAY_DELAY = 5000;
 
-  // EaseInOutQuad Easing Function
+  // Mouse Drag Variables (ПК свайп)
+  let isMouseDown = false;
+  let startMouseX = 0;
+  let scrollStartLeft = 0;
+  let hasDragged = false;
+
+  // EaseInOutQuad Formula
   const easeInOutQuad = (t) => {
-    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   };
 
   const slideLeft = (el) => {
-    return el.offsetLeft;
+    return el.offsetLeft - track.offsetLeft;
   };
 
-  // Custom Smooth Scroll with EaseInOutQuad
-  const smoothScrollTo = (targetX, duration = 550) => {
+  // Custom Smooth Scroll without Snap Interference
+  const smoothScrollTo = (targetX, duration = 600) => {
+    if (isAnimating) return;
+    
+    // Временно отключаем CSS Snap, чтобы не было дерганий на ПК
+    track.style.scrollSnapType = 'none';
+    track.style.scrollBehavior = 'auto';
+
     const startX = track.scrollLeft;
     const distance = targetX - startX;
     const startTime = performance.now();
@@ -42,6 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (progress < 1) {
         requestAnimationFrame(step);
       } else {
+        track.scrollLeft = targetX;
+        track.style.scrollSnapType = 'x mandatory';
         isAnimating = false;
         paint();
       }
@@ -67,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'promo-snake-dot';
-      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background-color 0.3s cubic-bezier(0.45,0,0.55,1);';
+      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background 0.3s;';
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
 
       dot.addEventListener('click', (e) => {
@@ -94,9 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let best = 0;
     let bestDist = Infinity;
 
-    // Smooth Image Parallax & Scale Effect inside Cards
+    // Плавная анимация картинки внутри карточки без вылета за border-radius
     slides.forEach((slide, i) => {
-      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const slideCenter = slideLeft(slide) + slide.offsetWidth / 2;
       const diff = (slideCenter - trackCenter) / track.clientWidth;
       const dist = Math.abs(slideCenter - trackCenter);
 
@@ -109,8 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (img) {
         const clampedDiff = Math.max(-1, Math.min(1, diff));
         const easeOffset = easeInOutQuad(Math.abs(clampedDiff)) * (clampedDiff < 0 ? -1 : 1);
-        const parallaxX = easeOffset * 12; // Parallax translation percentage
-        const scale = 1 - Math.abs(easeOffset) * 0.04; // Subtle scale depth
+        const parallaxX = easeOffset * 8; // Смещение картинки
+        const scale = 1 - Math.abs(easeOffset) * 0.03; // Масштабирование
 
         img.style.transform = `translate3d(${parallaxX}%, 0, 0) scale(${scale})`;
       }
@@ -118,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentIndex = best;
 
-    // Animate snake/worm indicator with EaseInOutQuad
+    // Расчет анимации worm/snake для точек
     if (!worm || !dotsInner) return;
     const dots = dotsInner.querySelectorAll('.promo-snake-dot');
     const n = dots.length;
@@ -162,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const nextSlide = () => {
-    if (isAnimating) return;
+    if (isAnimating || isMouseDown) return;
     const next = (currentIndex + 1) % totalSlides;
     scrollToSlide(next);
   };
@@ -184,23 +198,4 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   };
 
-  // Listeners
-  track.addEventListener('scroll', requestPaint, { passive: true });
-  track.addEventListener('touchstart', stopAutoplay, { passive: true });
-  track.addEventListener('touchend', restartAutoplay, { passive: true });
-  track.addEventListener('mouseenter', stopAutoplay);
-  track.addEventListener('mouseleave', restartAutoplay);
-
-  window.addEventListener('resize', () => {
-    requestPaint();
-  });
-
-  if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => requestPaint()).observe(track);
-  }
-
-  // Initial Run
-  buildDots();
-  requestPaint();
-  startAutoplay();
-});
+  // Mouse Drag Events (Полн
