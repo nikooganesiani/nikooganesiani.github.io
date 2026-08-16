@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // Dots Click
     dots.forEach((dot) => {
       dot.addEventListener('click', () => {
         const targetIndex = parseInt(dot.dataset.promoDot, 10);
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    // Touch / Swipe Events
     track.addEventListener('touchstart', (e) => {
       touchStartX = e.touches[0].clientX;
       isSwiping = true;
@@ -90,11 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
       startAutoplay();
     });
 
-    // Pause Autoplay on Hover
     slider.addEventListener('mouseenter', stopAutoplay);
     slider.addEventListener('mouseleave', startAutoplay);
 
-    // Initial run
     startAutoplay();
   });
 });
