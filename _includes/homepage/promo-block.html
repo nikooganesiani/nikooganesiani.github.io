@@ -1,33 +1,37 @@
 {% if site.data.promo_block and site.data.promo_block.size > 0 %}
 <div class="w-full relative my-3 md:my-5 bg-transparent" aria-label="Promo Banners" data-promo-block>
-  <!-- Frame -->
-  <div class="relative w-full overflow-hidden bg-transparent">
-    <!-- Native Snap Scroll Track with Gaps -->
+  <!-- Breakout Wrapper (Компенсирует px-6 родительского safezone) -->
+  <div class="-mx-6 px-6 relative w-[calc(100%+3rem)] overflow-visible bg-transparent select-none">
+    <!-- Scroll / Drag Track -->
     <div
       id="promoBannerTrack"
-      class="relative flex w-full h-full min-w-0 max-w-full gap-3 sm:gap-4 md:gap-5 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]"
+      class="flex w-full min-w-0 gap-3 sm:gap-4 md:gap-6 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch] cursor-grab active:cursor-grabbing"
     >
       {% for item in site.data.promo_block %}
-        <div class="flex-[0_0_100%] w-full min-w-full snap-start relative overflow-hidden rounded-2xl md:rounded-3xl bg-transparent select-none promo-banner-slide" data-index="{{ forloop.index0 }}">
+        <div
+          class="flex-[0_0_100%] w-full min-w-full snap-center relative rounded-2xl md:rounded-3xl overflow-hidden bg-transparent [transform:translateZ(0)] [-webkit-mask-image:-webkit-radial-gradient(white,black)] promo-banner-slide"
+          data-index="{{ forloop.index0 }}"
+        >
           {% if item.url and item.url != "" %}
             <a
               href="{{ item.url | relative_url }}"
-              class="block relative w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2"
+              class="block relative w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2 [transform:translateZ(0)]"
+              draggable="false"
             >
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center pointer-events-none select-none will-change-transform promo-banner-image [transition-timing-function:cubic-bezier(0.45,0,0.55,1)]"
+                class="w-full h-full object-cover object-center rounded-2xl md:rounded-3xl pointer-events-none select-none will-change-transform promo-banner-image [transform:translateZ(0)]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
             </a>
           {% else %}
-            <div class="relative block w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl">
+            <div class="relative block w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl [transform:translateZ(0)]">
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center pointer-events-none select-none will-change-transform promo-banner-image [transition-timing-function:cubic-bezier(0.45,0,0.55,1)]"
+                class="w-full h-full object-cover object-center rounded-2xl md:rounded-3xl pointer-events-none select-none will-change-transform promo-banner-image [transform:translateZ(0)]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
