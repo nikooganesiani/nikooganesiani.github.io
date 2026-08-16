@@ -20,6 +20,13 @@ layout: default
 <link rel="preconnect" href="https://api.enkaelectronics.com.ge" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.4/src/lite-yt-embed.css" />
 <script src="https://cdn.jsdelivr.net/npm/lite-youtube-embed@0.3.4/src/lite-yt-embed.js" defer></script>
+<meta property="og:title" content="{{ page.name | default: page.title }}">
+<meta property="og:description" content="{{ page.description | strip_html | escape }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:type" content="product">
+{% if first_product_img %}
+<meta property="og:image" content="{{ first_product_img | absolute_url }}">
+{% endif %}
 
 {% assign first_cat = page.categories | first %}
 {% if first_cat == nil or first_cat == empty %}
