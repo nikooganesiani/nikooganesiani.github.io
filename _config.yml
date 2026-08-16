@@ -48,6 +48,9 @@ plugins:
   - jekyll-sitemap
   - jekyll-seo-tag
 
+jekyll-seo-tag:
+  json_ld: false
+
 # Настройки для sitemap
 sitemap:
   filename: sitemap.xml
