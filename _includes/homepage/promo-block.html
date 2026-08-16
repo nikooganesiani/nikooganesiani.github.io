@@ -1,30 +1,33 @@
 {% if site.data.promo_block and site.data.promo_block.size > 0 %}
-<div class="w-full relative my-2 md:my-4 bg-transparent" aria-label="Promo Banners">
-  <!-- Slider Container -->
-  <div class="relative w-full overflow-hidden rounded-2xl md:rounded-3xl bg-transparent" data-promo-slider>
-    <!-- Slides Track -->
-    <div class="flex w-full transition-transform duration-500 ease-out will-change-transform" data-promo-track>
+<div class="w-full relative my-3 md:my-5 bg-transparent" aria-label="Promo Banners" data-promo-block>
+  <!-- Frame -->
+  <div class="relative w-full overflow-hidden rounded-2xl md:rounded-3xl bg-transparent">
+    <!-- Native Snap Scroll Track -->
+    <div
+      id="promoBannerTrack"
+      class="relative flex w-full h-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]"
+    >
       {% for item in site.data.promo_block %}
-        <div class="w-full flex-shrink-0 bg-transparent" data-promo-slide data-index="{{ forloop.index0 }}">
+        <div class="flex-[0_0_100%] w-full min-w-full snap-start relative overflow-hidden bg-transparent select-none promo-banner-slide" data-index="{{ forloop.index0 }}">
           {% if item.url and item.url != "" %}
             <a
               href="{{ item.url | relative_url }}"
-              class="group relative block w-full aspect-[2/1] sm:aspect-[2.4/1] md:aspect-[2.8/1] lg:aspect-[3.2/1] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2"
+              class="block relative w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2"
             >
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.01]"
+                class="w-full h-full object-cover object-center pointer-events-none select-none [-webkit-user-drag:none]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
             </a>
           {% else %}
-            <div class="relative block w-full aspect-[2/1] sm:aspect-[2.4/1] md:aspect-[2.8/1] lg:aspect-[3.2/1] overflow-hidden rounded-2xl md:rounded-3xl">
+            <div class="relative block w-full aspect-[2.4/1] overflow-hidden rounded-2xl md:rounded-3xl">
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center"
+                class="w-full h-full object-cover object-center pointer-events-none select-none [-webkit-user-drag:none]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
@@ -35,18 +38,10 @@
     </div>
   </div>
 
-  <!-- Pagination Dots -->
+  <!-- Animated Worm Dots Container -->
   {% if site.data.promo_block.size > 1 %}
-    <div class="flex items-center justify-center gap-2 pt-3 bg-transparent" data-promo-dots>
-      {% for item in site.data.promo_block %}
-        <button
-          type="button"
-          class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2 {% if forloop.first %}bg-[#155dfc] scale-110{% else %}bg-gray-400/50 hover:bg-gray-400{% endif %}"
-          data-promo-dot="{{ forloop.index0 }}"
-          aria-label="Go to slide {{ forloop.index }}"
-          aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
-        </button>
-      {% endfor %}
+    <div class="flex items-center justify-center pt-3 bg-transparent select-none">
+      <div id="promoBannerDots" class="relative flex items-center justify-center bg-transparent"></div>
     </div>
   {% endif %}
 </div>
