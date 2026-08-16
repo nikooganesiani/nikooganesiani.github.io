@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (totalSlides <= 1) return;
 
   let worm = null;
-  let dotsInner = null;
+  let dots = [];
   let isTicking = false;
   let currentIndex = 0;
   let autoplayTimer = null;
@@ -27,15 +27,11 @@ document.addEventListener('DOMContentLoaded', () => {
     return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
   };
 
-  const getTrackPaddingLeft = () => {
-    return parseFloat(window.getComputedStyle(track).paddingLeft) || 0;
+  const getSlideTargetLeft = (index) => {
+    return index * track.clientWidth;
   };
 
-  const slideTargetLeft = (el) => {
-    return el.offsetLeft - getTrackPaddingLeft();
-  };
-
-  // Custom Smooth Scroll with EaseInOutQuad
+  // Custom Smooth Scroll without Snap Interference
   const smoothScrollTo = (targetX, duration = 600) => {
     if (isAnimating) return;
 
@@ -68,24 +64,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const scrollToSlide = (index) => {
-    const target = slides[index];
-    if (!target) return;
-    smoothScrollTo(slideTargetLeft(target));
+    if (index < 0 || index >= totalSlides) return;
+    smoothScrollTo(getSlideTargetLeft(index));
   };
 
   const buildDots = () => {
     if (!dotsBox) return;
     dotsBox.innerHTML = '';
+    dots = [];
 
-    dotsInner = document.createElement('div');
-    dotsInner.style.cssText = 'position:relative;display:flex;align-items:center;gap:10px;';
-
-    // Увеличенные в 2 раза точки (12px)
+    // Точки: 7px на мобильных, 12px на ПК
     for (let i = 0; i < totalSlides; i++) {
       const dot = document.createElement('button');
       dot.type = 'button';
-      dot.className = 'promo-snake-dot';
-      dot.style.cssText = 'width:12px;height:12px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background 0.3s;';
+      dot.className = 'w-[7px] h-[7px] md:w-3 md:h-3 rounded-full bg-slate-300/80 flex-shrink-0 p-0 border-0 cursor-pointer outline-none transition-colors duration-300';
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
 
       dot.addEventListener('click', (e) => {
@@ -94,29 +86,31 @@ document.addEventListener('DOMContentLoaded', () => {
         restartAutoplay();
       });
 
-      dotsInner.appendChild(dot);
+      dotsBox.appendChild(dot);
+      dots.push(dot);
     }
 
-    // Увеличенный в 2 раза активный индикатор
+    // Активный worm-индикатор: 7px на мобильных, 12px на ПК
     worm = document.createElement('div');
-    worm.style.cssText = 'position:absolute;left:0;top:0;height:12px;width:12px;border-radius:9999px;background:#155dfc;pointer-events:none;will-change:transform,width;';
+    worm.className = 'absolute left-0 top-0 h-[7px] md:h-3 rounded-full bg-[#155dfc] pointer-events-none will-change-transform';
 
-    dotsInner.appendChild(worm);
-    dotsBox.appendChild(dotsInner);
+    dotsBox.appendChild(worm);
   };
 
   const paint = () => {
     isTicking = false;
     if (!track) return;
 
-    const trackCenter = track.scrollLeft + track.clientWidth / 2;
+    const trackWidth = track.clientWidth || 1;
+    const scrollPos = track.scrollLeft;
+    const trackCenter = scrollPos + trackWidth / 2;
     let best = 0;
     let bestDist = Infinity;
 
-    // Плавный параллакс изображений без потери border-radius
+    // Плавный параллакс изображений внутри карточек
     slides.forEach((slide, i) => {
-      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
-      const diff = (slideCenter - trackCenter) / track.clientWidth;
+      const slideCenter = i * trackWidth + trackWidth / 2;
+      const diff = (slideCenter - trackCenter) / trackWidth;
       const dist = Math.abs(slideCenter - trackCenter);
 
       if (dist < bestDist) {
@@ -128,8 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (img) {
         const clampedDiff = Math.max(-1, Math.min(1, diff));
         const easeOffset = easeInOutQuad(Math.abs(clampedDiff)) * (clampedDiff < 0 ? -1 : 1);
-        const parallaxX = easeOffset * 8;
-        const scale = 1 - Math.abs(easeOffset) * 0.03;
+        const parallaxX = easeOffset * 6;
+        const scale = 1 - Math.abs(easeOffset) * 0.02;
 
         img.style.transform = `translate3d(${parallaxX}%, 0, 0) scale(${scale})`;
       }
@@ -138,25 +132,23 @@ document.addEventListener('DOMContentLoaded', () => {
     currentIndex = best;
 
     // Анимация worm-индикатора с EaseInOutQuad
-    if (!worm || !dotsInner) return;
-    const dots = dotsInner.querySelectorAll('.promo-snake-dot');
+    if (!worm || dots.length < 2) return;
     const n = dots.length;
-    if (n < 2) return;
 
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    const ratio = maxScroll > 0 ? Math.max(0, Math.min(track.scrollLeft, maxScroll)) / maxScroll : 0;
+    const maxScroll = track.scrollWidth - trackWidth;
+    const ratio = maxScroll > 0 ? Math.max(0, Math.min(scrollPos, maxScroll)) / maxScroll : 0;
     const pos = ratio * (n - 1);
     const base = Math.min(Math.floor(pos + 1e-6), n - 2);
     const rawFrac = Math.min(Math.max(pos - base, 0), 1);
     const frac = easeInOutQuad(rawFrac);
 
-    const ir = dotsInner.getBoundingClientRect();
-    if (ir.width < 1) return;
+    const boxRect = dotsBox.getBoundingClientRect();
+    if (boxRect.width < 1) return;
 
     const a = dots[base].getBoundingClientRect();
     const b = dots[base + 1].getBoundingClientRect();
-    const x1 = a.left - ir.left;
-    const x2 = b.left - ir.left;
+    const x1 = a.left - boxRect.left;
+    const x2 = b.left - boxRect.left;
     const dw = a.width;
     const adv = x2 - x1;
     let width = dw;
@@ -203,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   };
 
-  // Mouse Drag на ПК
+  // Mouse Drag для ПК
   track.addEventListener('mousedown', (e) => {
     isMouseDown = true;
     hasDragged = false;
