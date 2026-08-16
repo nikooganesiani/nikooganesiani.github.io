@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!track) return;
 
   const slides = track.querySelectorAll('.promo-banner-slide');
+  const images = track.querySelectorAll('.promo-banner-image');
   const totalSlides = slides.length;
   if (totalSlides <= 1) return;
 
@@ -12,17 +13,47 @@ document.addEventListener('DOMContentLoaded', () => {
   let isTicking = false;
   let currentIndex = 0;
   let autoplayTimer = null;
+  let isAnimating = false;
   const AUTOPLAY_DELAY = 5000;
 
+  // EaseInOutQuad Easing Function
+  const easeInOutQuad = (t) => {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  };
+
   const slideLeft = (el) => {
-    return el.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+    return el.offsetLeft;
+  };
+
+  // Custom Smooth Scroll with EaseInOutQuad
+  const smoothScrollTo = (targetX, duration = 550) => {
+    const startX = track.scrollLeft;
+    const distance = targetX - startX;
+    const startTime = performance.now();
+    isAnimating = true;
+
+    const step = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = easeInOutQuad(progress);
+
+      track.scrollLeft = startX + distance * ease;
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        isAnimating = false;
+        paint();
+      }
+    };
+
+    requestAnimationFrame(step);
   };
 
   const scrollToSlide = (index) => {
     const target = slides[index];
     if (!target) return;
-    const targetLeft = slideLeft(target);
-    track.scrollTo({ left: targetLeft, behavior: 'smooth' });
+    smoothScrollTo(slideLeft(target));
   };
 
   const buildDots = () => {
@@ -36,9 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'promo-snake-dot';
-      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;';
+      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;transition:background-color 0.3s cubic-bezier(0.45,0,0.55,1);';
       dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-      
+
       dot.addEventListener('click', (e) => {
         e.preventDefault();
         scrollToSlide(i);
@@ -50,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     worm = document.createElement('div');
     worm.style.cssText = 'position:absolute;left:0;top:0;height:6px;width:6px;border-radius:9999px;background:#155dfc;pointer-events:none;will-change:transform,width;';
-    
+
     dotsInner.appendChild(worm);
     dotsBox.appendChild(dotsInner);
   };
@@ -59,34 +90,46 @@ document.addEventListener('DOMContentLoaded', () => {
     isTicking = false;
     if (!track) return;
 
-    // Detect active index
-    const center = track.scrollLeft + track.clientWidth / 2;
+    const trackCenter = track.scrollLeft + track.clientWidth / 2;
     let best = 0;
     let bestDist = Infinity;
 
-    for (let i = 0; i < totalSlides; i++) {
-      const mid = slideLeft(slides[i]) + slides[i].offsetWidth / 2;
-      const d = Math.abs(mid - center);
-      if (d < bestDist) {
-        bestDist = d;
+    // Smooth Image Parallax & Scale Effect inside Cards
+    slides.forEach((slide, i) => {
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const diff = (slideCenter - trackCenter) / track.clientWidth;
+      const dist = Math.abs(slideCenter - trackCenter);
+
+      if (dist < bestDist) {
+        bestDist = dist;
         best = i;
       }
-    }
+
+      const img = images[i];
+      if (img) {
+        const clampedDiff = Math.max(-1, Math.min(1, diff));
+        const easeOffset = easeInOutQuad(Math.abs(clampedDiff)) * (clampedDiff < 0 ? -1 : 1);
+        const parallaxX = easeOffset * 12; // Parallax translation percentage
+        const scale = 1 - Math.abs(easeOffset) * 0.04; // Subtle scale depth
+
+        img.style.transform = `translate3d(${parallaxX}%, 0, 0) scale(${scale})`;
+      }
+    });
+
     currentIndex = best;
 
-    // Animate snake worm
+    // Animate snake/worm indicator with EaseInOutQuad
     if (!worm || !dotsInner) return;
     const dots = dotsInner.querySelectorAll('.promo-snake-dot');
     const n = dots.length;
     if (n < 2) return;
 
-    let maxScroll = slideLeft(slides[totalSlides - 1]);
-    if (maxScroll < 1) maxScroll = (totalSlides - 1) * (track.clientWidth || 1);
-
+    const maxScroll = track.scrollWidth - track.clientWidth;
     const ratio = maxScroll > 0 ? Math.max(0, Math.min(track.scrollLeft, maxScroll)) / maxScroll : 0;
     const pos = ratio * (n - 1);
     const base = Math.min(Math.floor(pos + 1e-6), n - 2);
-    const frac = Math.min(Math.max(pos - base, 0), 1);
+    const rawFrac = Math.min(Math.max(pos - base, 0), 1);
+    const frac = easeInOutQuad(rawFrac);
 
     const ir = dotsInner.getBoundingClientRect();
     if (ir.width < 1) return;
@@ -119,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const nextSlide = () => {
+    if (isAnimating) return;
     const next = (currentIndex + 1) % totalSlides;
     scrollToSlide(next);
   };
@@ -140,22 +184,22 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutoplay();
   };
 
-  // Event Listeners
+  // Listeners
   track.addEventListener('scroll', requestPaint, { passive: true });
   track.addEventListener('touchstart', stopAutoplay, { passive: true });
-  track.addEventListener('touchend', startAutoplay, { passive: true });
+  track.addEventListener('touchend', restartAutoplay, { passive: true });
   track.addEventListener('mouseenter', stopAutoplay);
-  track.addEventListener('mouseleave', startAutoplay);
+  track.addEventListener('mouseleave', restartAutoplay);
 
   window.addEventListener('resize', () => {
-    paint();
+    requestPaint();
   });
 
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => paint()).observe(track);
+    new ResizeObserver(() => requestPaint()).observe(track);
   }
 
-  // Init
+  // Initial Run
   buildDots();
   requestPaint();
   startAutoplay();
