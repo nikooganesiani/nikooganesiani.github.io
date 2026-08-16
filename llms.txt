@@ -1,0 +1,25 @@
+---
+layout: null
+permalink: /llms.txt
+---
+# ENKA Electronics
+
+> ENKA Electronics (enkaelectronics.com.ge) — ელექტრონიკის ონლაინ მაღაზია საქართველოში: წვრილი საყოფაცხოვრებო ტექნიკა, ჭკვიანი სახლი, სამზარეულოს მოწყობილობები, თავისა და სახლის მოვლის ტექნიკა უფასო საკურიერო მიწოდებითა და ადგილზე გადახდით მთელი საქართველოს მასშტაბით.
+
+## ძირითადი კატეგორიები (Categories)
+- [სამზარეულოს ტექნიკა / Kitchen](https://enkaelectronics.com.ge/category/kitchen/): გრილები, ტოსტერები, ელექტრო ჩაიდნები, ყავის აპარატები, ბლენდერები, ჩოფერები, წვენსაწურები, აეროგრილები, მიქსერები, ხორცსაკეპები, ფრის და პოპკორნის აპარატები.
+- [ჭკვიანი სახლი / Smart Home](https://enkaelectronics.com.ge/category/smart-home/): სენსორები, ჭკვიანი განათება, უსაფრთხოების სისტემები და აქსესუარები.
+- [სახლის მოვლა / Home Care](https://enkaelectronics.com.ge/category/home-care/): ვერტიკალური და რობოტი მტვერსასრუტები, ორთქლის უთოები.
+- [თავის მოვლა / Personal Care](https://enkaelectronics.com.ge/category/personal-care/): წვერსაპარსები, ტრიმერები, თმის ფენები, თმის სახვევები, უთოები და ელექტრო სასწორები.
+- [გაჯეტები და აქსესუარები / Gadgets](https://enkaelectronics.com.ge/category/gadgets/): უსადენო ყურსასმენები, სმარტ საათები, დამტენები და მობილურის აქსესუარები.
+- [ხელსაწყოები და მშენებლობა / Tools](https://enkaelectronics.com.ge/category/tools/): ელექტრო ხელსაწყოები, ლაზერული თარაზოები და საზომი აპარატურა.
+
+## სერვისები და პირობები (Services & Policies)
+- [მიწოდების პირობები / Delivery](https://enkaelectronics.com.ge/delivery/): უფასო მიწოდება მთელ საქართველოში. ანგარიშსწორება ხდება კურიერთან ადგილზე შეკვეთის ჩაბარებისას (ნაღდი ანგარიშსწორებით ან ბარათით).
+- [გარანტია და დაბრუნება / Warranty](https://enkaelectronics.com.ge/warranty/): ყველა პროდუქტი გადის ტექნიკურ შემოწმებას გაგზავნამდე, მოქმედებს ოფიციალური გარანტია.
+- [კონტაქტი / Contact](https://enkaelectronics.com.ge/contacts/): სამუშაო საათები: 09:00 - 22:00. ტელ / WhatsApp: +995 551 17 89 90, ელ. ფოსტა: enka.electronics.ge@gmail.com.
+- [ჩვენს შესახებ / About](https://enkaelectronics.com.ge/about/): კომპანიის მისია და სერვისის სტანდარტები.
+
+## დამატებითი რესურსები (Full LLM Context)
+- [სრული კატალოგის მონაცემები (Full Catalog for LLM)](https://enkaelectronics.com.ge/llms-full.txt): ყველა პროდუქტის სრული სია ფასებით, მოდელებითა და მახასიათებლებით.
+- [Sitemap](https://enkaelectronics.com.ge/sitemap.xml): საიტის სრული XML რუკა.
