@@ -1,29 +1,30 @@
 {% if site.data.promo_block and site.data.promo_block.size > 0 %}
-<section class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4 md:my-6 bg-transparent" aria-label="Promo Banners">
-  <div class="relative w-full overflow-hidden bg-transparent select-none" data-promo-slider>
+<div class="w-full relative my-2 md:my-4 bg-transparent" aria-label="Promo Banners">
+  <!-- Slider Container -->
+  <div class="relative w-full overflow-hidden rounded-2xl md:rounded-3xl bg-transparent" data-promo-slider>
     <!-- Slides Track -->
     <div class="flex w-full transition-transform duration-500 ease-out will-change-transform" data-promo-track>
       {% for item in site.data.promo_block %}
-        <div class="min-w-full flex-shrink-0 bg-transparent" data-promo-slide data-index="{{ forloop.index0 }}">
+        <div class="w-full flex-shrink-0 bg-transparent" data-promo-slide data-index="{{ forloop.index0 }}">
           {% if item.url and item.url != "" %}
             <a
               href="{{ item.url | relative_url }}"
-              class="block relative w-full aspect-[2.2/1] sm:aspect-[2.5/1] md:aspect-[2.8/1] lg:aspect-[3/1] max-h-[220px] sm:max-h-[280px] md:max-h-[340px] lg:max-h-[380px] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2 transition-transform duration-200 active:scale-[0.99]"
+              class="group relative block w-full aspect-[2/1] sm:aspect-[2.4/1] md:aspect-[2.8/1] lg:aspect-[3.2/1] overflow-hidden rounded-2xl md:rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2"
             >
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center rounded-2xl md:rounded-3xl"
+                class="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.01]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
             </a>
           {% else %}
-            <div class="relative w-full aspect-[2.2/1] sm:aspect-[2.5/1] md:aspect-[2.8/1] lg:aspect-[3/1] max-h-[220px] sm:max-h-[280px] md:max-h-[340px] lg:max-h-[380px] overflow-hidden rounded-2xl md:rounded-3xl">
+            <div class="relative block w-full aspect-[2/1] sm:aspect-[2.4/1] md:aspect-[2.8/1] lg:aspect-[3.2/1] overflow-hidden rounded-2xl md:rounded-3xl">
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center rounded-2xl md:rounded-3xl"
+                class="w-full h-full object-cover object-center"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
@@ -32,21 +33,21 @@
         </div>
       {% endfor %}
     </div>
-
-    <!-- Pagination Dots -->
-    {% if site.data.promo_block.size > 1 %}
-      <div class="flex items-center justify-center gap-2 mt-3 md:mt-4 bg-transparent" data-promo-dots>
-        {% for item in site.data.promo_block %}
-          <button
-            type="button"
-            class="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2 {% if forloop.first %}bg-[#155dfc] scale-110{% else %}bg-gray-400/50 hover:bg-gray-400{% endif %}"
-            data-promo-dot="{{ forloop.index0 }}"
-            aria-label="Go to slide {{ forloop.index }}"
-            aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
-          </button>
-        {% endfor %}
-      </div>
-    {% endif %}
   </div>
-</section>
+
+  <!-- Pagination Dots -->
+  {% if site.data.promo_block.size > 1 %}
+    <div class="flex items-center justify-center gap-2 pt-3 bg-transparent" data-promo-dots>
+      {% for item in site.data.promo_block %}
+        <button
+          type="button"
+          class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#155dfc] focus:ring-offset-2 {% if forloop.first %}bg-[#155dfc] scale-110{% else %}bg-gray-400/50 hover:bg-gray-400{% endif %}"
+          data-promo-dot="{{ forloop.index0 }}"
+          aria-label="Go to slide {{ forloop.index }}"
+          aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
+        </button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
 {% endif %}
