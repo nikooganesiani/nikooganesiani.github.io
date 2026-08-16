@@ -1,0 +1,24 @@
+---
+layout: null
+permalink: /llms-full.txt
+---
+# ENKA Electronics — სრული კატალოგი და ინფორმაცია (Full Store Context)
+
+> მაღაზია: ENKA Electronics (https://enkaelectronics.com.ge)
+> მიწოდება: უფასო საქართველოს მთელ ტერიტორიაზე
+> გადახდა: ადგილზე მიღებისას (Cash / Card on Delivery)
+> კონტაქტი: +995 551 17 89 90 | enka.electronics.ge@gmail.com
+
+---
+
+## პროდუქციის სრული სია (Products Catalog)
+
+{% for product in site.products %}
+### {{ product.title }}
+- **SKU / არტიკული**: {{ product.sku }}
+- **კატეგორია**: {{ product.category }} {% if product.subcategory %}/ {{ product.subcategory }}{% endif %}
+- **ფასი**: {{ product.price }} GEL {% if product.old_price %}(ძველი ფასი: {{ product.old_price }} GEL){% endif %}
+- **ბმული**: https://enkaelectronics.com.ge{{ product.url }}
+- **აღწერა**: {{ product.description | strip_html | strip_newlines | truncate: 250 }}
+
+{% endfor %}
