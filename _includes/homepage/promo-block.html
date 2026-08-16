@@ -1,14 +1,14 @@
 {% if site.data.promo_block and site.data.promo_block.size > 0 %}
 <div class="w-full relative my-3 md:my-5 bg-transparent" aria-label="Promo Banners" data-promo-block>
   <!-- Frame -->
-  <div class="relative w-full overflow-hidden rounded-2xl md:rounded-3xl bg-transparent">
-    <!-- Native Snap Scroll Track -->
+  <div class="relative w-full overflow-hidden bg-transparent">
+    <!-- Native Snap Scroll Track with Gaps -->
     <div
       id="promoBannerTrack"
-      class="relative flex w-full h-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]"
+      class="relative flex w-full h-full min-w-0 max-w-full gap-3 sm:gap-4 md:gap-5 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch]"
     >
       {% for item in site.data.promo_block %}
-        <div class="flex-[0_0_100%] w-full min-w-full snap-start relative overflow-hidden bg-transparent select-none promo-banner-slide" data-index="{{ forloop.index0 }}">
+        <div class="flex-[0_0_100%] w-full min-w-full snap-start relative overflow-hidden rounded-2xl md:rounded-3xl bg-transparent select-none promo-banner-slide" data-index="{{ forloop.index0 }}">
           {% if item.url and item.url != "" %}
             <a
               href="{{ item.url | relative_url }}"
@@ -17,7 +17,7 @@
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center pointer-events-none select-none [-webkit-user-drag:none]"
+                class="w-full h-full object-cover object-center pointer-events-none select-none will-change-transform promo-banner-image [transition-timing-function:cubic-bezier(0.45,0,0.55,1)]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
@@ -27,7 +27,7 @@
               <img
                 src="{{ item.image | relative_url }}"
                 alt="{{ item.title | escape }}"
-                class="w-full h-full object-cover object-center pointer-events-none select-none [-webkit-user-drag:none]"
+                class="w-full h-full object-cover object-center pointer-events-none select-none will-change-transform promo-banner-image [transition-timing-function:cubic-bezier(0.45,0,0.55,1)]"
                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                 draggable="false"
               />
@@ -40,7 +40,7 @@
 
   <!-- Animated Worm Dots Container -->
   {% if site.data.promo_block.size > 1 %}
-    <div class="flex items-center justify-center pt-3 bg-transparent select-none">
+    <div class="flex items-center justify-center pt-3 md:pt-4 bg-transparent select-none">
       <div id="promoBannerDots" class="relative flex items-center justify-center bg-transparent"></div>
     </div>
   {% endif %}
