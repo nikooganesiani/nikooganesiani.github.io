@@ -2,9 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const sliders = document.querySelectorAll('[data-promo-slider]');
 
   sliders.forEach((slider) => {
+    const parentBlock = slider.closest('.relative');
     const track = slider.querySelector('[data-promo-track]');
     const slides = slider.querySelectorAll('[data-promo-slide]');
-    const dots = slider.querySelectorAll('[data-promo-dot]');
+    const dots = parentBlock ? parentBlock.querySelectorAll('[data-promo-dot]') : [];
     const totalSlides = slides.length;
 
     if (totalSlides <= 1) return;
@@ -13,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let autoplayTimer = null;
     const AUTOPLAY_DELAY = 5000;
 
-    let touchStartX = 0;
-    let touchEndX = 0;
+    let startX = 0;
+    let startY = 0;
     let isSwiping = false;
 
     const updateSlider = (index) => {
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
       dots.forEach((dot, i) => {
         const isActive = i === currentIndex;
         dot.setAttribute('aria-current', isActive ? 'true' : 'false');
-        
+
         if (isActive) {
           dot.classList.add('bg-[#155dfc]', 'scale-110');
           dot.classList.remove('bg-gray-400/50', 'hover:bg-gray-400');
@@ -58,32 +59,40 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    // Touch Handling with vertical scroll protection
     track.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
       isSwiping = true;
       stopAutoplay();
     }, { passive: true });
 
     track.addEventListener('touchmove', (e) => {
       if (!isSwiping) return;
-      touchEndX = e.touches[0].clientX;
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const diffX = Math.abs(currentX - startX);
+      const diffY = Math.abs(currentY - startY);
+
+      if (diffY > diffX) {
+        isSwiping = false;
+      }
     }, { passive: true });
 
-    track.addEventListener('touchend', () => {
+    track.addEventListener('touchend', (e) => {
       if (!isSwiping) return;
-      const swipeDistance = touchStartX - touchEndX;
+      const endX = e.changedTouches[0].clientX;
+      const diffX = startX - endX;
       const threshold = 40;
 
-      if (Math.abs(swipeDistance) > threshold && touchEndX !== 0) {
-        if (swipeDistance > 0) {
+      if (Math.abs(diffX) > threshold) {
+        if (diffX > 0) {
           nextSlide();
         } else {
           prevSlide();
         }
       }
 
-      touchStartX = 0;
-      touchEndX = 0;
       isSwiping = false;
       startAutoplay();
     });
