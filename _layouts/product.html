@@ -95,10 +95,15 @@ layout: default
   "@type": "Product",
   "name": {{ page.name | default: page.title | jsonify }},
   "image": [
-    {% assign product_imgs = page.images | reject: 'youtube.com' | reject: 'youtu.be' %}
-    {% for img in product_imgs %}
-      {{ img | absolute_url | jsonify }}{% unless forloop.last %},{% endunless %}
-    {% endfor %}
+  {% assign valid_images = "" | split: "" %}
+  {% for img in page.images %}
+    {% if img contains '.webp' or img contains '.jpg' or img contains '.png' or img contains '.jpeg' %}
+      {% assign valid_images = valid_images | push: img %}
+    {% endif %}
+  {% endfor %}
+  {% for img in valid_images %}
+    {{ img | absolute_url | jsonify }}{% unless forloop.last %},{% endunless %}
+  {% endfor %}
   ],
   "description": {{ page.description | strip_html | jsonify }},
   "offers": {
