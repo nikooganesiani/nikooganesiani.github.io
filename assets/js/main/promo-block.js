@@ -1,105 +1,162 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const sliders = document.querySelectorAll('[data-promo-slider]');
+  const track = document.getElementById('promoBannerTrack');
+  const dotsBox = document.getElementById('promoBannerDots');
+  if (!track) return;
 
-  sliders.forEach((slider) => {
-    const parentBlock = slider.closest('.relative');
-    const track = slider.querySelector('[data-promo-track]');
-    const slides = slider.querySelectorAll('[data-promo-slide]');
-    const dots = parentBlock ? parentBlock.querySelectorAll('[data-promo-dot]') : [];
-    const totalSlides = slides.length;
+  const slides = track.querySelectorAll('.promo-banner-slide');
+  const totalSlides = slides.length;
+  if (totalSlides <= 1) return;
 
-    if (totalSlides <= 1) return;
+  let worm = null;
+  let dotsInner = null;
+  let isTicking = false;
+  let currentIndex = 0;
+  let autoplayTimer = null;
+  const AUTOPLAY_DELAY = 5000;
 
-    let currentIndex = 0;
-    let autoplayTimer = null;
-    const AUTOPLAY_DELAY = 5000;
+  const slideLeft = (el) => {
+    return el.getBoundingClientRect().left - track.getBoundingClientRect().left + track.scrollLeft;
+  };
 
-    let startX = 0;
-    let startY = 0;
-    let isSwiping = false;
+  const scrollToSlide = (index) => {
+    const target = slides[index];
+    if (!target) return;
+    const targetLeft = slideLeft(target);
+    track.scrollTo({ left: targetLeft, behavior: 'smooth' });
+  };
 
-    const updateSlider = (index) => {
-      currentIndex = (index + totalSlides) % totalSlides;
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+  const buildDots = () => {
+    if (!dotsBox) return;
+    dotsBox.innerHTML = '';
 
-      dots.forEach((dot, i) => {
-        const isActive = i === currentIndex;
-        dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+    dotsInner = document.createElement('div');
+    dotsInner.style.cssText = 'position:relative;display:flex;align-items:center;gap:6px;';
 
-        if (isActive) {
-          dot.classList.add('bg-[#155dfc]', 'scale-110');
-          dot.classList.remove('bg-gray-400/50', 'hover:bg-gray-400');
-        } else {
-          dot.classList.remove('bg-[#155dfc]', 'scale-110');
-          dot.classList.add('bg-gray-400/50', 'hover:bg-gray-400');
-        }
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'promo-snake-dot';
+      dot.style.cssText = 'width:6px;height:6px;border-radius:9999px;background:#cbd5e1;flex-shrink:0;padding:0;border:none;cursor:pointer;outline:none;';
+      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      
+      dot.addEventListener('click', (e) => {
+        e.preventDefault();
+        scrollToSlide(i);
+        restartAutoplay();
       });
-    };
 
-    const nextSlide = () => updateSlider(currentIndex + 1);
-    const prevSlide = () => updateSlider(currentIndex - 1);
+      dotsInner.appendChild(dot);
+    }
 
-    const startAutoplay = () => {
-      stopAutoplay();
-      autoplayTimer = setInterval(nextSlide, AUTOPLAY_DELAY);
-    };
+    worm = document.createElement('div');
+    worm.style.cssText = 'position:absolute;left:0;top:0;height:6px;width:6px;border-radius:9999px;background:#155dfc;pointer-events:none;will-change:transform,width;';
+    
+    dotsInner.appendChild(worm);
+    dotsBox.appendChild(dotsInner);
+  };
 
-    const stopAutoplay = () => {
-      if (autoplayTimer) {
-        clearInterval(autoplayTimer);
-        autoplayTimer = null;
+  const paint = () => {
+    isTicking = false;
+    if (!track) return;
+
+    // Detect active index
+    const center = track.scrollLeft + track.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+
+    for (let i = 0; i < totalSlides; i++) {
+      const mid = slideLeft(slides[i]) + slides[i].offsetWidth / 2;
+      const d = Math.abs(mid - center);
+      if (d < bestDist) {
+        bestDist = d;
+        best = i;
       }
-    };
+    }
+    currentIndex = best;
 
-    dots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const targetIndex = parseInt(dot.dataset.promoDot, 10);
-        updateSlider(targetIndex);
-        startAutoplay();
-      });
-    });
+    // Animate snake worm
+    if (!worm || !dotsInner) return;
+    const dots = dotsInner.querySelectorAll('.promo-snake-dot');
+    const n = dots.length;
+    if (n < 2) return;
 
-    // Touch Handling with vertical scroll protection
-    track.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isSwiping = true;
-      stopAutoplay();
-    }, { passive: true });
+    let maxScroll = slideLeft(slides[totalSlides - 1]);
+    if (maxScroll < 1) maxScroll = (totalSlides - 1) * (track.clientWidth || 1);
 
-    track.addEventListener('touchmove', (e) => {
-      if (!isSwiping) return;
-      const currentX = e.touches[0].clientX;
-      const currentY = e.touches[0].clientY;
-      const diffX = Math.abs(currentX - startX);
-      const diffY = Math.abs(currentY - startY);
+    const ratio = maxScroll > 0 ? Math.max(0, Math.min(track.scrollLeft, maxScroll)) / maxScroll : 0;
+    const pos = ratio * (n - 1);
+    const base = Math.min(Math.floor(pos + 1e-6), n - 2);
+    const frac = Math.min(Math.max(pos - base, 0), 1);
 
-      if (diffY > diffX) {
-        isSwiping = false;
-      }
-    }, { passive: true });
+    const ir = dotsInner.getBoundingClientRect();
+    if (ir.width < 1) return;
 
-    track.addEventListener('touchend', (e) => {
-      if (!isSwiping) return;
-      const endX = e.changedTouches[0].clientX;
-      const diffX = startX - endX;
-      const threshold = 40;
+    const a = dots[base].getBoundingClientRect();
+    const b = dots[base + 1].getBoundingClientRect();
+    const x1 = a.left - ir.left;
+    const x2 = b.left - ir.left;
+    const dw = a.width;
+    const adv = x2 - x1;
+    let width = dw;
+    let off = x1;
 
-      if (Math.abs(diffX) > threshold) {
-        if (diffX > 0) {
-          nextSlide();
-        } else {
-          prevSlide();
-        }
-      }
+    if (frac <= 0.5) {
+      width = dw + frac * 2 * adv;
+    } else {
+      width = dw + (1 - frac) * 2 * adv;
+      off = x1 + (frac - 0.5) * 2 * adv;
+    }
 
-      isSwiping = false;
-      startAutoplay();
-    });
+    worm.style.transform = `translate3d(${off}px,0,0)`;
+    worm.style.width = `${width}px`;
+  };
 
-    slider.addEventListener('mouseenter', stopAutoplay);
-    slider.addEventListener('mouseleave', startAutoplay);
+  const requestPaint = () => {
+    if (!isTicking) {
+      isTicking = true;
+      window.requestAnimationFrame(paint);
+    }
+  };
 
+  const nextSlide = () => {
+    const next = (currentIndex + 1) % totalSlides;
+    scrollToSlide(next);
+  };
+
+  const startAutoplay = () => {
+    stopAutoplay();
+    autoplayTimer = setInterval(nextSlide, AUTOPLAY_DELAY);
+  };
+
+  const stopAutoplay = () => {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+  };
+
+  const restartAutoplay = () => {
+    stopAutoplay();
     startAutoplay();
+  };
+
+  // Event Listeners
+  track.addEventListener('scroll', requestPaint, { passive: true });
+  track.addEventListener('touchstart', stopAutoplay, { passive: true });
+  track.addEventListener('touchend', startAutoplay, { passive: true });
+  track.addEventListener('mouseenter', stopAutoplay);
+  track.addEventListener('mouseleave', startAutoplay);
+
+  window.addEventListener('resize', () => {
+    paint();
   });
+
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => paint()).observe(track);
+  }
+
+  // Init
+  buildDots();
+  requestPaint();
+  startAutoplay();
 });
