@@ -101,17 +101,22 @@ layout: default
   "@context": "https://schema.org/",
   "@type": "Product",
   "name": {{ page.name | default: page.title | jsonify }},
+  "sku": {{ page.sku | default: page.id | jsonify }},
   "image": [
-  {% assign valid_images = "" | split: "" %}
-  {% for img in page.images %}
-    {% if img contains '.webp' or img contains '.jpg' or img contains '.png' or img contains '.jpeg' %}
-      {% assign valid_images = valid_images | push: img %}
-    {% endif %}
-  {% endfor %}
-  {% for img in valid_images %}
-    {{ img | absolute_url | jsonify }}{% unless forloop.last %},{% endunless %}
-  {% endfor %}
+    {% assign valid_images = "" | split: "" %}
+    {% for img in page.images %}
+      {% if img contains '.webp' or img contains '.jpg' or img contains '.png' or img contains '.jpeg' %}
+        {% assign valid_images = valid_images | push: img %}
+      {% endif %}
+    {% endfor %}
+    {% for img in valid_images %}
+      {{ img | absolute_url | jsonify }}{% unless forloop.last %},{% endunless %}
+    {% endfor %}
   ],
+  "brand": {
+    "@type": "Brand",
+    "name": {{ page.brand | default: "Enka Electronics" | jsonify }}
+  },
   "description": {{ page.description | strip_html | jsonify }},
   "offers": {
     "@type": "Offer",
