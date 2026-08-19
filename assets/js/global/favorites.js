@@ -1,6 +1,7 @@
 /**
  * favorites.js
- * Данные избранного берутся из API каталога, а не из вёрстки карточки.
+ * Добавление: данные из API каталога.
+ * Модалка: openFavorites / closeFavorites / рендер списка.
  */
 
 (function () {
@@ -13,6 +14,7 @@
 
   var catalogMemory = null;
   var catalogPromise = null;
+  var modalBound = false;
 
   function getFavLink(btn) {
     var card = btn && btn.closest ? btn.closest('.product-card') : null;
@@ -44,15 +46,11 @@
     if (!link) return '';
     try {
       var path = link;
-      if (/^https?:\/\//i.test(link)) {
-        path = new URL(link).pathname;
-      }
+      if (/^https?:\/\//i.test(link)) path = new URL(link).pathname;
       var match = path.match(/\/product(?:s)?\/([^\/?#]+)/i);
       if (match) return decodeURIComponent(match[1]);
-
       var queryMatch = String(link).match(/[?&](?:sku|id)=([^&]+)/i);
       if (queryMatch) return decodeURIComponent(queryMatch[1]);
-
       return path.replace(/\/+$/, '').split('/').pop() || '';
     } catch (e) {
       return '';
@@ -126,10 +124,7 @@
 
   function writeCachedCatalog(items) {
     try {
-      sessionStorage.setItem(
-        CATALOG_CACHE_KEY,
-        JSON.stringify({ ts: Date.now(), items: items })
-      );
+      sessionStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify({ ts: Date.now(), items: items }));
     } catch (e) {}
   }
 
@@ -168,17 +163,13 @@
   }
 
   function normalizeName(name) {
-    return String(name || '')
-      .toLowerCase()
-      .replace(/\s+/g, ' ')
-      .trim();
+    return String(name || '').toLowerCase().replace(/\s+/g, ' ').trim();
   }
 
   function findProduct(catalog, hints) {
     if (!Array.isArray(catalog) || !catalog.length) return null;
 
-    var i;
-    var p;
+    var i, p;
 
     if (hints.sku) {
       for (i = 0; i < catalog.length; i++) {
@@ -285,6 +276,7 @@
   function saveFavs(favs) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
     if (typeof window.updateBadges === 'function') window.updateBadges();
+    updateFavModalCount(favs.length);
   }
 
   function identitiesOf(item, extraHints) {
@@ -349,6 +341,155 @@
     });
   }
 
+  function escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function updateFavModalCount(count) {
+    var el = document.getElementById('favModalCount');
+    if (!el) return;
+    var n = typeof count === 'number' ? count : loadFavs().length;
+    el.textContent = n > 0 ? '(' + n + ')' : '';
+  }
+
+  function renderFavList() {
+    var list = document.getElementById('favList');
+    if (!list) return;
+
+    var favs = loadFavs();
+    updateFavModalCount(favs.length);
+
+    if (!favs.length) {
+      list.innerHTML =
+        '<div class="py-10 px-4 text-center text-slate-400 text-[15px] leading-relaxed">' +
+        'რჩეულებში ჯერ არაფერია' +
+        '</div>';
+      return;
+    }
+
+    list.innerHTML = favs
+      .map(function (item, index) {
+        var href = item.link || '#';
+        var img = item.img || (Array.isArray(item.images) && typeof item.images[0] === 'string' ? item.images[0] : '');
+        var name = escapeHtml(item.name || 'პროდუქტი');
+        var price = escapeHtml(item.price || '');
+        var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
+
+        return (
+          '<div class="fav-item flex items-center gap-3 py-3 border-b border-slate-100 last:border-b-0" data-fav-index="' +
+          index +
+          '">' +
+          '<a href="' +
+          escapeHtml(href) +
+          '" class="shrink-0 w-16 h-16 rounded-2xl bg-slate-50 overflow-hidden flex items-center justify-center">' +
+          (img
+            ? '<img src="' + escapeHtml(img) + '" alt="" class="w-full h-full object-contain">'
+            : '') +
+          '</a>' +
+          '<a href="' +
+          escapeHtml(href) +
+          '" class="min-w-0 flex-1 no-underline">' +
+          '<div class="text-[14px] font-semibold text-slate-900 leading-snug line-clamp-2">' +
+          name +
+          '</div>' +
+          '<div class="mt-1 flex items-baseline gap-2">' +
+          '<span class="text-[15px] font-bold text-slate-900">' +
+          price +
+          '</span>' +
+          (oldPrice
+            ? '<span class="text-[12px] text-slate-400 line-through">' + oldPrice + '</span>'
+            : '') +
+          '</div>' +
+          '</a>' +
+          '<button type="button" class="fav-remove shrink-0 w-9 h-9 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition" data-fav-remove="' +
+          index +
+          '" aria-label="წაშლა">✕</button>' +
+          '</div>'
+        );
+      })
+      .join('');
+  }
+
+  function getFavModal() {
+    return document.getElementById('favModal');
+  }
+
+  function bindFavModal() {
+    if (modalBound) return;
+    var modal = getFavModal();
+    if (!modal) return;
+    modalBound = true;
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeFavorites();
+    });
+
+    var list = document.getElementById('favList');
+    if (list) {
+      list.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-fav-remove]');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var index = parseInt(btn.getAttribute('data-fav-remove'), 10);
+        removeFavByIndex(index);
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeFavorites();
+    });
+  }
+
+  function removeFavByIndex(index) {
+    var favs = loadFavs();
+    if (isNaN(index) || index < 0 || index >= favs.length) return;
+    var removed = favs.splice(index, 1)[0];
+    saveFavs(favs);
+    if (removed) setButtonsState(hintsFromItem(removed), false);
+    renderFavList();
+    if (typeof window.showToast === 'function') window.showToast('წაშლილია რჩეულებიდან');
+  }
+
+  function openFavorites() {
+    bindFavModal();
+    renderFavList();
+
+    var modal = getFavModal();
+    if (!modal) {
+      console.error('favModal not found');
+      return;
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex', 'active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeFavorites() {
+    var modal = getFavModal();
+    if (!modal) return;
+
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+
+    window.setTimeout(function () {
+      if (!modal.classList.contains('active')) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }, 400);
+  }
+
+  window.openFavorites = openFavorites;
+  window.closeFavorites = closeFavorites;
+  window.renderFavList = renderFavList;
+
   window.toggleFav = function (event, btn) {
     if (event) {
       event.preventDefault();
@@ -365,6 +506,7 @@
         favs.splice(existingIdx, 1);
         saveFavs(favs);
         setButtonsState(hints, false);
+        if (getFavModal() && getFavModal().classList.contains('active')) renderFavList();
         if (typeof window.showToast === 'function') window.showToast('წაშლილია რჩეულებიდან');
         return;
       }
@@ -375,9 +517,7 @@
       getCatalog()
         .then(function (catalog) {
           var product = findProduct(catalog, hints);
-          if (!product) {
-            throw new Error('Product not found in catalog');
-          }
+          if (!product) throw new Error('Product not found in catalog');
 
           var item = buildFavItem(product, hints);
           favs = loadFavs();
@@ -386,6 +526,7 @@
           favs.unshift(item);
           saveFavs(favs);
           setButtonsState(hintsFromItem(item), true);
+          if (getFavModal() && getFavModal().classList.contains('active')) renderFavList();
           if (typeof window.showToast === 'function') {
             window.showToast('დამატებულია რჩეულებში', 'fav');
           }
@@ -436,7 +577,9 @@
   }
 
   function initFavorites() {
+    bindFavModal();
     syncFavButtons();
+    updateFavModalCount();
     getCatalog().catch(function () {});
 
     if (document.body) {
