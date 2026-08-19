@@ -1,90 +1,127 @@
-function renderFavorites() {
+// Вспомогательная функция безопасного получения ссылки
+function getFavLink(btn) {
+    const card = btn.closest('.product-card');
+    if (card) {
+        // Ищем ссылку на карточку, исключая саму кнопку избранного (если это <a>)
+        const aEl = card.querySelector('a.product-link, a[href*="/product/"], a:not(.btn-fav):not(.btn-fav-card)') || card.querySelector('a');
+        if (aEl && aEl.getAttribute('href')) {
+            // Приводим к относительному пути без хоста для однозначного сравнения
+            try {
+                return new URL(aEl.getAttribute('href'), window.location.origin).pathname;
+            } catch (e) {
+                return aEl.getAttribute('href');
+            }
+        }
+    }
+    return window.location.pathname;
+}
+
+// Вспомогательная функция безопасного получения картинки (с поддержкой Lazy Load)
+function getFavImage(element) {
+    if (!element) return '';
+    return element.dataset.src || element.dataset.original || element.src || '';
+}
+
+window.toggleFav = function(event, btn) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    if (!btn) return;
+
     try {
-        const list = document.getElementById('favList');
-        const favsRaw = localStorage.getItem('myFavs');
-        const favs = favsRaw ? JSON.parse(favsRaw) : [];
-        const countEl = document.getElementById('favModalCount');
+        let name = "პროდუქტი", price = "0 ₾", oldPrice = null, img = "", link = getFavLink(btn);
+        const card = btn.closest('.product-card');
+        
+        if (card) {
+            // Считывание данных карточки
+            let nameEl = card.querySelector('.product-name, .product-title, .card-title'); 
+            if (nameEl) name = nameEl.innerText.trim();
 
-        if (countEl) {
-            countEl.innerText = favs.length > 0 ? `(${favs.length})` : '';
+            let priceEl = card.querySelector('.product-price, .modern-price-current, .price'); 
+            if (priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+
+            let oldPriceEl = card.querySelector('.old-price, .modern-price-old'); 
+            if (oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+
+            let imgEl = card.querySelector('.product-image, img'); 
+            img = getFavImage(imgEl);
+        } else {
+            // Считывание данных на странице товара
+            let titleEl = document.querySelector('.title-desktop, .title-mobile, h1.product-title-h1, h1');
+            if (titleEl) name = titleEl.innerText.trim();
+
+            let priceEl = document.querySelector('.modern-price-current, .product-price'); 
+            if (priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+            
+            let oldPriceEl = document.querySelector('.modern-price-old, .old-price'); 
+            if (oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
+            
+            let imgEl = document.querySelector('.main-gallery-slide img, .product-main-img, .product-gallery img'); 
+            img = getFavImage(imgEl);
         }
 
-        if (!list) return;
+        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
+        let existingIdx = favs.findIndex(f => f.link === link);
 
-        if (!favs || favs.length === 0) {
-            list.innerHTML = `
-                <div class="text-center text-slate-400 py-12 font-semibold">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <br>რჩეულები ცარიელია
-                </div>`;
-            return;
+        if (existingIdx > -1) {
+            favs.splice(existingIdx, 1);
+            btn.classList.remove('active');
+            window.showToast?.('წაშლილია რჩეულებიდან');
+        } else {
+            favs.unshift({ name, price, oldPrice, img, link });
+            btn.classList.add('active');
+            window.showToast?.('დამატებულია რჩეულებში', 'fav');
         }
 
-        list.innerHTML = favs.map((f, i) => {
-            const oldPHtml = (f?.oldPrice && f.oldPrice !== 'null' && !String(f.oldPrice).includes('undefined'))
-                ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${f.oldPrice}</span>`
-                : '';
-            const link = f?.link || '#';
-            const img = f?.img || '/img/no-image.png';
-            const name = f?.name || '';
-            const price = f?.price || '';
+        localStorage.setItem('myFavs', JSON.stringify(favs));
+        window.updateBadges?.();
 
-            return `
-                <div class="flex gap-3 bg-transparent border-b border-slate-200 py-4 px-2 relative items-center transition-all duration-200 last:border-none cursor-pointer hover:bg-slate-50" onclick="location.href='${link}'">
-                    <img class="w-16 h-16 rounded-lg object-contain bg-transparent shrink-0 border-none" src="${img}" alt="${name}">
-                    <div class="flex-1 min-w-0">
-                        <div class="font-bold text-[0.95rem] text-slate-900 leading-snug mb-1 line-clamp-2 overflow-hidden text-ellipsis">${name}</div>
-                        <div class="font-bold text-blue-600 text-[1.1rem] flex items-center flex-wrap gap-1.5">${price} ${oldPHtml}</div>
-                    </div>
-                    <button type="button" class="bg-transparent text-red-500 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 outline-none shrink-0 border-none active:scale-85 active:bg-red-100" onclick="event.stopPropagation(); window.removeFav(${i})">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                        </svg>
-                    </button>
-                </div>`;
-        }).join('');
-    } catch (error) {
-        console.error('Error rendering favorites:', error);
+        // Синхронизируем все одинаковые кнопки на странице
+        document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(otherBtn => {
+            if (getFavLink(otherBtn) === link) {
+                if (existingIdx > -1) otherBtn.classList.remove('active');
+                else otherBtn.classList.add('active');
+            }
+        });
+    } catch(e) { 
+        console.error("Favorite toggle error:", e); 
+    }
+};
+
+function syncFavButtons() {
+    try {
+        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
+        let favLinks = new Set(favs.map(f => f.link));
+
+        document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
+            let link = getFavLink(btn);
+            if (link && favLinks.has(link)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    } catch (e) {
+        console.error("Favorite sync error:", e);
     }
 }
 
-window.renderFavorites = renderFavorites;
+// Безопасная инициализация
+function initFavorites() {
+    syncFavButtons();
 
-window.openFavorites = function(e) {
-    if (e?.preventDefault) e.preventDefault();
-    renderFavorites();
-    window.openAppModal?.('favModal');
-};
-
-window.removeFav = function(index) {
-    try {
-        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-        const removedLink = favs[index] ? favs[index].link : null;
-        favs.splice(index, 1);
-        localStorage.setItem('myFavs', JSON.stringify(favs));
-        
-        renderFavorites();
-        window.updateBadges?.();
-
-        if (removedLink) {
-            document.querySelectorAll('.btn-fav, .btn-fav-card').forEach((btn) => {
-                if (!btn) return;
-                let link = '';
-                const card = btn.closest('.product-card');
-                if (card) {
-                    const a = card.querySelector('a');
-                    if (a) link = a.getAttribute('href') || '';
-                } else {
-                    link = window.location.pathname;
-                }
-                if (link === removedLink) {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error removing favorite:', error);
+    if (document.body) {
+        const favObserver = new MutationObserver((mutations) => {
+            let hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
+            if (hasAddedNodes) syncFavButtons();
+        });
+        favObserver.observe(document.body, { childList: true, subtree: true });
     }
-};
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFavorites);
+} else {
+    initFavorites();
+}
