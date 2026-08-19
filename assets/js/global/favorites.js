@@ -1,5 +1,5 @@
 /**
- * Favorites Manager with Direct API Integration
+ * Production-Ready Favorites System for ENKA Electronics
  * API Catalog: https://api.enkaelectronics.com.ge/
  */
 
@@ -8,87 +8,78 @@
 
     const STORAGE_KEY = 'myFavs';
     const API_URL = 'https://api.enkaelectronics.com.ge/';
-    const CACHE_STORAGE_KEY = 'enka_catalog_cache';
+    const CACHE_KEY = 'enka_catalog_cache';
 
-    let catalogMemoryCache = null;
-    let catalogFetchPromise = null;
+    let apiCatalogCache = null;
+    let apiCatalogPromise = null;
 
     /* ==========================================================================
-       1. CATALOG API & CACHING LAYER
+       1. CATALOG API LAYER (ASYNC & CACHED)
        ========================================================================== */
 
     /**
-     * Фоновая загрузка и кэширование каталога товаров
-     * @returns {Promise<Array>}
+     * Загрузка каталога с автоматическим кэшированием в sessionStorage
      */
-    async function getCatalog() {
-        if (catalogMemoryCache && catalogMemoryCache.length > 0) {
-            return catalogMemoryCache;
+    async function loadCatalog() {
+        if (apiCatalogCache && apiCatalogCache.length > 0) {
+            return apiCatalogCache;
         }
 
-        if (catalogFetchPromise) {
-            return catalogFetchPromise;
+        if (apiCatalogPromise) {
+            return apiCatalogPromise;
         }
 
-        // Проверка локального кэша сессии для мгновенного доступа
         try {
-            const sessionData = sessionStorage.getItem(CACHE_STORAGE_KEY);
-            if (sessionData) {
-                catalogMemoryCache = JSON.parse(sessionData);
-                return catalogMemoryCache;
+            const localCached = sessionStorage.getItem(CACHE_KEY);
+            if (localCached) {
+                apiCatalogCache = JSON.parse(localCached);
+                return apiCatalogCache;
             }
-        } catch (e) {
-            console.warn('[Favorites] SessionStorage read error:', e);
-        }
+        } catch (e) {}
 
-        catalogFetchPromise = fetch(API_URL)
-            .then((res) => {
-                if (!res.ok) throw new Error(`API HTTP Error: ${res.status}`);
+        apiCatalogPromise = fetch(API_URL)
+            .then(res => {
+                if (!res.ok) throw new Error('API network error');
                 return res.json();
             })
-            .then((data) => {
+            .then(data => {
                 const list = Array.isArray(data) ? data : (data.products || []);
-                catalogMemoryCache = list;
+                apiCatalogCache = list;
                 try {
-                    sessionStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(list));
-                } catch (e) {
-                    console.warn('[Favorites] SessionStorage quota exceeded or disabled');
-                }
+                    sessionStorage.setItem(CACHE_KEY, JSON.stringify(list));
+                } catch (e) {}
                 return list;
             })
-            .catch((err) => {
-                console.error('[Favorites] Catalog fetch failed:', err);
+            .catch(err => {
+                console.warn('[Favorites API] Failed to fetch:', err);
                 return [];
             })
             .finally(() => {
-                catalogFetchPromise = null;
+                apiCatalogPromise = null;
             });
 
-        return catalogFetchPromise;
+        return apiCatalogPromise;
     }
 
     /**
-     * Поиск товара в API каталоге по SKU или ID
-     * @param {string} sku 
-     * @returns {Promise<Object|null>}
+     * Поиск товара в API по артикулу (SKU), ID или ссылке
      */
-    async function findProductInApi(sku) {
-        if (!sku) return null;
-        const catalog = await getCatalog();
-        const cleanSku = String(sku).trim();
+    async function findInApi(sku, link, name) {
+        const catalog = await loadCatalog();
+        if (!catalog || catalog.length === 0) return null;
 
-        return catalog.find((item) => {
-            return (item.sku && String(item.sku).trim() === cleanSku) ||
-                   (item.id && String(item.id).trim() === cleanSku);
+        const cleanSku = sku ? String(sku).trim() : null;
+
+        return catalog.find(item => {
+            if (cleanSku && item.sku && String(item.sku).trim() === cleanSku) return true;
+            if (cleanSku && item.id && String(item.id).trim() === cleanSku) return true;
+            if (link && item.url && item.url === link) return true;
+            if (name && item.name && item.name.trim() === name.trim()) return true;
+            return false;
         }) || null;
     }
 
-    /**
-     * Извлечение первого доступного изображения товара
-     * @param {any} images 
-     * @returns {string}
-     */
-    function extractFirstImage(images) {
+    function extractApiImage(images) {
         if (!images) return '';
         if (Array.isArray(images)) return images[0] || '';
         if (typeof images === 'string') {
@@ -96,7 +87,6 @@
                 const parsed = JSON.parse(images);
                 if (Array.isArray(parsed)) return parsed[0] || '';
             } catch (e) {
-                // Если строка разделена запятыми
                 return images.split(',')[0].trim();
             }
             return images.trim();
@@ -104,89 +94,124 @@
         return '';
     }
 
-    /**
-     * Форматирование цены со знаком валюты
-     * @param {string|number} price 
-     * @returns {string}
-     */
-    function formatPrice(price) {
-        if (price === undefined || price === null || price === '') return '0 ₾';
-        const strPrice = String(price).replace(/₾/g, '').trim();
-        return `${strPrice} ₾`;
+    function formatPrice(val) {
+        if (val === undefined || val === null || val === '') return '0 ₾';
+        const str = String(val).replace(/₾/g, '').trim();
+        return `${str} ₾`;
     }
 
     /* ==========================================================================
-       2. DOM & DATA HELPERS
+       2. LOCAL STORAGE MANAGEMENT
+       ========================================================================== */
+
+    function getFavs() {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveFavs(items) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        } catch (e) {}
+    }
+
+    /* ==========================================================================
+       3. DOM DATA EXTRACTION (NO WRONG TARGETS)
        ========================================================================== */
 
     /**
-     * Безопасное получение SKU из элемента или родительской карточки
-     * @param {HTMLElement} btn 
-     * @returns {string}
+     * Определяет, находится ли кнопка внутри каталожной карточки
      */
-    function getProductSku(btn) {
-        if (!btn) return '';
+    function getParentCard(btn) {
+        if (!btn) return null;
+        return btn.closest('.product-card, [data-product-card], article, .card');
+    }
 
-        // 1. Атрибут на самой кнопке
-        if (btn.dataset.sku) return btn.dataset.sku.trim();
+    /**
+     * Извлечение SKU конкретного товара
+     */
+    function getItemSku(btn, card) {
+        if (btn && btn.dataset.sku) return btn.dataset.sku.trim();
+        if (card && card.dataset.sku) return card.dataset.sku.trim();
 
-        // 2. Ближайший контейнер с data-sku
-        const parentWithSku = btn.closest('[data-sku]');
-        if (parentWithSku && parentWithSku.dataset.sku) {
-            return parentWithSku.dataset.sku.trim();
-        }
+        const skuContainer = btn ? btn.closest('[data-sku]') : null;
+        if (skuContainer && skuContainer.dataset.sku) return skuContainer.dataset.sku.trim();
 
-        // 3. Поиск в карточке товара
-        const card = btn.closest('.product-card, [data-product-card]');
-        if (card && card.dataset.sku) {
-            return card.dataset.sku.trim();
-        }
+        // Если это страница товара (gallery.html)
+        if (!card) {
+            const pageEl = document.querySelector('[data-sku]');
+            if (pageEl && pageEl.dataset.sku) return pageEl.dataset.sku.trim();
 
-        // 4. Поиск на странице товара (глобальный контейнер)
-        const pageContainer = document.querySelector('[data-sku]');
-        if (pageContainer && pageContainer.dataset.sku) {
-            return pageContainer.dataset.sku.trim();
+            const skuEl = document.querySelector('#sku, .product-sku, [itemprop="sku"]');
+            if (skuEl) return skuEl.textContent.replace(/[^\d]/g, '').trim();
         }
 
         return '';
     }
 
     /**
-     * Безопасное получение URL страницы товара
-     * @param {HTMLElement} btn 
-     * @param {string} sku 
-     * @returns {string}
+     * Извлечение относительной ссылки товара (без хоста)
      */
-    function getProductLink(btn, sku) {
-        if (btn && btn.dataset.url) return btn.dataset.url;
+    function getItemLink(btn, card, sku) {
+        if (btn && btn.dataset.url) return btn.dataset.url.trim();
+        if (card && card.dataset.url) return card.dataset.url.trim();
 
-        const card = btn ? btn.closest('.product-card, [data-product-card]') : null;
         if (card) {
-            if (card.dataset.url) return card.dataset.url;
-            const aEl = card.querySelector('a.product-link, a[href*="/product/"], a:not(.btn-fav):not(.btn-fav-card)') || card.querySelector('a');
-            if (aEl && aEl.getAttribute('href')) {
+            const a = card.querySelector('a.product-link, a[href*="/product/"], a:not(.btn-fav)');
+            if (a && a.getAttribute('href')) {
                 try {
-                    return new URL(aEl.getAttribute('href'), window.location.origin).pathname;
+                    return new URL(a.getAttribute('href'), window.location.origin).pathname;
                 } catch (e) {
-                    return aEl.getAttribute('href');
+                    return a.getAttribute('href');
                 }
             }
         }
 
-        if (window.location.pathname.includes('/product/') || (sku && window.location.pathname.includes(sku))) {
+        // Если это страница товара
+        if (!card) {
             return window.location.pathname;
         }
 
-        return sku ? `/product/${sku}/` : window.location.pathname;
+        return sku ? `/product/${sku}/` : '';
     }
 
-    /**
-     * Получение резервного изображения из DOM
-     * @param {HTMLElement} btn 
-     * @returns {string}
-     */
-    function getFallbackImage(btn) {
-        const card = btn ? btn.closest('.product-card, [data-product-card]') : null;
+    function getItemFallbackName(btn, card) {
+        if (btn && btn.dataset.name) return btn.dataset.name.trim();
+        if (card) {
+            if (card.dataset.name) return card.dataset.name.trim();
+            const nameEl = card.querySelector('.product-name, .product-title, .card-title, h3, h2');
+            if (nameEl) return nameEl.textContent.trim();
+        }
+        const titleEl = document.querySelector('h1.product-title-h1, h1, .title-desktop, .title-mobile');
+        return titleEl ? titleEl.textContent.trim() : 'პროდუქტი';
+    }
+
+    function getItemFallbackPrice(btn, card) {
+        if (btn && btn.dataset.price) return btn.dataset.price;
+        if (card) {
+            if (card.dataset.price) return card.dataset.price;
+            const priceEl = card.querySelector('.product-price, .modern-price-current, .price');
+            if (priceEl) return priceEl.textContent;
+        }
+        const priceEl = document.querySelector('.modern-price-current, .product-price, [data-price]');
+        return priceEl ? (priceEl.dataset.price || priceEl.textContent) : '0';
+    }
+
+    function getItemFallbackOldPrice(btn, card) {
+        if (btn && btn.dataset.oldPrice) return btn.dataset.oldPrice;
+        if (card) {
+            if (card.dataset.oldPrice) return card.dataset.oldPrice;
+            const el = card.querySelector('.old-price, .modern-price-old');
+            if (el) return el.textContent;
+        }
+        const el = document.querySelector('.modern-price-old, .old-price, [data-old-price]');
+        return el ? (el.dataset.oldPrice || el.textContent) : null;
+    }
+
+    function getItemFallbackImage(btn, card) {
         const imgEl = card 
             ? card.querySelector('.product-image, img')
             : document.querySelector('.main-gallery-slide img, .product-main-img, .product-gallery img, img');
@@ -196,246 +221,347 @@
     }
 
     /* ==========================================================================
-       3. STORAGE & STATE MANAGEMENT
+       4. BUTTON SYNCHRONIZATION (STRICT ISOLATION)
        ========================================================================== */
 
-    function getStoredFavorites() {
-        try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        } catch (e) {
-            console.error('[Favorites] LocalStorage read error:', e);
-            return [];
-        }
-    }
-
-    function saveStoredFavorites(favs) {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
-        } catch (e) {
-            console.error('[Favorites] LocalStorage save error:', e);
-        }
-    }
-
     /**
-     * Сборка финального объекта товара с приоритетом данных из API
-     * @param {HTMLElement} btn 
-     * @param {string} sku 
-     * @param {Object|null} apiProduct 
-     * @returns {Object}
+     * Точечная синхронизация активности кнопок
      */
-    function buildProductData(btn, sku, apiProduct) {
-        const link = getProductLink(btn, sku);
+    function syncFavButtons() {
+        const favs = getFavs();
+        const favSkus = new Set(favs.map(f => String(f.sku || '').trim()).filter(Boolean));
+        const favLinks = new Set(favs.map(f => f.link).filter(Boolean));
 
-        if (apiProduct) {
-            return {
-                id: apiProduct.id || null,
-                sku: String(apiProduct.sku || sku).trim(),
-                name: apiProduct.name || btn.dataset.name || 'პროდუქტი',
-                brand: apiProduct.brand || '',
-                price: formatPrice(apiProduct.price || btn.dataset.price),
-                oldPrice: apiProduct.oldPrice ? formatPrice(apiProduct.oldPrice) : (btn.dataset.oldPrice ? formatPrice(btn.dataset.oldPrice) : null),
-                img: extractFirstImage(apiProduct.images) || getFallbackImage(btn),
-                link: link,
-                category: apiProduct.categories || btn.dataset.cat || '',
-                subcategory: apiProduct.subcategories || btn.dataset.subcat || ''
-            };
-        }
+        const buttons = document.querySelectorAll('.btn-fav, .btn-fav-card');
 
-        // Fallback: считывание строго из HTML dataset
-        return {
-            id: null,
-            sku: sku,
-            name: btn.dataset.name || 'პროდუქტი',
-            brand: '',
-            price: formatPrice(btn.dataset.price),
-            oldPrice: btn.dataset.oldPrice ? formatPrice(btn.dataset.oldPrice) : null,
-            img: getFallbackImage(btn),
-            link: link,
-            category: btn.dataset.cat || '',
-            subcategory: btn.dataset.subcat || ''
-        };
+        buttons.forEach(btn => {
+            const card = getParentCard(btn);
+            const sku = getItemSku(btn, card);
+            const link = getItemLink(btn, card, sku);
+
+            let isActive = false;
+
+            if (card) {
+                // Внутри карточки каталога: сравниваем строго SKU карточки или ссылку карточки
+                if (sku && favSkus.has(sku)) {
+                    isActive = true;
+                } else if (link && link !== window.location.pathname && favLinks.has(link)) {
+                    isActive = true;
+                }
+            } else {
+                // На отдельной странице товара (gallery.html)
+                if (sku && favSkus.has(sku)) {
+                    isActive = true;
+                } else if (favLinks.has(window.location.pathname)) {
+                    isActive = true;
+                }
+            }
+
+            if (isActive) {
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+            } else {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            }
+        });
     }
 
     /* ==========================================================================
-       4. CORE ACTION: TOGGLE FAVORITE
+       5. BADGES & COUNTERS
        ========================================================================== */
 
-    /**
-     * Переключение статуса избранного
-     * @param {Event} [event] 
-     * @param {HTMLElement} [buttonElement] 
-     */
-    async function toggleFavorite(event, buttonElement) {
+    function updateBadges() {
+        const favs = getFavs();
+        const count = favs.length;
+
+        // Обновляем все элементы счетчиков в хедере и навигации
+        const badges = document.querySelectorAll('#favCount, #favBadge, .fav-count, .fav-badge, [data-fav-count], [data-badge-fav]');
+        badges.forEach(badge => {
+            badge.textContent = count;
+            if (count > 0) {
+                badge.classList.remove('hidden');
+            }
+        });
+
+        // Счетчик в заголовке модального окна
+        const modalCount = document.getElementById('favModalCount');
+        if (modalCount) {
+            modalCount.textContent = count > 0 ? `(${count})` : '';
+        }
+
+        if (typeof window.updateBadges === 'function' && window.updateBadges !== updateBadges) {
+            try { window.updateBadges(); } catch (e) {}
+        }
+    }
+
+    /* ==========================================================================
+       6. MODAL WINDOW LOGIC (#favModal)
+       ========================================================================== */
+
+    function renderFavModalList() {
+        const listContainer = document.getElementById('favList');
+        if (!listContainer) return;
+
+        const favs = getFavs();
+
+        if (favs.length === 0) {
+            listContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 text-center text-slate-400">
+                    <svg class="w-12 h-12 mb-3 text-slate-300 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                    <p class="font-bold text-slate-700 text-base">სია ცარიელია</p>
+                    <p class="text-xs text-slate-400 mt-1">თქვენ არ გაქვთ დამატებული პროდუქტები</p>
+                </div>
+            `;
+            return;
+        }
+
+        listContainer.innerHTML = favs.map(item => `
+            <div class="flex items-center gap-3 py-3 border-b border-slate-100 last:border-b-0 group/fav" data-fav-sku="${item.sku || ''}" data-fav-link="${item.link || ''}">
+                <a href="${item.link || '#'}" class="w-16 h-16 flex-shrink-0 bg-slate-50 rounded-2xl overflow-hidden p-1 flex items-center justify-center border border-slate-100">
+                    <img src="${item.img || ''}" alt="${item.name || ''}" class="w-full h-full object-contain" onerror="this.style.opacity='0.2'">
+                </a>
+                <div class="flex-1 min-w-0">
+                    <a href="${item.link || '#'}" class="block text-sm font-bold text-slate-900 truncate hover:text-[#155dfc] transition-colors" title="${item.name}">
+                        ${item.name || 'პროდუქტი'}
+                    </a>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-sm font-extrabold text-[#155dfc]">${item.price || '0 ₾'}</span>
+                        ${item.oldPrice ? `<span class="text-xs text-slate-400 line-through">${item.oldPrice}</span>` : ''}
+                    </div>
+                </div>
+                <button type="button" 
+                        class="btn-fav-item-remove w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all border-none bg-transparent cursor-pointer"
+                        data-remove-sku="${item.sku || ''}" 
+                        data-remove-link="${item.link || ''}"
+                        title="წაშლა">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function openFavModal(e) {
+        if (e) e.preventDefault();
+        const modal = document.getElementById('favModal');
+        if (!modal) return;
+
+        renderFavModalList();
+        updateBadges();
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Вызов reflow для срабатывания CSS-анимации Tailwind
+        void modal.offsetWidth;
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeFavModal(e) {
+        if (e) e.preventDefault();
+        const modal = document.getElementById('favModal');
+        if (!modal) return;
+
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }, 400);
+    }
+
+    function removeFavItem(sku, link) {
+        let favs = getFavs();
+        favs = favs.filter(item => {
+            if (sku && item.sku) return String(item.sku).trim() !== String(sku).trim();
+            if (link && item.link) return item.link !== link;
+            return true;
+        });
+
+        saveFavs(favs);
+        renderFavModalList();
+        syncFavButtons();
+        updateBadges();
+
+        if (typeof window.showToast === 'function') {
+            window.showToast('წაშლილია რჩეულებიდან');
+        }
+
+        window.dispatchEvent(new CustomEvent('favorites:updated', { detail: { favs } }));
+    }
+
+    /* ==========================================================================
+       7. TOGGLE FAVORITES CORE
+       ========================================================================== */
+
+    window.toggleFav = async function (event, btnElement) {
         if (event) {
             event.preventDefault();
             event.stopPropagation();
         }
 
-        const btn = buttonElement || (event ? event.target.closest('.btn-fav, .btn-fav-card, [data-fav-btn]') : null);
+        const btn = btnElement || (event ? event.target.closest('.btn-fav, .btn-fav-card') : null);
         if (!btn) return;
 
-        const sku = getProductSku(btn);
-        const link = getProductLink(btn, sku);
-        let favs = getStoredFavorites();
+        const card = getParentCard(btn);
+        const sku = getItemSku(btn, card);
+        const link = getItemLink(btn, card, sku);
+        const fallbackName = getItemFallbackName(btn, card);
 
-        // Поиск существующего элемента по SKU (в приоритете) или по URL
-        const existingIndex = favs.findIndex((f) => {
+        let favs = getFavs();
+
+        // Проверяем, есть ли товар уже в избранном
+        const existingIdx = favs.findIndex(f => {
             if (sku && f.sku) return String(f.sku).trim() === String(sku).trim();
-            return f.link === link;
+            if (link && f.link) return f.link === link;
+            return false;
         });
 
-        const isRemoving = existingIndex > -1;
+        const isRemoving = existingIdx > -1;
 
         if (isRemoving) {
-            // Удаление из избранного
-            favs.splice(existingIndex, 1);
-            saveStoredFavorites(favs);
-            updateButtonVisualState(btn, false);
-            syncAllButtons(sku, link, false);
+            // Удаляем
+            favs.splice(existingIdx, 1);
+            saveFavs(favs);
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
 
             if (typeof window.showToast === 'function') {
                 window.showToast('წაშლილია რჩეულებიდან');
             }
         } else {
-            // Оптимистичное визуальное включение
-            updateButtonVisualState(btn, true);
-            syncAllButtons(sku, link, true);
+            // Оптимистично активируем кнопку сразу
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
 
-            // Получение гарантированно актуальных данных из API
-            let apiProduct = null;
-            if (sku) {
-                apiProduct = await findProductInApi(sku);
-            }
+            // Запрашиваем точные данные из API каталога
+            const apiItem = await findInApi(sku, link, fallbackName);
 
-            const newFavItem = buildProductData(btn, sku, apiProduct);
+            const newItem = {
+                id: apiItem ? apiItem.id : null,
+                sku: sku || (apiItem ? String(apiItem.sku) : ''),
+                name: (apiItem && apiItem.name) || fallbackName,
+                brand: (apiItem && apiItem.brand) || '',
+                price: formatPrice((apiItem && apiItem.price) || getItemFallbackPrice(btn, card)),
+                oldPrice: (apiItem && apiItem.oldPrice) ? formatPrice(apiItem.oldPrice) : (getItemFallbackOldPrice(btn, card) ? formatPrice(getItemFallbackOldPrice(btn, card)) : null),
+                img: (apiItem && extractApiImage(apiItem.images)) || getItemFallbackImage(btn, card),
+                link: link || (sku ? `/product/${sku}/` : window.location.pathname),
+                category: (apiItem && apiItem.categories) || (btn.dataset.cat || ''),
+                subcategory: (apiItem && apiItem.subcategories) || (btn.dataset.subcat || '')
+            };
 
-            // Добавление в начало списка
-            favs = getStoredFavorites();
-            favs.unshift(newFavItem);
-            saveStoredFavorites(favs);
+            favs = getFavs();
+            // Исключаем дубликаты
+            favs = favs.filter(f => !(sku && f.sku === sku));
+            favs.unshift(newItem);
+            saveFavs(favs);
 
             if (typeof window.showToast === 'function') {
                 window.showToast('დამატებულია რჩეულებში', 'fav');
             }
         }
 
-        // Обновление бейджей и вызов внешних слушателей
-        if (typeof window.updateBadges === 'function') {
-            window.updateBadges();
+        syncFavButtons();
+        updateBadges();
+
+        const modal = document.getElementById('favModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            renderFavModalList();
         }
 
-        window.dispatchEvent(new CustomEvent('favorites:updated', {
-            detail: { favs: favs, count: favs.length, sku: sku }
-        }));
-    }
+        window.dispatchEvent(new CustomEvent('favorites:updated', { detail: { favs } }));
+    };
 
     /* ==========================================================================
-       5. UI SYNCHRONIZATION
-       ========================================================================== */
-
-    /**
-     * Обновление состояния конкретной кнопки
-     * @param {HTMLElement} btn 
-     * @param {boolean} isActive 
-     */
-    function updateButtonVisualState(btn, isActive) {
-        if (!btn) return;
-
-        const outlineIcon = btn.querySelector('.icon-outline');
-        const filledIcon = btn.querySelector('.icon-filled');
-
-        if (isActive) {
-            btn.classList.add('active', 'text-[#155dfc]', 'border-[#155dfc]');
-            btn.setAttribute('aria-pressed', 'true');
-            if (outlineIcon) outlineIcon.classList.add('hidden');
-            if (filledIcon) filledIcon.classList.remove('hidden');
-        } else {
-            btn.classList.remove('active', 'text-[#155dfc]', 'border-[#155dfc]');
-            btn.setAttribute('aria-pressed', 'false');
-            if (outlineIcon) outlineIcon.classList.remove('hidden');
-            if (filledIcon) filledIcon.classList.add('hidden');
-        }
-    }
-
-    /**
-     * Синхронизация всех кнопок на странице, привязанных к конкретному товару
-     * @param {string} sku 
-     * @param {string} link 
-     * @param {boolean} isActive 
-     */
-    function syncAllButtons(sku, link, isActive) {
-        const buttons = document.querySelectorAll('.btn-fav, .btn-fav-card, [data-fav-btn]');
-        buttons.forEach((btn) => {
-            const btnSku = getProductSku(btn);
-            const btnLink = getProductLink(btn, btnSku);
-
-            if ((sku && btnSku && String(btnSku) === String(sku)) || (link && btnLink === link)) {
-                updateButtonVisualState(btn, isActive);
-            }
-        });
-    }
-
-    /**
-     * Полная синхронизация состояния всех кнопок на странице
-     */
-    function syncFavButtons() {
-        const favs = getStoredFavorites();
-        const favSkus = new Set(favs.filter((f) => f.sku).map((f) => String(f.sku).trim()));
-        const favLinks = new Set(favs.map((f) => f.link));
-
-        const buttons = document.querySelectorAll('.btn-fav, .btn-fav-card, [data-fav-btn]');
-        buttons.forEach((btn) => {
-            const sku = getProductSku(btn);
-            const link = getProductLink(btn, sku);
-
-            const isFav = (sku && favSkus.has(String(sku).trim())) || (link && favLinks.has(link));
-            updateButtonVisualState(btn, Boolean(isFav));
-        });
-    }
-
-    /* ==========================================================================
-       6. INITIALIZATION & EVENT DELEGATION
+       8. GLOBAL EVENT DELEGATION
        ========================================================================== */
 
     function initFavorites() {
-        // Фоновый прогрев кэша API при первой загрузке
-        getCatalog();
+        // Фоновый прогрев каталога API
+        loadCatalog();
 
-        // Синхронизация состояния кнопок в DOM
+        // Синхронизация при загрузке
         syncFavButtons();
+        updateBadges();
 
-        // Делегирование событий клика (поддержка динамически созданных карточек)
-        document.addEventListener('click', (event) => {
-            const targetBtn = event.target.closest('.btn-fav, .btn-fav-card, [data-fav-btn]');
-            if (targetBtn) {
-                toggleFavorite(event, targetBtn);
+        // Делегирование кликов
+        document.addEventListener('click', function (e) {
+            // Клик по кнопке открытия модалки избранного в шапке / меню
+            const openTrigger = e.target.closest('a[href="#favModal"], [data-open-fav-modal], #openFavModal, .header-fav-btn, a[href*="favModal"]');
+            if (openTrigger) {
+                e.preventDefault();
+                openFavModal(e);
+                return;
+            }
+
+            // Клик по кнопке удаления товара внутри модалки
+            const removeBtn = e.target.closest('.btn-fav-item-remove');
+            if (removeBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                removeFavItem(removeBtn.dataset.removeSku, removeBtn.dataset.removeLink);
+                return;
+            }
+
+            // Клик по фону (backdrop) для закрытия модалки
+            const modal = document.getElementById('favModal');
+            if (modal && e.target === modal) {
+                closeFavModal(e);
+                return;
+            }
+
+            // Клик по кнопке закрытия модалки
+            if (e.target.closest('[data-close-fav-modal], .btn-close-fav, .close-modal')) {
+                closeFavModal(e);
+                return;
             }
         });
 
-        // Отслеживание динамической подгрузки элементов (пагинация, фильтрация)
+        // Закрытие модалки по клавише ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeFavModal();
+            }
+        });
+
+        // Отслеживание динамической подгрузки товаров (пагинация/фильтры)
         if (document.body) {
             let debounceTimer = null;
-            const observer = new MutationObserver((mutations) => {
-                const hasNewNodes = mutations.some((m) => m.addedNodes.length > 0);
-                if (hasNewNodes) {
+            const observer = new MutationObserver(mutations => {
+                const hasAddedNodes = mutations.some(m => m.addedNodes.length > 0);
+                if (hasAddedNodes) {
                     clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(syncFavButtons, 50);
+                    debounceTimer = setTimeout(() => {
+                        syncFavButtons();
+                        updateBadges();
+                    }, 50);
                 }
             });
-
             observer.observe(document.body, { childList: true, subtree: true });
         }
     }
 
-    // Экспорт в глобальное пространство для обратной совместимости
-    window.toggleFav = toggleFavorite;
-    window.syncFavButtons = syncFavButtons;
-    window.Favorites = {
-        get: getStoredFavorites,
-        toggle: toggleFavorite,
-        sync: syncFavButtons,
-        getCatalog: getCatalog
+    // Экспорт в глобальную область видимости
+    window.openFavModal = openFavModal;
+    window.closeFavModal = closeFavModal;
+    window.toggleFavModal = function () {
+        const modal = document.getElementById('favModal');
+        if (modal && modal.classList.contains('active')) {
+            closeFavModal();
+        } else {
+            openFavModal();
+        }
     };
+    window.syncFavButtons = syncFavButtons;
+    window.updateBadges = updateBadges;
+    window.removeFromFavs = removeFavItem;
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initFavorites);
