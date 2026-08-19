@@ -114,15 +114,6 @@
     drag.raf = 0;
   }
 
-  function releaseSnapLock() {
-    track.classList.remove('is-dragging', 'is-coasting');
-    track.style.scrollSnapType = '';
-  }
-
-  function lockSnap() {
-    track.style.scrollSnapType = 'none';
-  }
-
   function tick(now) {
     drag.raf = 0;
 
@@ -152,7 +143,7 @@
 
     if (Math.abs(drag.velocity) < MIN_COAST_VELOCITY) {
       drag.coasting = false;
-      releaseSnapLock();
+      track.classList.remove('is-coasting');
       return;
     }
 
@@ -189,16 +180,15 @@
   }
 
   function beginCoast() {
+    track.classList.remove('is-dragging');
     if (drag.reduced || Math.abs(drag.velocity) < MIN_COAST_VELOCITY) {
       drag.coasting = false;
-      releaseSnapLock();
+      track.classList.remove('is-coasting');
       return;
     }
     drag.coasting = true;
     drag.lastTime = performance.now();
-    track.classList.remove('is-dragging');
     track.classList.add('is-coasting');
-    lockSnap();
     startLoop();
   }
 
@@ -218,6 +208,7 @@
       try {
         track.releasePointerCapture(e.pointerId);
       } catch (err) {
+        /* already released */
       }
     }
 
@@ -231,7 +222,7 @@
       beginCoast();
     } else {
       drag.coasting = false;
-      releaseSnapLock();
+      track.classList.remove('is-dragging', 'is-coasting');
     }
   }
 
@@ -243,7 +234,7 @@
       drag.active = true;
       drag.coasting = false;
       track.classList.add('is-dragging');
-      lockSnap();
+      track.classList.remove('is-coasting');
       try {
         if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
       } catch (err) {
@@ -264,7 +255,7 @@
 
     drag.coasting = false;
     stopLoop();
-    releaseSnapLock();
+    track.classList.remove('is-dragging', 'is-coasting');
     cacheMetrics();
 
     drag.tracking = true;
