@@ -5,7 +5,7 @@
     id="promo-slider-track"
     role="list"
     aria-label="Список промо-сторис"
-    class="flex flex-nowrap items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab active:cursor-grabbing [&.is-dragging]:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch] [-webkit-touch-callout:none] py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 scroll-px-3.5 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-2 lg:pr-12 motion-safe:snap-x motion-safe:snap-proximity [&.is-dragging]:snap-none [&.is-coasting]:snap-none"
+    class="flex flex-nowrap items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab active:cursor-grabbing [&.is-dragging]:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch] [-webkit-touch-callout:none] py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-2 lg:pr-12"
   >
     {% for promo in promo_items %}
     {% assign promo_title = promo.title | default: promo.name | default: 'Промо' %}
@@ -16,7 +16,7 @@
         data-title="{{ promo_title | escape }}"
         aria-label="{{ promo_title | escape }}"
         draggable="false"
-        class="promo-card shrink-0 relative flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-3 border-blue-600 data-[viewed]:border-zinc-500 rounded-[20px] sm:rounded-[24px] scroll-mx-1 motion-safe:snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:z-10"
+        class="promo-card shrink-0 relative flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-3 border-blue-600 data-[viewed]:border-zinc-500 rounded-[20px] sm:rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:z-10"
       >
         <div class="w-full h-full rounded-[15px] sm:rounded-[19px] overflow-hidden relative">
           <img
