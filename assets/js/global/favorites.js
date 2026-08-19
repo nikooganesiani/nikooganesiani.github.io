@@ -1,8 +1,3 @@
-/**
- * Production-Ready Favorites System for ENKA Electronics
- * API Catalog: https://api.enkaelectronics.com.ge/
- */
-
 (function () {
     'use strict';
 
