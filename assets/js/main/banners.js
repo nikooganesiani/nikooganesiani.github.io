@@ -1,7 +1,3 @@
-/**
- * Promo stories: drag-to-scroll, viewed-state, a11y.
- * Подключать сразу после #promo-slider-track (без defer) — чтобы не мигал border.
- */
 (function initPromoStories() {
   'use strict';
 
@@ -34,7 +30,6 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(viewed)));
     } catch (e) {
-      /* quota / private mode */
     }
   }
 
@@ -146,7 +141,6 @@
       try {
         track.setPointerCapture(e.pointerId);
       } catch (err) {
-        /* Safari edge cases */
       }
     });
 
