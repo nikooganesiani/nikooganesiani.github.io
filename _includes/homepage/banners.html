@@ -1,110 +1,46 @@
 {% assign promo_items = site.data.promo_stories %}
 {% if promo_items %}
-<section class="w-full py-3 select-none">
-  <div
+<section class="w-full py-3 select-none" aria-label="Промо-сторис">
+  <ul
     id="promo-slider-track"
-    class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-2 lg:pr-12"
+    role="list"
+    aria-label="Список промо-сторис"
+    class="flex flex-nowrap items-center gap-2.5 sm:gap-3 overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab active:cursor-grabbing [&.is-dragging]:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden [-webkit-overflow-scrolling:touch] [-webkit-touch-callout:none] py-2 box-border w-screen relative left-1/2 -translate-x-1/2 px-3.5 scroll-px-3.5 lg:static lg:translate-x-0 lg:w-[calc(100%+3rem)] lg:-mx-6 lg:pl-2 lg:pr-12 motion-safe:snap-x motion-safe:snap-proximity"
   >
     {% for promo in promo_items %}
-    <a
-      href="{{ promo.url | relative_url }}"
-      data-promo-id="{{ promo.id }}"
-      class="promo-card shrink-0 flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-3 border-blue-600 rounded-[20px] sm:rounded-[24px]"
-    >
-      <div class="w-full h-full rounded-[15px] sm:rounded-[19px] overflow-hidden relative">
-        <img
-          src="{{ promo.image | relative_url }}"
-          alt="Промо"
-          loading="lazy"
-          draggable="false"
-          class="w-full h-full object-cover object-center pointer-events-none brightness-[1.02] contrast-[1.02] isolation-auto"
-          onerror="this.parentElement.classList.add('bg-gradient-to-b','from-blue-900','to-zinc-900'); this.style.display='none';"
-        />
-      </div>
-    </a>
+    {% assign promo_title = promo.title | default: promo.name | default: 'Промо' %}
+    <li class="shrink-0 contents">
+      <a
+        href="{{ promo.url | relative_url }}"
+        data-promo-id="{{ promo.id }}"
+        data-title="{{ promo_title | escape }}"
+        aria-label="{{ promo_title | escape }}"
+        draggable="false"
+        class="promo-card shrink-0 relative flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-3 border-blue-600 data-[viewed]:border-zinc-500 rounded-[20px] sm:rounded-[24px] scroll-mx-1 motion-safe:snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:z-10"
+      >
+        <div class="w-full h-full rounded-[15px] sm:rounded-[19px] overflow-hidden relative">
+          <img
+            src="{{ promo.image | relative_url }}"
+            alt=""
+            width="88"
+            height="120"
+            decoding="async"
+            {% if forloop.first %}
+            fetchpriority="high"
+            loading="eager"
+            {% elsif forloop.index <= 5 %}
+            loading="eager"
+            {% else %}
+            loading="lazy"
+            {% endif %}
+            draggable="false"
+            class="w-full h-full object-cover object-center pointer-events-none brightness-[1.02] contrast-[1.02]"
+          />
+        </div>
+      </a>
+    </li>
     {% endfor %}
-  </div>
+  </ul>
 </section>
-
-<script>
-  (function () {
-    const track = document.getElementById('promo-slider-track');
-    if (!track) return;
-
-    const STORAGE_KEY = 'viewed_promo_stories';
-    let viewedCards = [];
-
-    try {
-      viewedCards = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch (e) {
-      viewedCards = [];
-    }
-
-    const cards = track.querySelectorAll('.promo-card');
-
-    function applyViewedStatus(card, id) {
-      if (viewedCards.includes(id)) {
-        card.classList.remove('border-blue-600');
-        card.classList.add('border-zinc-500');
-      }
-    }
-
-    cards.forEach((card) => {
-      const id = card.getAttribute('data-promo-id');
-      if (id) applyViewedStatus(card, id);
-    });
-
-    function markAsViewed(id, card) {
-      if (id && !viewedCards.includes(id)) {
-        viewedCards.push(id);
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(viewedCards));
-        } catch (e) {}
-        applyViewedStatus(card, id);
-      }
-    }
-
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-    let hasMoved = false;
-
-    track.addEventListener('mousedown', (e) => {
-      isDown = true;
-      hasMoved = false;
-      track.classList.add('cursor-grabbing');
-      startX = e.pageX - track.offsetLeft;
-      scrollLeft = track.scrollLeft;
-    });
-
-    window.addEventListener('mouseup', () => {
-      if (!isDown) return;
-      isDown = false;
-      track.classList.remove('cursor-grabbing');
-    });
-
-    track.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.4;
-      if (Math.abs(walk) > 5) {
-        hasMoved = true;
-      }
-      track.scrollLeft = scrollLeft - walk;
-    });
-
-    cards.forEach((card) => {
-      card.addEventListener('click', (e) => {
-        if (hasMoved) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        const id = card.getAttribute('data-promo-id');
-        markAsViewed(id, card);
-      });
-    });
-  })();
-</script>
+<script src="{{ '/assets/js/banners.js' | relative_url }}"></script>
 {% endif %}
