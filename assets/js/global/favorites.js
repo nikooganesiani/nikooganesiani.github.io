@@ -1,4 +1,6 @@
+// ==========================================
 // 1. Отрисовка списка избранного в модалке
+// ==========================================
 function renderFavs() {
     try {
         const list = document.getElementById('favList');
@@ -67,7 +69,9 @@ function renderFavs() {
 
 window.renderFavs = renderFavs;
 
+// ==========================================
 // 2. Открытие модалки избранного
+// ==========================================
 window.openFavs = function(e) {
     if (e?.preventDefault) e.preventDefault();
     renderFavs();
@@ -75,7 +79,9 @@ window.openFavs = function(e) {
 };
 window.openFavorites = window.openFavs;
 
-// 3. Удаление товара из самой модалки
+// ==========================================
+// 3. Удаление товара из модалки
+// ==========================================
 window.removeFavByIdx = function(idx, e) {
     if (e?.preventDefault) e.preventDefault();
     if (e?.stopPropagation) e.stopPropagation();
@@ -91,21 +97,146 @@ window.removeFavByIdx = function(idx, e) {
     }
 };
 
-// 4. Подсветка кнопок-сердечек на странице
+// ==========================================
+// 4. Умный поиск карточки и извлечение данных
+// ==========================================
+
+// Поиск родительской карточки товара
+function findCard(btn) {
+    if (!btn) return null;
+
+    // 1. Проверяем ваши блоки каруселей: subcatScroll, catScroll, recentScroll
+    const scrollItem = btn.closest('#subcatScroll > *, #catScroll > *, #recentScroll > *, [id*="Scroll"] > *');
+    if (scrollItem) return scrollItem;
+
+    // 2. Стандартные карточки и Tailwind-слайды
+    const genericCard = btn.closest('.product-card, .product-item, .card-product, .card, .snap-start, .flex-shrink-0');
+    if (genericCard && genericCard !== document.body) return genericCard;
+
+    return null;
+}
+
+// Извлечение ссылки
+function getLink(card) {
+    if (card) {
+        const a = card.querySelector('a[href*="/product/"], a.product-link') || 
+                  card.querySelector('a:not(.btn-fav):not(.btn-fav-card)');
+        if (a && a.getAttribute('href')) {
+            try {
+                return new URL(a.getAttribute('href'), window.location.origin).pathname;
+            } catch (e) {
+                return a.getAttribute('href');
+            }
+        }
+    }
+    return window.location.pathname;
+}
+
+// Извлечение картинки
+function getImage(card) {
+    const root = card || document;
+    const img = root.querySelector('.product-image, .main-gallery-slide img, .product-main-img, .product-gallery img, img');
+    if (!img) return '';
+    return img.dataset.src || img.dataset.original || img.getAttribute('src') || img.src || '';
+}
+
+// Извлечение названия
+function getTitle(card) {
+    if (card) {
+        // Ищем явные селекторы
+        const direct = card.querySelector('.product-name, .product-title, .card-title, h1, h2, h3, h4, .title');
+        if (direct && direct.innerText.trim() && !direct.innerText.includes('₾')) {
+            return direct.innerText.trim();
+        }
+
+        // Ищем текст внутри ссылок
+        const links = card.querySelectorAll('a:not(.btn-fav):not(.btn-fav-card)');
+        for (let a of links) {
+            const txt = a.innerText.trim();
+            if (txt && txt.length > 2 && !txt.includes('₾') && isNaN(Number(txt))) {
+                return txt;
+            }
+        }
+
+        // Ищем в alt картинки
+        const img = card.querySelector('img');
+        if (img && img.alt && img.alt.trim().length > 2) {
+            return img.alt.trim();
+        }
+    } else {
+        // На странице самого товара
+        const mainH1 = document.querySelector('h1.product-title-h1, h1.product-title, h1, .title-desktop, .title-mobile, .product-name');
+        if (mainH1 && mainH1.innerText.trim()) return mainH1.innerText.trim();
+    }
+    return "პროდუქტი";
+}
+
+// Извлечение цены и старой цены (сканирует элементы с символом ₾)
+function getPrices(card) {
+    const root = card || document;
+    let price = "0 ₾";
+    let oldPrice = null;
+
+    // 1. Ищем все конечные текстовые элементы со знаком ₾
+    const allElements = Array.from(root.querySelectorAll('*'));
+    const lariElements = allElements.filter(el => {
+        const txt = el.innerText || '';
+        return txt.includes('₾') && el.children.length === 0 && !el.closest('#favModal') && !el.closest('#ordersModal');
+    });
+
+    if (lariElements.length > 0) {
+        let currentPrices = [];
+
+        lariElements.forEach(el => {
+            const isOld = el.classList.contains('line-through') || 
+                          el.closest('.line-through') || 
+                          el.tagName === 'DEL' || 
+                          el.tagName === 'S' ||
+                          el.classList.contains('text-slate-400') ||
+                          el.classList.contains('text-gray-400') ||
+                          el.classList.contains('old-price') ||
+                          el.classList.contains('modern-price-old');
+
+            const val = el.innerText.replace(/₾/g, '').trim();
+            if (val) {
+                if (isOld && !oldPrice) {
+                    oldPrice = val + ' ₾';
+                } else {
+                    currentPrices.push(val);
+                }
+            }
+        });
+
+        if (currentPrices.length > 0) {
+            price = currentPrices[0] + ' ₾';
+        }
+    }
+
+    // 2. Если на детальной странице цена не нашлась, проверяем основные контейнеры цены
+    if (price === "0 ₾" && !card) {
+        const pagePriceEl = document.querySelector('.modern-price-current, [class*="price-current"], [class*="product-price"], [data-price]');
+        if (pagePriceEl) {
+            const val = pagePriceEl.innerText.replace(/₾/g, '').trim();
+            if (val) price = val + ' ₾';
+        }
+    }
+
+    return { price, oldPrice };
+}
+
+// ==========================================
+// 5. Подсветка кнопок-сердечек на странице
+// ==========================================
 function syncFavButtons() {
     try {
         const favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
         const favLinks = new Set(favs.map(f => f.link));
 
         document.querySelectorAll('.btn-fav, .btn-fav-card').forEach(btn => {
-            const card = btn.closest('.product-card');
-            let link = window.location.pathname;
-            if (card) {
-                const aEl = card.querySelector('a.product-link') || card.querySelector('a:not(.btn-fav)');
-                if (aEl && aEl.getAttribute('href')) link = aEl.getAttribute('href');
-            }
+            const card = findCard(btn);
+            const link = getLink(card);
             
-            if (favLinks.has(link)) {
+            if (link && favLinks.has(link)) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
@@ -115,7 +246,9 @@ function syncFavButtons() {
 }
 window.syncFavButtons = syncFavButtons;
 
-// 5. Клик по сердечку на карточке товара или в детальной странице
+// ==========================================
+// 6. Добавление / Удаление при клике на сердечко
+// ==========================================
 window.toggleFav = function(event, btn) {
     if (event) {
         event.preventDefault();
@@ -124,37 +257,12 @@ window.toggleFav = function(event, btn) {
     if (!btn) return;
 
     try {
-        let name = "პროდუქტი", price = "0 ₾", oldPrice = null, img = "", link = window.location.pathname;
-        const card = btn.closest('.product-card');
-
-        if (card) {
-            const nameEl = card.querySelector('.product-name, .product-title, .card-title');
-            if (nameEl) name = nameEl.innerText.trim();
-
-            const priceEl = card.querySelector('.product-price, .modern-price-current, .price');
-            if (priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-
-            const oldPriceEl = card.querySelector('.old-price, .modern-price-old');
-            if (oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-
-            const imgEl = card.querySelector('.product-image, img');
-            if (imgEl) img = imgEl.dataset.src || imgEl.src || '';
-
-            const aEl = card.querySelector('a.product-link') || card.querySelector('a:not(.btn-fav)');
-            if (aEl && aEl.getAttribute('href')) link = aEl.getAttribute('href');
-        } else {
-            const titleEl = document.querySelector('.title-desktop, .title-mobile, h1.product-title-h1, h1');
-            if (titleEl) name = titleEl.innerText.trim();
-
-            const priceEl = document.querySelector('.modern-price-current, .product-price');
-            if (priceEl) price = priceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-
-            const oldPriceEl = document.querySelector('.modern-price-old, .old-price');
-            if (oldPriceEl) oldPrice = oldPriceEl.innerText.replace(/₾/g, '').trim() + ' ₾';
-
-            const imgEl = document.querySelector('.main-gallery-slide img, .product-main-img, .product-gallery img');
-            if (imgEl) img = imgEl.dataset.src || imgEl.src || '';
-        }
+        const card = findCard(btn);
+        
+        const link = getLink(card);
+        const name = getTitle(card);
+        const img = getImage(card);
+        const { price, oldPrice } = getPrices(card);
 
         let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
         let existingIdx = favs.findIndex(f => f.link === link);
@@ -177,7 +285,7 @@ window.toggleFav = function(event, btn) {
     }
 };
 
-// Безопасный запуск подсветки кнопок один раз при открытии страницы
+// Запуск подсветки кнопок при загрузке страницы
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', syncFavButtons);
 } else {
