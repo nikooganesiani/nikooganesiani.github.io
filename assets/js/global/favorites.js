@@ -2,7 +2,7 @@
     'use strict';
 
     const STORAGE_KEY = 'myFavs';
-    const API_URL = 'https://api.enkaelectronics.com.ge/';
+    const API_URL = 'https://api.enkaelectronics.com.ge/catalog';
     const CACHE_KEY = 'enka_catalog_cache';
 
     let apiCatalogCache = null;
