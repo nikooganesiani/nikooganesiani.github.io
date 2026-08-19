@@ -2,11 +2,19 @@
   const AUTOPLAY_DELAY = 5000;
   const ANIM_MS = 600;
   const DRAG_THRESHOLD = 6;
+  const FLICK_VELOCITY = 0.32;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
   const easeInOutQuad = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+  const easeOutCubic = (t) => 1 - (1 - t) ** 3;
   const supportsInert = typeof HTMLElement !== 'undefined' && 'inert' in HTMLElement.prototype;
+
+  const rubberband = (value, min, max) => {
+    if (value < min) return min - (min - value) * 0.28;
+    if (value > max) return max + (value - max) * 0.28;
+    return value;
+  };
 
   const ready = (fn) => {
     if (document.readyState === 'loading') {
@@ -47,9 +55,31 @@
     let suppressClick = false;
     let dragStartX = 0;
     let dragStartScroll = 0;
+    let dragDelta = 0;
+    let dragRaf = 0;
+    let velocityX = 0;
+    let lastMoveX = 0;
+    let lastMoveT = 0;
     let scrollEndTimer = 0;
+    let snapLocked = false;
 
     const getTarget = (index) => slideOffsets[index] ?? index * slideWidth;
+
+    const setSnap = (on) => {
+      snapLocked = !on;
+      track.style.scrollSnapType = on ? '' : 'none';
+      track.style.scrollBehavior = on ? '' : 'auto';
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.scrollSnapAlign = on ? '' : 'none';
+      }
+    };
+
+    const enableSnapNextFrame = () => {
+      requestAnimationFrame(() => {
+        if (isPointerDown || isAnimating) return;
+        setSnap(true);
+      });
+    };
 
     const measure = () => {
       slideWidth = track.clientWidth || 1;
@@ -70,12 +100,11 @@
       }
     };
 
-    const nearestIndex = () => {
-      const x = track.scrollLeft;
+    const nearestIndexFrom = (scrollPos) => {
       let best = 0;
       let bestDist = Infinity;
       for (let i = 0; i < slideOffsets.length; i++) {
-        const dist = Math.abs(slideOffsets[i] - x);
+        const dist = Math.abs(slideOffsets[i] - scrollPos);
         if (dist < bestDist) {
           bestDist = dist;
           best = i;
@@ -89,41 +118,49 @@
       for (let i = 0; i < images.length; i++) {
         if (images[i]) images[i].style.willChange = value;
       }
-      if (worm) worm.style.willChange = value;
+      if (worm) worm.style.willChange = on ? 'transform, width' : '';
+    };
+
+    const setDragOffset = (dx) => {
+      const value = dx ? `translate3d(${dx}px,0,0)` : '';
+      for (let i = 0; i < slides.length; i++) {
+        slides[i].style.transform = value;
+        slides[i].style.willChange = dx ? 'transform' : '';
+      }
     };
 
     const updateWorm = (ratio) => {
       if (!worm || dots.length < 2 || dotMetrics.length < 2) return;
 
-      const pos = ratio * (dots.length - 1);
-      const base = Math.min(Math.floor(pos + 1e-6), dots.length - 2);
+      const n = dots.length;
+      const pos = ratio * (n - 1);
+      const base = Math.min(Math.floor(pos + 1e-6), n - 2);
       const rawFrac = clamp(pos - base, 0, 1);
       const frac = reduceMotion.matches ? rawFrac : easeInOutQuad(rawFrac);
       const a = dotMetrics[base];
       const b = dotMetrics[base + 1];
       if (!a || !b) return;
 
+      const dw = a.w;
       const adv = b.x - a.x;
-      let width = a.w;
+      let width = dw;
       let off = a.x;
 
       if (frac <= 0.5) {
-        width = a.w + frac * 2 * adv;
+        width = dw + frac * 2 * adv;
       } else {
-        width = a.w + (1 - frac) * 2 * adv;
+        width = dw + (1 - frac) * 2 * adv;
         off = a.x + (frac - 0.5) * 2 * adv;
       }
 
-      const sx = a.w > 0 ? width / a.w : 1;
-      worm.style.transform = `translate3d(${off}px,0,0) scaleX(${sx})`;
+      worm.style.transform = `translate3d(${off}px,0,0)`;
+      worm.style.width = `${width}px`;
     };
 
-    const paint = () => {
-      ticking = false;
+    const paintAt = (scrollPos) => {
       const w = slideWidth || 1;
-      const scrollPos = track.scrollLeft;
       const ratio = maxScroll > 0 ? clamp(scrollPos / maxScroll, 0, 1) : 0;
-      const idx = nearestIndex();
+      const idx = nearestIndexFrom(clamp(scrollPos, 0, maxScroll));
       currentIndex = idx;
 
       if (!reduceMotion.matches) {
@@ -135,13 +172,20 @@
             img.style.transform = '';
             continue;
           }
-          const diff = clamp((i * w + w / 2 - center) / w, -1, 1);
+          const slideCenter = (slideOffsets[i] ?? i * w) + w / 2;
+          const diff = clamp((slideCenter - center) / w, -1, 1);
           const easeOffset = easeInOutQuad(Math.abs(diff)) * Math.sign(diff || 0);
           img.style.transform = `translate3d(${easeOffset * 6}%,0,0) scale(${1 - Math.abs(easeOffset) * 0.02})`;
         }
       }
 
       updateWorm(ratio);
+    };
+
+    const paint = () => {
+      ticking = false;
+      if (isPointerDown && hasDragged) return;
+      paintAt(track.scrollLeft);
     };
 
     const requestPaint = () => {
@@ -185,25 +229,17 @@
         animRaf = 0;
       }
       isAnimating = false;
-      track.style.scrollSnapType = '';
-      track.style.scrollBehavior = '';
       setLayers(false);
     };
 
-    const enableSnapNextFrame = () => {
-      requestAnimationFrame(() => {
-        track.style.scrollSnapType = '';
-        track.style.scrollBehavior = '';
-      });
-    };
-
-    const smoothScrollTo = (targetX) => {
+    const smoothScrollTo = (targetX, { duration = ANIM_MS, ease = easeInOutQuad } = {}) => {
       cancelAnimation();
 
       if (reduceMotion.matches) {
         track.scrollLeft = targetX;
-        paint();
+        paintAt(targetX);
         syncSlideState(currentIndex);
+        enableSnapNextFrame();
         return;
       }
 
@@ -211,20 +247,22 @@
       const distance = targetX - startX;
       if (Math.abs(distance) < 1) {
         track.scrollLeft = targetX;
-        paint();
+        paintAt(targetX);
         syncSlideState(currentIndex);
+        enableSnapNextFrame();
         return;
       }
 
-      track.style.scrollSnapType = 'none';
-      track.style.scrollBehavior = 'auto';
+      setSnap(false);
       setLayers(true);
       isAnimating = true;
       const startTime = performance.now();
 
       const step = (now) => {
-        const progress = Math.min((now - startTime) / ANIM_MS, 1);
-        track.scrollLeft = startX + distance * easeInOutQuad(progress);
+        const progress = Math.min((now - startTime) / duration, 1);
+        const x = startX + distance * ease(progress);
+        track.scrollLeft = x;
+        paintAt(x);
 
         if (progress < 1) {
           animRaf = requestAnimationFrame(step);
@@ -235,9 +273,9 @@
         isAnimating = false;
         track.scrollLeft = targetX;
         setLayers(false);
-        enableSnapNextFrame();
-        paint();
+        paintAt(targetX);
         syncSlideState(currentIndex);
+        enableSnapNextFrame();
       };
 
       animRaf = requestAnimationFrame(step);
@@ -271,12 +309,12 @@
       }, AUTOPLAY_DELAY);
     };
 
-    const goTo = (index, { user = true, wrap = false } = {}) => {
+    const goTo = (index, { user = true, wrap = false, duration = ANIM_MS, ease = easeInOutQuad } = {}) => {
       const next = wrap
         ? ((index % total) + total) % total
         : clamp(index, 0, total - 1);
       currentIndex = next;
-      smoothScrollTo(getTarget(next));
+      smoothScrollTo(getTarget(next), { duration, ease });
       syncSlideState(next);
       if (user) {
         announce(next);
@@ -286,69 +324,130 @@
 
     const onScrollEnd = () => {
       if (isPointerDown || isAnimating) return;
-      const idx = nearestIndex();
+      const idx = nearestIndexFrom(track.scrollLeft);
       if (idx !== currentIndex) currentIndex = idx;
       syncSlideState(currentIndex);
+    };
+
+    const setDraggingUI = (on) => {
+      track.style.cursor = on ? 'grabbing' : '';
+      document.body.style.userSelect = on ? 'none' : '';
+      document.body.style.cursor = on ? 'grabbing' : '';
+    };
+
+    const visualScroll = () => rubberband(dragStartScroll - dragDelta, 0, maxScroll);
+
+    const flushDrag = () => {
+      dragRaf = 0;
+      if (!isPointerDown) return;
+      const visual = visualScroll();
+      setDragOffset(dragStartScroll - visual);
+      paintAt(visual);
+    };
+
+    const commitDragTransform = () => {
+      if (dragRaf) {
+        cancelAnimationFrame(dragRaf);
+        dragRaf = 0;
+      }
+      const visual = clamp(dragStartScroll - dragDelta, 0, maxScroll);
+      track.scrollLeft = visual;
+      setDragOffset(0);
+      return visual;
     };
 
     const endDrag = (event) => {
       if (!isPointerDown) return;
       isPointerDown = false;
+      setDraggingUI(false);
 
-      if (track.hasPointerCapture?.(event.pointerId)) {
+      if (event && track.hasPointerCapture?.(event.pointerId)) {
         track.releasePointerCapture(event.pointerId);
       }
 
-      if (hasDragged) {
-        suppressClick = true;
-        window.setTimeout(() => {
-          suppressClick = false;
-        }, 0);
-        goTo(nearestIndex(), { user: true });
-      } else {
-        track.style.scrollSnapType = '';
+      if (!hasDragged) {
+        setDragOffset(0);
+        enableSnapNextFrame();
         scheduleAutoplay();
+        return;
       }
 
+      const now = performance.now();
+      if (now - lastMoveT > 80) velocityX = 0;
+
+      const visual = commitDragTransform();
+      suppressClick = true;
+      window.setTimeout(() => {
+        suppressClick = false;
+      }, 0);
+
+      let next = nearestIndexFrom(visual);
+      if (Math.abs(velocityX) > FLICK_VELOCITY) {
+        next = velocityX < 0
+          ? Math.min(total - 1, next + (visual > getTarget(next) + 1 ? 0 : 1))
+          : Math.max(0, next - (visual < getTarget(next) - 1 ? 0 : 1));
+      }
+
+      const dist = Math.abs(getTarget(next) - visual);
+      const duration = clamp(260 + dist * 0.32, 260, 480);
+      goTo(next, { user: true, duration, ease: easeOutCubic });
       hasDragged = false;
-      setLayers(false);
     };
 
     dots.forEach((dot, i) => {
       dot.addEventListener('click', (event) => {
         event.preventDefault();
-        goTo(i, { user: true });
+        goTo(i, { user: true, duration: ANIM_MS, ease: easeInOutQuad });
         dots[i]?.focus({ preventScroll: true });
       });
     });
 
     track.addEventListener('pointerdown', (event) => {
-      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (event.pointerType !== 'mouse' && event.pointerType !== 'pen') return;
+      if (event.button !== 0) return;
+
       cancelAnimation();
+      setSnap(false);
       isPointerDown = true;
       hasDragged = false;
+      dragDelta = 0;
       dragStartX = event.clientX;
       dragStartScroll = track.scrollLeft;
-      track.style.scrollSnapType = 'none';
-      track.style.scrollBehavior = 'auto';
+      velocityX = 0;
+      lastMoveX = event.clientX;
+      lastMoveT = performance.now();
       stopAutoplay();
       track.setPointerCapture(event.pointerId);
     });
 
     track.addEventListener('pointermove', (event) => {
-      if (!isPointerDown || event.pointerType !== 'mouse') return;
-      const dx = event.clientX - dragStartX;
-      if (!hasDragged && Math.abs(dx) > DRAG_THRESHOLD) {
+      if (!isPointerDown || (event.pointerType !== 'mouse' && event.pointerType !== 'pen')) return;
+
+      const now = performance.now();
+      const dx = event.clientX - lastMoveX;
+      const dt = now - lastMoveT;
+      if (dt > 0) {
+        const inst = dx / dt;
+        velocityX = dt > 64 ? inst : velocityX * 0.72 + inst * 0.28;
+      }
+      lastMoveX = event.clientX;
+      lastMoveT = now;
+
+      dragDelta = event.clientX - dragStartX;
+      if (!hasDragged && Math.abs(dragDelta) > DRAG_THRESHOLD) {
         hasDragged = true;
+        setDraggingUI(true);
         setLayers(true);
       }
       if (!hasDragged) return;
+
       event.preventDefault();
-      track.scrollLeft = dragStartScroll - dx;
+      if (!dragRaf) dragRaf = requestAnimationFrame(flushDrag);
     });
 
     track.addEventListener('pointerup', endDrag);
     track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('lostpointercapture', endDrag);
 
     track.addEventListener(
       'click',
@@ -391,11 +490,13 @@
       { passive: true }
     );
 
-    root.addEventListener('pointerenter', () => {
+    root.addEventListener('pointerenter', (event) => {
+      if (event.pointerType !== 'mouse') return;
       isHovering = true;
       stopAutoplay();
     });
-    root.addEventListener('pointerleave', () => {
+    root.addEventListener('pointerleave', (event) => {
+      if (event.pointerType !== 'mouse') return;
       isHovering = false;
       scheduleAutoplay();
     });
@@ -457,11 +558,14 @@
     window.addEventListener('pageshow', scheduleAutoplay);
 
     const ro = new ResizeObserver(() => {
+      if (isPointerDown) return;
       const idx = currentIndex;
+      const prevSnap = snapLocked;
+      setSnap(false);
       measure();
-      track.style.scrollSnapType = 'none';
       track.scrollLeft = getTarget(idx);
-      paint();
+      paintAt(track.scrollLeft);
+      if (!prevSnap) return;
       enableSnapNextFrame();
     });
     ro.observe(track);
@@ -478,7 +582,7 @@
     io.observe(root);
 
     measure();
-    paint();
+    paintAt(0);
     syncSlideState(0);
     scheduleAutoplay();
   };
