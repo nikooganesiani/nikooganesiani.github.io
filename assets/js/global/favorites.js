@@ -1,3 +1,12 @@
+/**
+ * Wishlist / Favorites Module
+ * Полная поддержка карточек товаров, страниц товаров, галерей и различных e-commerce разметок (WooCommerce, Tailwind и др.)
+ */
+
+// ==========================================
+// 1. УТИЛИТЫ И ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ==========================================
+
 function esc(s) {
     return String(s == null ? '' : s)
         .replace(/&/g, '&amp;')
@@ -14,7 +23,7 @@ function absUrl(url) {
     if (!url) return '';
     const cleaned = String(url).trim().replace(/^['"]|['"]$/g, '');
     if (!cleaned) return '';
-    if (cleaned.indexOf('data:') === 0) return cleaned;
+    if (cleaned.startsWith('data:')) return cleaned;
     try {
         return new URL(cleaned, window.location.origin).href;
     } catch (e) {
@@ -26,8 +35,7 @@ function normalizeLink(href) {
     if (!href) return '';
     try {
         const u = new URL(href, window.location.origin);
-        const path = (u.pathname || '/').replace(/\/+$/, '') || '/';
-        return path;
+        return (u.pathname || '/').replace(/\/+$/, '') || '/';
     } catch (e) {
         return String(href).split('#')[0].split('?')[0].replace(/\/+$/, '');
     }
@@ -35,7 +43,7 @@ function normalizeLink(href) {
 
 function extractProductSlug(link) {
     const path = normalizeLink(link);
-    const m = path.match(/\/product\/([^/]+)\/?$/i) || path.match(/\/product\/([^/]+)/i);
+    const m = path.match(/\/product\/([^/]+)/i);
     if (!m) return '';
     try {
         return decodeURIComponent(m[1]).toLowerCase();
@@ -54,32 +62,94 @@ function itemKey(item) {
     return productKeyFromLink(item.link);
 }
 
-function formatPrice(value) {
+// ==========================================
+// 2. ПАРСИНГ И ОБРАБОТКА ЦЕН
+// ==========================================
+
+/**
+ * Очищает строку до валидного числового формата
+ */
+function cleanPriceString(value) {
     if (value == null) return '';
-    let raw = String(value).replace(/\u00a0/g, ' ').trim();
-    if (!raw || raw === 'null' || raw === 'undefined') return '';
-    raw = raw.replace(/₾/g, ' ').replace(/[^\d.,\s-]/g, '').replace(/\s+/g, ' ').trim();
-    if (!raw || !/\d/.test(raw)) return '';
-    return raw + ' ₾';
+    let str = String(value)
+        .replace(/\u00a0/g, ' ')
+        .replace(/[₾$€£]|GEL|gel|ლარი|лари/gi, '')
+        .trim();
+
+    // Поиск первого вхождения цифр с разделителями
+    const match = str.match(/\d+(?:[\s.,]\d+)*/);
+    if (!match) return '';
+    
+    // Удаляем лишние точки/запятые по краям
+    return match[0].trim().replace(/^[.,]+|[.,]+$/g, '');
 }
 
-function parseLariAmounts(text) {
+/**
+ * Преобразует любую цену к формату "120 ₾" / "120.50 ₾"
+ */
+function formatPrice(value) {
+    const cleaned = cleanPriceString(value);
+    if (!cleaned || !/\d/.test(cleaned)) return '';
+    return cleaned + ' ₾';
+}
+
+/**
+ * Преобразует строковую цену в числовое значение (float) для сравнения
+ */
+function parseNumericPrice(value) {
+    const raw = cleanPriceString(value);
+    if (!raw) return 0;
+
+    let num = raw.replace(/\s+/g, '');
+    if (num.includes(',') && num.includes('.')) {
+        if (num.indexOf(',') < num.indexOf('.')) {
+            num = num.replace(/,/g, ''); // 1,250.50 -> 1250.50
+        } else {
+            num = num.replace(/\./g, '').replace(',', '.'); // 1.250,50 -> 1250.50
+        }
+    } else if (num.includes(',')) {
+        num = num.replace(',', '.');
+    }
+
+    const val = parseFloat(num);
+    return isNaN(val) ? 0 : val;
+}
+
+/**
+ * Извлекает все возможные суммы из текста
+ */
+function extractAmountsFromText(text) {
     if (!text) return [];
     const src = String(text).replace(/\u00a0/g, ' ');
     const found = [];
-    const re = /₾\s*(\d(?:[\d\s.,]*\d)?|\d)|(\d(?:[\d\s.,]*\d)?|\d)\s*₾/g;
+    
+    // 1. Поиск с символом/словом валюты
+    const currencyRe = /(?:₾|GEL|gel|ლარი)\s*(\d+(?:[\s.,]\d+)*)|(\d+(?:[\s.,]\d+)*)\s*(?:₾|GEL|gel|ლარი)/gi;
     let m;
-    while ((m = re.exec(src))) {
-        const num = formatPrice(m[1] || m[2]);
-        if (num) found.push(num);
+    while ((m = currencyRe.exec(src))) {
+        const val = cleanPriceString(m[1] || m[2]);
+        if (val) found.push(val);
     }
+
+    // 2. Если с валютой не найдено, ищем просто числа
+    if (!found.length) {
+        const plainRe = /\b\d+(?:[.,]\d{2})?\b/g;
+        while ((m = plainRe.exec(src))) {
+            const val = cleanPriceString(m[0]);
+            if (val) found.push(val);
+        }
+    }
+
     return found;
 }
 
+// ==========================================
+// 3. РАБОТА С DOM И СЕЛЕКТОРАМИ
+// ==========================================
+
 function isDisplayed(el) {
     if (!el || el.nodeType !== 1) return false;
-    if (el.hidden || el.getAttribute('hidden') !== null) return false;
-    if (el.getAttribute('aria-hidden') === 'true') return false;
+    if (el.hidden || el.getAttribute('hidden') !== null || el.getAttribute('aria-hidden') === 'true') return false;
     const cls = el.className && String(el.className) || '';
     if (/\bhidden\b|\binvisible\b|\bsr-only\b|\bscreen-reader/.test(cls)) return false;
     try {
@@ -114,12 +184,11 @@ function isGalleryScope(el) {
 function isHuge(el) {
     if (!el || !el.getBoundingClientRect) return false;
     const r = el.getBoundingClientRect();
-    return r.width > window.innerWidth * 0.88 || r.height > window.innerHeight * 0.62;
+    return r.width > window.innerWidth * 0.92 || r.height > window.innerHeight * 0.75;
 }
 
 function findListingCard(btn) {
     if (!btn) return null;
-
     const scrollItem = closestAny(btn, '#subcatScroll > *, #catScroll > *, #recentScroll > *, [id$="Scroll"] > *');
     if (scrollItem && !isGalleryScope(scrollItem) && !isHuge(scrollItem)) return scrollItem;
 
@@ -172,18 +241,17 @@ function firstUseful(root, selectors, extraCheck) {
 function attrData(el) {
     const out = { id: '', name: '', price: '', oldPrice: '', img: '', link: '' };
     if (!el || !el.getAttribute) return out;
-    out.id = el.getAttribute('data-product-id') || el.getAttribute('data-product') || '';
+    out.id = el.getAttribute('data-product-id') || el.getAttribute('data-product') || el.getAttribute('data-id') || '';
     out.name = el.getAttribute('data-name') || el.getAttribute('data-title') || '';
     out.price = el.getAttribute('data-price') || el.getAttribute('data-current-price') || '';
-    out.oldPrice = el.getAttribute('data-old-price') || el.getAttribute('data-regular-price') || '';
+    out.oldPrice = el.getAttribute('data-old-price') || el.getAttribute('data-regular-price') || el.getAttribute('data-compare-at-price') || '';
     out.img = el.getAttribute('data-img') || el.getAttribute('data-image') || el.getAttribute('data-thumbnail') || '';
     out.link = el.getAttribute('data-url') || el.getAttribute('data-href') || el.getAttribute('href') || '';
-    if (!out.id && /^\d+$/.test(el.getAttribute('data-id') || '')) out.id = el.getAttribute('data-id');
     return out;
 }
 
 function mergeData(a, b) {
-    const out = {
+    return {
         id: a.id || b.id || '',
         name: a.name || b.name || '',
         price: a.price || b.price || '',
@@ -191,7 +259,146 @@ function mergeData(a, b) {
         img: a.img || b.img || '',
         link: a.link || b.link || ''
     };
-    return out;
+}
+
+// ==========================================
+// 4. ИЗВЛЕЧЕНИЕ ДАННЫХ О ТОВАРЕ
+// ==========================================
+
+function isExplicitOldPriceEl(el) {
+    if (!el || el.nodeType !== 1) return false;
+    const tag = el.tagName;
+    if (tag === 'DEL' || tag === 'S' || tag === 'STRIKE') return true;
+    const cls = el.className && String(el.className) || '';
+    if (/(?:^|[\s-])(?:old-price|price-old|modern-price-old|regular-price|compare-at-price|was-price)(?:$|[\s-])/i.test(cls)) return true;
+    if (/\bline-through\b/.test(cls)) return true;
+    if (closestAny(el, 'del, s, strike, .old-price, .price-old, .modern-price-old, .line-through')) return true;
+    return false;
+}
+
+function parsePriceFromEl(el) {
+    if (!el || !isDisplayed(el)) return '';
+    const dataPrice = el.getAttribute('data-price') || el.getAttribute('data-current-price') || el.getAttribute('data-old-price') || '';
+    if (dataPrice && /\d/.test(dataPrice)) return formatPrice(dataPrice);
+    
+    const amounts = extractAmountsFromText(el.innerText || el.textContent || '');
+    if (!amounts.length) return '';
+    return formatPrice(amounts[0]);
+}
+
+/**
+ * Надежное извлечение обычной и акционной цены
+ */
+function getPricesFrom(root, allowPageFallback) {
+    let scope = root;
+    if (!scope || scope === document) {
+        scope = firstUseful(document, [
+            '.modern-price',
+            '.product-price-box',
+            '.product-prices',
+            '.price-box',
+            '.product-info .price',
+            '.product-summary .price',
+            '.product-details [class*="price"]',
+            '[class*="product-price"]'
+        ]) || document;
+    }
+
+    // 1. Поиск явной старой цены (скидочной)
+    const oldPriceEl = firstUseful(scope, [
+        'del',
+        's',
+        'strike',
+        '.modern-price-old',
+        '.price-old',
+        '.old-price',
+        '.regular-price',
+        '.was-price',
+        '.compare-at-price',
+        '[class*="old-price"]',
+        '[class*="price-old"]',
+        '.line-through'
+    ], isExplicitOldPriceEl);
+
+    // 2. Поиск явной текущей цены
+    const currentPriceEl = firstUseful(scope, [
+        'ins',
+        '.modern-price-current',
+        '.price-current',
+        '.current-price',
+        '.product-price-current',
+        '.special-price',
+        '.sale-price',
+        '[class*="current-price"]',
+        '[class*="price-current"]',
+        '[data-price]:not(del):not(s)',
+        '.product-price:not(del):not(s)',
+        '.price:not(del):not(s)'
+    ], function (el) { return !isExplicitOldPriceEl(el); });
+
+    let oldPriceStr = parsePriceFromEl(oldPriceEl);
+    let priceStr = '';
+
+    if (currentPriceEl) {
+        // Если текущий элемент содержит внутри старую цену (например <p class="price"><del>...</del> 120 ₾</p>)
+        // клонируем его и удаляем del/s, чтобы исключить старую цену
+        const hasNestedOld = queryFirstSafe(currentPriceEl, 'del, s, strike, .line-through, [class*="old"]');
+        if (hasNestedOld) {
+            const clone = currentPriceEl.cloneNode(true);
+            queryAllSafe(clone, 'del, s, strike, .line-through, [class*="old"]').forEach(function (n) {
+                if (n && n.parentNode) n.parentNode.removeChild(n);
+            });
+            const amounts = extractAmountsFromText(clone.textContent || '');
+            if (amounts.length) priceStr = formatPrice(amounts[0]);
+        } else {
+            priceStr = parsePriceFromEl(currentPriceEl);
+        }
+    }
+
+    // 3. Fallback: если цены не найдены селекторами, сканируем все числа внутри контейнера
+    if (!priceStr && scope && scope !== document) {
+        const text = scope.innerText || scope.textContent || '';
+        const allAmounts = extractAmountsFromText(text);
+        if (allAmounts.length === 1) {
+            priceStr = formatPrice(allAmounts[0]);
+        } else if (allAmounts.length >= 2) {
+            if (oldPriceEl) {
+                priceStr = formatPrice(allAmounts[allAmounts.length - 1]);
+            } else {
+                const p1 = parseNumericPrice(allAmounts[0]);
+                const p2 = parseNumericPrice(allAmounts[1]);
+                if (p1 > p2) {
+                    oldPriceStr = formatPrice(p1);
+                    priceStr = formatPrice(p2);
+                } else {
+                    priceStr = formatPrice(p1);
+                }
+            }
+        }
+    }
+
+    // 4. Fallback страницы товара
+    if (!priceStr && allowPageFallback && (!root || root === document || isHuge(root))) {
+        const pageCurrent = firstUseful(document, ['.modern-price-current', '.price-current', '[data-price]', '.product-price', '.price']);
+        priceStr = parsePriceFromEl(pageCurrent);
+        if (!oldPriceStr) {
+            const pageOld = firstUseful(document, ['.modern-price-old', '.price-old', '.old-price', 'del', 's'], isExplicitOldPriceEl);
+            oldPriceStr = parsePriceFromEl(pageOld);
+        }
+    }
+
+    // 5. Числовая валидация цен
+    const curVal = parseNumericPrice(priceStr);
+    const oldVal = parseNumericPrice(oldPriceStr);
+
+    if (oldVal <= curVal || curVal === 0) {
+        oldPriceStr = null;
+    }
+
+    return {
+        price: curVal > 0 ? (formatPrice(curVal) || priceStr) : '0 ₾',
+        oldPrice: oldPriceStr ? (formatPrice(oldVal) || oldPriceStr) : null
+    };
 }
 
 function getLinkFrom(card, btn, allowPageFallback) {
@@ -202,10 +409,10 @@ function getLinkFrom(card, btn, allowPageFallback) {
     if (fromCard.link && extractProductSlug(fromCard.link)) return normalizeLink(fromCard.link);
 
     if (card) {
-        const preferred = firstUseful(card, ['a[href*="/product/"]', 'a.product-link']);
+        const preferred = firstUseful(card, ['a[href*="/product/"]', 'a.product-link', 'a[href*="/shop/"]', 'a']);
         if (preferred) {
             const href = preferred.getAttribute('href');
-            if (href) return normalizeLink(href);
+            if (href && href !== '#' && !href.startsWith('javascript:')) return normalizeLink(href);
         }
     }
 
@@ -217,8 +424,8 @@ function isUselessImage(url) {
     if (!url) return true;
     const u = String(url).toLowerCase();
     if (u.startsWith('data:image/svg')) return true;
-    if (u.indexOf('data:image/gif;base64,r0lgodlh') === 0) return true;
-    return /logo|favicon|sprite|placeholder|blank\.|pixel|1x1|spacer|dummy|spinner|icon-heart|heart\.svg|data:image\/gif/i.test(u);
+    if (u.includes('data:image/gif;base64,r0lgodlh')) return true;
+    return /logo|favicon|sprite|placeholder|blank\.|pixel|1x1|spacer|dummy|spinner|icon-heart|heart\.svg/i.test(u);
 }
 
 function urlFromSrcset(srcset) {
@@ -328,9 +535,7 @@ function getImageFrom(root, allowOg) {
 function cleanTitle(text) {
     if (!text) return '';
     const t = String(text).replace(/\s+/g, ' ').trim();
-    if (!t || t.indexOf('₾') !== -1) return '';
-    if (!isNaN(Number(t))) return '';
-    if (t.length < 2) return '';
+    if (!t || t.includes('₾') || /^\d+$/.test(t) || t.length < 2) return '';
     return t;
 }
 
@@ -351,13 +556,13 @@ function getTitleFrom(root, allowPageFallback) {
         if (direct) {
             const fromData = cleanTitle(direct.getAttribute('data-name') || direct.getAttribute('data-title'));
             if (fromData) return fromData;
-            const fromText = cleanTitle(direct.innerText);
+            const fromText = cleanTitle(direct.innerText || direct.textContent);
             if (fromText) return fromText;
         }
 
         const links = queryAllSafe(root, 'a:not(.btn-fav):not(.btn-fav-card)');
         for (let i = 0; i < links.length; i++) {
-            const t = cleanTitle(links[i].innerText);
+            const t = cleanTitle(links[i].innerText || links[i].textContent);
             if (t && t.length > 2) return t;
         }
 
@@ -376,7 +581,7 @@ function getTitleFrom(root, allowPageFallback) {
             '.product-name'
         ]);
         if (mainH1) {
-            const t = cleanTitle(mainH1.innerText);
+            const t = cleanTitle(mainH1.innerText || mainH1.textContent);
             if (t) return t;
         }
         const og = document.querySelector('meta[property="og:title"], meta[name="og:title"]');
@@ -387,94 +592,6 @@ function getTitleFrom(root, allowPageFallback) {
     }
 
     return 'პროდუქტი';
-}
-
-function isExplicitOldPriceEl(el) {
-    if (!el || el.nodeType !== 1) return false;
-    if (el.tagName === 'DEL' || el.tagName === 'S') return true;
-    const cls = el.className && String(el.className) || '';
-    if (/(?:^|[\s-])(?:old-price|price-old|modern-price-old|regular-price)(?:$|[\s-])/i.test(cls)) return true;
-    if (/\bline-through\b/.test(cls)) return true;
-    if (closestAny(el, 'del, s, .old-price, .price-old, .modern-price-old')) return true;
-    return false;
-}
-
-function parsePriceFromEl(el, preferLast) {
-    if (!el || !isDisplayed(el)) return '';
-    const dataPrice = el.getAttribute('data-price') || el.getAttribute('data-current-price') || '';
-    if (dataPrice && /\d/.test(dataPrice)) return formatPrice(dataPrice);
-    const amounts = parseLariAmounts(el.innerText || el.textContent || '');
-    if (!amounts.length) return '';
-    if (amounts.length === 1) return amounts[0];
-    return preferLast ? amounts[amounts.length - 1] : amounts[0];
-}
-
-function getPricesFrom(root, allowPageFallback) {
-    let scope = root;
-    if (!scope || scope === document) {
-        scope = firstUseful(document, [
-            '.modern-price',
-            '.product-price-box',
-            '.product-prices',
-            '.price-box',
-            '.product-info .price',
-            '.product-summary',
-            '.product-info',
-            '.product-details',
-            '[class*="product-price"]'
-        ]) || document;
-    }
-
-    const currentEl = firstUseful(scope, [
-        '.modern-price-current',
-        '.price-current',
-        '.current-price',
-        '.product-price-current',
-        '[data-price]',
-        '.product-price .price',
-        '.product-price'
-    ], function (el) { return !isExplicitOldPriceEl(el); });
-
-    const oldEl = firstUseful(scope, [
-        '.modern-price-old',
-        '.price-old',
-        '.old-price',
-        'del',
-        's'
-    ], isExplicitOldPriceEl);
-
-    let price = parsePriceFromEl(currentEl, true);
-    let oldPrice = parsePriceFromEl(oldEl, false);
-
-    if ((!price || !oldPrice) && scope && scope !== document) {
-        const nodes = queryAllSafe(scope, 'span, b, strong, del, s, p, em, i, small');
-        const currentFound = [];
-        const oldFound = [];
-        for (let i = 0; i < nodes.length; i++) {
-            const el = nodes[i];
-            if (el.childElementCount > 0) continue;
-            if (isIgnoredScope(el) || !isDisplayed(el)) continue;
-            const amounts = parseLariAmounts(el.textContent || '');
-            if (!amounts.length) continue;
-            if (isExplicitOldPriceEl(el)) oldFound.push(amounts[0]);
-            else currentFound.push(amounts[0]);
-        }
-        if (!price && currentFound.length) price = currentFound[0];
-        if (!oldPrice && oldFound.length) oldPrice = oldFound[0];
-    }
-
-    if (!price && allowPageFallback && (!root || root === document || isHuge(root))) {
-        const pageCurrent = firstUseful(document, ['.modern-price-current', '[data-price]', '.price-current', '.product-price']);
-        price = parsePriceFromEl(pageCurrent, true);
-        if (!oldPrice) {
-            const pageOld = firstUseful(document, ['.modern-price-old', '.price-old', '.old-price', 'del', 's'], isExplicitOldPriceEl);
-            oldPrice = parsePriceFromEl(pageOld, false);
-        }
-    }
-
-    if (price && oldPrice && price === oldPrice) oldPrice = '';
-    if (!price) price = '0 ₾';
-    return { price: price, oldPrice: oldPrice || null };
 }
 
 function getButtonKey(btn) {
@@ -490,7 +607,7 @@ function getButtonKey(btn) {
     if (own.id) return String(own.id).toLowerCase();
     if (own.link && extractProductSlug(own.link)) return extractProductSlug(own.link);
 
-    if (isProductPage() && (!listing)) {
+    if (isProductPage() && !listing) {
         return extractProductSlug(window.location.pathname);
     }
 
@@ -517,7 +634,8 @@ function collectProductData(btn) {
     if (data.link && extractProductSlug(data.link)) link = normalizeLink(data.link);
     else link = getLinkFrom(root, btn, allowPage);
 
-    let name = cleanTitle(data.name) || getTitleFrom(root && root !== document ? root : null, allowPage);
+    const name = cleanTitle(data.name) || getTitleFrom(root && root !== document ? root : null, allowPage);
+    
     let img = data.img ? absUrl(data.img) : '';
     if (!img) {
         if (listing) img = getImageFrom(listing, false);
@@ -531,11 +649,14 @@ function collectProductData(btn) {
 
     let prices;
     if (data.price && /\d/.test(String(data.price))) {
+        const cur = formatPrice(data.price);
+        const old = data.oldPrice ? formatPrice(data.oldPrice) : null;
+        const curNum = parseNumericPrice(cur);
+        const oldNum = parseNumericPrice(old);
         prices = {
-            price: formatPrice(data.price) || '0 ₾',
-            oldPrice: formatPrice(data.oldPrice) || null
+            price: cur || '0 ₾',
+            oldPrice: (oldNum > curNum && oldNum > 0) ? old : null
         };
-        if (prices.price && prices.oldPrice && prices.price === prices.oldPrice) prices.oldPrice = null;
     } else {
         prices = getPricesFrom(listing || (allowPage ? document : root), allowPage);
     }
@@ -556,6 +677,10 @@ function collectProductData(btn) {
     };
 }
 
+// ==========================================
+// 5. УПРАВЛЕНИЕ STORAGE И СОСТОЯНИЕМ
+// ==========================================
+
 function readFavs() {
     let parsed = [];
     try {
@@ -574,11 +699,17 @@ function readFavs() {
         const key = itemKey(item);
         if (!key || seen.has(key)) continue;
         seen.add(key);
+        
+        const price = formatPrice(item.price) || '0 ₾';
+        const oldPrice = formatPrice(item.oldPrice);
+        const curVal = parseNumericPrice(price);
+        const oldVal = parseNumericPrice(oldPrice);
+
         out.push({
             id: key,
             name: item.name || 'პროდუქტი',
-            price: formatPrice(item.price) || '0 ₾',
-            oldPrice: formatPrice(item.oldPrice) || null,
+            price: price,
+            oldPrice: (oldVal > curVal && oldVal > 0) ? oldPrice : null,
             img: item.img || '',
             link: item.link || ''
         });
@@ -587,7 +718,11 @@ function readFavs() {
 }
 
 function writeFavs(favs) {
-    localStorage.setItem('myFavs', JSON.stringify(favs));
+    try {
+        localStorage.setItem('myFavs', JSON.stringify(favs));
+    } catch (e) {
+        console.error('LocalStorage write error:', e);
+    }
 }
 
 function persistCleanFavs() {
@@ -595,6 +730,10 @@ function persistCleanFavs() {
     writeFavs(favs);
     return favs;
 }
+
+// ==========================================
+// 6. РЕНДЕРИНГ И СОБЫТИЯ
+// ==========================================
 
 function renderFavs() {
     try {
@@ -742,6 +881,10 @@ window.toggleFav = function (event, btn) {
         console.error('Error toggling favorite:', e);
     }
 };
+
+// ==========================================
+// 7. ИНИЦИАЛИЗАЦИЯ
+// ==========================================
 
 function bootFavSync() {
     persistCleanFavs();
