@@ -1,43 +1,6 @@
-{% comment %}
-  Параметры:
-  - sku: артикул товара (строго обязателен)
-  - name: название товара
-  - price: цена
-  - old_price: старая цена
-  - cat: категория
-  - subcat: подкатегория
-  - url: прямая ссылка на товар (необязательно)
-  - class: дополнительные Tailwind-классы (необязательно)
-{% endcomment %}
-
-<button type="button"
-        class="btn-fav group relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-400 hover:text-[#155dfc] hover:border-[#155dfc] transition-all duration-200 shadow-sm cursor-pointer select-none {{ include.class }}"
-        data-fav-btn
-        data-sku="{{ include.sku }}"
-        data-name="{{ include.name }}"
-        data-price="{{ include.price }}"
-        data-old-price="{{ include.old_price }}"
-        data-cat="{{ include.cat }}"
-        data-subcat="{{ include.subcat }}"
-        {% if include.url %}data-url="{{ include.url }}"{% endif %}
-        aria-label="დამატება რჩეულებში"
-        aria-pressed="false"
-        title="რჩეულებში დამატება">
-  <!-- Иконка по умолчанию (контур) -->
-  <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110 pointer-events-none icon-outline block" 
-       fill="none" 
-       stroke="currentColor" 
-       viewBox="0 0 24 24">
-    <path stroke-linecap="round" 
-          stroke-linejoin="round" 
-          stroke-width="2" 
-          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-  </svg>
-
-  <!-- Иконка активного состояния (заливка) -->
-  <svg class="w-5 h-5 transition-transform duration-200 group-hover:scale-110 pointer-events-none icon-filled hidden text-[#155dfc]" 
-       fill="currentColor" 
-       viewBox="0 0 24 24">
-    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-  </svg>
-</button>
+<div class="modal fixed inset-0 bg-slate-900/40 backdrop-blur-[8px] z-[9999] hidden justify-center items-center opacity-0 transition-opacity duration-400 p-4 [&.active]:opacity-100 group" id="favModal">
+    <div class="bg-white max-w-[440px] w-full rounded-3xl p-6 max-h-[90vh] overflow-y-auto overflow-x-hidden transform scale-90 translate-y-5 opacity-0 transition-all duration-400 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-[.active]:scale-100 group-[.active]:translate-y-0 group-[.active]:opacity-100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden border-none shadow-none">
+        <h3 class="flex items-center justify-center text-[1.5rem] font-bold text-slate-900 mb-6 tracking-tight">რჩეულები <span id="favModalCount" class="ml-2 text-inherit text-inherit"></span></h3>
+        <div id="favList" class="max-h-[55vh] overflow-y-auto flex flex-col pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"></div>
+    </div>
+</div>
