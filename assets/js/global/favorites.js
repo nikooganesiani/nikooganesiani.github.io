@@ -1,90 +1,149 @@
-function renderFavorites() {
+/**
+ * Управление списком избранных товаров.
+ * Обеспечивает синхронизацию между LocalStorage и пользовательским интерфейсом.
+ */
+class FavoritesManager {
+  constructor(options = {}) {
+    this.storageKey = options.storageKey || 'enka_favorites';
+    this.btnSelector = options.btnSelector || '[data-action="toggle-favorite"]';
+    this.counterSelector = options.counterSelector || '.favorites-counter';
+    this.activeClass = options.activeClass || 'is-active';
+    
+    // Инициализация состояния
+    this.favorites = this._loadFromStorage();
+    
+    // Запуск слушателей
+    this._initEvents();
+    this.updateUI();
+  }
+
+  /**
+   * Приватный метод: загрузка данных из LocalStorage
+   * @returns {Map} Коллекция избранных товаров (Map используется для быстрого поиска и хранения объектов)
+   */
+  _loadFromStorage() {
     try {
-        const list = document.getElementById('favList');
-        const favsRaw = localStorage.getItem('myFavs');
-        const favs = favsRaw ? JSON.parse(favsRaw) : [];
-        const countEl = document.getElementById('favModalCount');
-
-        if (countEl) {
-            countEl.innerText = favs.length > 0 ? `(${favs.length})` : '';
-        }
-
-        if (!list) return;
-
-        if (!favs || favs.length === 0) {
-            list.innerHTML = `
-                <div class="text-center text-slate-400 py-12 font-semibold">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <br>რჩეულები ცარიელია
-                </div>`;
-            return;
-        }
-
-        list.innerHTML = favs.map((f, i) => {
-            const oldPHtml = (f?.oldPrice && f.oldPrice !== 'null' && !String(f.oldPrice).includes('undefined'))
-                ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${f.oldPrice}</span>`
-                : '';
-            const link = f?.link || '#';
-            const img = f?.img || '/img/no-image.png';
-            const name = f?.name || '';
-            const price = f?.price || '';
-
-            return `
-                <div class="flex gap-3 bg-transparent border-b border-slate-200 py-4 px-2 relative items-center transition-all duration-200 last:border-none cursor-pointer hover:bg-slate-50" onclick="location.href='${link}'">
-                    <img class="w-16 h-16 rounded-lg object-contain bg-transparent shrink-0 border-none" src="${img}" alt="${name}">
-                    <div class="flex-1 min-w-0">
-                        <div class="font-bold text-[0.95rem] text-slate-900 leading-snug mb-1 line-clamp-2 overflow-hidden text-ellipsis">${name}</div>
-                        <div class="font-bold text-blue-600 text-[1.1rem] flex items-center flex-wrap gap-1.5">${price} ${oldPHtml}</div>
-                    </div>
-                    <button type="button" class="bg-transparent text-red-500 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-300 outline-none shrink-0 border-none active:scale-85 active:bg-red-100" onclick="event.stopPropagation(); window.removeFav(${i})">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-                        </svg>
-                    </button>
-                </div>`;
-        }).join('');
+      const data = localStorage.getItem(this.storageKey);
+      const parsedData = data ? JSON.parse(data) : [];
+      // Ожидается, что храним массив объектов { id, title, price, etc. }
+      return new Map(parsedData.map(item => [item.id, item]));
     } catch (error) {
-        console.error('Error rendering favorites:', error);
+      console.error('Ошибка чтения Favorites из LocalStorage:', error);
+      return new Map();
     }
+  }
+
+  /**
+   * Приватный метод: сохранение данных в LocalStorage
+   */
+  _saveToStorage() {
+    try {
+      const dataArray = Array.from(this.favorites.values());
+      localStorage.setItem(this.storageKey, JSON.stringify(dataArray));
+    } catch (error) {
+      console.error('Ошибка записи Favorites в LocalStorage (возможно, превышена квота):', error);
+    }
+  }
+
+  /**
+   * Инициализация событий с использованием делегирования
+   */
+  _initEvents() {
+    // Слушаем клики по всему документу для динамически добавленных элементов
+    document.addEventListener('click', (event) => {
+      const btn = event.target.closest(this.btnSelector);
+      if (!btn) return;
+
+      event.preventDefault();
+      
+      // Собираем данные о товаре из data-атрибутов кнопки
+      const productData = {
+        id: btn.dataset.id,
+        title: btn.dataset.title || '',
+        price: btn.dataset.price || 0,
+        image: btn.dataset.image || ''
+      };
+
+      if (!productData.id) {
+        console.warn('Кнопка избранного не содержит data-id');
+        return;
+      }
+
+      this.toggle(productData);
+    });
+
+    // Синхронизация между соседними вкладками браузера
+    window.addEventListener('storage', (event) => {
+      if (event.key === this.storageKey) {
+        this.favorites = this._loadFromStorage();
+        this.updateUI();
+      }
+    });
+  }
+
+  /**
+   * Переключение статуса товара (добавить/удалить)
+   * @param {Object} product - Данные товара
+   */
+  toggle(product) {
+    if (this.favorites.has(product.id)) {
+      this.favorites.delete(product.id);
+    } else {
+      this.favorites.set(product.id, product);
+    }
+    
+    this._saveToStorage();
+    this.updateUI();
+  }
+
+  /**
+   * Получить все избранные товары в виде массива
+   * @returns {Array}
+   */
+  getAll() {
+    return Array.from(this.favorites.values());
+  }
+
+  /**
+   * Тотальное обновление UI: счетчики в шапке и состояния кнопок на странице
+   */
+  updateUI() {
+    // 1. Обновляем все счетчики на странице (например, в хедере)
+    const counters = document.querySelectorAll(this.counterSelector);
+    counters.forEach(counter => {
+      counter.textContent = this.favorites.size;
+      // Дополнительно можно скрывать/показывать бейдж, если 0
+      counter.style.display = this.favorites.size > 0 ? 'inline-block' : 'none';
+    });
+
+    // 2. Обновляем состояния всех кнопок-сердечек на текущей странице
+    const buttons = document.querySelectorAll(this.btnSelector);
+    buttons.forEach(btn => {
+      const id = btn.dataset.id;
+      if (this.favorites.has(id)) {
+        btn.classList.add(this.activeClass);
+        btn.setAttribute('aria-label', 'Удалить из избранного');
+        // Опционально: смена иконки на залитую
+      } else {
+        btn.classList.remove(this.activeClass);
+        btn.setAttribute('aria-label', 'Добавить в избранное');
+        // Опционально: смена иконки на пустую
+      }
+    });
+  }
 }
 
-window.renderFavorites = renderFavorites;
-
-window.openFavorites = function(e) {
-    if (e?.preventDefault) e.preventDefault();
-    renderFavorites();
-    window.openAppModal?.('favModal');
-};
-
-window.removeFav = function(index) {
-    try {
-        let favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-        const removedLink = favs[index] ? favs[index].link : null;
-        favs.splice(index, 1);
-        localStorage.setItem('myFavs', JSON.stringify(favs));
-        
-        renderFavorites();
-        window.updateBadges?.();
-
-        if (removedLink) {
-            document.querySelectorAll('.btn-fav, .btn-fav-card').forEach((btn) => {
-                if (!btn) return;
-                let link = '';
-                const card = btn.closest('.product-card');
-                if (card) {
-                    const a = card.querySelector('a');
-                    if (a) link = a.getAttribute('href') || '';
-                } else {
-                    link = window.location.pathname;
-                }
-                if (link === removedLink) {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-    } catch (error) {
-        console.error('Error removing favorite:', error);
-    }
-};
+// Экспорт для модульной системы, или инициализация в браузере
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = FavoritesManager;
+} else {
+  // Автоматический запуск при загрузке DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    window.Favorites = new FavoritesManager({
+      storageKey: 'enka_favorites_v1', // Версионирование ключа полезно при смене структуры данных
+      btnSelector: '.js-favorite-btn',
+      counterSelector: '.js-favorite-counter',
+      activeClass: 'favorite-active'
+    });
+  });
+}
