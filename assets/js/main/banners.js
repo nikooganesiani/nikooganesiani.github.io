@@ -33,7 +33,6 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(viewedSet)));
     } catch (e) {
-      /* quota / private mode */
     }
   }
 
@@ -45,7 +44,7 @@
   }
 
   var viewed = loadViewed();
-  for (var i = 0; i < cards.length; i++) {
+  for (var i = 0; i < cards.length; i += 1) {
     var viewedId = cards[i].getAttribute('data-promo-id');
     if (viewedId && viewed.has(String(viewedId))) paintViewed(cards[i]);
   }
@@ -66,7 +65,7 @@
       img.hidden = true;
       var frame = img.parentElement;
       if (!frame) return;
-      for (var c = 0; c < IMG_FALLBACK.length; c++) {
+      for (var c = 0; c < IMG_FALLBACK.length; c += 1) {
         frame.classList.add(IMG_FALLBACK[c]);
       }
     },
@@ -88,7 +87,7 @@
     lastTime: 0,
     velocity: 0,
     raf: 0,
-    suppressTimer: 0,
+    suppressTimer: 0
   };
 
   function isDragPointer(e) {
@@ -135,10 +134,7 @@
 
       if (Math.abs(drag.targetScroll - next) < 0.35) next = drag.targetScroll;
       if (next !== current) track.scrollLeft = next;
-
-      if (drag.active || Math.abs(drag.targetScroll - track.scrollLeft) >= 0.35) {
-        startLoop();
-      }
+      startLoop();
       return;
     }
 
@@ -147,8 +143,8 @@
     var last = drag.lastTime || now;
     var dt = Math.min(32, Math.max(8, now - last));
     drag.lastTime = now;
-
     drag.velocity *= Math.pow(FRICTION, dt / 16.67);
+
     var coastTo = clampScroll(track.scrollLeft + drag.velocity * dt);
     track.scrollLeft = coastTo;
 
@@ -222,7 +218,6 @@
       try {
         track.releasePointerCapture(e.pointerId);
       } catch (err) {
-        /* already released */
       }
     }
 
@@ -252,7 +247,6 @@
       try {
         if (track.setPointerCapture) track.setPointerCapture(e.pointerId);
       } catch (err) {
-        /* Safari edge cases */
       }
     }
 
@@ -325,7 +319,7 @@
     var list = track.querySelectorAll('.promo-card');
     var current = document.activeElement;
     var index = -1;
-    for (var n = 0; n < list.length; n++) {
+    for (var n = 0; n < list.length; n += 1) {
       if (list[n] === current) {
         index = n;
         break;
@@ -347,4 +341,7 @@
     next.scrollIntoView({
       inline: 'nearest',
       block: 'nearest',
-      behavior: prefersReducedMotion() ? 'auto' :
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+    });
+  });
+})();
