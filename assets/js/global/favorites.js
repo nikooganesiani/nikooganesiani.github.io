@@ -15,6 +15,7 @@
   var catalogMemory = null;
   var catalogPromise = null;
   var modalBound = false;
+  var closeTimer = null;
 
   function getFavLink(btn) {
     var card = btn && btn.closest ? btn.closest('.product-card') : null;
@@ -466,8 +467,18 @@
       return;
     }
 
+    if (closeTimer) {
+      clearTimeout(closeTimer);
+      closeTimer = null;
+    }
+
     modal.classList.remove('hidden');
-    modal.classList.add('flex', 'active');
+    modal.classList.add('flex');
+    modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto';
+
+    void modal.offsetWidth;
+    modal.classList.add('active');
     document.body.style.overflow = 'hidden';
   }
 
@@ -476,12 +487,16 @@
     if (!modal) return;
 
     modal.classList.remove('active');
+    modal.style.pointerEvents = 'none';
     document.body.style.overflow = '';
 
-    window.setTimeout(function () {
+    if (closeTimer) clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(function () {
+      closeTimer = null;
       if (!modal.classList.contains('active')) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        modal.style.display = 'none';
       }
     }, 400);
   }
