@@ -12,7 +12,7 @@
 
   <!-- Full Viewport Track: в покое 1 баннер без обрезков, при свайпе карточка скользит до краев экрана -->
   <div
-    class="flex w-full min-w-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch] [overflow-anchor:none] cursor-grab active:cursor-grabbing"
+    class="flex w-full min-w-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain [-webkit-overflow-scrolling:touch] [overflow-anchor:none] cursor-grab"
     data-promo-track
   >
     {% for item in site.data.promo_block %}
@@ -88,7 +88,7 @@
           ></button>
         {% endfor %}
         <div
-          class="absolute left-0 top-0 z-[1] w-[7px] h-[7px] md:w-3 md:h-3 rounded-full bg-[#155dfc] pointer-events-none origin-left"
+          class="absolute left-0 top-0 z-[1] w-[7px] h-[7px] md:w-3 md:h-3 rounded-full bg-[#155dfc] pointer-events-none"
           data-promo-worm
           aria-hidden="true"
         ></div>
