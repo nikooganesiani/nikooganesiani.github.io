@@ -1,0 +1,113 @@
+<!-- _includes/searchpage.html -->
+<main class="w-full min-h-screen flex flex-col">
+    <div class="max-w-[1280px] w-full mx-auto px-4 sm:px-6 flex-1">
+        
+        <nav aria-label="Breadcrumb" class="mb-5 max-lg:mb-0">
+            <div class="flex justify-between items-center gap-4 w-full flex-nowrap overflow-hidden">
+                <ul class="flex gap-2 items-center flex-1 min-w-0 overflow-hidden m-0 p-0 list-none">
+                    <li class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
+                        <a href="/" aria-label="მთავარი" draggable="false" class="flex items-center gap-1 text-slate-600 hover:text-blue-600 transition-colors outline-none no-underline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            <span class="max-sm:hidden">მთავარი</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center shrink-0 text-slate-300" aria-hidden="true">
+                        <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+                    </li>
+                    <li class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
+                        <span class="text-slate-600 truncate">ძიება</span>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="flex items-center gap-2 mb-6 text-slate-800 min-h-[32px]">
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">ძიების შედეგები:</h1>
+            <span id="searchQueryDisplay" class="text-xl sm:text-2xl font-bold text-blue-600"></span>
+            <span id="searchResultCount" class="text-sm sm:text-base font-semibold text-slate-400"></span>
+        </div>
+
+        <div class="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-4 items-center justify-between mt-2 mb-8 bg-white p-3 sm:p-5 rounded-2xl sm:rounded-3xl shadow-xs border border-slate-100 relative z-30" id="filtersBar">
+            <div class="flex items-center sm:mr-auto min-w-0">
+                <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-50 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full border border-slate-200 transition-all focus-within:border-blue-600 focus-within:bg-white focus-within:shadow-md">
+                    <label for="minPrice" class="text-slate-400 font-extrabold text-[0.65rem] sm:text-xs uppercase tracking-wider">ფასი</label>
+                    <input type="number" id="minPrice" placeholder="დან" min="0" class="border-0 bg-transparent text-xs sm:text-sm font-bold outline-none w-10 sm:w-16 text-slate-900 text-center placeholder:text-slate-400">
+                    <span class="text-slate-300 font-light">|</span>
+                    <input type="number" id="maxPrice" placeholder="მდე" min="0" aria-label="მაქსიმალური ფასი" class="border-0 bg-transparent text-xs sm:text-sm font-bold outline-none w-10 sm:w-16 text-slate-900 text-center placeholder:text-slate-400">
+                </div>
+            </div>
+            
+            <div class="relative min-w-[100px] sm:min-w-[200px] flex-1 sm:flex-initial" id="customSortSelect">
+                <div class="bg-white border border-slate-200 px-3.5 sm:px-5 py-2 sm:py-3 rounded-full text-xs sm:text-sm cursor-pointer font-bold text-slate-900 flex justify-between items-center transition-all select-none hover:border-slate-300 active:scale-[0.98]" id="selectTrigger">
+                    <span id="selectedValue">დალაგება</span>
+                    <svg class="w-4 h-4 transition-transform duration-300 select-arrow-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+                </div>
+                <div class="absolute top-[calc(100%+8px)] left-0 right-0 bg-white rounded-2xl shadow-xl z-50 hidden border border-slate-100 overflow-hidden" id="selectOptions">
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-asc">ყველა</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="price-desc">კლებადობით</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="price-asc">ზრდადობით</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-asc">A-Z</div>
+                    <div class="select-option px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm cursor-pointer transition-colors font-semibold text-slate-600 hover:bg-slate-50 hover:text-blue-600 hover:pl-6" data-value="name-desc">Z-A</div>
+                </div>
+            </div>
+
+            <button class="reset-filters bg-red-50 text-red-500 rounded-full flex items-center justify-center shrink-0 w-0 h-0 opacity-0 overflow-hidden invisible pointer-events-none transition-all duration-300 transform scale-75 rotate-45 hover:bg-red-100 hover:scale-105 active:scale-90 active:-rotate-90 [&.show]:w-9 [&.show]:h-9 sm:[&.show]:w-10 sm:[&.show]:h-10 [&.show]:opacity-100 [&.show]:visible [&.show]:pointer-events-auto [&.show]:scale-100 [&.show]:rotate-0" id="resetFilters" title="გასუფთავება">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+            </button>
+            
+            <select id="sortSelect" class="hidden">
+                <option value="name-asc">ყველა</option>
+                <option value="price-desc">კლებადობით</option>
+                <option value="price-asc">ზრდადობით</option>
+                <option value="name-asc">A-Z</option>
+                <option value="name-desc">Z-A</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-7 mb-8 sm:mb-12 min-h-[600px] content-start" id="searchResultsGrid">
+            <div class="bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 p-0 flex flex-col h-full animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100"></div>
+                <div class="p-3 sm:p-5 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-9 sm:h-11 bg-slate-100 rounded-xl sm:rounded-2xl mt-auto"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 p-0 flex flex-col h-full animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100"></div>
+                <div class="p-3 sm:p-5 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-9 sm:h-11 bg-slate-100 rounded-xl sm:rounded-2xl mt-auto"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 p-0 flex flex-col h-full animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100"></div>
+                <div class="p-3 sm:p-5 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-9 sm:h-11 bg-slate-100 rounded-xl sm:rounded-2xl mt-auto"></div>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl sm:rounded-[2rem] overflow-hidden border border-slate-100 p-0 flex flex-col h-full animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100"></div>
+                <div class="p-3 sm:p-5 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-9 sm:h-11 bg-slate-100 rounded-xl sm:rounded-2xl mt-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadMoreContainer" class="hidden text-center mb-12">
+            <button id="loadMoreBtn" type="button" class="inline-flex items-center justify-center min-w-[200px] mx-auto py-3.5 px-6 rounded-2xl bg-white border border-slate-200 text-slate-900 font-extrabold text-sm sm:text-base shadow-xs hover:bg-slate-50 hover:border-slate-300 hover:-translate-y-0.5 active:scale-95 transition-all outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                მეტის ნახვა
+            </button>
+        </div>
+    </div>
+</main>
