@@ -1,7 +1,7 @@
 - id: "promo-1"
-  title: "უფასო მიწოდება"
-  image: "/img/banners/1freeshipping.webp"
-  url: "/info/delivery"
+  title: "Sokany - ყველაფერი თქვენი სამზარეულოსთვის"
+  image: "/img/banners/banner1.webp"
+  url: "/category/?kitchen"
 
 - id: "promo-2"
   title: "თქვენი შეკვეთის სტატუსი"
