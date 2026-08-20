@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Array.isArray(subs) && subs.length > 0) {
       subs.forEach((sub) => {
         const link = document.createElement('a');
-        link.href = `/catalog?cat=${encodeURIComponent(catId)}&subcat=${encodeURIComponent(sub.id)}`;
+        link.href = `/category/?${encodeURIComponent(catId)}&sub=${encodeURIComponent(sub.id)}`;
         link.className = 'flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:border-[#155dfc] hover:bg-blue-50/50 text-gray-700 hover:text-[#155dfc] transition-all text-sm font-medium group';
         link.dataset.cat = catId;
         link.dataset.subcat = sub.id;
