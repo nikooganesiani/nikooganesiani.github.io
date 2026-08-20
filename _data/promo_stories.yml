@@ -1,14 +1,14 @@
 - id: "promo-1"
   title: "უფასო მიწოდება"
-  image: "/img/banners/1freeshipping.webp"
+  image: "/img/promostories/1freeshipping.webp"
   url: "/info/delivery"
 
 - id: "promo-2"
   title: "თქვენი შეკვეთის სტატუსი"
-  image: "/img/banners/2orderstatuscheck.webp"
+  image: "/img/promostories/2orderstatuscheck.webp"
   url: "/?orderstatus"
 
 - id: "promo-3"
   title: "უფასო მიწოდება"
-  image: "/img/banners/3followusfacebook.webp"
+  image: "/img/promostories/3followusfacebook.webp"
   url: "https://www.facebook.com/enkaelectronics"
