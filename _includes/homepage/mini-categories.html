@@ -1,0 +1,47 @@
+<!-- _includes/categories.html -->
+<section class="w-full max-w-7xl mx-auto px-4 py-4">
+  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-3">
+    {% for category in site.data.catalog %}
+      {% assign cat_id = category[0] %}
+      {% assign cat_info = category[1] %}
+      <button
+        type="button"
+        class="category-item-btn flex flex-col items-center justify-center p-3 rounded-2xl border border-gray-100 bg-white shadow-xs hover:border-[#155dfc]/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group text-center cursor-pointer outline-none"
+        data-cat="{{ cat_id }}"
+        data-name="{{ cat_info.title }}"
+        data-subs='{{ cat_info.subs | jsonify | escape }}'
+      >
+        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-[#155dfc] flex items-center justify-center mb-2 group-hover:bg-[#155dfc] group-hover:text-white transition-colors duration-200 [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
+          {{ cat_info.icon }}
+        </div>
+        <span class="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-[#155dfc] line-clamp-1 transition-colors">
+          {{ cat_info.title }}
+        </span>
+      </button>
+    {% endfor %}
+  </div>
+</section>
+
+<div
+  id="categoryModal"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200"
+>
+  <div
+    id="categoryModalBox"
+    class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-200"
+  >
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/60">
+      <h3 id="categoryModalTitle" class="text-base font-semibold text-gray-900"></h3>
+      <button
+        type="button"
+        id="categoryModalClose"
+        class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-200/60 transition-colors"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="categoryModalList" class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[60vh] overflow-y-auto"></div>
+  </div>
+</div>
