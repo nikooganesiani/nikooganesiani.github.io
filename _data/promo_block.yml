@@ -2,8 +2,3 @@
   title: "Sokany - ყველაფერი თქვენი სამზარეულოსთვის"
   image: "/img/banners/banner1.webp"
   url: "/category/?kitchen"
-
-- id: "promo-2"
-  title: "თქვენი შეკვეთის სტატუსი"
-  image: "/img/banners/2orderstatuscheck.webp"
-  url: "/?orderstatus"
