@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const apiUrl = window.CATALOG_API_URL || 'https://api.enkaelectronics.com.ge/catalog';
 
-    // Встроенный fallback рендерер карточки, если на главной нет глобального createProductCardHTML
     const renderCard = (p) => {
         if (typeof window.createProductCardHTML === 'function') {
             return window.createProductCardHTML(p, 'rec');
@@ -64,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (recentProducts.length > 0) {
                 recentScroll.innerHTML = recentProducts.map(p => renderCard(p)).join('');
                 
-                // Отображение секции
                 recentSection.classList.remove('hidden');
                 recentSection.style.display = 'block';
 
