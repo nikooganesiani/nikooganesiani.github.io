@@ -4,31 +4,8 @@ title: "მთავარი"
 ---
 
 <div class="max-w-[1280px] w-full mx-auto px-6 py-4 pb-16 animate-[fadeIn_0.6s_ease] overflow-x-hidden selection:bg-blue-200">
-
   {% include homepage/banners.html %}
   {% include homepage/promo-block.html %}
   {% include homepage/mini-categories.html %}
   {% include homepage/recently-viewed.html %}
-  
-  <div id="viewHome">
-      <!-- Здесь блоки вашей главной страницы (товары, секции и т.д.) -->
-  </div>
-
 </div>
-
-<script>
-    (function() {
-        const params = new URLSearchParams(window.location.search);
-        const hasCategory = params.has('category');
-
-        const vCategory = document.getElementById('viewCategory');
-        const vHome = document.getElementById('viewHome');
-
-        if (hasCategory && vCategory) {
-            vCategory.style.display = 'block';
-            if (vHome) vHome.style.display = 'none';
-        } else {
-            if (vHome) vHome.style.display = 'block';
-        }
-    })();
-</script>
