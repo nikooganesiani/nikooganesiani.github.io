@@ -21,15 +21,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return r.json();
         })
         .then(data => {
-            if (!data || !Array.isArray(data.products)) return;
+            const productsList = (data && data.products) ? data.products : (Array.isArray(data) ? data : []);
+            if (!productsList.length) return;
 
             const recentProducts = recentIds
-                .map(id => data.products.find(p => String(p.id) === String(id)))
+                .map(id => productsList.find(p => String(p.id) === String(id)))
                 .filter(Boolean);
 
             if (recentProducts.length > 0 && typeof window.createProductCardHTML === 'function') {
-                recentSection.style.display = 'block';
                 recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
+                recentSection.style.display = 'block';
 
                 if (recentProducts.length <= 4) {
                     const arrowL = document.getElementById('recentArrowLeft');
@@ -43,16 +44,3 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error rendering recently viewed products:', err);
         });
 });
-
-if (typeof window.scrollCarousel !== 'function') {
-    window.scrollCarousel = function(containerId, direction) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            const scrollAmount = container.clientWidth * 0.75;
-            container.scrollBy({
-                left: direction * scrollAmount,
-                behavior: 'smooth'
-            });
-        }
-    };
-}
