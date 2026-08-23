@@ -1,26 +1,25 @@
 <aside 
   id="cookie-banner" 
-  class="fixed top-3 inset-x-3 sm:top-auto sm:bottom-6 sm:inset-x-auto sm:left-6 z-50 pointer-events-none transition-all duration-300 ease-out scale-95 opacity-0" 
+  class="fixed top-3 inset-x-3 sm:top-auto sm:bottom-6 sm:left-6 sm:right-auto z-50 pointer-events-none transition-all duration-300 ease-out scale-95 opacity-0" 
   aria-label="Cookie Policy Notification"
 >
-  <div class="pointer-events-auto w-full sm:max-w-md bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-2xl shadow-slate-900/10 rounded-2xl p-3 flex items-center gap-3">
-    <div class="shrink-0 w-8 h-8 rounded-xl bg-[#155dfc]/10 text-[#155dfc] flex items-center justify-center">
-      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-      </svg>
+  <div class="pointer-events-auto w-full sm:max-w-md md:max-w-lg bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-xl shadow-slate-900/10 rounded-2xl sm:rounded-[22px] p-3 sm:p-5 flex items-center justify-between gap-3.5 sm:gap-6">
+    <div class="flex-1 min-w-0">
+      <p class="text-xs sm:text-sm font-semibold text-slate-900 leading-snug">
+        საიტი იყენებს ქუქი-ფაილებს (Cookies).
+      </p>
+      <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 leading-snug">
+        იხილეთ 
+        <a href="/info/privacy" class="text-[#155dfc] font-medium hover:underline">კონფიდენციალურობის პოლიტიკა</a>.
+      </p>
     </div>
-
-    <p class="text-[11px] sm:text-xs text-slate-600 leading-snug flex-1">
-      საიტი იყენებს ქუქი-ფაილებს (Cookies). დარჩენით თქვენ ეთანხმებით 
-      <a href="/info/privacy" class="text-[#155dfc] font-medium hover:underline whitespace-nowrap">პოლიტიკას</a>.
-    </p>
 
     <button 
       id="cookie-accept-btn" 
       type="button" 
-      class="shrink-0 px-3.5 py-1.5 bg-[#155dfc] hover:bg-blue-700 active:scale-95 text-white text-xs font-medium rounded-xl transition-all duration-200 shadow-sm shadow-[#155dfc]/25 cursor-pointer"
+      class="shrink-0 px-4 py-2 sm:px-6 sm:py-2.5 bg-[#155dfc] hover:bg-blue-700 active:scale-95 text-white text-xs sm:text-sm font-medium rounded-xl sm:rounded-[14px] transition-all duration-200 shadow-sm shadow-[#155dfc]/25 cursor-pointer whitespace-nowrap"
     >
-      გასაგებია
+      ვეთანხმები
     </button>
   </div>
 </aside>
