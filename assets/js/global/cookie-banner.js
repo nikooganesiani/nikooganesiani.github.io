@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!isAccepted) {
     setTimeout(() => {
-      banner.classList.remove('translate-y-full', 'opacity-0');
+      banner.classList.remove('translate-y-8', 'opacity-0');
       banner.classList.add('translate-y-0', 'opacity-100');
     }, 400);
   }
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(STORAGE_KEY, 'true');
     
     banner.classList.remove('translate-y-0', 'opacity-100');
-    banner.classList.add('translate-y-full', 'opacity-0');
+    banner.classList.add('translate-y-8', 'opacity-0');
 
     banner.addEventListener('transitionend', () => {
       banner.remove();
