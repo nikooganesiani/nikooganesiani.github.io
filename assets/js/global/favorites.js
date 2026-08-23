@@ -1,9 +1,3 @@
-/**
- * favorites.js
- * Добавление: данные из API каталога.
- * Модалка: openFavorites / closeFavorites / рендер списка.
- */
-
 (function () {
   'use strict';
 
