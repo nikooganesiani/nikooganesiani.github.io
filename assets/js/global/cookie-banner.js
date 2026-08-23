@@ -9,12 +9,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isAccepted = localStorage.getItem(STORAGE_KEY);
 
-  if (!isAccepted) {
-    setTimeout(() => {
-      banner.classList.remove('translate-y-8', 'opacity-0');
-      banner.classList.add('translate-y-0', 'opacity-100');
-    }, 400);
-  }
+const checkAndAdjustPosition = () => {
+    if (!isAccepted) {
+      const rect = banner.getBoundingClientRect();
+      const isMobileViewport = window.innerWidth < 768;
+
+      if (isMobileViewport && (window.innerHeight - rect.top) < 120) {
+        banner.style.position = 'relative';
+        banner.style.bottom = 'auto';
+        banner.style.top = 'auto';
+        banner.style.transform = 'none';
+        banner.classList.add('is-mobile-adjusted');
+      } else {
+        banner.style.position = 'fixed';
+        banner.style.bottom = '5rem';
+        banner.style.top = 'auto';
+        banner.style.transform = 'translateX(-50%)';
+        if (banner.classList.contains('is-mobile-adjusted')) {
+          banner.classList.remove('is-mobile-adjusted');
+        }
+      }
+
+      setTimeout(() => {
+        banner.classList.remove('translate-y-8', 'opacity-0');
+        banner.classList.add('translate-y-0', 'opacity-100');
+      }, 400);
+    }
+  };
+
+  checkAndAdjustPosition();
+  window.addEventListener('resize', checkAndAdjustPosition);
 
   acceptBtn.addEventListener('click', () => {
     localStorage.setItem(STORAGE_KEY, 'true');
@@ -24,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     banner.addEventListener('transitionend', () => {
       banner.remove();
+      window.removeEventListener('resize', checkAndAdjustPosition);
     }, { once: true });
   });
 });
