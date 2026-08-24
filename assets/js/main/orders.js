@@ -74,16 +74,27 @@ if (quickForm) {
             });
             
             if (response.ok) {
-                if (typeof fbq === 'function') {
-                    fbq('track', 'Purchase', {
-                        value: numericPrice,
-                        currency: 'GEL',
-                        content_name: product.name,
-                        content_ids: product.id ? [String(product.id)] : [],
-                        content_type: 'product',
-                        num_items: 1
-                    }, { eventID: eventId });
-                }
+    // 1. Google Ads Conversion Event
+    if (typeof gtag === 'function') {
+        gtag('event', 'conversion', {
+            'send_to': 'AW-18407942518/qFjICJX3_-YcEPbSy8lE',
+            'value': numericPrice,
+            'currency': 'GEL',
+            'transaction_id': eventId
+        });
+    }
+
+    // 2. Facebook Pixel
+    if (typeof fbq === 'function') {
+        fbq('track', 'Purchase', {
+            value: numericPrice,
+            currency: 'GEL',
+            content_name: product.name,
+            content_ids: product.id ? [String(product.id)] : [],
+            content_type: 'product',
+            num_items: 1
+        }, { eventID: eventId });
+    }
                 if (typeof window.sendCapiEvent === 'function') {
                     window.sendCapiEvent('Purchase', {
                         value: numericPrice,
