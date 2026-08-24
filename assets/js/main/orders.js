@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             window.openAppModal?.('orderFormModal');
         } catch(e) { 
-            console.error(e); 
+            console.error('[Modal Open Error]', e); 
         }
     };
 
@@ -37,26 +37,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if (quickForm) {
         quickForm.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
             const hp = document.getElementById('quickEmailHp');
             if (hp && hp.value) return; 
 
-            const name = quickName?.value?.trim() || '';
-            const phoneRaw = (quickPhone?.value || '').replace(/\s/g, '');
+            const name = quickName?.value?.trim() || 'Покупатель';
+            let rawDigits = (quickPhone?.value || '').replace(/\D/g, '');
+            if (rawDigits.startsWith('995')) rawDigits = rawDigits.substring(3);
+            
             const phoneWrapper = document.getElementById('quickFormWrapperPhone');
             const nameWrapper = document.getElementById('quickFormWrapperName');
             
-            if (!name) { 
+            if (quickName && !quickName.value.trim()) { 
                 nameWrapper?.classList.add('error-border'); 
                 return; 
             }
-            if (phoneRaw.length !== 9) { 
+            if (rawDigits.length !== 9) { 
                 phoneWrapper?.classList.add('error-border'); 
                 return; 
             }
             
             const modal = document.getElementById('orderFormModal');
             const product = JSON.parse(modal?.dataset?.product || '{}');
-            const fullPhone = '+995' + phoneRaw;
+            const fullPhone = '+995' + rawDigits;
             const submitBtn = quickForm.querySelector('button[type="submit"]');
             const originalContent = submitBtn ? submitBtn.innerHTML : ''; 
             
@@ -65,50 +68,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
             }
             
+            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+            const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
+            const productId = product.sku || product.id || '';
+
+            // --- 1. ОТПРАВКА В GOOGLE ADS (GTAG) ---
             try {
-                const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-                const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
-                const productId = product.sku || product.id || '';
-                
-                const workerUrl = window.WORKER_URL || '/api/order';
-                let responseOk = false;
-
-                try {
-                    const response = await fetch(workerUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: name,
-                            phone: fullPhone,
-                            product: product.name || '',
-                            price: product.price || 0,
-                            product_id: productId,
-                            event_id: eventId
-                        })
-                    });
-                    responseOk = response.ok;
-                } catch (fetchErr) {
-                    console.warn('[Order Worker Error]', fetchErr);
-                    responseOk = true; 
-                }
-                
-                if (responseOk) {
-                    // 1. Google Ads Conversion
-                    const gtagFn = window.gtag || function() { (window.dataLayer = window.dataLayer || []).push(arguments); };
-                    
-                    gtagFn('set', 'user_data', {
-                        'phone_number': fullPhone
-                    });
-
-                    gtagFn('event', 'conversion', {
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'conversion', {
                         'send_to': 'AW-18407942518/UmJiCP-njuccEPbSy8lE',
                         'value': numericPrice,
                         'currency': 'GEL',
                         'transaction_id': eventId
                     });
-
-                    // Стандартный ecommerce purchase для GA4 / Google Tag
-                    gtagFn('event', 'purchase', {
+                    window.gtag('event', 'purchase', {
                         'transaction_id': eventId,
                         'value': numericPrice,
                         'currency': 'GEL',
@@ -119,48 +92,85 @@ document.addEventListener('DOMContentLoaded', function() {
                             'quantity': 1
                         }]
                     });
-
-                    // 2. Facebook Pixel
-                    if (typeof fbq === 'function') {
-                        fbq('track', 'Purchase', {
-                            value: numericPrice,
-                            currency: 'GEL',
-                            content_name: product.name,
-                            content_ids: productId ? [String(productId)] : [],
-                            content_type: 'product',
-                            num_items: 1
-                        }, { eventID: eventId });
-                    }
-
-                    // 3. Facebook CAPI
-                    if (typeof window.sendCapiEvent === 'function') {
-                        window.sendCapiEvent('Purchase', {
-                            value: numericPrice,
-                            currency: 'GEL',
-                            content_name: product.name,
-                            content_ids: productId ? [String(productId)] : [],
-                            content_type: 'product'
-                        }, eventId);
-                    }
-                    
-                    window.closeAppModal?.('orderFormModal');
-                    setTimeout(() => {
-                        window.showOrderConfirm?.({
-                            name: name,
-                            phone: fullPhone,
-                            product: product.name,
-                            price: product.price,
-                            oldPrice: product.oldPrice || product.old_price
-                        });
-                    }, 400);
+                } else {
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push([
+                        'event', 'conversion', {
+                            'send_to': 'AW-18407942518/UmJiCP-njuccEPbSy8lE',
+                            'value': numericPrice,
+                            'currency': 'GEL',
+                            'transaction_id': eventId
+                        }
+                    ]);
                 }
-            } catch(error) {
-                console.error(error);
+                console.log('%c[Google Ads Conversion Sent]', 'background: #155dfc; color: #fff; padding: 4px;', {
+                    send_to: 'AW-18407942518/UmJiCP-njuccEPbSy8lE',
+                    value: numericPrice,
+                    currency: 'GEL',
+                    transaction_id: eventId
+                });
+            } catch (gErr) {
+                console.error('[Google Ads Error]', gErr);
+            }
+
+            // --- 2. FACEBOOK PIXEL ---
+            try {
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Purchase', {
+                        value: numericPrice,
+                        currency: 'GEL',
+                        content_name: product.name,
+                        content_ids: productId ? [String(productId)] : [],
+                        content_type: 'product',
+                        num_items: 1
+                    }, { eventID: eventId });
+                }
+            } catch (fbErr) {
+                console.error('[FB Error]', fbErr);
+            }
+
+            // --- 3. ОТПРАВКА НА СЕРВЕР / WORKER ---
+            try {
+                const workerUrl = window.WORKER_URL || '/api/order';
+                await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: fullPhone,
+                        product: product.name || '',
+                        price: product.price || 0,
+                        product_id: productId,
+                        event_id: eventId
+                    })
+                });
+
+                if (typeof window.sendCapiEvent === 'function') {
+                    window.sendCapiEvent('Purchase', {
+                        value: numericPrice,
+                        currency: 'GEL',
+                        content_name: product.name,
+                        content_ids: productId ? [String(productId)] : [],
+                        content_type: 'product'
+                    }, eventId);
+                }
+            } catch (workerErr) {
+                console.warn('[Worker Notice]', workerErr);
             } finally {
                 if (submitBtn) {
                     submitBtn.innerHTML = originalContent;
                     submitBtn.disabled = false;
                 }
+                window.closeAppModal?.('orderFormModal');
+                setTimeout(() => {
+                    window.showOrderConfirm?.({
+                        name: name,
+                        phone: fullPhone,
+                        product: product.name,
+                        price: product.price,
+                        oldPrice: product.oldPrice || product.old_price
+                    });
+                }, 400);
             }
         });
     }
