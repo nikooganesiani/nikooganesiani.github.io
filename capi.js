@@ -1,6 +1,13 @@
 const CAPI_WORKER_URL = 'https://capi.enkaelectronics.com.ge/';
 
 function sendCapiEvent(eventName, customData = {}, eventId = null) {
+  // Валидация event_name: Meta требует непустую валидную строку
+  if (!eventName || typeof eventName !== 'string' || !eventName.trim()) {
+    console.warn('CAPI: event_name must be a non-empty string');
+    return null;
+  }
+
+  const validEventName = eventName.trim();
   const finalEventId = eventId || `${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
   try {
@@ -8,17 +15,17 @@ function sendCapiEvent(eventName, customData = {}, eventId = null) {
       const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
       return match ? decodeURIComponent(match[2]) : '';
     };
-    
-    const fbp = getCookie('_fbp');
-    const fbc = getCookie('_fbc');
+
+    const fbp = getCookie('_fbp') || undefined;
+    const fbc = getCookie('_fbc') || undefined;
 
     const payload = {
-      event_name: eventName,
+      event_name: validEventName,
       event_id: finalEventId,
       event_source_url: window.location.href,
       fbp: fbp,
       fbc: fbc,
-      custom_data: customData,
+      custom_data: customData && typeof customData === 'object' ? customData : {},
     };
 
     fetch(CAPI_WORKER_URL, {
@@ -32,6 +39,7 @@ function sendCapiEvent(eventName, customData = {}, eventId = null) {
 
     return finalEventId;
   } catch (e) {
+    console.error('CAPI execution error:', e);
     return finalEventId;
   }
 }
