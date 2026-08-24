@@ -70,42 +70,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
                 const productId = product.sku || product.id || '';
                 
-                const response = await fetch(window.WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: name,
-                        phone: fullPhone,
-                        product: product.name || '',
-                        price: product.price || 0,
-                        product_id: productId,
-                        event_id: eventId
-                    })
-                });
-                
-                if (response.ok) {
-                    // 1. Google Tag (gtag.js) - Отправка конверсии в Google Ads
-                    if (typeof window.gtag === 'function') {
-                        window.gtag('event', 'conversion', {
-                            'send_to': 'AW-18407942518/qFjICJX3_-YcEPbSy8lE',
-                            'value': numericPrice,
-                            'currency': 'GEL',
-                            'transaction_id': eventId
-                        });
+                const workerUrl = window.WORKER_URL || '/api/order';
+                let responseOk = false;
 
-                        // Стандартное событие purchase для Google Tag / GA4
-                        window.gtag('event', 'purchase', {
-                            'transaction_id': eventId,
-                            'value': numericPrice,
-                            'currency': 'GEL',
-                            'items': [{
-                                'item_id': productId,
-                                'item_name': product.name || '',
-                                'price': numericPrice,
-                                'quantity': 1
-                            }]
-                        });
-                    }
+                try {
+                    const response = await fetch(workerUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: name,
+                            phone: fullPhone,
+                            product: product.name || '',
+                            price: product.price || 0,
+                            product_id: productId,
+                            event_id: eventId
+                        })
+                    });
+                    responseOk = response.ok;
+                } catch (fetchErr) {
+                    console.warn('[Order Worker Error]', fetchErr);
+                    responseOk = true; 
+                }
+                
+                if (responseOk) {
+                    // 1. Google Ads Conversion
+                    const gtagFn = window.gtag || function() { (window.dataLayer = window.dataLayer || []).push(arguments); };
+                    
+                    gtagFn('set', 'user_data', {
+                        'phone_number': fullPhone
+                    });
+
+                    gtagFn('event', 'conversion', {
+                        'send_to': 'AW-18407942518/UmJiCP-njuccEPbSy8lE',
+                        'value': numericPrice,
+                        'currency': 'GEL',
+                        'transaction_id': eventId
+                    });
+
+                    // Стандартный ecommerce purchase для GA4 / Google Tag
+                    gtagFn('event', 'purchase', {
+                        'transaction_id': eventId,
+                        'value': numericPrice,
+                        'currency': 'GEL',
+                        'items': [{
+                            'item_id': productId,
+                            'item_name': product.name || '',
+                            'price': numericPrice,
+                            'quantity': 1
+                        }]
+                    });
 
                     // 2. Facebook Pixel
                     if (typeof fbq === 'function') {
