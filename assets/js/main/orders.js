@@ -74,14 +74,15 @@ if (quickForm) {
             });
             
             if (response.ok) {
-    // 1. Google Ads Conversion Event
-    if (typeof gtag === 'function') {
-        gtag('event', 'conversion', {
-            'send_to': 'AW-18407942518/qFjICJX3_-YcEPbSy8lE',
-            'value': numericPrice,
-            'currency': 'GEL',
-            'transaction_id': eventId
-        });
+    // Безопасная отправка конверсии в Google Ads
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        'event': 'conversion',
+        'send_to': 'AW-18407942518/qFjICJX3_-YcEPbSy8lE',
+        'value': numericPrice,
+        'currency': 'GEL',
+        'transaction_id': eventId
+    });
     }
 
     // 2. Facebook Pixel
