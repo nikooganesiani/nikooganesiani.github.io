@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let subcatProducts = [];
         
         if (subcatSection && subcatScroll && currentSub) {
-            subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).slice(0, 30);
+            subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).sort(() => Math.random() - 0.5).slice(0, 30);
             if (subcatProducts.length > 0) {
                 subcatSection.style.display = 'block';
                 subcatScroll.innerHTML = subcatProducts.map(p => window.createProductCardHTML(p, 'subc')).join('');
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const catScroll = document.getElementById('catScroll');
         
         if (catSection && catScroll && currentCat) {
-            let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).slice(0, 30);
+            let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).sort(() => Math.random() - 0.5).slice(0, 30);
             if (catProducts.length > 0) {
                 catSection.style.display = 'block';
                 catScroll.innerHTML = catProducts.map(p => window.createProductCardHTML(p, 'cat')).join('');
