@@ -2,6 +2,9 @@ const CAPI_WORKER_URL = 'https://capi.enkaelectronics.com.ge/';
 
 const IDS = { fbp: null, fbc: null, eid: null };
 
+const FBP_RE = /^fb\.\d+\.\d+\.\d+$/;
+const FBC_RE = /^fb\.\d+\.\d+\..+/;
+
 function cookieDomain() {
   const host = location.hostname;
   if (host === 'localhost' || /^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return '';
@@ -14,8 +17,19 @@ function cookieDomain() {
 }
 
 function getCookie(name) {
-  const match = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)'));
-  return match ? decodeURIComponent(match[1]) : '';
+  try {
+    const match = document.cookie.match(
+      new RegExp('(?:^|; )' + name.replace(/([.$?*|{}()[\]\\/+^])/g, '\\$1') + '=([^;]*)')
+    );
+    if (!match) return '';
+    try {
+      return decodeURIComponent(match[1]);
+    } catch (e) {
+      return match[1];
+    }
+  } catch (e) {
+    return '';
+  }
 }
 
 function setCookie(name, value, days) {
@@ -27,38 +41,95 @@ function setCookie(name, value, days) {
   document.cookie = cookie;
 }
 
+function lsGet(key) {
+  try { return localStorage.getItem(key) || ''; } catch (e) { return ''; }
+}
+
+function lsSet(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
+
+function persist(name, value, days) {
+  if (!value) return;
+  setCookie(name, value, days);
+  lsSet(name, value);
+}
+
+function readStored(name) {
+  return getCookie(name) || lsGet(name) || '';
+}
+
+function extractFbclid(search) {
+  if (!search) return '';
+  const m = String(search).match(/[?&]fbclid=([^&#]+)/);
+  if (!m) return '';
+  try {
+    return decodeURIComponent(m[1].replace(/\+/g, '%2B'));
+  } catch (e) {
+    return m[1];
+  }
+}
+
 function getFbclid() {
   try {
-    return new URLSearchParams(location.search).get('fbclid') || '';
+    const fromUrl = extractFbclid(location.search);
+    if (fromUrl) return fromUrl;
+    if (document.referrer) {
+      try {
+        const ref = new URL(document.referrer);
+        if (ref.hostname === location.hostname) {
+          const fromRef = extractFbclid(ref.search);
+          if (fromRef) return fromRef;
+        }
+      } catch (e) {}
+    }
+    return '';
   } catch (e) {
     return '';
   }
 }
 
+function fbclidFromFbc(fbc) {
+  if (!fbc) return '';
+  const a = fbc.indexOf('.');
+  const b = fbc.indexOf('.', a + 1);
+  const c = fbc.indexOf('.', b + 1);
+  if (a === -1 || b === -1 || c === -1) return '';
+  return fbc.slice(c + 1);
+}
+
 function ensureIdentifiers() {
-  let fbp = getCookie('_fbp') || IDS.fbp;
-  if (!fbp || !/^fb\.\d+\.\d+\.\d+$/.test(fbp)) {
+  let fbp = IDS.fbp || readStored('_fbp');
+  if (!fbp || !FBP_RE.test(fbp)) {
     fbp = 'fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 1e13);
-    setCookie('_fbp', fbp, 90);
   }
+  persist('_fbp', fbp, 90);
   IDS.fbp = fbp;
 
   const fbclid = getFbclid();
-  let fbc = getCookie('_fbc') || IDS.fbc || '';
+  let fbc = IDS.fbc || readStored('_fbc') || '';
+  if (fbc && !FBC_RE.test(fbc)) fbc = '';
+
   if (fbclid) {
-    if (!fbc || fbc.split('.').slice(3).join('.') !== fbclid) {
+    const existingClickId = fbclidFromFbc(fbc);
+    if (!fbc || existingClickId !== fbclid) {
       fbc = 'fb.1.' + Date.now() + '.' + fbclid;
-      setCookie('_fbc', fbc, 90);
     }
   }
-  IDS.fbc = fbc || null;
 
-  let eid = getCookie('_capi_uid') || IDS.eid;
+  if (fbc && FBC_RE.test(fbc)) {
+    persist('_fbc', fbc, 90);
+    IDS.fbc = fbc;
+  } else {
+    IDS.fbc = null;
+  }
+
+  let eid = IDS.eid || readStored('_capi_uid');
   if (!eid) {
     eid = (crypto.randomUUID && crypto.randomUUID()) ||
       (Date.now().toString(36) + Math.random().toString(36).slice(2, 12));
-    setCookie('_capi_uid', eid, 365);
   }
+  persist('_capi_uid', eid, 365);
   IDS.eid = eid;
 
   return { fbp: IDS.fbp, fbc: IDS.fbc, external_id: IDS.eid };
