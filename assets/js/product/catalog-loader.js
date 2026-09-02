@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <svg id="inlineOrderIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     <span id="inlineOrderText">ყიდვა</span>
                 </button>
-                <div class="flex justify-center text-slate-600 text-[0.9rem] font-semibold text-center border border-slate-200 rounded-[9px] bg-[#fbfdff] p-2.5">
+                <div class="flex justify-center text-slate-600 text-[0.9rem] font-semibold text-center border border-slate-200 rounded-[9px] bg-[#fbfdff] p-2">
                     შეუკვეთე ახლა, გადაიხადე მიღებისას
                 </div>
             `;
