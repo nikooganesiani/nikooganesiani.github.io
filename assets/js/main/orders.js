@@ -60,10 +60,12 @@ if (quickForm) {
             const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
             
-            // Включаем event_name для исключения ошибок валидации на бэкенде
             const response = await fetch(window.WORKER_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'EnkaOrderForm' // Защита от ботов
+                },
                 body: JSON.stringify({
                     event_name: 'Purchase',
                     name: name,
@@ -71,7 +73,8 @@ if (quickForm) {
                     product: product.name || '',
                     price: product.price || 0,
                     product_id: product.id || '',
-                    event_id: eventId
+                    event_id: eventId,
+                    source: 'Быстрый заказ'
                 })
             });
             
