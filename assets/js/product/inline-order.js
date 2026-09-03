@@ -62,38 +62,42 @@ document.addEventListener('submit', function(e) {
         icon.outerHTML = `<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-5 h-5" id="inlineOrderIcon"></div>`;
         text.innerText = 'იგზავნება...';
 
-const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
-const targetWorker = window.WORKER_URL;
+        const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+        const numericPrice = parseFloat(String(product.price).replace(/[^\d.]/g, '')) || 0;
+        const targetWorker = window.WORKER_URL;
 
-fetch(targetWorker, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: name,
-    phone: fullPhone,
-    product: product.name,
-    price: product.price,
-    product_id: product.id,
-    event_id: eventId,
-  }),
-}).catch(console.error);
+        fetch(targetWorker, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'EnkaOrderForm'
+            },
+            body: JSON.stringify({
+                name: name,
+                phone: fullPhone,
+                product: product.name,
+                price: product.price,
+                product_id: product.id,
+                event_id: eventId,
+                source: 'Страница товара'
+            }),
+        }).catch(console.error);
 
-if (typeof window.sendCapiEvent === 'function') {
-  window.sendCapiEvent(
-    'Purchase',
-    {
-      value: numericPrice,
-      currency: 'GEL',
-      content_name: product.name,
-      content_ids: product.id ? [String(product.id)] : [],
-      content_type: 'product',
-      num_items: 1,
-    },
-    eventId,
-    { name: name, phone: fullPhone }
-  );
-}
+        if (typeof window.sendCapiEvent === 'function') {
+            window.sendCapiEvent(
+                'Purchase',
+                {
+                    value: numericPrice,
+                    currency: 'GEL',
+                    content_name: product.name,
+                    content_ids: product.id ? [String(product.id)] : [],
+                    content_type: 'product',
+                    num_items: 1,
+                },
+                eventId,
+                { name: name, phone: fullPhone }
+            );
+        }
 
         btn.style.pointerEvents = 'auto';
         btn.style.opacity = '1';
