@@ -1,4 +1,3 @@
-// assets/js/searchpage.js
 (function() {
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
