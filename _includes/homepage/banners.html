@@ -16,9 +16,9 @@
         data-title="{{ promo_title | escape }}"
         aria-label="{{ promo_title | escape }}"
         draggable="false"
-        class="promo-card shrink-0 relative flex flex-col justify-center items-center w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] p-[3px] border-3 border-blue-600 data-[viewed]:border-zinc-500 rounded-[20px] sm:rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:z-10"
+        class="promo-card shrink-0 relative block w-[calc((100vw-28px-3.3*10px)/4.35)] min-w-[72px] max-w-[88px] aspect-[1/1.36] sm:w-[94px] sm:max-w-none sm:aspect-[1/1.36] md:w-[calc((100%-6*12px)/7.25)] md:max-w-[130px] border-[3px] border-blue-600 data-[viewed]:border-zinc-500 rounded-[20px] sm:rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:z-10"
       >
-        <div class="w-full h-full rounded-[15px] sm:rounded-[19px] overflow-hidden relative">
+        <div class="absolute inset-[3px] rounded-[14px] sm:rounded-[18px] overflow-hidden isolate">
           <img
             src="{{ promo.image | relative_url }}"
             alt=""
