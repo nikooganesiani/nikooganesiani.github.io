@@ -57,36 +57,42 @@
             </select>
         </div>
 
-        <!-- Сетка с content-start и auto-rows-max для предотвращения растягивания рядов -->
-        <div class="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3 sm:gap-7 mb-8 sm:mb-12 min-h-[600px] content-start auto-rows-max items-start" id="catalogContainer">
-            <!-- Начальные скелетоны компактной высоты -->
-            <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-3 sm:p-5 flex flex-col animate-pulse">
-                <div class="w-full aspect-square bg-slate-100 rounded-xl sm:rounded-2xl mb-3"></div>
-                <div class="h-4 bg-slate-100 rounded-md w-4/5 mb-2"></div>
-                <div class="h-3 bg-slate-100 rounded-md w-2/3 mb-4"></div>
-                <div class="h-6 bg-slate-100 rounded-md w-1/3 mb-4"></div>
-                <div class="h-10 sm:h-12 bg-slate-100 rounded-xl sm:rounded-2xl w-full mt-2"></div>
+        <div class="flex flex-wrap gap-4 max-lg:gap-3 mb-8 sm:mb-12 min-h-[600px] content-start" id="catalogContainer">
+            <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] min-w-0 flex flex-col animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100 rounded-t-2xl"></div>
+                <div class="bg-white rounded-b-2xl p-4 max-sm:p-3 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-11 max-sm:h-9 bg-slate-100 rounded-lg max-sm:rounded-md mt-auto"></div>
+                </div>
             </div>
-            <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-3 sm:p-5 flex flex-col animate-pulse">
-                <div class="w-full aspect-square bg-slate-100 rounded-xl sm:rounded-2xl mb-3"></div>
-                <div class="h-4 bg-slate-100 rounded-md w-4/5 mb-2"></div>
-                <div class="h-3 bg-slate-100 rounded-md w-2/3 mb-4"></div>
-                <div class="h-6 bg-slate-100 rounded-md w-1/3 mb-4"></div>
-                <div class="h-10 sm:h-12 bg-slate-100 rounded-xl sm:rounded-2xl w-full mt-2"></div>
+            <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] min-w-0 flex flex-col animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100 rounded-t-2xl"></div>
+                <div class="bg-white rounded-b-2xl p-4 max-sm:p-3 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-11 max-sm:h-9 bg-slate-100 rounded-lg max-sm:rounded-md mt-auto"></div>
+                </div>
             </div>
-            <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-3 sm:p-5 flex flex-col animate-pulse hidden sm:flex">
-                <div class="w-full aspect-square bg-slate-100 rounded-xl sm:rounded-2xl mb-3"></div>
-                <div class="h-4 bg-slate-100 rounded-md w-4/5 mb-2"></div>
-                <div class="h-3 bg-slate-100 rounded-md w-2/3 mb-4"></div>
-                <div class="h-6 bg-slate-100 rounded-md w-1/3 mb-4"></div>
-                <div class="h-10 sm:h-12 bg-slate-100 rounded-xl sm:rounded-2xl w-full mt-2"></div>
+            <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] min-w-0 flex flex-col animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100 rounded-t-2xl"></div>
+                <div class="bg-white rounded-b-2xl p-4 max-sm:p-3 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-11 max-sm:h-9 bg-slate-100 rounded-lg max-sm:rounded-md mt-auto"></div>
+                </div>
             </div>
-            <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-slate-100 p-3 sm:p-5 flex flex-col animate-pulse hidden sm:flex">
-                <div class="w-full aspect-square bg-slate-100 rounded-xl sm:rounded-2xl mb-3"></div>
-                <div class="h-4 bg-slate-100 rounded-md w-4/5 mb-2"></div>
-                <div class="h-3 bg-slate-100 rounded-md w-2/3 mb-4"></div>
-                <div class="h-6 bg-slate-100 rounded-md w-1/3 mb-4"></div>
-                <div class="h-10 sm:h-12 bg-slate-100 rounded-xl sm:rounded-2xl w-full mt-2"></div>
+            <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] min-w-0 flex flex-col animate-pulse" aria-hidden="true">
+                <div class="w-full aspect-square bg-slate-100 rounded-t-2xl"></div>
+                <div class="bg-white rounded-b-2xl p-4 max-sm:p-3 flex flex-col flex-1 gap-2.5">
+                    <div class="h-4 bg-slate-100 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-100 rounded w-1/2"></div>
+                    <div class="h-6 bg-slate-100 rounded w-1/3 mt-2"></div>
+                    <div class="h-11 max-sm:h-9 bg-slate-100 rounded-lg max-sm:rounded-md mt-auto"></div>
+                </div>
             </div>
         </div>
 
