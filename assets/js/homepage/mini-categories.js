@@ -10,43 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let isModalOpen = false;
 
-  const lockBodyScroll = () => {
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-    document.body.classList.add('overflow-hidden');
-  };
-
-  const unlockBodyScroll = () => {
-    document.body.classList.remove('overflow-hidden');
-    document.body.style.paddingRight = '';
-  };
-
   const createSubcategoryLink = (catId, sub) => {
     const link = document.createElement('a');
     link.href = `/category/?${encodeURIComponent(catId)}&sub=${encodeURIComponent(sub.id)}`;
-    // Плоская кнопка с чёткой рамкой 2px и заливкой синим при наведении
     link.className =
-      'flex items-center justify-between p-3 rounded-xl bg-white border-2 border-[#dbe4f0] hover:border-[#155dfc] hover:bg-[#155dfc] text-slate-900 hover:text-white transition-colors duration-150 text-sm font-bold group';
+      'flex items-center justify-between px-4 py-3.5 rounded-xl bg-slate-50/80 hover:bg-[#155dfc]/[0.08] active:bg-[#155dfc]/[0.12] text-slate-800 hover:text-[#155dfc] transition-colors duration-150 text-[14px] font-medium group';
     link.dataset.cat = catId;
     link.dataset.subcat = sub.id;
     link.dataset.name = sub.name;
 
     const titleSpan = document.createElement('span');
-    titleSpan.className = 'pr-2 leading-snug';
+    titleSpan.className = 'pr-3 leading-snug';
     titleSpan.textContent = sub.name;
 
-    const iconWrapper = document.createElement('span');
-    iconWrapper.className =
-      'w-7 h-7 rounded-lg bg-[#eef4ff] text-[#155dfc] group-hover:bg-[#ffc72c] group-hover:text-slate-950 flex items-center justify-center shrink-0 transition-colors duration-150';
-    iconWrapper.innerHTML = `
-      <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+    const arrow = document.createElement('span');
+    arrow.className = 'text-slate-400 group-hover:text-[#155dfc] transition-colors shrink-0';
+    arrow.innerHTML = `
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
       </svg>
     `;
 
-    link.append(titleSpan, iconWrapper);
+    link.append(titleSpan, arrow);
     return link;
   };
 
@@ -72,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modalBox.classList.remove('translate-y-6', 'opacity-0');
     modalBox.classList.add('translate-y-0', 'opacity-100');
 
-    lockBodyScroll();
+    document.body.classList.add('overflow-hidden');
     isModalOpen = true;
   };
 
@@ -86,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     modalBox.classList.remove('translate-y-0', 'opacity-100');
     modalBox.classList.add('translate-y-6', 'opacity-0');
 
-    unlockBodyScroll();
+    document.body.classList.remove('overflow-hidden');
     isModalOpen = false;
   };
 
