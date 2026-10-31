@@ -1,28 +1,39 @@
 <!-- _includes/categories.html -->
-<section class="w-full max-w-7xl mx-auto px-4 py-4 sm:py-6" aria-label="კატეგორიები">
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4">
+<section class="w-full max-w-7xl mx-auto px-4 py-4" aria-label="კატეგორიები">
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
     {% for category in site.data.catalog %}
       {% assign cat_id = category[0] %}
       {% assign cat_info = category[1] %}
+      {% assign subs_count = cat_info.subs | size %}
       <button
         type="button"
         aria-haspopup="dialog"
-        class="category-item-btn group relative flex flex-row sm:flex-col items-center sm:justify-center gap-3 sm:gap-3.5 p-3 sm:p-5 rounded-2xl bg-white border border-slate-200/80 shadow-sm hover:border-[#155dfc] hover:shadow-lg hover:shadow-[#155dfc]/10 hover:-translate-y-1 active:scale-[0.98] transition-all duration-200 text-left sm:text-center cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#155dfc] overflow-hidden"
+        class="category-item-btn group relative flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border-2 border-[#dbe4f0] hover:bg-[#155dfc] hover:border-[#155dfc] active:bg-[#1048c7] transition-colors duration-150 text-left cursor-pointer outline-none focus-visible:border-[#155dfc]"
         data-cat="{{ cat_id }}"
         data-name="{{ cat_info.title | escape }}"
         data-subs='{{ cat_info.subs | jsonify | escape }}'
       >
-        <span class="
+        <!-- Верхний ряд: Иконка + Жёлтый бейдж со счётчиком/стрелкой -->
+        <div class="flex items-start justify-between w-full gap-2 mb-3 sm:mb-4">
+          <!-- Блок иконки (синий по умолчанию -> жёлтый при наведении) -->
+          <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#eef4ff] text-[#155dfc] border-2 border-[#155dfc]/15 flex items-center justify-center shrink-0 group-hover:bg-[#ffc72c] group-hover:border-[#ffc72c] group-hover:text-slate-950 transition-colors duration-150 [&>svg]:w-6 [&>svg]:h-6">
+            {{ cat_info.icon }}
+          </div>
 
-absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#155dfc] via-[#facc15] to-[#155dfc] opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
-
-        <div class="relative shrink-0 w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-blue-50/90 border border-blue-100/80 text-[#155dfc] flex items-center justify-center group-hover:bg-[#155dfc] group-hover:text-white group-hover:border-[#155dfc] group-hover:shadow-md group-hover:shadow-[#155dfc]/25 transition-all duration-200 [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-7 sm:[&>svg]:h-7">
-          {{ cat_info.icon }}
-          <span class="w-2 h-2 rounded-full bg-[#facc15] absolute -top-0.5 -right-0.5 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-200 shadow-xs"></span>
+          <!-- Фирменный жёлтый бейдж (связывает карточку с баннером и сторис) -->
+          <span class="inline-flex items-center gap-0.5 px-2 py-1 rounded-lg bg-[#ffc72c] text-slate-950 text-xs font-extrabold leading-none group-hover:bg-white group-hover:text-[#155dfc] transition-colors duration-150">
+            {% if subs_count > 0 %}
+              <span>{{ subs_count }}</span>
+            {% endif %}
+            <svg class="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </span>
         </div>
 
-        <div class="flex-1 min-w-0 sm:w-full">
-          <span class="block text-xs sm:text-sm font-semibold text-slate-800 group-hover:text-[#155dfc] leading-snug line-clamp-2 sm:line-clamp-1 transition-colors">
+        <!-- Нижний ряд: Название категории во всю ширину карточки -->
+        <div class="w-full">
+          <span class="block text-xs sm:text-sm font-bold text-slate-900 group-hover:text-white leading-snug line-clamp-1 transition-colors duration-150">
             {{ cat_info.title }}
           </span>
         </div>
@@ -31,40 +42,44 @@ absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#155dfc] via-[#facc15] to-[#
   </div>
 </section>
 
+<!-- Модальное окно (Плоский дизайн, рамка 2px в стиле сайта, без теней) -->
 <div
   id="categoryModal"
   role="dialog"
   aria-modal="true"
   aria-labelledby="categoryModalTitle"
   aria-hidden="true"
-  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200"
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-slate-950/60 opacity-0 pointer-events-none transition-opacity duration-150"
 >
   <div
     id="categoryModalBox"
-    class="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden transform translate-y-8 sm:translate-y-0 sm:scale-95 opacity-0 transition-all duration-200 border border-slate-100"
+    class="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-2xl border-t-4 sm:border-2 border-[#155dfc] overflow-hidden transform translate-y-6 sm:translate-y-0 opacity-0 transition-all duration-150"
   >
-    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mt-2.5 sm:hidden"></div>
+    <!-- Полоска-индикатор для мобильных -->
+    <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-3 sm:hidden"></div>
 
-    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
-      <div class="flex items-center gap-2.5">
-        <span class="w-2 h-6 rounded-full bg-[#facc15]"></span>
+    <!-- Шапка модального окна -->
+    <div class="flex items-center justify-between px-5 py-4 border-b-2 border-[#eef2f8] bg-white">
+      <div class="flex items-center gap-3">
+        <span class="w-3 h-7 rounded-md bg-[#ffc72c] border border-[#155dfc]/20 shrink-0"></span>
         <div>
-          <h3 id="categoryModalTitle" class="text-base sm:text-lg font-bold text-slate-900 leading-tight"></h3>
-          <p class="text-xs text-slate-500 mt-0.5">აირჩიეთ ქვეკატეგორია</p>
+          <h3 id="categoryModalTitle" class="text-base sm:text-lg font-extrabold text-slate-950 leading-tight"></h3>
+          <p class="text-xs font-medium text-slate-500 mt-0.5">აირჩიეთ ქვეკატეგორია</p>
         </div>
       </div>
       <button
         type="button"
         id="categoryModalClose"
         aria-label="დახურვა"
-        class="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 bg-slate-50 hover:text-slate-700 hover:bg-slate-100 active:scale-95 transition-all cursor-pointer"
+        class="w-9 h-9 rounded-xl border-2 border-[#dbe4f0] flex items-center justify-center text-slate-600 bg-white hover:bg-[#155dfc] hover:border-[#155dfc] hover:text-white transition-colors duration-150 cursor-pointer"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
     </div>
 
-    <div id="categoryModalList" class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[65vh] overflow-y-auto bg-slate-50/50"></div>
+    <!-- Список подкатегорий -->
+    <div id="categoryModalList" class="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[65vh] overflow-y-auto bg-[#f4f7fb]"></div>
   </div>
 </div>
