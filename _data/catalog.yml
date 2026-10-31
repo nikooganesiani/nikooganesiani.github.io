@@ -26,6 +26,7 @@ kitchen:
     - { id: "fryer", name: "ფრის აპარატი" }
     - { id: "popcorn", name: "პოპკორნის აპარატი" }
     - { id: "cottoncandy", name: "ბამბის ნაყინის აპარატი" }
+    - { id: "fruitdehydrator", name: "ჩირის აპარატი" }
 
 homecare:
   title: "სახლის მოვლა"
