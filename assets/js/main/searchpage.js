@@ -474,7 +474,7 @@
             });
         }
 
-        // Загрузка данных и первичный расчет релевантности
+        // Загрузка данных и первичный расчет релевантности (ТОЛЬКО ПО НАЗВАНИЮ)
         const apiUrl = window.CATALOG_API_URL || 'https://api.enkaelectronics.com.ge/catalog';
         const fetchPromise = window.fetchCatalogCached ? window.fetchCatalogCached() : fetch(apiUrl).then(res => {
             if (!res.ok) throw new Error('Catalog fetch error');
@@ -493,24 +493,19 @@
                     if (p.stockStatus === 'out_of_stock') return;
 
                     const nameNorm = normalizeText(p.name || '');
-                    const skuNorm = normalizeText(p.sku || '');
-                    const descNorm = normalizeText(p.description || '');
 
-                    const matchesAll = searchTerms.every(term => 
-                        nameNorm.includes(term) || skuNorm.includes(term) || descNorm.includes(term)
-                    );
+                    // Ищем совпадение всех слов запроса исключительно в названии товара
+                    const matchesAll = searchTerms.every(term => nameNorm.includes(term));
 
                     if (!matchesAll) return;
 
-                    // Расчет веса релевантности
+                    // Расчет веса релевантности только по названию
                     let score = 0;
                     if (nameNorm.startsWith(fullQueryNormalized)) score += 100;
                     else if (nameNorm.includes(fullQueryNormalized)) score += 60;
-                    if (skuNorm.includes(fullQueryNormalized)) score += 80;
+                    
                     searchTerms.forEach(term => {
                         if (nameNorm.includes(term)) score += 20;
-                        if (skuNorm.includes(term)) score += 15;
-                        if (descNorm.includes(term)) score += 5;
                     });
 
                     baseMatchedProducts.push({
