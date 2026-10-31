@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const productCountBadge = document.getElementById('productCountBadge');
     const subcategoryPillsWrapper = document.getElementById('subcategoryPillsWrapper');
     const subcategoryPills = document.getElementById('subcategoryPills');
+    const subScrollLeft = document.getElementById('subScrollLeft');
+    const subScrollRight = document.getElementById('subScrollRight');
 
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
@@ -22,6 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortSelect = document.getElementById('sortSelect');
     const resetBtn = document.getElementById('resetFilters');
     const presetButtons = document.querySelectorAll('.price-preset-btn');
+
+    // Переносим мобильное модальное окно в корень body, чтобы анимация родителя не ограничивала его z-index
+    const mobileFilterModal = document.getElementById('mobileFilterModal');
+    if (mobileFilterModal && mobileFilterModal.parentElement !== document.body) {
+        document.body.appendChild(mobileFilterModal);
+    }
 
     let currentPage = 1;
     const itemsPerPage = 16;
@@ -69,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. Синхронизация состояния с адресной строкой браузера (без перезагрузки)
+    // 2. Синхронизация состояния с адресной строкой браузера
     function syncUrlState() {
         const params = new URLSearchParams();
         if (state.category && state.category !== 'all') {
@@ -84,6 +92,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const queryStr = params.toString().replace(/=(&|$)/g, '$1');
         const newUrl = queryStr ? `${window.location.pathname}?${queryStr}` : window.location.pathname;
         window.history.replaceState({}, '', newUrl);
+    }
+
+    // Управление видимостью стрелок прокрутки подкатегорий на ПК
+    function updateSubcategoryArrows() {
+        if (!subcategoryPills || !subScrollLeft || !subScrollRight) return;
+        const { scrollLeft, scrollWidth, clientWidth } = subcategoryPills;
+        const canScrollLeft = scrollLeft > 4;
+        const canScrollRight = scrollLeft + clientWidth < scrollWidth - 4;
+
+        subScrollLeft.classList.toggle('md:flex', canScrollLeft);
+        subScrollLeft.classList.toggle('!hidden', !canScrollLeft);
+
+        subScrollRight.classList.toggle('md:flex', canScrollRight);
+        subScrollRight.classList.toggle('!hidden', !canScrollRight);
+    }
+
+    if (subcategoryPills) {
+        subcategoryPills.addEventListener('scroll', updateSubcategoryArrows, { passive: true });
+        window.addEventListener('resize', updateSubcategoryArrows);
+    }
+    if (subScrollLeft && subcategoryPills) {
+        subScrollLeft.addEventListener('click', () => {
+            subcategoryPills.scrollBy({ left: -260, behavior: 'smooth' });
+        });
+    }
+    if (subScrollRight && subcategoryPills) {
+        subScrollRight.addEventListener('click', () => {
+            subcategoryPills.scrollBy({ left: 260, behavior: 'smooth' });
+        });
     }
 
     // 3. Обновление хлебных крошек, заголовка H1 и пилюль подкатегорий
@@ -143,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Генерация пилюль подкатегорий
+        // Генерация пилюль подкатегорий (без теней и обводок)
         if (subcategoryPillsWrapper && subcategoryPills) {
             if (catData && Array.isArray(catData.subs) && catData.subs.length > 0 && !state.search) {
                 subcategoryPillsWrapper.classList.remove('hidden');
@@ -152,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 let pillsHTML = `
                     <button type="button" data-sub-pill="all" class="shrink-0 px-4 py-2 rounded-full text-xs sm:text-[13px] font-bold transition-all cursor-pointer ${
                         allActive 
-                            ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/25' 
-                            : 'bg-white text-slate-600 border border-slate-200/80 hover:border-slate-300 hover:text-slate-900'
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                     }">
                         ყველა
                     </button>`;
@@ -163,21 +200,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     return `
                         <button type="button" data-sub-pill="${s.id}" class="shrink-0 px-4 py-2 rounded-full text-xs sm:text-[13px] font-bold transition-all cursor-pointer ${
                             isActive 
-                                ? 'bg-blue-600 text-white shadow-sm shadow-blue-600/25' 
-                                : 'bg-white text-slate-600 border border-slate-200/80 hover:border-slate-300 hover:text-slate-900'
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                         }">
                             ${s.name}
                         </button>`;
                 }).join('');
 
                 subcategoryPills.innerHTML = pillsHTML;
+                requestAnimationFrame(updateSubcategoryArrows);
             } else {
                 subcategoryPillsWrapper.classList.add('hidden');
             }
         }
     }
 
-    // Обработка клика по пилюлям подкатегорий (SPA-переход без перезагрузки)
+    // Обработка клика по пилюлям подкатегорий
     document.addEventListener('click', (e) => {
         const pill = e.target.closest('[data-sub-pill], [data-sub-switch]');
         if (!pill) return;
@@ -223,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawMin = minPriceInput && minPriceInput.value !== '' ? parseInt(minPriceInput.value, 10) : NaN;
         const rawMax = maxPriceInput && maxPriceInput.value !== '' ? parseInt(maxPriceInput.value, 10) : NaN;
 
-        // Умная обработка диапазона: если пользователь ввел min > max, просто меняем границы местами при фильтрации, не ломая поле ввода
         let effectiveMin = rawMin;
         let effectiveMax = rawMax;
         if (!isNaN(rawMin) && !isNaN(rawMax) && rawMin > rawMax) {
@@ -234,7 +271,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasPriceFilter = (minPriceInput && minPriceInput.value !== '') || (maxPriceInput && maxPriceInput.value !== '');
         const hasSortFilter = sortSelect && sortSelect.value !== 'default';
 
-        // Показ кнопки сброса и индикатора на мобильном
         if (resetBtn) {
             if (hasPriceFilter || hasSortFilter) {
                 resetBtn.classList.remove('hidden');
@@ -250,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateActivePresetUI(minPriceInput?.value || '', maxPriceInput?.value || '');
 
-        // Фильтрация
         filtered = filtered.filter(p => p.stockStatus !== 'out_of_stock');
 
         if (state.category !== 'all') {
@@ -272,22 +307,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isNaN(effectiveMin)) filtered = filtered.filter(p => p.priceValue >= effectiveMin);
         if (!isNaN(effectiveMax)) filtered = filtered.filter(p => p.priceValue <= effectiveMax);
 
-        // Сортировка
         const sortBy = sortSelect ? sortSelect.value : 'default';
         if (sortBy === 'name-asc') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ka'));
         if (sortBy === 'name-desc') filtered.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'ka'));
         if (sortBy === 'price-asc') filtered.sort((a, b) => a.priceValue - b.priceValue);
         if (sortBy === 'price-desc') filtered.sort((a, b) => b.priceValue - a.priceValue);
 
-        // Обновление счетчика в заголовке
         if (productCountBadge) {
             productCountBadge.textContent = `${filtered.length} პროდუქტი`;
         }
 
-        // Пустое состояние (Empty State)
         if (filtered.length === 0) {
             container.innerHTML = `
-                <div class="col-span-full w-full flex flex-col items-center justify-center text-center py-16 sm:py-24 px-4 bg-white rounded-3xl border border-slate-100">
+                <div class="col-span-full w-full flex flex-col items-center justify-center text-center py-16 sm:py-24 px-4 bg-white rounded-3xl">
                     <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/>
@@ -321,7 +353,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Обновление прогресс-бара и кнопки «Показать еще»
         if (loadMoreContainer) {
             if (filtered.length > endIndex) {
                 loadMoreContainer.classList.remove('hidden');
@@ -338,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Обработчики событий фильтра цены (с Debounce 300ms)
+    // 5. Обработчики событий фильтра цены
     function handlePriceChange(source) {
         if (source === 'mobile') {
             if (minPriceInput && mobileMinPrice) minPriceInput.value = mobileMinPrice.value;
@@ -360,13 +391,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobileMinPrice) mobileMinPrice.addEventListener('input', () => handlePriceChange('mobile'));
     if (mobileMaxPrice) mobileMaxPrice.addEventListener('input', () => handlePriceChange('mobile'));
 
-    // Кнопки быстрых пресетов цены (< 50, 50-150, 150+)
     presetButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetMin = btn.dataset.min || '';
             const targetMax = btn.dataset.max || '';
 
-            // Повторный клик по активному пресету снимает его
             const isSame = (minPriceInput?.value || '') === targetMin && (maxPriceInput?.value || '') === targetMax;
             const newMin = isSame ? '' : targetMin;
             const newMax = isSame ? '' : targetMax;
@@ -441,9 +470,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 7. Мобильная шторка фильтров (iOS Bottom Sheet)
+    // 7. Мобильная шторка фильтров
     const mobileFilterBtn = document.getElementById('mobileFilterBtn');
-    const mobileFilterModal = document.getElementById('mobileFilterModal');
     const mobileFilterBackdrop = document.getElementById('mobileFilterBackdrop');
     const mobileFilterSheet = document.getElementById('mobileFilterSheet');
     const closeMobileFilter = document.getElementById('closeMobileFilter');
