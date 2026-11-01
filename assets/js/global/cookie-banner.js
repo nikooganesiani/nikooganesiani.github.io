@@ -22,41 +22,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Если уже принято — сразу удаляем из DOM
+  // Если уже принято — полностью удаляем из DOM, чтобы не было коллизий
   if (hasConsent()) {
     banner.remove();
     return;
   }
 
-  // Переносим баннер в корень <body> для гарантированного приоритета z-index
+  // Переносим в корень <body> для гарантированного приоритета z-index
   if (banner.parentElement !== document.body) {
     document.body.appendChild(banner);
   }
 
-  // Показываем баннер (выезд сверху вниз)
+  // Показываем баннер (на мобильных сверху вниз, на ПК снизу вверх)
   const showTimeout = setTimeout(() => {
-    banner.classList.remove('hidden');
-    banner.classList.add('flex');
+    banner.classList.add('is-mounted');
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        card.classList.remove('-translate-y-5', 'scale-95', 'opacity-0');
-        card.classList.add('translate-y-0', 'scale-100', 'opacity-100');
+        card.classList.add('is-visible');
       });
     });
   }, 400);
 
-  // Закрытие (уход обратно наверх) и полное удаление из DOM
+  // Закрытие и удаление из DOM
   acceptBtn.addEventListener('click', () => {
     clearTimeout(showTimeout);
     saveConsent();
 
-    // Мгновенно отключаем коллизию
-    card.classList.replace('pointer-events-auto', 'pointer-events-none');
+    // Мгновенно отключаем перехват кликов (хлебные крошки сразу доступны)
+    card.style.pointerEvents = 'none';
     acceptBtn.disabled = true;
 
-    card.classList.remove('translate-y-0', 'scale-100', 'opacity-100');
-    card.classList.add('-translate-y-5', 'scale-95', 'opacity-0');
+    card.classList.remove('is-visible');
 
     const removeBanner = () => {
       if (banner.isConnected) {
