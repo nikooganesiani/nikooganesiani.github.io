@@ -4,6 +4,100 @@ const quickPhone = document.getElementById('quickPhone');
 
 let isQuickOrderSubmitting = false;
 
+// Настройки анти-спама для защиты бота заказов
+const ORDER_RATE_LIMIT = {
+    MAX_PER_MINUTE: 3,        // Максимум 3 заказа в минуту с одного устройства
+    MAX_PER_15_MIN: 5,        // Максимум 5 заказов за 15 минут
+    MIN_INTERVAL_MS: 4000,    // Минимум 4 секунды между любыми двумя кликами
+    SAME_DATA_TTL_MS: 300000  // 5 минут блокировки на отправку 100% идентичных данных
+};
+
+function getOrderHistory() {
+    try {
+        const raw = localStorage.getItem('_enka_order_guard') || '';
+        const parsed = raw ? JSON.parse(raw) : { ts: [], sigs: {} };
+        return {
+            ts: Array.isArray(parsed.ts) ? parsed.ts : [],
+            sigs: parsed.sigs && typeof parsed.sigs === 'object' ? parsed.sigs : {}
+        };
+    } catch (e) {
+        return { ts: [], sigs: {} };
+    }
+}
+
+function saveOrderHistory(history) {
+    try {
+        localStorage.setItem('_enka_order_guard', JSON.stringify(history));
+    } catch (e) {}
+}
+
+/**
+ * Проверяет, можно ли отправлять заказ боту
+ * Возвращает: { allowed: boolean, reason: 'ok' | 'duplicate_exact' | 'cooldown' | 'rate_limit' }
+ */
+function checkOrderSpamGuard(name, phone, productKey) {
+    const now = Date.now();
+    const history = getOrderHistory();
+
+    // Очищаем старые записи (старше 15 минут)
+    history.ts = history.ts.filter(t => now - t < 900000);
+    for (const k of Object.keys(history.sigs)) {
+        if (now - history.sigs[k] > ORDER_RATE_LIMIT.SAME_DATA_TTL_MS) {
+            delete history.sigs[k];
+        }
+    }
+
+    // 1. Проверка на 100% идентичный заказ (тот же телефон + то же имя + тот же товар)
+    const exactSignature = `${name.toLowerCase()}|${phone}|${productKey}`;
+    if (history.sigs[exactSignature] && (now - history.sigs[exactSignature] < ORDER_RATE_LIMIT.SAME_DATA_TTL_MS)) {
+        saveOrderHistory(history);
+        return { allowed: false, reason: 'duplicate_exact' };
+    }
+
+    // 2. Проверка минимального интервала (защита от макросов/кликеров каждую секунду)
+    const lastTs = history.ts.length ? history.ts[history.ts.length - 1] : 0;
+    if (lastTs && (now - lastTs < ORDER_RATE_LIMIT.MIN_INTERVAL_MS)) {
+        saveOrderHistory(history);
+        return { allowed: false, reason: 'cooldown' };
+    }
+
+    // 3. Лимит: не более 3 заказов в минуту (и не более 5 за 15 минут)
+    const lastMinuteCount = history.ts.filter(t => now - t < 60000).length;
+    if (lastMinuteCount >= ORDER_RATE_LIMIT.MAX_PER_MINUTE || history.ts.length >= ORDER_RATE_LIMIT.MAX_PER_15_MIN) {
+        saveOrderHistory(history);
+        return { allowed: false, reason: 'rate_limit' };
+    }
+
+    return { allowed: true, reason: 'ok', exactSignature, history };
+}
+
+function recordSuccessfulOrder(exactSignature) {
+    const now = Date.now();
+    const history = getOrderHistory();
+    history.ts.push(now);
+    if (exactSignature) {
+        history.sigs[exactSignature] = now;
+    }
+    saveOrderHistory(history);
+}
+
+function showSpamError(form, message) {
+    let errEl = form.querySelector('.enka-rate-limit-msg');
+    if (!errEl) {
+        errEl = document.createElement('div');
+        errEl.className = 'enka-rate-limit-msg text-red-500 text-sm text-center mt-2 font-medium';
+        errEl.style.color = '#ef4444';
+        errEl.style.marginTop = '8px';
+        errEl.style.textAlign = 'center';
+        errEl.style.fontSize = '13px';
+        form.appendChild(errEl);
+    }
+    errEl.textContent = message;
+    setTimeout(() => {
+        if (errEl) errEl.textContent = '';
+    }, 5000);
+}
+
 window.openOrderForm = function(product) {
     try {
         isQuickOrderSubmitting = false;
@@ -12,6 +106,9 @@ window.openOrderForm = function(product) {
         document.getElementById('quickFormWrapperName')?.classList.remove('error-border'); 
         document.getElementById('quickFormWrapperPhone')?.classList.remove('error-border');
         
+        const errEl = quickForm?.querySelector('.enka-rate-limit-msg');
+        if (errEl) errEl.textContent = '';
+
         const submitBtn = quickForm?.querySelector('button[type="submit"]');
         if (submitBtn) submitBtn.disabled = false;
 
@@ -32,7 +129,7 @@ if (quickPhone) {
 if (quickForm) {
     quickForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        e.stopImmediatePropagation(); // Блокируем срабатывание других обработчиков на этой же форме
+        e.stopImmediatePropagation();
 
         if (isQuickOrderSubmitting) return;
 
@@ -50,8 +147,6 @@ if (quickForm) {
         if (!name) { nameWrapper?.classList.add('error-border'); return; }
         if (phoneRaw.length !== 9) { phoneWrapper?.classList.add('error-border'); return; }
         
-        isQuickOrderSubmitting = true;
-
         let product = {};
         try {
             const modal = document.getElementById('orderFormModal');
@@ -59,6 +154,39 @@ if (quickForm) {
         } catch (err) {}
 
         const fullPhone = '+995' + phoneRaw;
+        const slugFromUrl = window.location.pathname.replace(/^\/product\/|\/$/g, '') || 'item';
+        const productKey = String(product.id || slugFromUrl || product.name || 'item');
+
+        // Проверка анти-спама перед отправкой к боту
+        const guard = checkOrderSpamGuard(name, fullPhone, productKey);
+
+        if (!guard.allowed) {
+            if (guard.reason === 'duplicate_exact') {
+                // Если человек отправил на 100% те же данные (не меняя телефон) — не спамим бота, просто показываем подтверждение
+                window.closeAppModal?.('orderFormModal');
+                setTimeout(() => {
+                    window.showOrderConfirm?.({
+                        name: name,
+                        phone: fullPhone,
+                        product: product.name,
+                        price: product.price,
+                        oldPrice: product.oldPrice || product.old_price
+                    });
+                }, 300);
+                return;
+            }
+            if (guard.reason === 'cooldown') {
+                showSpamError(quickForm, 'გთხოვთ მოითმინოთ რამდენიმე წამი...');
+                return;
+            }
+            if (guard.reason === 'rate_limit') {
+                showSpamError(quickForm, 'შეკვეთების ლიმიტი ამოწურულია. გთხოვთ სცადოთ 1 წუთში.');
+                return;
+            }
+        }
+
+        isQuickOrderSubmitting = true;
+
         const submitBtn = quickForm.querySelector('button[type="submit"]');
         const originalContent = submitBtn ? submitBtn.innerHTML : ''; 
         
@@ -83,13 +211,17 @@ if (quickForm) {
                     phone: fullPhone,
                     product: product.name || '',
                     price: product.price || 0,
-                    product_id: product.id || '',
+                    product_id: product.id || slugFromUrl,
                     event_id: eventId,
                     source: 'Быстрый заказ'
                 })
             });
             
             if (response.ok) {
+                // Записываем успешную отправку в историю анти-спама
+                recordSuccessfulOrder(guard.exactSignature);
+
+                // Отправляем в CAPI (capi.js сам заблокирует повтор, если это было просто исправление опечатки в номере!)
                 if (typeof window.sendCapiEvent === 'function') {
                     window.sendCapiEvent(
                         'Purchase',
@@ -97,7 +229,7 @@ if (quickForm) {
                             value: numericPrice,
                             currency: 'GEL',
                             content_name: product.name || '',
-                            content_ids: product.id ? [String(product.id)] : [],
+                            content_ids: [productKey],
                             content_type: 'product',
                             num_items: 1
                         },

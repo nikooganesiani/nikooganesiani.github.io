@@ -137,31 +137,48 @@ function ensureIdentifiers() {
   return { fbp: IDS.fbp, fbc: IDS.fbc, external_id: IDS.eid };
 }
 
-function isDuplicatePurchaseOnClient(customData, phone) {
+/**
+ * Дедупликация Purchase на устройстве:
+ * НЕ зависит от введенного номера телефона! Если клиент исправил ошибку в номере и отправил
+ * заказ повторно, в CAPI второй раз покупка этого товара НЕ отправится (замок 30 минут).
+ */
+function isDuplicatePurchaseOnClient(customData) {
   const now = Date.now();
-  // Защита 3 секунды от двойного клика / двойного обработчика на одной форме
-  if (now - lastPurchaseTimestamp < 3000) {
+  const PURCHASE_TTL = 1800000; // 30 минут на один и тот же товар с одного устройства
+
+  // 1. Защита от быстрых повторных отправок на одной странице (15 секунд)
+  if (now - lastPurchaseTimestamp < 15000) {
     return true;
   }
 
   const contentKey = Array.isArray(customData?.content_ids) && customData.content_ids.length
     ? customData.content_ids.join(',')
-    : (customData?.content_name || '');
+    : (customData?.content_name || location.pathname);
   const valKey = String(customData?.value || 0);
-  const phoneKey = String(phone || '').replace(/\D/g, '').slice(-9);
-  const fingerprint = `${contentKey}|${valKey}|${phoneKey}`;
+  // Ключ строится ТОЛЬКО по товару и цене (смена цифры в телефоне не создает новый Purchase!)
+  const productFingerprint = `${contentKey}|${valKey}`;
 
   try {
-    const raw = lsGet('_capi_recent_purchases');
+    const raw = readStored('_capi_recent_purchases');
     const recent = raw ? JSON.parse(raw) : {};
+
     for (const k of Object.keys(recent)) {
-      if (now - recent[k] > 600000) delete recent[k];
+      if (now - recent[k] > PURCHASE_TTL) delete recent[k];
     }
-    if (recent[fingerprint] && now - recent[fingerprint] < 600000) {
+
+    // Проверка: покупали ли уже этот товар с этого браузера за последние 30 минут
+    if (recent[productFingerprint] && (now - recent[productFingerprint] < PURCHASE_TTL)) {
       return true;
     }
-    recent[fingerprint] = now;
-    lsSet('_capi_recent_purchases', JSON.stringify(recent));
+
+    // Проверка: не было ли вообще любой покупки с этого браузера за последние 15 секунд
+    if (recent['__last_any__'] && (now - recent['__last_any__'] < 15000)) {
+      return true;
+    }
+
+    recent[productFingerprint] = now;
+    recent['__last_any__'] = now;
+    persist('_capi_recent_purchases', JSON.stringify(recent), 1);
   } catch (e) {}
 
   lastPurchaseTimestamp = now;
@@ -175,7 +192,6 @@ function resolveUserInfo(userInfo = {}, isPurchase = false) {
     email: userInfo?.email ? String(userInfo.email).trim() : '',
   };
 
-  // Если это Purchase, но скрипт формы забыл передать телефон/имя — ищем в инпутах на странице
   if (isPurchase && (!resolved.phone || !resolved.name)) {
     try {
       if (!resolved.phone) {
@@ -239,8 +255,8 @@ function sendCapiEvent(eventName, customData = {}, eventId = null, userInfo = {}
   const finalUser = resolveUserInfo(userInfo, isPurchase);
 
   if (isPurchase) {
-    if (isDuplicatePurchaseOnClient(customData, finalUser.phone)) {
-      console.info('CAPI: Duplicate Purchase suppressed on client');
+    if (isDuplicatePurchaseOnClient(customData)) {
+      console.info('CAPI: Duplicate Purchase suppressed on client (already tracked for this device/product)');
       return finalEventId;
     }
   }
