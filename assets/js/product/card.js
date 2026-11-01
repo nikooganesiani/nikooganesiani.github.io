@@ -1,11 +1,12 @@
 (() => {
     'use strict';
 
-    // Хранилище объектов товаров в памяти (вместо тяжелого и уязвимого JSON в HTML-атрибутах)
+    // Хранилище объектов товаров в памяти (безопасная замена инлайн-JSON в onclick)
     const productStore = new Map();
     const FALLBACK_IMAGE = '/img/no-image.png';
+    const SLIDE_GAP = 8; // 8px (gap-2) — буфер против субпиксельного наложения соседних фото
 
-    // Экранирование спецсимволов для безопасной вставки в верстку
+    // Экранирование спецсимволов для безопасной вставки в HTML
     const escapeHtml = (str) => {
         if (str === null || str === undefined) return '';
         return String(str)
@@ -16,20 +17,20 @@
             .replace(/'/g, '&#39;');
     };
 
-    // Парсинг цены (корректно обрабатывает и целые, и дробные числа)
+    // Парсинг цены (поддерживает целые и дробные значения)
     const parsePrice = (val) => {
         if (val === null || val === undefined) return 0;
         const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.]/g, '');
         return parseFloat(cleaned) || 0;
     };
 
-    // Очистка строки цены от дублирующегося символа валюты
+    // Форматирование цены для отображения
     const formatPriceDisplay = (val) => {
         if (val === null || val === undefined) return '';
         return escapeHtml(String(val).replace(/₾/g, '').trim());
     };
 
-    // Вызов формы заказа по ID из памяти
+    // Вызов формы заказа по ключу из памяти
     window.triggerCardOrder = function (storeKey, event) {
         if (event) {
             event.preventDefault();
@@ -55,7 +56,7 @@
 
         productStore.set(uniqueId, p);
 
-        // Фильтрация изображений
+        // Фильтрация валидных изображений
         const rawImages = Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []);
         const imgs = rawImages.filter(
             (img) => typeof img === 'string' && img.trim() !== '' && !img.includes('youtube.com') && !img.includes('youtu.be')
@@ -66,7 +67,7 @@
 
         const hasMultipleImages = imgs.length > 1;
 
-        // Бейдж скидки (без теней, правильной прямоугольной пропорции)
+        // Расчет скидки
         const oldVal = parsePrice(p.oldPrice);
         const newVal = parsePrice(p.price);
         let discountBadge = '';
@@ -81,13 +82,13 @@
             }
         }
 
-        // Круглые точки навигации и стрелки (без теней и плашек)
+        // Индикаторы (точки) и стрелки навигации (только для десктопа, чтобы не мешать свайпу карусели)
         let dotsHtml = '';
         let arrowsHtml = '';
 
         if (hasMultipleImages) {
             dotsHtml = `
-            <div class="absolute bottom-2.5 left-0 right-0 flex justify-center items-center gap-1.5 z-10 pointer-events-none" id="dots-${uniqueId}">
+            <div class="absolute bottom-2.5 left-0 right-0 flex justify-center items-center gap-1.5 z-10 pointer-events-none max-lg:hidden" id="dots-${uniqueId}">
                 ${imgs.map((_, i) => `
                     <div class="w-1.5 h-1.5 rounded-full bg-slate-900/20 transition-all duration-300 dot ${i === 0 ? 'active !bg-blue-600 scale-[1.25]' : ''}"></div>
                 `).join('')}
@@ -106,10 +107,10 @@
         const formattedOldPrice = oldVal > newVal ? formatPriceDisplay(p.oldPrice) : '';
 
         return `
-        <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] snap-start min-w-0 flex flex-col relative group/card product-card bg-white rounded-2xl border border-slate-100 overflow-hidden" data-product-id="${safeId}">
+        <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] snap-start min-w-0 flex flex-col relative group/card product-card bg-white rounded-2xl overflow-hidden" data-product-id="${safeId}">
             
             <!-- Блок изображения -->
-            <div class="relative w-full aspect-square overflow-hidden bg-white">
+            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl bg-white">
                 ${discountBadge}
 
                 <button type="button" class="absolute top-2.5 right-2.5 max-sm:top-1.5 max-sm:right-1.5 w-[30px] h-[30px] max-sm:w-[26px] max-sm:h-[26px] bg-transparent border-none rounded-full flex items-center justify-center cursor-pointer text-slate-400 transition-all duration-200 outline-none z-10 hover:text-red-500 active:scale-85 btn-fav-card [&.active]:text-red-500 [&.active>svg]:fill-current" aria-label="დამატება რჩეულებში" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
@@ -118,11 +119,12 @@
 
                 ${arrowsHtml}
 
-                <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden product-images-track" id="track-${uniqueId}">
+                <!-- overflow-x-hidden не перехватывает свайп пальцем/тачпадом у родительской карусели, а gap-2 исключает попадание края соседнего фото -->
+                <div class="flex w-full h-full gap-2 overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden product-images-track" id="track-${uniqueId}">
                     ${imgs.map((img) => `
-                        <div class="flex-[0_0_100%] w-full h-full snap-start flex items-center justify-center">
+                        <div class="flex-[0_0_100%] w-full h-full shrink-0 flex items-center justify-center overflow-hidden bg-white">
                             <a href="${productUrl}" class="w-full h-full block" draggable="false">
-                                <img class="w-full h-full object-cover" 
+                                <img class="w-full h-full object-cover block" 
                                      src="${escapeHtml(img)}" 
                                      alt="${safeName}" 
                                      width="600" 
@@ -140,14 +142,14 @@
             </div>
 
             <!-- Информация о товаре -->
-            <div class="bg-white pt-3 pb-4 px-4 max-sm:pt-2.5 max-sm:pb-3 max-sm:px-3 flex flex-col flex-1 product-info">
+            <div class="bg-white rounded-b-2xl pt-3 pb-4 px-4 max-sm:pt-2.5 max-sm:pb-3 max-sm:px-3 flex flex-col flex-1 product-info">
                 
-                <!-- Название строго в 1 строку, без пустого пространства снизу -->
+                <!-- Название строго в 1 строку -->
                 <a href="${productUrl}" class="block text-[0.95rem] max-sm:text-[0.82rem] font-bold text-slate-900 leading-snug tracking-tight truncate mb-2 max-sm:mb-1.5 no-underline transition-opacity duration-200 hover:opacity-75" title="${safeName}">
                     ${safeName}
                 </a>
 
-                <!-- Цена сразу под названием -->
+                <!-- Блок цены -->
                 <div class="flex flex-row items-baseline gap-1.5 flex-wrap mb-3.5 max-sm:mb-2.5">
                     <div class="text-[1.45rem] max-sm:text-[1.15rem] font-bold text-blue-600 tracking-tight leading-none">
                         ${formattedPrice}₾
@@ -159,8 +161,8 @@
                     ` : ''}
                 </div>
 
-                <!-- Кнопка со скруглением rounded-lg (соосно карточке rounded-2xl) и без теней -->
-                <button type="button" class="bg-blue-600 text-white border-none py-2.5 px-3 max-sm:py-2 max-sm:px-2.5 rounded-lg max-sm:rounded-md cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-colors duration-200 flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-[0.98] outline-none w-full mt-auto" aria-label="ყიდვა" onclick="window.triggerCardOrder('${uniqueId}', event)">
+                <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
+                <button type="button" class="bg-blue-600 text-white border-none py-2.5 px-3 max-sm:py-2 max-sm:px-2.5 rounded-lg max-sm:rounded-md cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 ease-out flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full mt-auto" aria-label="ყიდვა" onclick="window.triggerCardOrder('${uniqueId}', event)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" class="max-sm:w-3.5 max-sm:h-3.5 shrink-0"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                     <span>ყიდვა</span>
                 </button>
@@ -169,16 +171,16 @@
     };
 
     /**
-     * Обновление активной точки при скролле галереи
+     * Обновление активной точки при переключении фото
      */
     window.updateDots = function (uniqueId, trackEl) {
         if (!trackEl || trackEl._isUpdating) return;
         trackEl._isUpdating = true;
 
         window.requestAnimationFrame(() => {
-            const width = trackEl.clientWidth;
-            if (width > 0) {
-                const index = Math.round(trackEl.scrollLeft / width);
+            const step = trackEl.clientWidth + SLIDE_GAP;
+            if (step > SLIDE_GAP) {
+                const index = Math.round(trackEl.scrollLeft / step);
                 const dotsContainer = document.getElementById(`dots-${uniqueId}`);
                 if (dotsContainer) {
                     const dots = dotsContainer.children;
@@ -195,7 +197,7 @@
     };
 
     /**
-     * Переключение слайдов стрелками
+     * Точное переключение слайдов по их реальному offsetLeft (без субпиксельной погрешности)
      */
     window.scrollCardGallery = function (id, dir, e) {
         if (e) {
@@ -203,22 +205,32 @@
             e.stopPropagation();
         }
         const track = document.getElementById(`track-${id}`);
-        if (!track) return;
+        if (!track || track.children.length <= 1) return;
 
-        const width = track.clientWidth;
-        const maxScroll = track.scrollWidth - width;
+        const slides = track.children;
+        const total = slides.length;
+        const step = track.clientWidth + SLIDE_GAP;
 
-        if (dir === 1 && track.scrollLeft >= maxScroll - 5) {
-            track.scrollTo({ left: 0, behavior: 'smooth' });
-        } else if (dir === -1 && track.scrollLeft <= 5) {
-            track.scrollTo({ left: maxScroll, behavior: 'smooth' });
-        } else {
-            track.scrollBy({ left: dir * width, behavior: 'smooth' });
+        const currentIndex = typeof track._targetIndex === 'number'
+            ? track._targetIndex
+            : Math.round(track.scrollLeft / step);
+
+        const nextIndex = (currentIndex + dir + total) % total;
+        track._targetIndex = nextIndex;
+
+        const targetSlide = slides[nextIndex];
+        if (targetSlide) {
+            track.scrollTo({ left: targetSlide.offsetLeft, behavior: 'smooth' });
         }
+
+        clearTimeout(track._resetTimer);
+        track._resetTimer = setTimeout(() => {
+            track._targetIndex = undefined;
+        }, 350);
     };
 
     /**
-     * Скролл внешней карусели карточек
+     * Прокрутка внешней карусели товаров
      */
     window.scrollCarousel = function (containerId, direction) {
         const container = document.getElementById(containerId);
@@ -238,7 +250,7 @@
         }
     };
 
-    // Слушатель скролла для точек
+    // Слушатель скролла для синхронизации точек
     document.addEventListener(
         'scroll',
         (e) => {
