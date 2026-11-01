@@ -1,7 +1,5 @@
 <!-- Хлебные крошки -->
-<nav aria-label="Breadcrumb" class="relative z-20 mb-3 sm:mb-4 animate-[slideDown_0.4s_ease] pointer-events-auto">
-    <div class="flex justify-between items-center gap-4 w-full flex-nowrap">
-        <ol id="categoryBreadcrumbsList" itemscope itemtype="https://schema.org/BreadcrumbList" style="scrollbar-width: none; -ms-overflow-style: none;" class="flex gap-1.5 sm:gap-2 items-center flex-1 min-w-0 overflow-x-auto [&::-webkit-scrollbar]:hidden m-0 p-0 list-none">
+    {% include product/breadcrumbs.html %}
             
             <!-- 1. Главная -->
             <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
