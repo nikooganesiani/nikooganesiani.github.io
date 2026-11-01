@@ -4,6 +4,14 @@ const IDS = { fbp: null, fbc: null, eid: null };
 const SENT_EVENT_IDS = new Set();
 let lastPurchaseTimestamp = 0;
 
+// Настройки защиты бота от спама (работает глобально для всех форм на сайте)
+const BOT_GUARD_CONFIG = {
+  MAX_PER_MINUTE: 3,       // Макс. 3 заказа в минуту с одного устройства
+  MAX_PER_15_MIN: 5,       // Макс. 5 заказов за 15 минут
+  MIN_COOLDOWN_MS: 4000,   // Минимум 4 секунды между кликами
+  SAME_ORDER_TTL: 300000,  // 5 минут блокировки на 100% одинаковые данные (имя + телефон + товар)
+};
+
 const FBP_RE = /^fb\.\d+\.\d+\.\d+$/;
 const FBC_RE = /^fb\.\d+\.\d+\..+/;
 
@@ -137,25 +145,166 @@ function ensureIdentifiers() {
   return { fbp: IDS.fbp, fbc: IDS.fbc, external_id: IDS.eid };
 }
 
-/**
- * Дедупликация Purchase на устройстве:
- * НЕ зависит от введенного номера телефона! Если клиент исправил ошибку в номере и отправил
- * заказ повторно, в CAPI второй раз покупка этого товара НЕ отправится (замок 30 минут).
- */
+// ============================================================================
+// ГЛОБАЛЬНАЯ ЗАЩИТА БОТА ЗАКАЗОВ ОТ СПАМА (ПЕРЕХВАТЧИК ДЛЯ ВСЕХ ФОРМ САЙТА)
+// ============================================================================
+
+function showOrderGuardToast(message, isWarning = true) {
+  try {
+    let toast = document.getElementById('enka-guard-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'enka-guard-toast';
+      toast.style.cssText =
+        'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999999;' +
+        'padding:12px 20px;border-radius:10px;color:#fff;font-size:14px;font-weight:600;' +
+        'box-shadow:0 10px 25px rgba(0,0,0,0.25);transition:opacity 0.3s ease;text-align:center;max-width:90vw;';
+      document.body.appendChild(toast);
+    }
+    toast.style.backgroundColor = isWarning ? '#dc2626' : '#16a34a';
+    toast.style.opacity = '1';
+    toast.textContent = message;
+
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(() => {
+      if (toast) toast.style.opacity = '0';
+    }, 4000);
+  } catch (e) {}
+}
+
+function checkAndRecordBotOrder(name, phone, productKey) {
+  const now = Date.now();
+  let history = { ts: [], sigs: {} };
+
+  try {
+    const raw = readStored('_enka_bot_guard');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.ts)) history.ts = parsed.ts;
+      if (parsed.sigs && typeof parsed.sigs === 'object') history.sigs = parsed.sigs;
+    }
+  } catch (e) {}
+
+  // Очистка старых записей
+  history.ts = history.ts.filter((t) => now - t < 900000);
+  for (const k of Object.keys(history.sigs)) {
+    if (now - history.sigs[k] > BOT_GUARD_CONFIG.SAME_ORDER_TTL) {
+      delete history.sigs[k];
+    }
+  }
+
+  // 1. Защита от быстрых кликов (< 4 секунд)
+  const lastTs = history.ts.length ? history.ts[history.ts.length - 1] : 0;
+  if (lastTs && now - lastTs < BOT_GUARD_CONFIG.MIN_COOLDOWN_MS) {
+    return {
+      allowed: false,
+      reason: 'cooldown',
+      message: 'გთხოვთ მოითმინოთ რამდენიმე წამი...',
+    };
+  }
+
+  // 2. Блокировка 100% идентичного заказа (те же имя + телефон + товар в течение 5 минут)
+  const cleanPhone = String(phone || '').replace(/\D/g, '').slice(-9);
+  const cleanName = String(name || '').trim().toLowerCase();
+  const sig = `${cleanName}|${cleanPhone}|${productKey}`;
+
+  if (history.sigs[sig] && now - history.sigs[sig] < BOT_GUARD_CONFIG.SAME_ORDER_TTL) {
+    return {
+      allowed: false,
+      reason: 'duplicate_exact',
+      message: 'თქვენი შეკვეთა უკვე მიღებულია!',
+    };
+  }
+
+  // 3. Лимит: максимум 3 заказа в минуту (и 5 за 15 минут) с одного устройства
+  const lastMinCount = history.ts.filter((t) => now - t < 60000).length;
+  if (
+    lastMinCount >= BOT_GUARD_CONFIG.MAX_PER_MINUTE ||
+    history.ts.length >= BOT_GUARD_CONFIG.MAX_PER_15_MIN
+  ) {
+    return {
+      allowed: false,
+      reason: 'rate_limit',
+      message: 'შეკვეთების ლიმიტი ამოწურულია (მაქს. 3 წუთში). გთხოვთ სცადოთ 1 წუთში.',
+    };
+  }
+
+  // Записываем СРАЗУ (до завершения сети), чтобы параллельные клики не проскочили
+  history.ts.push(now);
+  history.sigs[sig] = now;
+  persist('_enka_bot_guard', JSON.stringify(history), 1);
+
+  return { allowed: true };
+}
+
+// Перехватываем отправку заказов во все воркеры бота на всех страницах сайта
+if (typeof window.fetch === 'function' && !window.__enkaFetchGuarded) {
+  window.__enkaFetchGuarded = true;
+  const originalFetch = window.fetch.bind(window);
+
+  window.fetch = async function (input, init) {
+    try {
+      const url = typeof input === 'string' ? input : input?.url || '';
+      const method = (init?.method || input?.method || 'GET').toUpperCase();
+
+      // Проверяем все POST-запросы кроме самого CAPI-воркера
+      if (
+        method === 'POST' &&
+        url &&
+        !url.includes('capi.enkaelectronics.com.ge') &&
+        init?.body &&
+        typeof init.body === 'string'
+      ) {
+        let bodyObj = null;
+        try {
+          bodyObj = JSON.parse(init.body);
+        } catch (e) {}
+
+        // Определяем, что это запрос заказа в бот (есть поле phone)
+        if (bodyObj && (bodyObj.phone || bodyObj.tel || bodyObj.customer_phone)) {
+          const phone = bodyObj.phone || bodyObj.tel || bodyObj.customer_phone || '';
+          const name = bodyObj.name || bodyObj.customer_name || '';
+          const prodKey =
+            bodyObj.product_id || bodyObj.product || location.pathname.replace(/^\/|\/$/g, '') || 'item';
+
+          const guard = checkAndRecordBotOrder(name, phone, prodKey);
+          if (!guard.allowed) {
+            showOrderGuardToast(guard.message, guard.reason !== 'duplicate_exact');
+            console.warn('[OrderGuard] Запрос к боту заблокирован:', guard.reason);
+
+            return new Response(
+              JSON.stringify({ ok: false, error: guard.reason, message: guard.message }),
+              {
+                status: 429,
+                headers: { 'Content-Type': 'application/json' },
+              }
+            );
+          }
+        }
+      }
+    } catch (e) {}
+
+    return originalFetch(input, init);
+  };
+}
+
+// ============================================================================
+// ДЕДУПЛИКАЦИЯ И ОТПРАВКА CAPI
+// ============================================================================
+
 function isDuplicatePurchaseOnClient(customData) {
   const now = Date.now();
-  const PURCHASE_TTL = 1800000; // 30 минут на один и тот же товар с одного устройства
+  const PURCHASE_TTL = 1800000; // 30 минут замок на тот же товар
 
-  // 1. Защита от быстрых повторных отправок на одной странице (15 секунд)
   if (now - lastPurchaseTimestamp < 15000) {
     return true;
   }
 
-  const contentKey = Array.isArray(customData?.content_ids) && customData.content_ids.length
-    ? customData.content_ids.join(',')
-    : (customData?.content_name || location.pathname);
+  const contentKey =
+    Array.isArray(customData?.content_ids) && customData.content_ids.length
+      ? customData.content_ids.join(',')
+      : customData?.content_name || location.pathname;
   const valKey = String(customData?.value || 0);
-  // Ключ строится ТОЛЬКО по товару и цене (смена цифры в телефоне не создает новый Purchase!)
   const productFingerprint = `${contentKey}|${valKey}`;
 
   try {
@@ -166,13 +315,11 @@ function isDuplicatePurchaseOnClient(customData) {
       if (now - recent[k] > PURCHASE_TTL) delete recent[k];
     }
 
-    // Проверка: покупали ли уже этот товар с этого браузера за последние 30 минут
-    if (recent[productFingerprint] && (now - recent[productFingerprint] < PURCHASE_TTL)) {
+    if (recent[productFingerprint] && now - recent[productFingerprint] < PURCHASE_TTL) {
       return true;
     }
 
-    // Проверка: не было ли вообще любой покупки с этого браузера за последние 15 секунд
-    if (recent['__last_any__'] && (now - recent['__last_any__'] < 15000)) {
+    if (recent['__last_any__'] && now - recent['__last_any__'] < 15000) {
       return true;
     }
 
