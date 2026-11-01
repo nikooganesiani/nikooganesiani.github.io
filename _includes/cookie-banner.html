@@ -2,45 +2,53 @@
   id="cookie-banner" 
   role="region"
   aria-label="Cookie Policy Notification"
-  class="fixed bottom-4 inset-x-4 sm:bottom-6 sm:inset-x-0 z-50 hidden justify-center pointer-events-none"
+  style="z-index: 2147483647;"
+  class="fixed bottom-4 inset-x-3.5 sm:bottom-6 sm:inset-x-0 z-[2147483647] hidden justify-center pointer-events-none"
 >
   <div 
     id="cookie-banner-card"
-    class="pointer-events-auto w-full sm:w-auto sm:max-w-lg bg-white/95 backdrop-blur-xl border border-slate-200/90 shadow-2xl shadow-slate-900/10 rounded-2xl sm:rounded-[24px] p-4 sm:p-4 sm:pl-5 flex items-center justify-between gap-3.5 sm:gap-6 transition-all duration-300 ease-out translate-y-4 scale-95 opacity-0 motion-reduce:transition-none motion-reduce:transform-none"
+    class="pointer-events-auto w-full sm:w-auto sm:max-w-[540px] bg-white/95 backdrop-blur-2xl border border-white/80 ring-1 ring-slate-900/[0.08] shadow-[0_20px_50px_-12px_rgba(15,23,42,0.25)] rounded-2xl sm:rounded-[24px] p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-5 transition-all duration-300 ease-out translate-y-6 scale-95 opacity-0 motion-reduce:transition-none motion-reduce:transform-none"
   >
-    <div class="flex items-center gap-3.5 min-w-0">
-      <!-- Иконка для визуального акцента (скрыта на очень узких экранах, если мало места, либо видна всегда) -->
-      <div class="hidden xs:flex shrink-0 w-10 h-10 rounded-xl bg-blue-50 text-[#155dfc] items-center justify-center">
-        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" />
-          <path d="M8.5 8.5v.01" />
-          <path d="M16 15.5v.01" />
-          <path d="M12 12v.01" />
-          <path d="M11 17v.01" />
-          <path d="M7 14v.01" />
+    <!-- Левая часть: Иконка + Текст -->
+    <div class="flex items-center gap-3 sm:gap-3.5 min-w-0">
+      
+      <!-- Бейдж с двухслойной иконкой (теперь виден на всех экранах) -->
+      <div class="flex shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-[14px] bg-gradient-to-br from-[#155dfc]/15 via-[#155dfc]/5 to-transparent border border-[#155dfc]/15 text-[#155dfc] items-center justify-center shadow-inner">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8.5" cy="8.5" r="1" fill="currentColor"/>
+          <circle cx="15.5" cy="15.5" r="1" fill="currentColor"/>
+          <circle cx="12" cy="12" r="1" fill="currentColor"/>
+          <circle cx="11" cy="16.5" r="1" fill="currentColor"/>
+          <circle cx="7.5" cy="13.5" r="1" fill="currentColor"/>
         </svg>
       </div>
 
+      <!-- Текстовый блок -->
       <div class="flex-1 min-w-0">
-        <p class="text-xs sm:text-sm font-semibold text-slate-900 leading-snug">
-          საიტი იყენებს ქუქი-ფაილებს (Cookies)
+        <p class="text-xs sm:text-[13.5px] font-semibold text-slate-900 tracking-tight leading-snug">
+          საიტი იყენებს ქუქი-ფაილებს (Cookies).
         </p>
-        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1 leading-snug">
+        <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
           იხილეთ 
           <a 
             href="/info/privacy" 
-            class="text-[#155dfc] font-medium underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155dfc] rounded-xs"
-          >კონფიდენციალურობის პოლიტიკა</a>
+            class="text-[#155dfc] font-medium underline decoration-[#155dfc]/35 underline-offset-4 hover:decoration-[#155dfc] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155dfc] rounded-xs"
+          >კონფიდენციალურობის პოლიტიკა</a>.
         </p>
       </div>
     </div>
 
+    <!-- Правая часть: Кнопка с иконкой галочки -->
     <button 
       id="cookie-accept-btn" 
       type="button" 
-      class="shrink-0 px-4 py-2.5 sm:px-5 sm:py-2.5 bg-[#155dfc] hover:bg-blue-700 active:scale-95 text-white text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 shadow-sm shadow-[#155dfc]/25 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155dfc] focus-visible:ring-offset-2"
+      class="shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 bg-gradient-to-b from-[#256aff] to-[#155dfc] hover:from-[#155dfc] hover:to-[#1048cb] active:scale-95 text-white text-xs sm:text-[13px] font-semibold rounded-xl sm:rounded-[14px] transition-all duration-200 shadow-[0_4px_14px_0_rgba(21,93,252,0.35),inset_0_1px_0_0_rgba(255,255,255,0.25)] cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#155dfc] focus-visible:ring-offset-2"
     >
-      ვეთანხმები
+      <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M20 6 9 17l-5-5"/>
+      </svg>
+      <span>ვეთანხმები</span>
     </button>
   </div>
 </aside>
