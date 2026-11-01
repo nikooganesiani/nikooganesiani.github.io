@@ -2,13 +2,19 @@ const quickForm = document.getElementById('quickOrderForm');
 const quickName = document.getElementById('quickName');
 const quickPhone = document.getElementById('quickPhone');
 
+let isQuickOrderSubmitting = false;
+
 window.openOrderForm = function(product) {
     try {
+        isQuickOrderSubmitting = false;
         if (quickName) quickName.value = '';
         if (quickPhone) quickPhone.value = '';
         document.getElementById('quickFormWrapperName')?.classList.remove('error-border'); 
         document.getElementById('quickFormWrapperPhone')?.classList.remove('error-border');
         
+        const submitBtn = quickForm?.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.disabled = false;
+
         const modal = document.getElementById('orderFormModal');
         if (modal) {
             modal.dataset.product = JSON.stringify(product || {});
@@ -19,34 +25,39 @@ window.openOrderForm = function(product) {
 
 if (quickPhone) {
     quickPhone.addEventListener('input', function() {
-        let val = this.value.replace(/\D/g, '');
-        if (val.startsWith('995')) val = val.substring(3);
-        if (val.length > 9) val = val.slice(0, 9);
-        let formatted = '';
-        for (let i = 0; i < val.length; i++) {
-            if (i === 3 || i === 5 || i === 7) formatted += ' ';
-            formatted += val[i];
-        }
-        this.value = formatted;
+        window.formatPhoneInput(this);
     });
 }
 
 if (quickForm) {
     quickForm.addEventListener('submit', async function(e) {
         e.preventDefault();
+        e.stopImmediatePropagation(); // Блокируем срабатывание других обработчиков на этой же форме
+
+        if (isQuickOrderSubmitting) return;
+
         const hp = document.getElementById('quickEmailHp');
         if (hp && hp.value) return; 
 
         const name = quickName?.value?.trim() || '';
-        const phoneRaw = (quickPhone?.value || '').replace(/\s/g, '');
+        const phoneRaw = (quickPhone?.value || '').replace(/\D/g, '');
         const phoneWrapper = document.getElementById('quickFormWrapperPhone');
         const nameWrapper = document.getElementById('quickFormWrapperName');
         
+        nameWrapper?.classList.remove('error-border');
+        phoneWrapper?.classList.remove('error-border');
+
         if (!name) { nameWrapper?.classList.add('error-border'); return; }
         if (phoneRaw.length !== 9) { phoneWrapper?.classList.add('error-border'); return; }
         
-        const modal = document.getElementById('orderFormModal');
-        const product = JSON.parse(modal?.dataset?.product || '{}');
+        isQuickOrderSubmitting = true;
+
+        let product = {};
+        try {
+            const modal = document.getElementById('orderFormModal');
+            product = JSON.parse(modal?.dataset?.product || '{}');
+        } catch (err) {}
+
         const fullPhone = '+995' + phoneRaw;
         const submitBtn = quickForm.querySelector('button[type="submit"]');
         const originalContent = submitBtn ? submitBtn.innerHTML : ''; 
@@ -64,7 +75,7 @@ if (quickForm) {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'X-Requested-With': 'EnkaOrderForm' // Защита от ботов
+                    'X-Requested-With': 'EnkaOrderForm'
                 },
                 body: JSON.stringify({
                     event_name: 'Purchase',
@@ -79,24 +90,23 @@ if (quickForm) {
             });
             
             if (response.ok) {
-                if (typeof fbq === 'function') {
-                    fbq('track', 'Purchase', {
-                        value: numericPrice,
-                        currency: 'GEL',
-                        content_name: product.name,
-                        content_ids: product.id ? [String(product.id)] : [],
-                        content_type: 'product',
-                        num_items: 1
-                    }, { eventID: eventId });
-                }
                 if (typeof window.sendCapiEvent === 'function') {
-                    window.sendCapiEvent('Purchase', {
-                        value: numericPrice,
-                        currency: 'GEL',
-                        content_name: product.name,
-                        content_ids: product.id ? [String(product.id)] : [],
-                        content_type: 'product'
-                    }, eventId);
+                    window.sendCapiEvent(
+                        'Purchase',
+                        {
+                            value: numericPrice,
+                            currency: 'GEL',
+                            content_name: product.name || '',
+                            content_ids: product.id ? [String(product.id)] : [],
+                            content_type: 'product',
+                            num_items: 1
+                        },
+                        eventId,
+                        {
+                            name: name,
+                            phone: fullPhone
+                        }
+                    );
                 }
                 
                 window.closeAppModal?.('orderFormModal');
@@ -108,15 +118,26 @@ if (quickForm) {
                         price: product.price,
                         oldPrice: product.oldPrice || product.old_price
                     });
+                    if (submitBtn) {
+                        submitBtn.innerHTML = originalContent;
+                        submitBtn.disabled = false;
+                    }
+                    isQuickOrderSubmitting = false;
                 }, 400);
+            } else {
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }
+                isQuickOrderSubmitting = false;
             }
         } catch(error) {
             console.error(error);
-        } finally {
             if (submitBtn) {
                 submitBtn.innerHTML = originalContent;
                 submitBtn.disabled = false;
             }
+            isQuickOrderSubmitting = false;
         }
     });
 }
@@ -157,9 +178,9 @@ window.showOrderConfirm = function(data = {}) {
 
 window.formatPhoneInput = function(input) {
     if (!input) return;
-    let value = input.value.replace(/\s/g, '');
-    if (value.startsWith('+995')) value = value.substring(4);
-    value = value.replace(/\D/g, '');
+    let value = input.value.replace(/\D/g, '');
+    if (value.startsWith('995')) value = value.substring(3);
+    if (value.startsWith('0')) value = value.substring(1);
     if (value.length > 9) value = value.slice(0, 9);
     let formatted = '';
     for (let i = 0; i < value.length; i++) {
@@ -174,8 +195,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const nameInput = form.querySelector('input[placeholder*="სახელი"], input[name="name"]');
         const phoneInput = form.querySelector('input[type="tel"], input[name="phone"]');
         if (nameInput && phoneInput) {
-            if (!nameInput.id) nameInput.id = 'n' + Math.random().toString(36).substr(2, 5);
-            if (!phoneInput.id) phoneInput.id = 'p' + Math.random().toString(36).substr(2, 5);
+            if (!nameInput.id) nameInput.id = 'n' + Math.random().toString(36).slice(2, 7);
+            if (!phoneInput.id) phoneInput.id = 'p' + Math.random().toString(36).slice(2, 7);
             phoneInput.addEventListener('input', function() { window.formatPhoneInput(this); });
         }
     });

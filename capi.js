@@ -1,6 +1,8 @@
 const CAPI_WORKER_URL = 'https://capi.enkaelectronics.com.ge/';
 
 const IDS = { fbp: null, fbc: null, eid: null };
+const SENT_EVENT_IDS = new Set();
+let lastPurchaseTimestamp = 0;
 
 const FBP_RE = /^fb\.\d+\.\d+\.\d+$/;
 const FBC_RE = /^fb\.\d+\.\d+\..+/;
@@ -135,16 +137,99 @@ function ensureIdentifiers() {
   return { fbp: IDS.fbp, fbc: IDS.fbc, external_id: IDS.eid };
 }
 
+/**
+ * Проверяет, не отправлялся ли уже такой же Purchase в последние 10 минут
+ */
+function isDuplicatePurchaseOnClient(customData, phone) {
+  const now = Date.now();
+  // Защита от одновременного вызова из 2 разных обработчиков форм (интервал 15 сек)
+  if (now - lastPurchaseTimestamp < 15000) {
+    return true;
+  }
+
+  const contentKey = Array.isArray(customData?.content_ids) && customData.content_ids.length
+    ? customData.content_ids.join(',')
+    : (customData?.content_name || '');
+  const valKey = String(customData?.value || 0);
+  const phoneKey = String(phone || '').replace(/\D/g, '').slice(-9);
+  const fingerprint = `${contentKey}|${valKey}|${phoneKey}`;
+
+  try {
+    const raw = lsGet('_capi_recent_purchases');
+    const recent = raw ? JSON.parse(raw) : {};
+    // Очистка старых записей (старше 10 минут = 600_000 мс)
+    for (const k of Object.keys(recent)) {
+      if (now - recent[k] > 600000) delete recent[k];
+    }
+    if (recent[fingerprint] && now - recent[fingerprint] < 600000) {
+      return true;
+    }
+    recent[fingerprint] = now;
+    lsSet('_capi_recent_purchases', JSON.stringify(recent));
+  } catch (e) {}
+
+  lastPurchaseTimestamp = now;
+  return false;
+}
+
+/**
+ * Резервный поиск имени и телефона, если вызывающий код не передал userInfo
+ */
+function resolveUserInfo(userInfo = {}) {
+  const resolved = {
+    phone: userInfo?.phone ? String(userInfo.phone).trim() : '',
+    name: userInfo?.name ? String(userInfo.name).trim() : '',
+    email: userInfo?.email ? String(userInfo.email).trim() : '',
+  };
+
+  if (resolved.phone && resolved.name) {
+    lsSet('_capi_last_user', JSON.stringify(resolved));
+    return resolved;
+  }
+
+  // Попытка достать из кеша предыдущего ввода
+  try {
+    const cached = JSON.parse(lsGet('_capi_last_user') || '{}');
+    if (!resolved.phone && cached.phone) resolved.phone = cached.phone;
+    if (!resolved.name && cached.name) resolved.name = cached.name;
+    if (!resolved.email && cached.email) resolved.email = cached.email;
+  } catch (e) {}
+
+  return resolved;
+}
+
 ensureIdentifiers();
 
 function sendCapiEvent(eventName, customData = {}, eventId = null, userInfo = {}) {
+  if (navigator.webdriver) return null;
+
   if (!eventName || typeof eventName !== 'string' || !eventName.trim()) {
     console.warn('CAPI: event_name must be a non-empty string');
     return null;
   }
 
   const validEventName = eventName.trim();
-  const finalEventId = eventId || (Date.now() + '_' + Math.random().toString(36).substring(2, 9));
+  const finalEventId =
+    eventId && typeof eventId === 'string' && eventId.trim()
+      ? eventId.trim()
+      : `${validEventName.toLowerCase()}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+  // 1. Защита от повторной отправки одного и того же event_id
+  if (SENT_EVENT_IDS.has(finalEventId)) {
+    return finalEventId;
+  }
+
+  const finalUser = resolveUserInfo(userInfo);
+
+  // 2. Защита от дублей события Purchase на стороне клиента
+  if (validEventName === 'Purchase') {
+    if (isDuplicatePurchaseOnClient(customData, finalUser.phone)) {
+      console.info('CAPI: Duplicate Purchase suppressed on client');
+      return finalEventId;
+    }
+  }
+
+  SENT_EVENT_IDS.add(finalEventId);
   const ids = ensureIdentifiers();
 
   try {
@@ -159,11 +244,9 @@ function sendCapiEvent(eventName, customData = {}, eventId = null, userInfo = {}
       custom_data: customData && typeof customData === 'object' ? customData : {},
     };
 
-    if (userInfo && typeof userInfo === 'object') {
-      if (userInfo.phone) payload.phone = String(userInfo.phone);
-      if (userInfo.name) payload.name = String(userInfo.name);
-      if (userInfo.email) payload.email = String(userInfo.email);
-    }
+    if (finalUser.phone) payload.phone = finalUser.phone;
+    if (finalUser.name) payload.name = finalUser.name;
+    if (finalUser.email) payload.email = finalUser.email;
 
     fetch(CAPI_WORKER_URL, {
       method: 'POST',
