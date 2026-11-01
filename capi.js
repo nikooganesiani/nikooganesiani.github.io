@@ -137,13 +137,10 @@ function ensureIdentifiers() {
   return { fbp: IDS.fbp, fbc: IDS.fbc, external_id: IDS.eid };
 }
 
-/**
- * Проверяет, не отправлялся ли уже такой же Purchase в последние 10 минут
- */
 function isDuplicatePurchaseOnClient(customData, phone) {
   const now = Date.now();
-  // Защита от одновременного вызова из 2 разных обработчиков форм (интервал 15 сек)
-  if (now - lastPurchaseTimestamp < 15000) {
+  // Защита 3 секунды от двойного клика / двойного обработчика на одной форме
+  if (now - lastPurchaseTimestamp < 3000) {
     return true;
   }
 
@@ -157,7 +154,6 @@ function isDuplicatePurchaseOnClient(customData, phone) {
   try {
     const raw = lsGet('_capi_recent_purchases');
     const recent = raw ? JSON.parse(raw) : {};
-    // Очистка старых записей (старше 10 минут = 600_000 мс)
     for (const k of Object.keys(recent)) {
       if (now - recent[k] > 600000) delete recent[k];
     }
@@ -172,22 +168,43 @@ function isDuplicatePurchaseOnClient(customData, phone) {
   return false;
 }
 
-/**
- * Резервный поиск имени и телефона, если вызывающий код не передал userInfo
- */
-function resolveUserInfo(userInfo = {}) {
+function resolveUserInfo(userInfo = {}, isPurchase = false) {
   const resolved = {
     phone: userInfo?.phone ? String(userInfo.phone).trim() : '',
     name: userInfo?.name ? String(userInfo.name).trim() : '',
     email: userInfo?.email ? String(userInfo.email).trim() : '',
   };
 
-  if (resolved.phone && resolved.name) {
+  // Если это Purchase, но скрипт формы забыл передать телефон/имя — ищем в инпутах на странице
+  if (isPurchase && (!resolved.phone || !resolved.name)) {
+    try {
+      if (!resolved.phone) {
+        const phoneInputs = document.querySelectorAll('#quickPhone, input[type="tel"], input[name="phone"]');
+        for (const el of phoneInputs) {
+          const digits = (el.value || '').replace(/\D/g, '');
+          if (digits.length >= 9) {
+            resolved.phone = '+995' + digits.slice(-9);
+            break;
+          }
+        }
+      }
+      if (!resolved.name) {
+        const nameInputs = document.querySelectorAll('#quickName, input[name="name"], input[placeholder*="სახელი"]');
+        for (const el of nameInputs) {
+          if (el.value && el.value.trim()) {
+            resolved.name = el.value.trim();
+            break;
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  if (resolved.phone || resolved.name) {
     lsSet('_capi_last_user', JSON.stringify(resolved));
     return resolved;
   }
 
-  // Попытка достать из кеша предыдущего ввода
   try {
     const cached = JSON.parse(lsGet('_capi_last_user') || '{}');
     if (!resolved.phone && cached.phone) resolved.phone = cached.phone;
@@ -214,15 +231,14 @@ function sendCapiEvent(eventName, customData = {}, eventId = null, userInfo = {}
       ? eventId.trim()
       : `${validEventName.toLowerCase()}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
-  // 1. Защита от повторной отправки одного и того же event_id
   if (SENT_EVENT_IDS.has(finalEventId)) {
     return finalEventId;
   }
 
-  const finalUser = resolveUserInfo(userInfo);
+  const isPurchase = validEventName === 'Purchase';
+  const finalUser = resolveUserInfo(userInfo, isPurchase);
 
-  // 2. Защита от дублей события Purchase на стороне клиента
-  if (validEventName === 'Purchase') {
+  if (isPurchase) {
     if (isDuplicatePurchaseOnClient(customData, finalUser.phone)) {
       console.info('CAPI: Duplicate Purchase suppressed on client');
       return finalEventId;
