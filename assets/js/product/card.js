@@ -57,7 +57,7 @@ window.createProductCardHTML = function(p, prefix = 'sim') {
                 <div class="text-[1.5rem] max-sm:text-[1.1rem] font-bold text-blue-600 tracking-tight leading-none">${String(p.price).replace(/₾/g, '')}₾</div>
                 ${p.oldPrice ? `<span class="text-[0.85rem] max-sm:text-[0.75rem] leading-snug mb-[2px] line-through decoration-slate-400 decoration-[1px] text-slate-400">${String(p.oldPrice).replace(/₾/g, '')}₾</span>` : ''}
             </div>
-            <button class="bg-blue-600 text-white border-none p-3 max-sm:p-2 rounded-lg max-sm:rounded-md cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full mt-auto" aria-label="ყიდვა" onclick='window.openOrderForm(${productDataAttr})'>
+            <button class="bg-blue-600 text-white border-none p-3 max-sm:p-2 rounded-lg max-sm:rounded-md cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full mt-2.5 sm:mt-3" aria-label="ყიდვა" onclick='window.openOrderForm(${productDataAttr})'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="max-sm:w-3.5 max-sm:h-3.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                 ყიდვა
             </button>
