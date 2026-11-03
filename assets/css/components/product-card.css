@@ -1,0 +1,39 @@
+/* The same card is used by card.js and the server-rendered fallback. */
+.product-card { position: relative; display: flex; flex-direction: column; min-width: 0; border: 0; border-radius: 0; background: #fff; color: #2c3644; overflow: visible; }
+.product-card-media { position: relative; width: 100%; aspect-ratio: 1; background: #f7f8fa; border-radius: 12px; overflow: hidden; }
+.product-images-track { display: flex; width: 100%; height: 100%; gap: 8px; overflow-x: hidden; scrollbar-width: none; }
+.product-images-track::-webkit-scrollbar { display: none; }
+.product-card-slide { display: flex; align-items: center; justify-content: center; flex: 0 0 100%; width: 100%; height: 100%; background: #f7f8fa; overflow: hidden; }
+.product-card-image-link { display: block; width: 100%; height: 100%; }
+.product-card-image { display: block; width: 100%; height: 100%; padding: 16px; object-fit: contain; mix-blend-mode: multiply; }
+.product-info { display: flex; flex-direction: column; flex: 1; padding: 16px 1px 0; min-width: 0; }
+.product-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 13px; line-height: 1.65; font-weight: 550; color: #414b59; margin-bottom: 12px; min-height: 3.3em; text-decoration: none; }
+.product-name:hover { color: #155dfc; }
+.product-card-prices { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.product-card-price { color: #2c3644; font-size: 20px; font-weight: 600; line-height: 1.15; }
+.product-card-old-price { color: #929ba8; font-size: 12px; line-height: 1.4; text-decoration: line-through; text-decoration-thickness: 1px; }
+.product-card-action { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: auto; background: #fff; border: 1px solid #dfe4eb; border-radius: 8px; color: #536171; min-height: 40px; padding: 9px 12px; font-size: 12px; line-height: 1.5; font-weight: 550; text-decoration: none; cursor: pointer; box-shadow: none; transition: border-color .2s, color .2s, background .2s; }
+.product-card-action:hover { background: #f4f7fe; border-color: #b5c9f4; color: #155dfc; }
+.product-card-action:disabled { border-color: #eceff3; color: #929ba8; background: #f7f8fa; cursor: default; }
+.product-card-action svg { flex-shrink: 0; }
+.product-card-favorite { position: absolute; top: 6px; right: 6px; z-index: 10; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: #8893a1; cursor: pointer; transition: color .2s, background .2s; }
+.product-card-favorite:hover { background: #fff; color: #d14b62; }
+.product-card-favorite.active { color: #d14b62; }
+.product-card-favorite.active svg { fill: currentColor; }
+.product-card-discount { position: absolute; top: 10px; left: 10px; z-index: 10; padding: 4px 8px; border-radius: 6px; font-size: 12px; line-height: 1.5; font-weight: 600; background: #ef4444; color: #fff; pointer-events: none; user-select: none; }
+.product-card-dots { position: absolute; bottom: 10px; left: 0; right: 0; z-index: 10; display: flex; align-items: center; justify-content: center; gap: 6px; pointer-events: none; }
+.product-card .dot { width: 4px; height: 4px; border-radius: 50%; background: #0f172a33; transition: transform .2s, background .2s; }
+.product-card .dot.active { background: #155dfc; transform: scale(1.25); }
+.product-card .card-nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 1px solid #e3e7ed; border-radius: 50%; background: #fffffff0; color: #687485; opacity: 0; cursor: pointer; transition: color .2s, opacity .2s; }
+.product-card .card-nav-arrow.prev { left: 8px; }
+.product-card .card-nav-arrow.next { right: 8px; }
+.product-card:hover .card-nav-arrow, .product-card:focus-within .card-nav-arrow { opacity: 1; }
+.product-card .card-nav-arrow:hover { color: #155dfc; }
+.product-card .card-nav-arrow svg { width: 16px; height: 16px; }
+@media (max-width: 1023px) { .product-card-dots, .product-card .card-nav-arrow { display: none; } }
+@media (max-width: 767px) {
+  .product-card-image { padding: 12px; }
+  .product-name { font-size: 12px; }
+  .product-card-price { font-size: 19px; }
+}
+@media (max-width: 359px) { .product-card-price { font-size: 18px; } }

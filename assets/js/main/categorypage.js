@@ -146,63 +146,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (categoryMainTitle) categoryMainTitle.textContent = pageHeading;
 
-        // Хлебные крошки (1-в-1 со страницей товара breadcrumbs.html)
+        // Shared breadcrumb markup, icons and styles; only the items change.
         if (breadcrumbsList) {
-            const rawIcon = catData?.icon ? String(catData.icon) : '';
-            const hasCatIcon = rawIcon.includes('<svg');
-            const catIconHTML = hasCatIcon
-                ? `<span class="inline-flex items-center justify-center shrink-0 w-4 h-4 [&>svg]:w-4 [&>svg]:h-4 [&>svg]:block" aria-hidden="true">${rawIcon.replace('<svg', '<svg width="16" height="16"')}</span>`
-                : '';
-
-            const separatorCrumb = `
-                <li class="flex items-center shrink-0 text-slate-300 select-none" aria-hidden="true">
-                    <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6"></path>
-                    </svg>
-                </li>`;
-
-            const homeCrumb = `
-                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap shrink-0">
-                    <a itemprop="item" href="/" aria-label="მთავარი" draggable="false" class="inline-flex items-center gap-1.5 py-1.5 px-1 text-slate-600 hover:text-blue-600 active:text-blue-700 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded no-underline touch-manipulation">
-                        <svg class="shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        <span itemprop="name" class="max-sm:sr-only">მთავარი</span>
-                    </a>
-                    <meta itemprop="position" content="1" />
-                </li>`;
-
+            const items = [];
             if (state.category !== 'all' && state.sub !== 'all' && !state.search) {
-                // Цепочка: Главная > Категория (с иконкой) > Подкатегория
-                breadcrumbsList.innerHTML = `
-                    ${homeCrumb}
-                    ${separatorCrumb}
-                    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
-                        <a itemprop="item" href="/category/?${encodeURIComponent(state.category)}" data-sub-switch="all" aria-label="${categoryTitle}" draggable="false" class="inline-flex items-center gap-1.5 py-1.5 px-1 text-slate-600 hover:text-blue-600 active:text-blue-700 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded no-underline max-w-full overflow-hidden touch-manipulation">
-                            ${catIconHTML}
-                            <span itemprop="name" class="${hasCatIcon ? 'max-sm:sr-only' : ''} truncate">${categoryTitle}</span>
-                        </a>
-                        <meta itemprop="position" content="2" />
-                    </li>
-                    ${separatorCrumb}
-                    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
-                        <span id="breadcrumbCategoryName" itemprop="name" aria-current="page" class="inline-flex items-center gap-1 py-1.5 px-1 text-slate-600 font-bold truncate">${pageHeading}</span>
-                        <meta itemprop="position" content="3" />
-                    </li>`;
+                items.push({ label: categoryTitle, href: '/category/?' + encodeURIComponent(state.category), iconKey: state.category, subSwitch: 'all' });
+                items.push({ label: pageHeading, current: true });
             } else {
-                // Цепочка: Главная > Категория (или Все продукты / Поиск)
-                breadcrumbsList.innerHTML = `
-                    ${homeCrumb}
-                    ${separatorCrumb}
-                    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="flex-initial min-w-0 inline-flex items-center text-[0.85rem] font-bold text-slate-500 whitespace-nowrap">
-                        <span id="breadcrumbCategoryName" itemprop="name" aria-current="page" class="inline-flex items-center gap-1.5 py-1.5 px-1 text-slate-600 font-bold max-w-full overflow-hidden">
-                            ${!state.search ? catIconHTML : ''}
-                            <span class="truncate">${pageHeading}</span>
-                        </span>
-                        <meta itemprop="position" content="2" />
-                    </li>`;
+                items.push({ label: pageHeading, current: true, iconKey: state.search ? null : state.category });
             }
+            window.renderBreadcrumbs(breadcrumbsList.closest('[data-breadcrumbs]'), items);
         }
 
         // Генерация пилюль подкатегорий (без теней и обводок)

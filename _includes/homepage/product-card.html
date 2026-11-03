@@ -3,16 +3,16 @@
 {% assign old_price = product.oldPrice | remove: '₾' | plus: 0 %}
 {% assign card_image = '/img/no-image.svg' %}
 {% for image in product.images %}{% unless image contains 'youtube.com' or image contains 'youtu.be' %}{% assign card_image = image %}{% break %}{% endunless %}{% endfor %}
-<article class="product-card flex flex-col rounded-2xl overflow-hidden bg-white" data-product-id="{{ product.product_id | escape }}">
-  <a href="{{ product.url | relative_url }}" class="block aspect-square bg-white p-2" tabindex="-1" aria-hidden="true">
-    <img src="{{ card_image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='/img/no-image.svg'">
-  </a>
-  <div class="p-3 sm:p-4 flex flex-col flex-1">
-    <a href="{{ product.url | relative_url }}" class="text-sm sm:text-base font-semibold leading-snug line-clamp-2 min-h-[2.75em] mb-3">{{ product.name | escape }}</a>
-    <div class="flex flex-wrap items-baseline gap-2 mb-4">
-      <span class="text-xl sm:text-2xl font-bold text-blue-600">{{ product.price | remove: '₾' | escape }} ₾</span>
-      {% if old_price > price %}<del class="text-sm text-slate-500">{{ product.oldPrice | remove: '₾' | escape }} ₾</del>{% endif %}
+<article class="product-card" data-product-id="{{ product.product_id | escape }}">
+  <div class="product-card-media">
+    <a href="{{ product.url | relative_url }}" class="product-card-image-link" tabindex="-1" aria-hidden="true"><img src="{{ card_image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="product-card-image" onerror="this.onerror=null;this.src='/img/no-image.svg'"></a>
+  </div>
+  <div class="product-info">
+    <a href="{{ product.url | relative_url }}" class="product-name">{{ product.name | escape }}</a>
+    <div class="product-card-prices">
+      <span class="product-card-price">{{ product.price | remove: '₾' | escape }} ₾</span>
+      {% if old_price > price %}<del class="product-card-old-price">{{ product.oldPrice | remove: '₾' | escape }} ₾</del>{% endif %}
     </div>
-    <a href="{{ product.url | relative_url }}" class="mt-auto flex min-h-11 items-center justify-center rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700">დეტალურად</a>
+    <a href="{{ product.url | relative_url }}" class="product-card-action">დეტალურად</a>
   </div>
 </article>

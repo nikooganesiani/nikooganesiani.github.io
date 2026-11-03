@@ -3,6 +3,9 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../_site');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const footerOf = value => value.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
+const sharedFooter = footerOf(html);
+assert.ok(sharedFooter?.includes('class="site-footer"'), 'Homepage must use the shared footer');
 assert.ok(!/{%|{{/.test(html), 'Unrendered Liquid on homepage');
 assert.equal((html.match(/<h1\b/g) || []).length, 1, 'Homepage needs one h1');
 const scripts = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
@@ -17,7 +20,7 @@ for (const [, resource] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
   assert.ok([file, file + '.html', path.join(file, 'index.html')].some(candidate => fs.existsSync(candidate)), 'Missing homepage resource: ' + resource);
   checked++;
 }
-assert.ok((html.match(/class="product-card /g) || []).length > 0, 'Popular products need a server-rendered fallback');
+assert.ok((html.match(/class="product-card(?:\s|")/g) || []).length > 0, 'Popular products need a server-rendered fallback');
 assert.ok(!html.includes('Halloween'), 'Outdated promo campaign on homepage');
 for (const forbidden of ['node_modules', 'scripts', 'tests', 'vendor', '.local', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']) {
   assert.ok(!fs.existsSync(path.join(root, forbidden)), 'Development file published: ' + forbidden);
@@ -31,6 +34,8 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   const file = path.join(productsDir, entry.name, 'index.html');
   const productHtml = fs.readFileSync(file, 'utf8');
   const label = 'Product ' + entry.name + ': ';
+  assert.equal(footerOf(productHtml), sharedFooter, label + 'footer must match the shared homepage footer');
+  assert.ok(productHtml.includes('class="site-breadcrumbs"'), label + 'shared breadcrumbs');
   assert.ok(!/{%|{{/.test(productHtml), label + 'unrendered Liquid');
   assert.equal((productHtml.match(/<h1\b/g) || []).length, 1, label + 'needs one h1');
   const productIds = [...productHtml.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
@@ -65,3 +70,10 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
 }
 assert.ok(productCount > 0, 'No product pages built');
 console.log('Verified ' + productCount + ' product pages: metadata, schema, availability, forms, unique scripts/IDs and local links.');
+for (const page of ['category', 'search']) {
+  const pageHtml = fs.readFileSync(path.join(root, page, 'index.html'), 'utf8');
+  assert.equal(footerOf(pageHtml), sharedFooter, page + ': footer must match the shared homepage footer');
+  assert.ok(pageHtml.includes('class="site-breadcrumbs"'), page + ': shared breadcrumbs');
+  assert.equal((pageHtml.match(/src="\/assets\/js\/global\/breadcrumbs.js"/g) || []).length, 1, page + ': one shared breadcrumb renderer');
+}
+console.log('Shared footer and breadcrumbs verified on product, category and search pages.');

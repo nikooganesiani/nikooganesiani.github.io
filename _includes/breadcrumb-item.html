@@ -1,0 +1,8 @@
+<li class="breadcrumb-item{% if include.kind %} breadcrumb-{{ include.kind | escape }}{% endif %}{% if include.current %} breadcrumb-current{% endif %}" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"{% if include.kind == 'home' %} data-breadcrumb-home{% endif %}>
+  {% if include.href %}<a class="breadcrumb-link" itemprop="item" href="{{ include.href | escape }}" aria-label="{{ include.label | escape }}">{% else %}<span class="breadcrumb-link"{% if include.current %} aria-current="page"{% endif %}>{% endif %}
+    {% if include.kind == 'home' %}{% include icons.html name='home' size=16 %}{% endif %}
+    <span class="breadcrumb-icon" aria-hidden="true">{% if include.icon %}{{ include.icon }}{% endif %}</span>
+    <span class="breadcrumb-label" itemprop="name">{{ include.label | escape }}</span>
+  {% if include.href %}</a>{% else %}</span>{% endif %}
+  <meta itemprop="position" content="{{ include.position | default: 2 }}">
+</li>

@@ -3,9 +3,9 @@
   {% for product in include.products %}{% unless include.exclude contains product %}{% include homepage/product-card.html product=product %}{% assign rendered = rendered | plus: 1 %}{% if rendered == 12 %}{% break %}{% endif %}{% endunless %}{% endfor %}
 {% endcapture %}
 <section class="product-recommendations" id="{{ include.prefix }}Section" aria-labelledby="{{ include.prefix }}Title" {% unless rendered > 0 %}hidden{% endunless %}>
-  <div class="product-section-heading">
-    <h2 id="{{ include.prefix }}Title">{{ include.heading | escape }}</h2>
-    <div class="product-carousel-controls">
+  <div class="catalog-section-heading">
+    <h2 class="catalog-section-title" id="{{ include.prefix }}Title">{{ include.heading | escape }}</h2>
+    <div class="catalog-section-controls">
       <button type="button" class="carousel-control" id="{{ include.prefix }}ArrowLeft" aria-label="წინა პროდუქტები" aria-controls="{{ include.prefix }}Scroll" onclick="scrollCarousel('{{ include.prefix }}Scroll', -1)" disabled>{% include icons.html name='chevron-left' size=18 %}</button>
       <button type="button" class="carousel-control" id="{{ include.prefix }}ArrowRight" aria-label="შემდეგი პროდუქტები" aria-controls="{{ include.prefix }}Scroll" onclick="scrollCarousel('{{ include.prefix }}Scroll', 1)" disabled>{% include icons.html name='chevron-right' size=18 %}</button>
     </div>

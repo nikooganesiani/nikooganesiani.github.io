@@ -1,0 +1,11 @@
+/* A single footer component, independent of the page layout. */
+.site-footer { margin-top: auto; border-top: 1px solid #e8ebef; padding: 48px 24px 24px; background: #f8f9fb; color: #68717e; }
+.site-footer-inner { max-width: 1232px; margin: 0 auto; }
+.site-footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 40px; margin-bottom: 48px; }
+.site-footer-title { margin: 0 0 18px; color: #404b5b; font-size: 14px; line-height: 1.5; font-weight: 600; text-align: left; }
+.site-footer-link { display: flex; align-items: center; gap: 11px; width: fit-content; min-height: 36px; padding: 0; margin: 0; border: 0; border-radius: 0; background: transparent; color: #68717e; font-size: 12px; line-height: 1.5; font-weight: 450; text-align: left; text-decoration: none; cursor: pointer; transition: color .15s; }
+.site-footer-link:hover { color: #155dfc; }
+.site-footer-icon { display: flex; align-items: center; flex-shrink: 0; width: 18px; color: #8491a1; }
+.site-footer-icon svg { width: 17px; height: 17px; stroke-width: 1.6; }
+.site-footer-label { min-width: 0; font-size: inherit; font-weight: inherit; color: inherit; }
+.site-footer-copyright { padding-top: 24px; border-top: 1px dashed #e2e8f0; color: #68717e; font-size: 12px; font-weight: 450; line-height: 1.7; text-align: center; }

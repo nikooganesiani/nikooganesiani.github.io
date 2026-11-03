@@ -1,0 +1,24 @@
+/* One navigation component for product, category and search pages. */
+.site-breadcrumbs { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 32px; min-width: 0; color: #68717e; }
+.site-breadcrumbs ol { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 0; margin: 0; list-style: none; }
+.site-breadcrumbs li { display: flex; align-items: center; min-width: 0; flex-shrink: 0; }
+.site-breadcrumbs .breadcrumb-link { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; color: #68717e; font-size: 13px; font-weight: 550; line-height: 1.5; text-decoration: none; white-space: nowrap; }
+.site-breadcrumbs a.breadcrumb-link { transition: color .15s; }
+.site-breadcrumbs a.breadcrumb-link:hover { color: #155dfc; }
+.site-breadcrumbs .breadcrumb-current { flex-shrink: 1; }
+.site-breadcrumbs .breadcrumb-current .breadcrumb-label { overflow: hidden; text-overflow: ellipsis; }
+.site-breadcrumbs .breadcrumb-separator { color: #bcc3cd; }
+.site-breadcrumbs .breadcrumb-icon { display: flex; align-items: center; }
+.site-breadcrumbs .breadcrumb-icon:empty { display: none; }
+.site-breadcrumbs .breadcrumb-icon svg { width: 16px; height: 16px; }
+.site-breadcrumbs .breadcrumb-sku { font-size: 12px; color: #68717e; white-space: nowrap; letter-spacing: .025em; }
+.site-breadcrumbs .breadcrumb-sku span { color: #586271; margin-left: 5px; font-variant-numeric: tabular-nums; user-select: all; }
+@media (min-width: 1440px) { .site-breadcrumbs { margin-bottom: 40px; } }
+@media (max-width: 767px) {
+  .site-breadcrumbs { gap: 16px; margin-bottom: 24px; }
+  .site-breadcrumbs ol { gap: 9px; overflow: hidden; }
+  .site-breadcrumbs .breadcrumb-link { font-size: 12px; }
+  .site-breadcrumbs .breadcrumb-home .breadcrumb-label,
+  .site-breadcrumbs .breadcrumb-category:has(.breadcrumb-icon svg):not(.breadcrumb-current) .breadcrumb-label,
+  .site-breadcrumbs .breadcrumb-sku { display: none; }
+}
