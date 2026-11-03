@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const availability = document.getElementById('productAvailability');
     availability.hidden = available(product);
     availability.textContent = price > 0 ? labels[stock] + '. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.' : 'ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.';
-    const mobile = document.getElementById('buyButton');
+    const mobile = document.getElementById('mobileBuyLabel');
     mobile.textContent = available(product) ? 'ყიდვა' : 'დეტალურად';
     const schemaElement = document.getElementById('productSchema');
     if (schemaElement) {

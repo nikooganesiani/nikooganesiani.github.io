@@ -1,4 +1,4 @@
 <div id="mobileBottomBar" class="product-mobile-bar print:hidden" aria-label="პროდუქტის შეძენა">
-  <div class="min-w-0"><strong data-product-price class="text-lg text-blue-700">{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong><span class="block text-[11px] text-slate-600" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span></div>
-  <button type="button" class="product-primary-button" id="buyButton" onclick="scrollToForm()">{% if product_available %}ყიდვა{% else %}დეტალურად{% endif %}</button>
+  <div class="product-mobile-price"><strong data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong><span data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span></div>
+  <button type="button" class="product-primary-button" id="buyButton" onclick="scrollToForm()">{% include icons.html name='bag' size=18 %}<span id="mobileBuyLabel">{% if product_available %}ყიდვა{% else %}დეტალურად{% endif %}</span></button>
 </div>

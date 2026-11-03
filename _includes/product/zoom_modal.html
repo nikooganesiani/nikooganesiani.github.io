@@ -1,13 +1,13 @@
 <div id="imageZoomModal" class="modal product-zoom hidden" role="dialog" aria-label="პროდუქტის ფოტოების გალერეა" aria-hidden="true" tabindex="-1">
   <div class="product-zoom-content">
-    <div class="product-zoom-header"><span id="zoomCounter" role="status" class="text-sm text-slate-600">1 / {{ product_photos.size }}</span><button type="button" class="product-icon-button" data-close-modal aria-label="გალერეის დახურვა">✕</button></div>
+    <div class="product-zoom-header"><span class="product-zoom-title">{{ page.name | escape }}</span><span id="zoomCounter" role="status">1 / {{ product_photos.size }}</span><button type="button" class="product-icon-button" data-close-modal aria-label="გალერეის დახურვა">{% include icons.html name='close' size=22 %}</button></div>
     <div id="modalTrack" class="product-gallery-track product-zoom-track" tabindex="0" role="group" aria-label="გადიდებული ფოტოები">
       {% for img in product_photos %}<div class="modal-slide"><img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="1200" height="1200" loading="lazy" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'"></div>{% endfor %}
     </div>
     <div class="product-zoom-footer">
-      <button type="button" class="product-icon-button" data-zoom-direction="-1" aria-label="წინა ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>←</button>
+      <button type="button" class="product-icon-button" data-zoom-direction="-1" aria-label="წინა ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>{% include icons.html name='chevron-left' size=20 %}</button>
       <div id="modalThumbStrip" class="product-thumbnails" role="group" aria-label="გადიდებული ფოტოს არჩევა">{% for img in product_photos %}<button type="button" class="product-thumbnail" data-zoom-index="{{ forloop.index0 }}" aria-label="გადიდებული ფოტო {{ forloop.index }}" aria-pressed="false"><img src="{{ img | escape }}" alt="" width="64" height="64" loading="lazy" onerror="this.onerror=null;this.src='/img/no-image.svg'"></button>{% endfor %}</div>
-      <button type="button" class="product-icon-button" data-zoom-direction="1" aria-label="შემდეგი ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>→</button>
+      <button type="button" class="product-icon-button" data-zoom-direction="1" aria-label="შემდეგი ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>{% include icons.html name='chevron-right' size=20 %}</button>
     </div>
   </div>
 </div>

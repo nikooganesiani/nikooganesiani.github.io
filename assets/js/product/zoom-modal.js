@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const zoomArrow = event.target.closest('[data-zoom-direction]');
     if (photo) {
       window.openAppModal(modal, photo);
-      go(modalTrack, Number(photo.dataset.photoIndex), true);
+      go(modalTrack, photo.hasAttribute('data-expand-current') ? current(track) : Number(photo.dataset.photoIndex), true);
       sync(modalTrack, '[data-zoom-index]', 'zoomCounter');
     } else if (thumb) go(track, Number(thumb.dataset.galleryIndex));
     else if (arrow) go(track, current(track) + Number(arrow.dataset.galleryDirection));
@@ -67,6 +67,18 @@ document.addEventListener('DOMContentLoaded', () => {
     go(modalTrack, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(modalTrack) + (event.key === 'ArrowRight' ? 1 : -1));
   });
 
+  const sectionLinks = [...document.querySelectorAll('.product-section-nav a')];
+  const syncSectionLinks = () => {
+    const selected = sectionLinks.find(link => link.hash === window.location.hash) || sectionLinks[0];
+    sectionLinks.forEach(link => {
+      link.classList.toggle('is-active', link === selected);
+      if (link === selected) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+  window.addEventListener('hashchange', syncSectionLinks);
+  syncSectionLinks();
+
   const specs = document.getElementById('specsBlock');
   const expand = document.getElementById('btnExpandSpecs');
   if (specs && expand) {
@@ -79,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const expanded = expand.getAttribute('aria-expanded') !== 'true';
       expand.setAttribute('aria-expanded', String(expanded));
       specs.classList.toggle('expanded', expanded);
-      expand.textContent = expanded ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
+      document.getElementById('specsExpandLabel').textContent = expanded ? 'ნაკლების ნახვა' : 'ყველა მახასიათებელი';
     });
     measure();
     if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measure).observe(specs.querySelector('dl'));
@@ -96,9 +108,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const bar = document.getElementById('mobileBottomBar');
   const buy = document.getElementById('submitInlineOrderBtn');
   document.documentElement.style.setProperty('--mobile-buy-bar-height', '82px');
-  if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(entries => {
-    bar.dataset.formVisible = String(entries[0].isIntersecting);
-  }, { threshold: 0.5 }).observe(buy);
+  let barUpdatePending = false;
+  const updateBuyBar = () => {
+    if (barUpdatePending) return;
+    barUpdatePending = true;
+    requestAnimationFrame(() => {
+      const rect = buy.getBoundingClientRect();
+      const navigation = document.getElementById('enka-mobile-nav');
+      const bottomInset = navigation?.getBoundingClientRect().height || 0;
+      const viewportHeight = Math.min(window.innerHeight, window.visualViewport?.height || window.innerHeight);
+      bar.dataset.formVisible = String(rect.width > 0 && rect.top >= 0 && rect.bottom <= viewportHeight - bottomInset);
+      barUpdatePending = false;
+    });
+  };
+  window.addEventListener('scroll', updateBuyBar, { passive: true });
+  window.addEventListener('resize', updateBuyBar, { passive: true });
+  window.visualViewport?.addEventListener('resize', updateBuyBar, { passive: true });
+  if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(updateBuyBar).observe(buy);
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(updateBuyBar).observe(document.getElementById('inlineOrderForm'));
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
+    document.documentElement.style.setProperty('--mobile-buy-bar-height', Math.ceil(bar.getBoundingClientRect().height + 6) + 'px');
+  }).observe(bar);
+  updateBuyBar();
 
   document.querySelectorAll('.product-video-play').forEach(link => link.addEventListener('click', event => {
     const container = link.closest('[data-video-id]');

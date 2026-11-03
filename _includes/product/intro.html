@@ -1,0 +1,21 @@
+<div class="product-intro">
+  <div class="product-intro-meta">
+    <div class="product-brand-info">{% if page.brand %}<span class="product-brand">{{ page.brand | escape }}</span>{% endif %}{% if page.sku %}<span class="product-mobile-sku">SKU {{ page.sku | escape }}</span>{% endif %}</div>
+    <span class="product-stock" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
+  </div>
+  <h1 data-product-name>{{ page.name | escape }}</h1>
+  {% assign highlight_count = 0 %}
+  {% capture product_highlights %}
+    {% for spec in page.specs %}
+      {% unless spec[0] == 'ბრენდი' or spec[0] == 'მოდელი' or spec[0] == 'ძაბვა' or spec[0] == 'სიხშირე' or spec[0] == 'კვების წყარო' %}
+        <div><dt>{{ spec[0] | escape }}</dt><dd>{{ spec[1] | escape }}</dd></div>
+        {% assign highlight_count = highlight_count | plus: 1 %}
+        {% if highlight_count == 3 %}{% break %}{% endif %}
+      {% endunless %}
+    {% endfor %}
+  {% endcapture %}
+  {% if highlight_count > 0 %}
+  <dl class="product-highlights">{{ product_highlights }}</dl>
+  <a class="product-detail-link" href="#productSpecifications">ყველა მახასიათებელი{% include icons.html name='chevron-right' size=13 %}</a>
+  {% endif %}
+</div>

@@ -1,44 +1,47 @@
 <div id="productData" hidden data-id="{{ page.product_id | escape }}" data-sku="{{ page.sku | escape }}" data-name="{{ page.name | escape }}" data-price="{{ product_price }}" data-old-price="{{ page.oldPrice | escape }}" data-stock="{{ product_stock | escape }}" data-cat="{{ first_cat | escape }}" data-subcat="{{ first_sub | escape }}" data-image="{{ first_product_img | escape }}"></div>
-<aside class="product-buy-box" aria-label="შეკვეთა">
-  <div class="flex items-center justify-between gap-3 mb-5">
-    <span class="product-stock" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
-    <span class="text-xs text-slate-500">SKU: {{ page.sku | escape }}</span>
+<div class="product-buy-box">
+  <div class="product-price-row">
+    <strong class="product-price" data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong>
+    <del data-product-old-price {% unless product_old_price > product_price %}hidden{% endunless %}>{{ page.oldPrice | remove: '₾' | escape }} ₾</del>
+    <span class="product-discount" id="saleBadge" {% unless product_old_price > product_price and product_price > 0 %}hidden{% endunless %}>{% if product_old_price > product_price %}-{{ product_old_price | minus: product_price | times: 100.0 | divided_by: product_old_price | round }}%{% endif %}</span>
   </div>
-  <div class="flex flex-wrap items-baseline gap-3 mb-2">
-    <strong class="text-4xl font-bold tracking-tight text-blue-700" data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong>
-    <del class="text-xl text-slate-500" data-product-old-price {% unless product_old_price > product_price %}hidden{% endunless %}>{{ page.oldPrice | remove: '₾' | escape }} ₾</del>
-    <span class="product-discount" id="saleBadge" {% unless product_old_price > product_price and product_price > 0 %}hidden{% endunless %}>{% if product_old_price > product_price %}−{{ product_old_price | minus: product_price | times: 100.0 | divided_by: product_old_price | round }}%{% endif %}</span>
-  </div>
-  <p class="text-sm text-slate-600 mb-6">უფასო მიწოდება · გადახდა მიღებისას</p>
-  <form id="inlineOrderForm" novalidate aria-label="პროდუქტის შეკვეთა" class="flex flex-col gap-4">
-    <fieldset id="inlineOrderFields" class="min-w-0 flex flex-col gap-4" {% unless product_available %}disabled hidden{% endunless %}>
-      <legend class="font-bold text-lg mb-3">შეუკვეთეთ მარტივად</legend>
-      <p class="text-sm text-slate-600 -mt-1">დატოვეთ ნომერი — შეკვეთის დეტალებს ოპერატორი შეგითანხმებთ.</p>
+  <p class="product-delivery-note">{% include icons.html name='truck' size=17 %}უფასო მიწოდება მთელ საქართველოში</p>
+
+  <form id="inlineOrderForm" novalidate aria-label="პროდუქტის შეკვეთა" class="product-order-form">
+    <fieldset id="inlineOrderFields" {% unless product_available %}disabled hidden{% endunless %}>
+      <legend class="product-order-heading">შეუკვეთეთ მარტივად</legend>
+      <p class="product-order-description">დატოვეთ ნომერი და დეტალებს ჩვენ შეგითანხმებთ.</p>
       <input type="text" name="email_hp" id="inlineEmailHp" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
-      <div id="inlineNameWrapper">
-        <label for="inlineName" class="product-field-label">თქვენი სახელი</label>
-        <input type="text" name="name" id="inlineName" class="product-input" placeholder="სახელი" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="inlineNameError">
-        <p id="inlineNameError" class="product-field-error" hidden></p>
+      <div class="product-form-fields">
+        <div id="inlineNameWrapper">
+          <label for="inlineName" class="product-field-label">თქვენი სახელი</label>
+          <input type="text" name="name" id="inlineName" class="product-input" placeholder="სახელი" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="inlineNameError">
+          <p id="inlineNameError" class="product-field-error" hidden></p>
+        </div>
+        <div id="inlinePhoneWrapper">
+          <label for="inlinePhone" class="product-field-label">მობილურის ნომერი</label>
+          <div class="product-phone-field"><span aria-hidden="true">+995</span><input type="tel" name="phone" id="inlinePhone" class="product-input" placeholder="555 12 34 56" autocomplete="tel-national" inputmode="tel" required maxlength="24" aria-describedby="inlinePhoneHint inlinePhoneError"></div>
+          <p id="inlinePhoneHint" class="sr-only">საქართველოს მობილურის 9-ნიშნა ნომერი</p>
+          <p id="inlinePhoneError" class="product-field-error" hidden></p>
+        </div>
       </div>
-      <div id="inlinePhoneWrapper">
-        <label for="inlinePhone" class="product-field-label">მობილურის ნომერი</label>
-        <div class="product-phone-field"><span aria-hidden="true">+995</span><input type="tel" name="phone" id="inlinePhone" class="product-input" placeholder="555 12 34 56" autocomplete="tel-national" inputmode="tel" required maxlength="24" aria-describedby="inlinePhoneHint inlinePhoneError"></div>
-        <p id="inlinePhoneHint" class="text-xs text-slate-500 mt-2">საქართველოს მობილურის 9-ნიშნა ნომერი</p>
-        <p id="inlinePhoneError" class="product-field-error" hidden></p>
-      </div>
-      <button type="submit" id="submitInlineOrderBtn" class="product-primary-button" disabled>ყიდვა</button>
+      <button type="submit" id="submitInlineOrderBtn" class="product-primary-button" disabled>
+        {% include icons.html name='bag' size=19 %}<span class="product-button-spinner" aria-hidden="true"></span><span id="inlineOrderButtonText">ყიდვა</span>
+      </button>
+      <p class="product-payment-note">{% include icons.html name='shield' size=15 %}გადაიხადეთ მხოლოდ მიღებისას</p>
     </fieldset>
-    <p id="productAvailability" class="text-sm text-slate-600" role="status" {% if product_available %}hidden{% endif %}>{% if product_price <= 0 %}ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.{% else %}{{ product_stock_label }}. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.{% endif %}</p>
-    <a id="productAlternatives" class="product-primary-button" href="{% if first_cat %}/category/?{{ first_cat | url_encode }}{% else %}/{% endif %}" {% if product_available %}hidden{% endif %}>სხვა პროდუქტების ნახვა</a>
-    <p id="inlineOrderError" class="product-field-error" role="alert" hidden></p>
-    <p id="inlineOrderStatus" class="text-sm text-slate-600" role="status"></p>
-    <button type="button" id="productCatalogRetry" class="text-sm text-blue-700 underline self-start" hidden>მონაცემების განახლება</button>
-    <p class="text-xs text-slate-500 leading-relaxed">«ყიდვა»-ზე დაჭერით ეთანხმებით <a href="/info/privacy" class="underline hover:text-blue-700">კონფიდენციალურობის პოლიტიკას</a>.</p>
+    <p id="productAvailability" class="product-availability" role="status" {% if product_available %}hidden{% endif %}>{% if product_price <= 0 %}ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.{% else %}{{ product_stock_label }}. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.{% endif %}</p>
+    <a id="productAlternatives" class="product-primary-button" href="{% if first_cat %}/category/?{{ first_cat | url_encode }}{% else %}/{% endif %}" {% if product_available %}hidden{% endif %}>სხვა პროდუქტების ნახვა{% include icons.html name='arrow-right' size=17 %}</a>
+    <p id="inlineOrderError" class="product-field-error product-order-error" role="alert" hidden></p>
+    <p id="inlineOrderStatus" class="product-order-status" role="status"></p>
+    <button type="button" id="productCatalogRetry" class="product-detail-link" hidden>მონაცემების განახლება</button>
+    <p class="product-privacy">«ყიდვა»-ზე დაჭერით ეთანხმებით <a href="/info/privacy">კონფიდენციალურობის პოლიტიკას</a>.</p>
   </form>
-  <noscript><p class="text-sm mt-4">ონლაინ შეკვეთისთვის ჩართეთ JavaScript ან დაგვირეკეთ: <a href="tel:+995551178990" class="underline">+995 551 17 89 90</a>.</p></noscript>
+  <noscript><p class="product-availability">ონლაინ შეკვეთისთვის ჩართეთ JavaScript ან დაგვირეკეთ: <a href="tel:+995551178990">+995 551 17 89 90</a>.</p></noscript>
+
   <div class="product-service-links">
-    <a href="/info/delivery"><span aria-hidden="true">↗</span><span><strong>უფასო მიწოდება</strong><small>საქართველოს მასშტაბით · გადახდა მიღებისას</small></span></a>
-    <a href="/info/warranty"><span aria-hidden="true">✓</span><span><strong>გარანტია და დაბრუნება</strong><small>{% if page.warranty != '' %}{{ page.warranty | escape }} · {% endif %}პირობების ნახვა</small></span></a>
-    <a href="tel:+995551178990"><span aria-hidden="true">☎</span><span><strong>დაგეხმარებით არჩევაში</strong><small>+995 551 17 89 90</small></span></a>
+    <a href="/info/delivery">{% include icons.html name='truck' size=22 %}<span><strong>უფასო მიწოდება</strong><small>საქართველოს ნებისმიერ წერტილში</small></span>{% include icons.html name='chevron-right' size=15 %}</a>
+    <a href="/info/warranty">{% include icons.html name='shield' size=22 %}<span><strong>გარანტია და დაბრუნება</strong><small>{% if page.warranty != '' %}{{ page.warranty | escape }} · {% endif %}გაეცანით პირობებს</small></span>{% include icons.html name='chevron-right' size=15 %}</a>
   </div>
-</aside>
+  <a class="product-contact" href="tel:+995551178990">{% include icons.html name='phone' size=15 %}<span>გაქვთ კითხვა?</span><strong>+995 551 17 89 90</strong></a>
+</div>

@@ -11,16 +11,16 @@ layout: default
   {% if sub.id == first_sub %}{% assign sub_name = sub.name %}{% break %}{% endif %}
 {% endfor %}
 
-<div class="product-page max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 pb-12">
+<div class="product-page">
   {% include product/breadcrumbs.html %}
-  <h1 data-product-name class="text-2xl sm:text-3xl font-bold text-slate-900 leading-tight tracking-tight break-words mb-6">{{ page.name | escape }}</h1>
   <div class="product-overview">
+    {% include product/intro.html %}
     {% include product/gallery.html %}
     {% include product/buy_box.html %}
   </div>
   {% include product/details.html %}
   {% include product/similar.html %}
-  {% include homepage/popular-products.html %}
+  <div class="product-popular">{% include homepage/popular-products.html %}</div>
 </div>
 {% include product/mobile_bar.html %}
 {% include product/zoom_modal.html %}

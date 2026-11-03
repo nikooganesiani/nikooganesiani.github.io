@@ -1,30 +1,34 @@
 <section class="product-gallery" aria-label="პროდუქტის ფოტოები">
-  <div class="product-gallery-stage">
-    <div class="product-gallery-actions">
-      <button type="button" class="product-icon-button btn-fav [&.active]:text-red-500 [&.active_svg]:fill-current" aria-label="დამატება რჩეულებში" aria-pressed="false" onclick="toggleFav(event, this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/></svg></button>
-      <button type="button" class="product-icon-button" aria-label="ბმულის გაზიარება" onclick="copyProductLink(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></svg></button>
-    </div>
-    <div class="product-gallery-track" id="mainGalleryTrack" tabindex="0" role="group" aria-label="პროდუქტის ფოტოები; გამოიყენეთ ისრის ღილაკები">
-      {% for img in product_photos %}
-      <button type="button" class="main-gallery-slide" data-photo-index="{{ forloop.index0 }}" aria-label="ფოტო {{ forloop.index }} — გადიდება" aria-haspopup="dialog" aria-controls="imageZoomModal">
-        <img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="800" height="800" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'">
-      </button>
-      {% endfor %}
-    </div>
-    {% if product_photos.size > 1 %}
-    <div class="product-gallery-navigation">
-      <button type="button" class="product-icon-button" data-gallery-direction="-1" aria-label="წინა ფოტო" aria-controls="mainGalleryTrack">←</button>
-      <span id="galleryCounter" class="text-xs font-semibold text-slate-600" aria-live="polite" aria-atomic="true">1 / {{ product_photos.size }}</span>
-      <button type="button" class="product-icon-button" data-gallery-direction="1" aria-label="შემდეგი ფოტო" aria-controls="mainGalleryTrack">→</button>
-    </div>
-    {% endif %}
-  </div>
   {% if product_photos.size > 1 %}
   <div class="product-thumbnails" id="thumbStrip" role="group" aria-label="ფოტოს არჩევა">
     {% for img in product_photos %}
     <button type="button" class="product-thumbnail {% if forloop.first %}active{% endif %}" data-gallery-index="{{ forloop.index0 }}" aria-label="ფოტო {{ forloop.index }}" aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="mainGalleryTrack"><img src="{{ img | escape }}" alt="" width="80" height="80" loading="lazy" onerror="this.onerror=null;this.src='/img/no-image.svg'"></button>
     {% endfor %}
+    {% if yt_id != '' %}<a class="product-thumbnail product-video-thumbnail" href="#productVideo" aria-label="ვიდეოს ნახვა">{% include icons.html name='play' size=21 %}<span>ვიდეო</span></a>{% endif %}
   </div>
   {% endif %}
-  <p class="text-xs text-slate-500 mt-3 text-center">დააჭირეთ ფოტოს გასადიდებლად{% if yt_id != '' %} · <a href="#productVideo" class="text-blue-700 underline">ვიდეოს ნახვა</a>{% endif %}</p>
+  <div class="product-gallery-body">
+    <div class="product-gallery-stage">
+      <div class="product-gallery-actions">
+        <button type="button" class="product-icon-button btn-fav" aria-label="დამატება რჩეულებში" aria-pressed="false" onclick="toggleFav(event, this)">{% include icons.html name='heart' size=21 %}</button>
+        <button type="button" class="product-icon-button" aria-label="ბმულის გაზიარება" onclick="copyProductLink(this)">{% include icons.html name='share' size=19 %}</button>
+      </div>
+      <div class="product-gallery-track" id="mainGalleryTrack" tabindex="0" role="group" aria-label="პროდუქტის ფოტოები; გამოიყენეთ ისრის ღილაკები">
+        {% for img in product_photos %}
+        <button type="button" class="main-gallery-slide" data-photo-index="{{ forloop.index0 }}" aria-label="ფოტო {{ forloop.index }} — გადიდება" aria-haspopup="dialog" aria-controls="imageZoomModal">
+          <img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="800" height="800" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'">
+        </button>
+        {% endfor %}
+      </div>
+      <div class="product-gallery-navigation">
+        <div class="product-gallery-pagination">
+          {% if product_photos.size > 1 %}<button type="button" class="product-icon-button" data-gallery-direction="-1" aria-label="წინა ფოტო" aria-controls="mainGalleryTrack">{% include icons.html name='chevron-left' size=17 %}</button>{% endif %}
+          <span id="galleryCounter" aria-live="polite" aria-atomic="true">1 <span>/</span> {{ product_photos.size }}</span>
+          {% if product_photos.size > 1 %}<button type="button" class="product-icon-button" data-gallery-direction="1" aria-label="შემდეგი ფოტო" aria-controls="mainGalleryTrack">{% include icons.html name='chevron-right' size=17 %}</button>{% endif %}
+        </div>
+        <button type="button" class="product-icon-button product-expand-button" data-photo-index="0" data-expand-current aria-label="ფოტოს გადიდება" aria-haspopup="dialog" aria-controls="imageZoomModal">{% include icons.html name='expand' size=18 %}</button>
+      </div>
+    </div>
+    <p class="product-gallery-caption">{% include icons.html name='expand' size=12 %}<span>დააჭირეთ ფოტოს გასადიდებლად</span>{% if yt_id != '' %}<a href="#productVideo">ვიდეოს ნახვა{% include icons.html name='play' size=12 %}</a>{% endif %}</p>
+  </div>
 </section>

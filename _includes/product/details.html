@@ -1,24 +1,39 @@
-<div class="product-details">
-  {% if page.specs.size > 0 %}
-  <section aria-labelledby="productSpecsTitle">
-    <h2 id="productSpecsTitle" class="text-xl sm:text-2xl font-bold mb-5">სპეციფიკაციები</h2>
-    <div id="specsBlock" class="product-specs">
-      <dl>{% for spec in page.specs %}<div class="product-spec-row"><dt>{{ spec[0] | escape }}</dt><dd>{{ spec[1] | escape }}</dd></div>{% endfor %}</dl>
-    </div>
-    <button type="button" id="btnExpandSpecs" class="text-sm font-bold text-blue-700 min-h-11 mt-2" aria-controls="specsBlock" aria-expanded="false" hidden>მეტის ნახვა</button>
-  </section>
-  {% endif %}
-  <section aria-labelledby="productDescriptionTitle">
-    <h2 id="productDescriptionTitle" class="text-xl sm:text-2xl font-bold mb-5">აღწერა</h2>
-    <div class="text-sm sm:text-base leading-relaxed text-slate-600 whitespace-pre-line break-words">{{ page.longDescription | default: page.description | default: 'დამატებითი ინფორმაციისთვის დაგვიკავშირდით.' | escape }}</div>
+<nav class="product-section-nav" aria-label="პროდუქტის ინფორმაცია">
+  <a href="#productDescription" class="is-active">პროდუქტის შესახებ</a>
+  {% if page.specs.size > 0 %}<a href="#productSpecifications">მახასიათებლები</a>{% endif %}
+  <a href="#productDelivery">მიწოდება და გარანტია</a>
+</nav>
+<div class="product-details" id="productInformation">
+  <section id="productDescription" aria-labelledby="productDescriptionTitle">
+    <h2 id="productDescriptionTitle">პროდუქტის შესახებ</h2>
+    <div class="product-description">{{ page.longDescription | default: page.description | default: 'დამატებითი ინფორმაციისთვის დაგვიკავშირდით.' | escape }}</div>
     {% if yt_id != '' %}
-    <section class="mt-7" id="productVideo" aria-labelledby="productVideoTitle">
-      <h3 id="productVideoTitle" class="font-bold text-lg mb-3">ვიდეო განხილვა</h3>
+    <section class="product-video-section" id="productVideo" aria-labelledby="productVideoTitle">
+      <h3 id="productVideoTitle">გაიცანით უკეთ</h3>
       <div class="product-video" data-video-id="{{ yt_id | escape }}">
-        <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="product-video-play" aria-label="ვიდეოს ნახვა YouTube-ზე (ახალი ფანჯარა)"><img src="https://i.ytimg.com/vi/{{ yt_id | escape }}/hqdefault.jpg" alt="" width="480" height="360" loading="lazy"><span>▶ ვიდეოს ნახვა</span></a>
+        <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="product-video-play" aria-label="ვიდეოს ნახვა YouTube-ზე (ახალი ფანჯარა)"><img src="https://i.ytimg.com/vi/{{ yt_id | escape }}/hqdefault.jpg" alt="" width="480" height="360" loading="lazy"><span class="product-video-play-icon">{% include icons.html name='play' size=26 %}</span><span class="product-video-play-label">ვიდეო მიმოხილვა</span></a>
       </div>
-      <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm text-blue-700 underline">YouTube-ზე გახსნა ↗</a>
+      <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="product-detail-link">YouTube-ზე გახსნა{% include icons.html name='arrow-up-right' size=14 %}</a>
     </section>
     {% endif %}
   </section>
+  {% if page.specs.size > 0 %}
+  <section id="productSpecifications" aria-labelledby="productSpecsTitle">
+    <h2 id="productSpecsTitle">მახასიათებლები</h2>
+    <div id="specsBlock" class="product-specs">
+      <dl>{% for spec in page.specs %}<div class="product-spec-row"><dt>{{ spec[0] | escape }}</dt><dd>{{ spec[1] | escape }}</dd></div>{% endfor %}</dl>
+    </div>
+    <button type="button" id="btnExpandSpecs" class="product-detail-link product-expand-specs" aria-controls="specsBlock" aria-expanded="false" hidden><span id="specsExpandLabel">ყველა მახასიათებელი</span>{% include icons.html name='chevron-down' size=15 %}</button>
+  </section>
+  {% endif %}
+</div>
+<div id="productDelivery" class="product-policy-details">
+  <details>
+    <summary>{% include icons.html name='truck' size=21 %}<span>მიწოდება და გადახდა</span>{% include icons.html name='chevron-down' size=17 %}</summary>
+    <div><p>მიწოდება უფასოა საქართველოს მასშტაბით. მისამართსა და მიწოდების დეტალებს ოპერატორი შეგითანხმებთ. თანხას გადაიხდით ნივთის მიღებისას.</p><a href="/info/delivery" class="product-detail-link">დეტალური პირობები{% include icons.html name='chevron-right' size=13 %}</a></div>
+  </details>
+  <details>
+    <summary>{% include icons.html name='shield' size=21 %}<span>გარანტია და დაბრუნება</span>{% include icons.html name='chevron-down' size=17 %}</summary>
+    <div><p>{% if page.warranty != '' %}გარანტია: {{ page.warranty | escape }}. {% endif %}გარანტიისა და დაბრუნების პირობები იხილეთ შესაბამის გვერდზე ან დაგვიკავშირდით ნომერზე <a href="tel:+995551178990">+995 551 17 89 90</a>.</p><a href="/info/warranty" class="product-detail-link">პირობების ნახვა{% include icons.html name='chevron-right' size=13 %}</a></div>
+  </details>
 </div>

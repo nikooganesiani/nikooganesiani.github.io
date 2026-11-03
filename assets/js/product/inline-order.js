@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameInput = document.getElementById('inlineName');
   const phoneInput = document.getElementById('inlinePhone');
   const button = document.getElementById('submitInlineOrderBtn');
+  const buttonText = document.getElementById('inlineOrderButtonText');
   const error = document.getElementById('inlineOrderError');
   const fields = document.getElementById('inlineOrderFields');
   let submitting = false;
@@ -56,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.enkaOrderPending = true;
     fields.disabled = true;
     button.disabled = true;
-    button.textContent = 'იგზავნება…';
+    buttonText.textContent = 'იგზავნება…';
     form.setAttribute('aria-busy', 'true');
     try {
       const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.enkaOrderPending = false;
       fields.disabled = form.dataset.available !== 'true';
       button.disabled = fields.disabled;
-      button.textContent = 'ყიდვა';
+      buttonText.textContent = 'ყიდვა';
       form.removeAttribute('aria-busy');
     }
   });

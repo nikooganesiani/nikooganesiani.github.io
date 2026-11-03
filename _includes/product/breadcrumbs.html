@@ -1,7 +1,21 @@
-<nav aria-label="ნავიგაციის ჯაჭვი" class="mb-5">
-  <ol itemscope itemtype="https://schema.org/BreadcrumbList" class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500">
-    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/" class="inline-flex items-center min-h-8 hover:text-blue-700"><span itemprop="name">მთავარი</span></a><meta itemprop="position" content="1"></li>
-    {% if first_cat and cat_name %}<li aria-hidden="true">/</li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/category/?{{ first_cat | url_encode }}" class="inline-flex items-center min-h-8 hover:text-blue-700"><span itemprop="name">{{ cat_name | escape }}</span></a><meta itemprop="position" content="2"></li>{% endif %}
-    {% if first_cat and first_sub and sub_name %}<li aria-hidden="true">/</li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/category/?{{ first_cat | url_encode }}&amp;sub={{ first_sub | url_encode }}" class="inline-flex items-center min-h-8 hover:text-blue-700"><span itemprop="name">{{ sub_name | escape }}</span></a><meta itemprop="position" content="3"></li>{% endif %}
+<nav aria-label="ნავიგაციის ჯაჭვი" class="product-breadcrumbs">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="/" aria-label="მთავარი">{% include icons.html name='home' size=16 %}<span itemprop="name" class="breadcrumb-home-label">მთავარი</span></a><meta itemprop="position" content="1">
+    </li>
+    {% if first_cat and cat_name %}
+    <li class="breadcrumb-separator" aria-hidden="true">{% include icons.html name='chevron-right' size=12 %}</li>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      <a itemprop="item" href="/category/?{{ first_cat | url_encode }}" aria-label="{{ cat_name | escape }}">
+        {% if cat_data.icon %}<span class="breadcrumb-category-icon" aria-hidden="true">{{ cat_data.icon }}</span>{% endif %}
+        <span itemprop="name" class="breadcrumb-category-label">{{ cat_name | escape }}</span>
+      </a><meta itemprop="position" content="2">
+    </li>
+    {% endif %}
+    {% if first_cat and first_sub and sub_name %}
+    <li class="breadcrumb-separator" aria-hidden="true">{% include icons.html name='chevron-right' size=12 %}</li>
+    <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="breadcrumb-current"><a itemprop="item" href="/category/?{{ first_cat | url_encode }}&amp;sub={{ first_sub | url_encode }}"><span itemprop="name">{{ sub_name | escape }}</span></a><meta itemprop="position" content="3"></li>
+    {% endif %}
   </ol>
+  {% if page.sku %}<span class="breadcrumb-sku">SKU <span>{{ page.sku | escape }}</span></span>{% endif %}
 </nav>

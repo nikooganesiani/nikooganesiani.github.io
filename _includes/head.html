@@ -14,6 +14,7 @@
     <meta property="og:locale" content="ka_GE">
     <meta name="twitter:card" content="{% if is_product_page %}summary_large_image{% else %}summary{% endif %}">
     {% if is_product_page %}
+    <link rel="stylesheet" href="{{ '/assets/css/product.css' | relative_url }}">
     <meta property="product:price:amount" content="{{ product_price }}">
     <meta property="product:price:currency" content="GEL">
     <link rel="preload" as="image" href="{{ first_product_img | escape }}" fetchpriority="high">
