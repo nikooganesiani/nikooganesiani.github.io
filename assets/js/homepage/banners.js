@@ -39,8 +39,8 @@
   function paintViewed(card) {
     if (card.hasAttribute('data-viewed')) return;
     card.setAttribute('data-viewed', '');
-    var title = card.getAttribute('data-title') || 'Промо';
-    card.setAttribute('aria-label', title + ' (просмотрено)');
+    var title = card.getAttribute('data-title') || 'შეთავაზება';
+    card.setAttribute('aria-label', title + ' (ნანახია)');
   }
 
   var viewed = loadViewed();

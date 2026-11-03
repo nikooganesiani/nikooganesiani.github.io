@@ -1,27 +1,3 @@
-let _catalogCache = null;
-let _catalogPromise = null;
-
-window.fetchCatalogCached = function() {
-    if (_catalogCache) return Promise.resolve(_catalogCache);
-    if (!_catalogPromise) {
-        const apiUrl = window.CATALOG_API_URL || 'https://api.enkaelectronics.com.ge/catalog';
-        _catalogPromise = fetch(apiUrl)
-            .then(res => { 
-                if (!res.ok) throw new Error('Network error'); 
-                return res.json(); 
-            })
-            .then(d => { 
-                _catalogCache = d; 
-                return d; 
-            })
-            .catch(err => {
-                _catalogPromise = null;
-                throw err;
-            });
-    }
-    return _catalogPromise;
-};
-
 const NORMALIZE_CHAR_MAP = {
     'a':'ა','b':'ბ','c':'ც','d':'დ','e':'ე','f':'ფ','g':'გ','h':'ჰ','i':'ი','j':'ჯ','k':'კ','l':'ლ','m':'მ','n':'ნ','o':'ო','p':'პ','q':'ქ','r':'რ','s':'ს','t':'ტ','u':'უ','v':'ვ','w':'წ','x':'ხ','y':'ყ','z':'ზ',
     'A':'ა','B':'ჩ','C':'ჩ','D':'დ','E':'ე','F':'ფ','G':'ღ','H':'ჰ','I':'ი','J':'ჟ','K':'კ','L':'ლ','M':'მ','N':'ნ','O':'ო','P':'პ','Q':'ქ','R':'ღ','S':'შ','T':'თ','U':'უ','V':'ვ','W':'ჭ','X':'ხ','Y':'ყ','Z':'ძ',
@@ -70,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const subs = Array.isArray(catData.subs) ? catData.subs : [];
                 const encodedCatId = encodeURIComponent(catId);
 
-                const subLinks = subs.map(sub => 
-                    `<a href="/category/?${encodedCatId}&sub=${encodeURIComponent(sub.id)}" class="no-underline text-slate-700 text-[0.85rem] font-medium py-2 px-3.5 rounded-xl bg-slate-100/80 border border-slate-200/70 transition-colors duration-150 select-none hover:text-white hover:bg-blue-600 hover:border-blue-600" draggable="false">${sub.name}</a>`
+                const subLinks = subs.map(sub =>
+                    `<a href="/category/?${encodedCatId}&sub=${encodeURIComponent(sub.id)}" class="no-underline text-slate-700 text-[0.85rem] font-medium py-2 px-3.5 rounded-xl bg-slate-100/80 border border-slate-200/70 transition-colors duration-150 select-none hover:text-white hover:bg-blue-600 hover:border-blue-600" draggable="false">${window.escapeHTML(sub.name)}</a>`
                 ).join('');
 
                 const countBadge = subs.length > 0
@@ -80,12 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const itemHtml = `
                 <div class="shrink-0 bg-slate-50/70 hover:bg-slate-50 border border-slate-200/80 rounded-2xl overflow-hidden transition-colors duration-150 [&.active]:bg-white [&.active]:border-blue-500/40 group/item">
-                    <div class="flex items-center justify-between p-3.5 sm:p-4 cursor-pointer font-bold text-slate-800 text-[0.98rem] sm:text-[1.02rem] select-none" onclick="this.parentElement?.classList.toggle('active')">
+                    <button type="button" class="w-full text-left flex items-center justify-between p-3.5 sm:p-4 cursor-pointer font-bold text-slate-800 text-[0.98rem] sm:text-[1.02rem] select-none" aria-expanded="false" aria-controls="catalog-panel-${encodedCatId}" onclick="this.setAttribute('aria-expanded', String(this.parentElement.classList.toggle('active')))">
                         <div class="flex items-center gap-3.5 min-w-0">
                             <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0 transition-colors duration-150 group-[.active]/item:bg-blue-600 group-[.active]/item:text-white [&>svg]:w-5 [&>svg]:h-5">
                                 ${catData.icon || ''}
                             </div>
-                            <span class="truncate">${catData.title || ''}</span>
+                            <span class="truncate">${window.escapeHTML(catData.title || '')}</span>
                         </div>
                         <div class="flex items-center gap-2.5 shrink-0 ml-2">
                             ${countBadge}
@@ -93,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <svg class="w-4 h-4 text-slate-500 transition-transform duration-150 group-[.active]/item:rotate-180 group-[.active]/item:text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
                             </div>
                         </div>
-                    </div>
-                    <div class="hidden px-3.5 sm:px-4 pb-4 group-[.active]/item:block">
+                    </button>
+                    <div id="catalog-panel-${encodedCatId}" class="hidden px-3.5 sm:px-4 pb-4 group-[.active]/item:block">
                         <div class="flex flex-wrap gap-2 border-t border-slate-100 pt-3.5">
                             <a href="/category/?${encodedCatId}" class="no-underline inline-flex items-center gap-1.5 text-blue-600 text-[0.85rem] font-bold py-2 px-3.5 rounded-xl bg-blue-50 border border-blue-200/60 transition-colors duration-150 select-none hover:text-white hover:bg-blue-600 hover:border-blue-600" draggable="false">
                                 <span>ყველა</span>

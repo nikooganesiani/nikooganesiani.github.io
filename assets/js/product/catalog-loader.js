@@ -17,8 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    fetch(window.CATALOG_API_URL)
-    .then(r => { if (!r.ok) throw new Error('Error'); return r.json(); })
+    window.fetchCatalogCached()
     .then(data => {
         const currentSub = pDataset.subcat || "";
         const currentCat = pDataset.cat || "";
@@ -26,21 +25,25 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlId = window.location.pathname.replace(/\/$/, '').split('/').pop();
         const currentProduct = data.products.find(p => (currentSku !== "" && String(p.sku) === currentSku) || (urlId !== "" && String(p.id) === urlId));
         const actualProductId = currentProduct ? currentProduct.id : null;
-        
+
         if (actualProductId) {
-            let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-            recentIds = recentIds.filter(id => id !== actualProductId); 
-            recentIds.unshift(actualProductId); 
+            try {
+            let recentIds;
+            try { recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]'); } catch { recentIds = []; }
+            if (!Array.isArray(recentIds)) recentIds = [];
+            recentIds = recentIds.filter(id => id !== actualProductId);
+            recentIds.unshift(actualProductId);
             if (recentIds.length > 20) recentIds = recentIds.slice(0, 20);
             localStorage.setItem('recentIds', JSON.stringify(recentIds));
+            } catch { /* Browsing a product does not depend on optional history storage. */ }
         }
-        
+
         const rawStock = (currentProduct && currentProduct.stockStatus) ? String(currentProduct.stockStatus).trim().toLowerCase() : 'in_stock';
         const badgeTag = document.getElementById('dynamicStockBadgeTag');
         const mobileBadgeTag = document.getElementById('mobileDynamicStockBadgeTag');
         const btnContainer = document.getElementById('dynamicBuyButton');
         const formInputs = document.getElementById('dynamicFormInputs');
-        
+
         let stockHtml = '';
         let btnHtml = '';
 
@@ -82,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const subcatSection = document.getElementById('subcatSection');
         const subcatScroll = document.getElementById('subcatScroll');
         let subcatProducts = [];
-        
+
         if (subcatSection && subcatScroll && currentSub) {
             subcatProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.subcategories && p.subcategories.includes(currentSub)).sort(() => Math.random() - 0.5).slice(0, 30);
             if (subcatProducts.length > 0) {
@@ -99,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const catSection = document.getElementById('catSection');
         const catScroll = document.getElementById('catScroll');
-        
+
         if (catSection && catScroll && currentCat) {
             let catProducts = data.products.filter(p => p.id !== actualProductId && p.stockStatus !== 'out_of_stock' && p.categories && p.categories.includes(currentCat) && !subcatProducts.some(sp => sp.id === p.id)).sort(() => Math.random() - 0.5).slice(0, 30);
             if (catProducts.length > 0) {
@@ -117,10 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const recentSection = document.getElementById('recentlyViewedSection');
         const recentScroll = document.getElementById('recentScroll');
         if (recentSection && recentScroll) {
-            let recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-            recentIds = recentIds.filter(id => id !== actualProductId); 
+            let recentIds;
+            try { recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]'); } catch { recentIds = []; }
+            if (!Array.isArray(recentIds)) recentIds = [];
+            recentIds = recentIds.filter(id => id !== actualProductId);
             const recentProducts = recentIds.map(id => data.products.find(p => p.id === id)).filter(Boolean);
-            
+
             if (recentProducts.length > 0) {
                 recentSection.style.display = 'block';
                 recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
@@ -132,5 +137,5 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-    });
+    }).catch(() => { /* The static product page remains available when the catalog is offline. */ });
 });

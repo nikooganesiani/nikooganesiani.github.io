@@ -1,9 +1,11 @@
 - id: "promo-1"
-  title: "სმარტ საათი Z55 Ultra სპეცშეთავაზებით Halloween Sale"
+  title: "იყავი კავშირზე. შენი სტილით."
+  product_id: "z55ultra"
   image: "/img/banners/banner1.webp"
   url: "/product/z55ultra/"
 
 - id: "promo-2"
-  title: "სმარტ სასწორი Tiffany TF-775 სპეცშეთავაზებით Halloween Sale"
+  title: "პატარა ნაბიჯი. მეტი ზრუნვა."
+  product_id: "smartscaletiffany"
   image: "/img/banners/banner2.webp"
   url: "/product/smartscaletiffany/"

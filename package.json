@@ -1,0 +1,17 @@
+{
+  "name": "enka-electronics",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify",
+    "check": "node --test tests/*.test.cjs",
+    "check:site": "node scripts/check-site.cjs",
+    "generate": "node generate_pages.js",
+    "build": "pnpm run generate && pnpm run build:css && bundle exec jekyll build",
+    "preview": "node scripts/preview.cjs"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.4",
+    "tailwindcss": "4.3.4"
+  }
+}

@@ -1,8 +1,12 @@
 function renderOrders() {
     try {
         const list = document.getElementById('ordersList');
-        const ordersRaw = localStorage.getItem('myOrders');
-        const orders = ordersRaw ? JSON.parse(ordersRaw) : [];
+        let ordersRaw;
+        try { ordersRaw = localStorage.getItem('myOrders'); } catch { ordersRaw = null; }
+        let orders;
+        try { orders = ordersRaw ? JSON.parse(ordersRaw) : []; } catch { orders = []; }
+        if (!Array.isArray(orders)) orders = [];
+        const escape = window.escapeHTML;
         const countEl = document.getElementById('ordersModalCount');
 
         if (countEl) {
@@ -25,24 +29,24 @@ function renderOrders() {
         }
 
         list.innerHTML = orders.map((o) => {
-            if (!o) return '';
+            if (!o || typeof o !== 'object') return '';
             const d = o.date ? new Date(o.date) : new Date();
             const dateStr = !isNaN(d.getTime())
-                ? d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+                ? d.toLocaleDateString('ka-GE') + ' ' + d.toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' })
                 : '';
             const priceFixed = String(o.price || '').includes('₾') ? o.price : `${String(o.price || '').trim()} ₾`;
             const oldPHtml = (o.oldPrice && o.oldPrice !== 'null' && !String(o.oldPrice).includes('undefined'))
-                ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${o.oldPrice}</span>`
+                ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${escape(o.oldPrice)}</span>`
                 : '';
 
             return `
                 <div class="flex flex-col gap-0 bg-transparent border-b border-slate-200 py-4 px-2 relative items-start transition-all duration-200 last:border-none">
                     <div class="flex justify-between w-full pb-1 mb-1">
                         <span class="text-[0.8rem] text-slate-500 font-semibold">${dateStr}</span>
-                        <span class="text-[1rem] text-blue-600 font-bold flex items-center">${priceFixed} ${oldPHtml}</span>
+                        <span class="text-[1rem] text-blue-600 font-bold flex items-center">${escape(priceFixed)} ${oldPHtml}</span>
                     </div>
-                    <div class="whitespace-normal leading-snug text-[0.9rem] font-bold text-slate-900">${o.product || ''}</div>
-                    <div class="text-[0.8rem] text-slate-500 mt-1 font-semibold">${o.name || ''} • ${o.phone || ''}</div>
+                    <div class="whitespace-normal leading-snug text-[0.9rem] font-bold text-slate-900">${escape(o.product || '')}</div>
+                    <div class="text-[0.8rem] text-slate-500 mt-1 font-semibold">${escape(o.name || '')} • ${escape(o.phone || '')}</div>
                 </div>`;
         }).join('');
     } catch (error) {

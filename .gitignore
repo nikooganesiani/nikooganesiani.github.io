@@ -1,0 +1,10 @@
+/.local/
+/.bundle/
+/.jekyll-cache/
+/.jekyll-metadata
+/_site/
+/_products/
+/node_modules/
+/.pnpm-store/
+/vendor/
+/assets/css/style.css

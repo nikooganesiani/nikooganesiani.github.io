@@ -5,10 +5,11 @@
 <html lang="ka" class="[--mobile-nav-height:calc(65px+env(safe-area-inset-bottom,0px))]">
 {% include head.html %}
 <body class="bg-slate-50 min-h-screen flex flex-col text-slate-900 pt-[70px] max-sm:pt-0 max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
+    <a href="#main-content" class="skip-link">მთავარ შინაარსზე გადასვლა</a>
     {% include scrollbar.html %}
     {% include header.html %}
-    
-    <main class="flex-1">{{ content }}</main>
+
+    <main id="main-content" tabindex="-1" class="flex-1">{{ content }}</main>
 
     {% include cookie-banner.html %}
     {% include footer.html %}

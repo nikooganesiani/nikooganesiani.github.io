@@ -1,17 +1,17 @@
 <div id="topProgressBar" aria-hidden="true"></div>
 
 <script src="/assets/js/main/config.js" defer></script>
+<script src="/assets/js/global/catalog.js" defer></script>
+<script src="/assets/js/global/modals.js" defer></script>
 <script src="/assets/js/main/catalog-nav.js" defer></script>
 <script src="/assets/js/main/search.js" defer></script>
 <script src="/assets/js/main/tracking.js" defer></script>
 <script src="/assets/js/main/orders.js" defer></script>
-<script src="/assets/js/main/favorites.js" defer></script>
 <script src="/assets/js/main/ui-gestures.js" defer></script>
 <script src="/assets/js/product/card.js" defer></script>
 <script src="/assets/js/main/searchpage.js" defer></script>
 <script src="/assets/js/main/categorypage.js" defer></script>
 <script src="/assets/js/global/progressBar.js" defer></script>
-<script src="/assets/js/global/modals.js" defer></script>
 <script src="{{ '/assets/js/global/mobile-nav.js' | relative_url }}" defer></script>
 <script src="/assets/js/global/toast.js" defer></script>
 <script src="/assets/js/global/badges.js" defer></script>
@@ -19,7 +19,10 @@
 <script src="/assets/js/global/orders.js" defer></script>
 <script src="/assets/js/global/copyProductLink.js" defer></script>
 <script src="/assets/js/global/cookie-banner.js" defer></script>
+{% if page.is_home %}
 <script src="/assets/js/homepage/banners.js" defer></script>
 <script src="/assets/js/homepage/mini-categories.js" defer></script>
 <script src="/assets/js/homepage/promo-block.js" defer></script>
 <script src="/assets/js/homepage/recently-viewed.js" defer></script>
+<script src="/assets/js/homepage/popular-products.js" defer></script>
+{% endif %}

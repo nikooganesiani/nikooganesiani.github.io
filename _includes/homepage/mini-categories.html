@@ -1,12 +1,15 @@
 <!-- _includes/categories.html -->
-<section class="w-full max-w-7xl mx-auto px-4 py-3 sm:py-4" aria-label="კატეგორიები">
+<section class="w-full py-4 sm:py-6" aria-labelledby="categoriesTitle">
+  <h2 id="categoriesTitle" class="text-xl sm:text-2xl font-bold tracking-tight mb-4">კატეგორიები</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
     {% for category in site.data.catalog %}
       {% assign cat_id = category[0] %}
       {% assign cat_info = category[1] %}
-      <button
-        type="button"
+      <a
+        href="/category/?{{ cat_id | url_encode }}"
         aria-haspopup="dialog"
+        aria-controls="categoryModal"
+        aria-expanded="false"
         class="category-item-btn group flex flex-row sm:flex-col items-center sm:justify-center gap-3 sm:gap-2.5 p-2.5 sm:p-4 rounded-2xl bg-white border border-slate-200/70 hover:border-[#155dfc]/40 active:bg-slate-50 transition-colors duration-150 text-left sm:text-center cursor-pointer outline-none"
         data-cat="{{ cat_id }}"
         data-name="{{ cat_info.title | escape }}"
@@ -21,7 +24,7 @@
         <span class="text-xs sm:text-[13px] font-semibold text-slate-800 group-hover:text-[#155dfc] leading-tight line-clamp-2 sm:line-clamp-1 transition-colors duration-150">
           {{ cat_info.title }}
         </span>
-      </button>
+      </a>
     {% endfor %}
   </div>
 </section>
@@ -33,11 +36,11 @@
   aria-modal="true"
   aria-labelledby="categoryModalTitle"
   aria-hidden="true"
-  class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center sm:p-4 bg-black/45 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-200"
+  class="modal fixed inset-0 z-[9999] hidden items-end sm:items-center justify-center sm:p-4 bg-black/45 backdrop-blur-xs opacity-0 transition-opacity duration-200 [&.active]:opacity-100 group"
 >
   <div
     id="categoryModalBox"
-    class="relative w-full max-w-md bg-white rounded-t-[28px] sm:rounded-3xl overflow-hidden transform translate-y-6 sm:translate-y-0 opacity-0 transition-all duration-200"
+    class="relative w-full max-w-md bg-white rounded-t-[28px] sm:rounded-3xl overflow-hidden transform translate-y-6 opacity-0 transition-all duration-200 group-[.active]:translate-y-0 group-[.active]:opacity-100"
   >
     <!-- Тонкий ползунок шторки (только на мобильных) -->
     <div class="w-9 h-1 bg-slate-300/80 rounded-full mx-auto mt-2.5 sm:hidden"></div>

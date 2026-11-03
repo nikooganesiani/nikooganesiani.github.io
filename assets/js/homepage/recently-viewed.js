@@ -1,46 +1,36 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const recentSection = document.getElementById('recentlyViewedSection');
-    const recentScroll = document.getElementById('recentScroll');
+document.addEventListener('DOMContentLoaded', () => {
+  const section = document.getElementById('recentlyViewedSection');
+  const track = document.getElementById('recentScroll');
+  const status = document.getElementById('recentStatus');
+  const retry = document.getElementById('recentRetry');
+  if (!section || !track) return;
 
-    if (!recentSection || !recentScroll) return;
-
-    let recentIds = [];
+  async function load() {
+    let ids;
+    try { ids = JSON.parse(localStorage.getItem('recentIds') || '[]'); } catch { ids = []; }
+    if (!Array.isArray(ids) || !ids.length) { section.hidden = true; return; }
+    ids = [...new Set(ids.filter(id => typeof id === 'string' || typeof id === 'number').map(String))].slice(0, 12);
+    section.hidden = false;
+    retry.hidden = true;
+    section.setAttribute('aria-busy', 'true');
+    status.textContent = 'პროდუქტები იტვირთება…';
     try {
-        recentIds = JSON.parse(localStorage.getItem('recentIds') || '[]');
-    } catch (e) {
-        recentIds = [];
+      const { products } = await window.fetchCatalogCached();
+      const selected = ids.map(id => products.find(p => String(p.id) === id || String(p.sku) === id)).filter(Boolean);
+      track.innerHTML = selected.map(p => window.createProductCardHTML(p, 'rec')).join('');
+      status.textContent = '';
+      section.hidden = !selected.length;
+      window.syncFavButtons?.();
+    } catch {
+      status.textContent = 'პროდუქტები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.';
+      retry.hidden = false;
+    } finally {
+      section.removeAttribute('aria-busy');
+      window.bindProductCarousel?.('recentScroll', 'recentArrowLeft', 'recentArrowRight');
     }
-
-    if (!Array.isArray(recentIds) || recentIds.length === 0) return;
-
-    const apiUrl = window.CATALOG_API_URL || 'https://api.enkaelectronics.com.ge/catalog';
-
-    fetch(apiUrl)
-        .then(r => {
-            if (!r.ok) throw new Error('Catalog fetch error');
-            return r.json();
-        })
-        .then(data => {
-            const productsList = (data && data.products) ? data.products : (Array.isArray(data) ? data : []);
-            if (!productsList.length) return;
-
-            const recentProducts = recentIds
-                .map(id => productsList.find(p => String(p.id) === String(id)))
-                .filter(Boolean);
-
-            if (recentProducts.length > 0 && typeof window.createProductCardHTML === 'function') {
-                recentScroll.innerHTML = recentProducts.map(p => window.createProductCardHTML(p, 'rec')).join('');
-                recentSection.style.display = 'block';
-
-                if (recentProducts.length <= 4) {
-                    const arrowL = document.getElementById('recentArrowLeft');
-                    const arrowR = document.getElementById('recentArrowRight');
-                    if (arrowL) arrowL.style.display = 'none';
-                    if (arrowR) arrowR.style.display = 'none';
-                }
-            }
-        })
-        .catch(err => {
-            console.error('Error rendering recently viewed products:', err);
-        });
+  }
+  retry.addEventListener('click', load);
+  window.addEventListener('pageshow', event => { if (event.persisted) load(); });
+  window.addEventListener('storage', event => { if (event.key === 'recentIds' || event.key === null) load(); });
+  load();
 });

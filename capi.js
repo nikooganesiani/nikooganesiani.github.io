@@ -234,7 +234,19 @@ function checkAndRecordBotOrder(name, phone, productKey) {
   history.sigs[sig] = now;
   persist('_enka_bot_guard', JSON.stringify(history), 1);
 
-  return { allowed: true };
+  return { allowed: true, reservation: { sig, timestamp: now } };
+}
+
+function releaseBotOrderReservation(reservation) {
+  if (!reservation) return;
+  try {
+    const history = JSON.parse(readStored('_enka_bot_guard') || '{}');
+    if (!Array.isArray(history.ts) || !history.sigs) return;
+    const index = history.ts.indexOf(reservation.timestamp);
+    if (index !== -1) history.ts.splice(index, 1);
+    if (history.sigs[reservation.sig] === reservation.timestamp) delete history.sigs[reservation.sig];
+    persist('_enka_bot_guard', JSON.stringify(history), 1);
+  } catch (e) {}
 }
 
 // Перехватываем отправку заказов во все воркеры бота на всех страницах сайта
@@ -243,6 +255,7 @@ if (typeof window.fetch === 'function' && !window.__enkaFetchGuarded) {
   const originalFetch = window.fetch.bind(window);
 
   window.fetch = async function (input, init) {
+    let reservation = null;
     try {
       const url = typeof input === 'string' ? input : input?.url || '';
       const method = (init?.method || input?.method || 'GET').toUpperCase();
@@ -280,11 +293,24 @@ if (typeof window.fetch === 'function' && !window.__enkaFetchGuarded) {
               }
             );
           }
+          reservation = guard.reservation;
         }
       }
     } catch (e) {}
 
-    return originalFetch(input, init);
+    try {
+      const response = await originalFetch(input, init);
+      let rejected = !response.ok;
+      if (reservation && response.ok) {
+        const result = await response.clone().json().catch(() => null);
+        rejected = result?.ok === false || result?.success === false || !!result?.error;
+      }
+      if (rejected) releaseBotOrderReservation(reservation);
+      return response;
+    } catch (error) {
+      releaseBotOrderReservation(reservation);
+      throw error;
+    }
   };
 }
 

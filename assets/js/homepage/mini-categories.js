@@ -8,8 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!modal || !modalBox || !modalTitle || !modalList) return;
 
-  let isModalOpen = false;
-
   const createSubcategoryLink = (catId, sub) => {
     const link = document.createElement('a');
     link.href = `/category/?${encodeURIComponent(catId)}&sub=${encodeURIComponent(sub.id)}`;
@@ -50,34 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     modalList.appendChild(fragment);
 
-    modal.setAttribute('aria-hidden', 'false');
-    modal.classList.remove('opacity-0', 'pointer-events-none');
-    modal.classList.add('opacity-100', 'pointer-events-auto');
-
-    modalBox.classList.remove('translate-y-6', 'opacity-0');
-    modalBox.classList.add('translate-y-0', 'opacity-100');
-
-    document.body.classList.add('overflow-hidden');
-    isModalOpen = true;
+    const all = createSubcategoryLink(catId, { id: '', name: 'ყველა პროდუქტი' });
+    all.href = `/category/?${encodeURIComponent(catId)}`;
+    modalList.prepend(all);
+    window.openAppModal(modal);
   };
 
   const closeModal = () => {
-    if (!isModalOpen) return;
-
-    modal.setAttribute('aria-hidden', 'true');
-    modal.classList.remove('opacity-100', 'pointer-events-auto');
-    modal.classList.add('opacity-0', 'pointer-events-none');
-
-    modalBox.classList.remove('translate-y-0', 'opacity-100');
-    modalBox.classList.add('translate-y-6', 'opacity-0');
-
-    document.body.classList.remove('overflow-hidden');
-    isModalOpen = false;
+    window.closeAppModal(modal);
   };
 
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.category-item-btn');
     if (btn) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
       const catId = btn.dataset.cat || '';
       const catName = btn.dataset.name || '';
       let subs = [];
@@ -92,14 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (isModalOpen && (e.target === modal || (closeBtn && closeBtn.contains(e.target)))) {
+    if (modal.classList.contains('active') && (e.target === modal || (closeBtn && closeBtn.contains(e.target)))) {
       closeModal();
     }
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isModalOpen) {
-      closeModal();
-    }
-  });
 });

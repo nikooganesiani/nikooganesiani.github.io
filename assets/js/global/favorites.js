@@ -1,13 +1,7 @@
 (function () {
   'use strict';
 
-  var CATALOG_API = 'https://api.enkaelectronics.com.ge/catalog';
   var STORAGE_KEY = 'myFavs';
-  var CATALOG_CACHE_KEY = 'catalogCache_v1';
-  var CATALOG_TTL_MS = 5 * 60 * 1000;
-
-  var catalogMemory = null;
-  var catalogPromise = null;
   var modalBound = false;
 
   function getFavLink(btn) {
@@ -93,62 +87,8 @@
     };
   }
 
-  function normalizeList(data) {
-    if (Array.isArray(data)) return data;
-    if (!data || typeof data !== 'object') return [];
-    if (Array.isArray(data.products)) return data.products;
-    if (Array.isArray(data.items)) return data.items;
-    if (Array.isArray(data.catalog)) return data.catalog;
-    if (Array.isArray(data.data)) return data.data;
-    return [];
-  }
-
-  function readCachedCatalog() {
-    try {
-      var raw = sessionStorage.getItem(CATALOG_CACHE_KEY);
-      if (!raw) return null;
-      var parsed = JSON.parse(raw);
-      if (!parsed || !Array.isArray(parsed.items)) return null;
-      if (Date.now() - parsed.ts > CATALOG_TTL_MS) return null;
-      return parsed.items;
-    } catch (e) {
-      return null;
-    }
-  }
-
-  function writeCachedCatalog(items) {
-    try {
-      sessionStorage.setItem(CATALOG_CACHE_KEY, JSON.stringify({ ts: Date.now(), items: items }));
-    } catch (e) {}
-  }
-
   function getCatalog() {
-    if (catalogMemory) return Promise.resolve(catalogMemory);
-    if (catalogPromise) return catalogPromise;
-
-    var cached = readCachedCatalog();
-    if (cached) {
-      catalogMemory = cached;
-      return Promise.resolve(cached);
-    }
-
-    catalogPromise = fetch(CATALOG_API, { credentials: 'omit' })
-      .then(function (res) {
-        if (!res.ok) throw new Error('Catalog HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        var items = normalizeList(data);
-        catalogMemory = items;
-        writeCachedCatalog(items);
-        return items;
-      })
-      .catch(function (err) {
-        catalogPromise = null;
-        throw err;
-      });
-
-    return catalogPromise;
+    return window.fetchCatalogCached().then(function(data) { return data.products; });
   }
 
   function same(a, b) {
@@ -261,7 +201,7 @@
   function loadFavs() {
     try {
       var favs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      return Array.isArray(favs) ? favs : [];
+      return Array.isArray(favs) ? favs.filter(item => item && typeof item === 'object') : [];
     } catch (e) {
       return [];
     }
@@ -330,6 +270,8 @@
         }
       }
       if (!match) return;
+      otherBtn.setAttribute('aria-pressed', String(isActive));
+      otherBtn.setAttribute('aria-label', (isActive ? 'წაშლა რჩეულებიდან' : 'დამატება რჩეულებში') + (otherHints.name ? ': ' + otherHints.name : ''));
       if (isActive) otherBtn.classList.add('active');
       else otherBtn.classList.remove('active');
     });
@@ -368,8 +310,8 @@
 
     list.innerHTML = favs
       .map(function (item, index) {
-        var href = item.link || '#';
-        var img = item.img || (Array.isArray(item.images) && typeof item.images[0] === 'string' ? item.images[0] : '');
+        var href = window.safeProductLink(item.link);
+        var img = window.safeProductImage(item.img || (Array.isArray(item.images) && typeof item.images[0] === 'string' ? item.images[0] : ''));
         var name = escapeHtml(item.name || 'პროდუქტი');
         var price = escapeHtml(item.price || '');
         var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
@@ -547,6 +489,8 @@
         }
         if (active) btn.classList.add('active');
         else btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', String(active));
+        btn.setAttribute('aria-label', (active ? 'წაშლა რჩეულებიდან' : 'დამატება რჩეულებში') + (hints.name ? ': ' + hints.name : ''));
       });
     } catch (e) {
       console.error('Favorite sync error:', e);
@@ -557,7 +501,6 @@
     bindFavModal();
     syncFavButtons();
     updateFavModalCount();
-    getCatalog().catch(function () {});
 
     if (document.body) {
       var favObserver = new MutationObserver(function (mutations) {
@@ -572,6 +515,13 @@
 
   window.syncFavButtons = syncFavButtons;
   window.getFavoritesCatalog = getCatalog;
+  window.addEventListener('storage', function(event) {
+    if (event.key === 'myFavs' || event.key === null) {
+      syncFavButtons();
+      updateFavModalCount();
+      if (getFavModal()?.classList.contains('active')) renderFavList();
+    }
+  });
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFavorites);

@@ -1,43 +1,32 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const popularSection = document.getElementById('popularSection');
-    const popularScroll = document.getElementById('popularScroll');
+document.addEventListener('DOMContentLoaded', () => {
+  const section = document.getElementById('popularSection');
+  const track = document.getElementById('popularScroll');
+  const status = document.getElementById('popularStatus');
+  const retry = document.getElementById('popularRetry');
+  if (!section || !track) return;
+  const ids = [...new Set((section.dataset.popularIds || '').split(',').filter(Boolean))];
 
-    if (!popularSection || !popularScroll) return;
-
-    const rawIds = popularSection.dataset.popularIds || '';
-    const popularIds = rawIds.split(',').map(id => id.trim()).filter(Boolean);
-
-    if (popularIds.length === 0) return;
-
-    const apiUrl = window.CATALOG_API_URL || 'https://api.enkaelectronics.com.ge/catalog';
-
-    fetch(apiUrl)
-        .then(r => {
-            if (!r.ok) throw new Error('Catalog fetch error');
-            return r.json();
-        })
-        .then(data => {
-            const productsList = (data && data.products) ? data.products : (Array.isArray(data) ? data : []);
-            if (!productsList.length) return;
-
-            // Находим товары согласно списку и сохраняем исходный порядок из YAML
-            const popularProducts = popularIds
-                .map(id => productsList.find(p => String(p.id) === String(id) || String(p.sku) === String(id)))
-                .filter(Boolean);
-
-            if (popularProducts.length > 0 && typeof window.createProductCardHTML === 'function') {
-                popularScroll.innerHTML = popularProducts.map(p => window.createProductCardHTML(p, 'pop')).join('');
-                popularSection.style.display = 'block';
-
-                if (popularProducts.length <= 4) {
-                    const arrowL = document.getElementById('popularArrowLeft');
-                    const arrowR = document.getElementById('popularArrowRight');
-                    if (arrowL) arrowL.style.display = 'none';
-                    if (arrowR) arrowR.style.display = 'none';
-                }
-            }
-        })
-        .catch(err => {
-            console.error('Error rendering popular products:', err);
-        });
+  async function load() {
+    retry.hidden = true;
+    section.setAttribute('aria-busy', 'true');
+    status.textContent = track.children.length ? '' : 'პროდუქტები იტვირთება…';
+    try {
+      const { products } = await window.fetchCatalogCached();
+      const selected = ids.map(id => products.find(p => String(p.id) === id || String(p.sku) === id))
+        .filter(p => p && p.stockStatus !== 'out_of_stock');
+      track.innerHTML = selected.map(p => window.createProductCardHTML(p, 'pop')).join('');
+      status.textContent = selected.length ? '' : 'ამჟამად პოპულარული პროდუქტები არ არის.';
+      window.syncFavButtons?.();
+    } catch {
+      status.textContent = track.children.length
+        ? 'მონაცემების განახლება ვერ მოხერხდა. მიმდინარე ფასი იხილეთ პროდუქტის გვერდზე.'
+        : 'პროდუქტები ვერ ჩაიტვირთა. გთხოვთ, სცადოთ ხელახლა.';
+      retry.hidden = false;
+    } finally {
+      section.removeAttribute('aria-busy');
+      window.bindProductCarousel?.('popularScroll', 'popularArrowLeft', 'popularArrowRight');
+    }
+  }
+  retry.addEventListener('click', load);
+  load();
 });

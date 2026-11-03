@@ -100,12 +100,18 @@ function showSpamError(form, message) {
 
 window.openOrderForm = function(product) {
     try {
-        isQuickOrderSubmitting = false;
+        if (isQuickOrderSubmitting) return;
+        if (!product?.id || product.stockStatus === 'out_of_stock' || !(parseFloat(product.price) > 0)) return;
+        document.getElementById('quickProductName').textContent = product.name || '';
+        document.getElementById('quickProductPrice').textContent = String(product.price).replace(/₾/g, '').trim() + ' ₾';
+        document.getElementById('quickOrderError').textContent = '';
+        quickName?.removeAttribute('aria-invalid');
+        quickPhone?.removeAttribute('aria-invalid');
         if (quickName) quickName.value = '';
         if (quickPhone) quickPhone.value = '';
-        document.getElementById('quickFormWrapperName')?.classList.remove('error-border'); 
+        document.getElementById('quickFormWrapperName')?.classList.remove('error-border');
         document.getElementById('quickFormWrapperPhone')?.classList.remove('error-border');
-        
+
         const errEl = quickForm?.querySelector('.enka-rate-limit-msg');
         if (errEl) errEl.textContent = '';
 
@@ -134,19 +140,35 @@ if (quickForm) {
         if (isQuickOrderSubmitting) return;
 
         const hp = document.getElementById('quickEmailHp');
-        if (hp && hp.value) return; 
+        if (hp && hp.value) return;
 
         const name = quickName?.value?.trim() || '';
         const phoneRaw = (quickPhone?.value || '').replace(/\D/g, '');
         const phoneWrapper = document.getElementById('quickFormWrapperPhone');
         const nameWrapper = document.getElementById('quickFormWrapperName');
-        
+
         nameWrapper?.classList.remove('error-border');
         phoneWrapper?.classList.remove('error-border');
 
-        if (!name) { nameWrapper?.classList.add('error-border'); return; }
-        if (phoneRaw.length !== 9) { phoneWrapper?.classList.add('error-border'); return; }
-        
+        const errorEl = document.getElementById('quickOrderError');
+        if (errorEl) errorEl.textContent = '';
+        quickName?.removeAttribute('aria-invalid');
+        quickPhone?.removeAttribute('aria-invalid');
+        if (name.length < 2) {
+            nameWrapper?.classList.add('error-border');
+            quickName?.setAttribute('aria-invalid', 'true');
+            if (errorEl) errorEl.textContent = 'გთხოვთ, მიუთითოთ თქვენი სახელი.';
+            quickName?.focus();
+            return;
+        }
+        if (!/^5\d{8}$/.test(phoneRaw)) {
+            phoneWrapper?.classList.add('error-border');
+            quickPhone?.setAttribute('aria-invalid', 'true');
+            if (errorEl) errorEl.textContent = 'მიუთითეთ 9-ნიშნა მობილურის ნომერი, რომელიც იწყება 5-ით.';
+            quickPhone?.focus();
+            return;
+        }
+
         let product = {};
         try {
             const modal = document.getElementById('orderFormModal');
@@ -166,6 +188,7 @@ if (quickForm) {
                 window.closeAppModal?.('orderFormModal');
                 setTimeout(() => {
                     window.showOrderConfirm?.({
+                        save: false,
                         name: name,
                         phone: fullPhone,
                         product: product.name,
@@ -188,20 +211,23 @@ if (quickForm) {
         isQuickOrderSubmitting = true;
 
         const submitBtn = quickForm.querySelector('button[type="submit"]');
-        const originalContent = submitBtn ? submitBtn.innerHTML : ''; 
-        
+        const originalContent = submitBtn ? submitBtn.innerHTML : '';
+
         if (submitBtn) {
-            submitBtn.innerHTML = '<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-6 h-6 mx-auto"></div>'; 
+            submitBtn.innerHTML = '<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-6 h-6 mx-auto"></div>';
             submitBtn.disabled = true;
+            submitBtn.setAttribute('aria-label', 'შეკვეთა იგზავნება');
         }
-        
+        quickForm.setAttribute('aria-busy', 'true');
+
         try {
             const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
-            
+
             const response = await fetch(window.WORKER_URL, {
                 method: 'POST',
-                headers: { 
+                signal: AbortSignal.timeout(20000),
+                headers: {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'EnkaOrderForm'
                 },
@@ -216,13 +242,15 @@ if (quickForm) {
                     source: 'Быстрый заказ'
                 })
             });
-            
-            if (response.ok) {
+
+            const result = await response.clone().json().catch(() => null);
+            if (response.ok && result?.ok !== false && result?.success !== false && !result?.error) {
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
 
                 // Отправляем в CAPI (capi.js сам заблокирует повтор, если это было просто исправление опечатки в номере!)
                 if (typeof window.sendCapiEvent === 'function') {
+                    try {
                     window.sendCapiEvent(
                         'Purchase',
                         {
@@ -239,8 +267,9 @@ if (quickForm) {
                             phone: fullPhone
                         }
                     );
+                    } catch (analyticsError) { console.error(analyticsError); }
                 }
-                
+
                 window.closeAppModal?.('orderFormModal');
                 setTimeout(() => {
                     window.showOrderConfirm?.({
@@ -257,6 +286,7 @@ if (quickForm) {
                     isQuickOrderSubmitting = false;
                 }, 400);
             } else {
+                if (errorEl) errorEl.textContent = 'შეკვეთა ვერ გაიგზავნა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.';
                 if (submitBtn) {
                     submitBtn.innerHTML = originalContent;
                     submitBtn.disabled = false;
@@ -265,11 +295,15 @@ if (quickForm) {
             }
         } catch(error) {
             console.error(error);
+            if (errorEl) errorEl.textContent = 'სერვერთან კავშირი ვერ დამყარდა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.';
             if (submitBtn) {
                 submitBtn.innerHTML = originalContent;
                 submitBtn.disabled = false;
             }
             isQuickOrderSubmitting = false;
+        } finally {
+            quickForm.removeAttribute('aria-busy');
+            submitBtn?.removeAttribute('aria-label');
         }
     });
 }
@@ -284,15 +318,19 @@ window.showOrderConfirm = function(data = {}) {
         if (confirmName) confirmName.textContent = data.name || '-';
         if (confirmPhone) confirmPhone.textContent = data.phone || '-';
         if (confirmProduct) confirmProduct.textContent = data.product || '-';
-        
+
         const rawConfirmPrice = String(data.price || '').replace(/₾/g, '').trim();
         if (confirmPrice) confirmPrice.textContent = rawConfirmPrice ? `${rawConfirmPrice} ₾` : '-';
-        
-        let oldPrice = (data.oldPrice && data.oldPrice !== 'null' && data.oldPrice !== 'undefined') 
-            ? String(data.oldPrice).replace(/₾/g, '').trim() + ' ₾' 
+
+        let oldPrice = (data.oldPrice && data.oldPrice !== 'null' && data.oldPrice !== 'undefined')
+            ? String(data.oldPrice).replace(/₾/g, '').trim() + ' ₾'
             : null;
-        
-        let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+
+        if (data.save !== false) {
+        try {
+        let orders;
+        try { orders = JSON.parse(localStorage.getItem('myOrders') || '[]'); } catch { orders = []; }
+        if (!Array.isArray(orders)) orders = [];
         orders.unshift({
             name: data.name || '',
             phone: data.phone || '',
@@ -302,6 +340,8 @@ window.showOrderConfirm = function(data = {}) {
             date: new Date().toISOString()
         });
         localStorage.setItem('myOrders', JSON.stringify(orders));
+        } catch { /* A completed order must still be confirmed when storage is unavailable. */ }
+        }
         window.updateBadges?.();
 
         window.openAppModal?.('orderConfirmModal');

@@ -6,8 +6,8 @@ baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
 
-# Включаем инкрементальную сборку по умолчанию
-incremental: true
+# Полная сборка исключает устаревшие страницы и данные каталога
+incremental: false
 
 include: [_pages]
 
@@ -19,6 +19,12 @@ exclude:
   - Gemfile.lock
   - package.json
   - package-lock.json
+  - pnpm-lock.yaml
+  - pnpm-workspace.yaml
+  - scripts
+  - tests
+  - .local
+  - AGENTS.md
   - README.md
   - generate_pages.js
   - assets/css/input.css

@@ -11,12 +11,6 @@ document.addEventListener('touchstart', function(e) {
     }
 }, {passive: true});
 
-window.addEventListener('contextmenu', function(e) {
-    if (e.target?.closest?.('button, a, .product-card, .category-btn, .sub-category-btn, .thumb-card, .similar-card')) {
-        e.preventDefault();
-    }
-});
-
 document.addEventListener('touchend', function(e) {
     setTimeout(function() {
         if (document.activeElement && document.activeElement !== document.body) {

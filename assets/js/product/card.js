@@ -3,7 +3,7 @@
 
     // Хранилище объектов товаров в памяти (безопасная замена инлайн-JSON в onclick)
     const productStore = new Map();
-    const FALLBACK_IMAGE = '/img/no-image.png';
+    const FALLBACK_IMAGE = '/img/no-image.svg';
     const SLIDE_GAP = 8; // 8px (gap-2) — буфер против субпиксельного наложения соседних фото
 
     // Экранирование спецсимволов для безопасной вставки в HTML
@@ -20,7 +20,7 @@
     // Парсинг цены (поддерживает целые и дробные значения)
     const parsePrice = (val) => {
         if (val === null || val === undefined) return 0;
-        const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.]/g, '');
+        const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.\-]/g, '');
         return parseFloat(cleaned) || 0;
     };
 
@@ -37,7 +37,7 @@
             event.stopPropagation();
         }
         const product = productStore.get(String(storeKey));
-        if (product && typeof window.openOrderForm === 'function') {
+        if (product && product.stockStatus !== 'out_of_stock' && parsePrice(product.price) > 0 && typeof window.openOrderForm === 'function') {
             window.openOrderForm(product);
         }
     };
@@ -48,9 +48,10 @@
     window.createProductCardHTML = function (p, prefix = 'sim') {
         if (!p || typeof p !== 'object') return '';
 
-        const rawId = p.id ?? Math.random().toString(36).slice(2, 9);
+        if (!p.id) return '';
+        const rawId = String(p.id);
         const safeId = escapeHtml(rawId);
-        const uniqueId = `${escapeHtml(prefix)}-${safeId}`;
+        const uniqueId = `${String(prefix).replace(/[^a-z0-9_-]/gi, '')}-${Array.from(rawId).map(char => char.codePointAt(0).toString(16)).join('-')}`;
         const productUrl = `/product/${encodeURIComponent(rawId)}/`;
         const safeName = escapeHtml(p.name || '');
 
@@ -60,7 +61,7 @@
         const rawImages = Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []);
         const imgs = rawImages.filter(
             (img) => typeof img === 'string' && img.trim() !== '' && !img.includes('youtube.com') && !img.includes('youtu.be')
-        );
+        ).map(img => window.safeProductImage(img));
         if (imgs.length === 0) {
             imgs.push(FALLBACK_IMAGE);
         }
@@ -70,6 +71,7 @@
         // Расчет скидки
         const oldVal = parsePrice(p.oldPrice);
         const newVal = parsePrice(p.price);
+        const available = p.stockStatus !== 'out_of_stock' && newVal > 0;
         let discountBadge = '';
 
         if (oldVal > newVal && newVal > 0) {
@@ -108,12 +110,12 @@
 
         return `
         <div class="flex-[0_0_calc(25%-12px)] max-lg:flex-[0_0_calc(33.333%-8px)] max-sm:flex-[0_0_calc(50%-6px)] snap-start min-w-0 flex flex-col relative group/card product-card bg-white rounded-2xl overflow-hidden" data-product-id="${safeId}">
-            
+
             <!-- Блок изображения -->
             <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl bg-white">
                 ${discountBadge}
 
-                <button type="button" class="absolute top-2.5 right-2.5 max-sm:top-1.5 max-sm:right-1.5 w-[30px] h-[30px] max-sm:w-[26px] max-sm:h-[26px] bg-transparent border-none rounded-full flex items-center justify-center cursor-pointer text-slate-400 transition-all duration-200 outline-none z-10 hover:text-red-500 active:scale-85 btn-fav-card [&.active]:text-red-500 [&.active>svg]:fill-current" aria-label="დამატება რჩეულებში" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+                <button type="button" class="absolute top-1.5 right-1.5 w-11 h-11 bg-white/95 border-none rounded-full flex items-center justify-center cursor-pointer text-slate-500 transition-all duration-200 outline-none z-10 hover:text-red-500 active:scale-85 btn-fav-card [&.active]:text-red-500 [&.active>svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
 
@@ -123,15 +125,15 @@
                 <div class="flex w-full h-full gap-2 overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden product-images-track" id="track-${uniqueId}">
                     ${imgs.map((img) => `
                         <div class="flex-[0_0_100%] w-full h-full shrink-0 flex items-center justify-center overflow-hidden bg-white">
-                            <a href="${productUrl}" class="w-full h-full block" draggable="false">
-                                <img class="w-full h-full object-cover block" 
-                                     src="${escapeHtml(img)}" 
-                                     alt="${safeName}" 
-                                     width="600" 
-                                     height="600" 
-                                     loading="lazy" 
+                            <a href="${productUrl}" class="w-full h-full block" draggable="false" tabindex="-1" aria-hidden="true">
+                                <img class="w-full h-full object-contain block p-2"
+                                     src="${escapeHtml(img)}"
+                                     alt="${safeName}"
+                                     width="600"
+                                     height="600"
+                                     loading="lazy"
                                      decoding="async"
-                                     onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';" 
+                                     onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
                                      draggable="false">
                             </a>
                         </div>
@@ -143,16 +145,16 @@
 
             <!-- Информация о товаре -->
             <div class="bg-white rounded-b-2xl pt-3 pb-4 px-4 max-sm:pt-2.5 max-sm:pb-3 max-sm:px-3 flex flex-col flex-1 product-info">
-                
+
                 <!-- Название строго в 1 строку -->
-                <a href="${productUrl}" class="block text-[0.95rem] max-sm:text-[0.82rem] font-bold text-slate-900 leading-snug tracking-tight truncate mb-2 max-sm:mb-1.5 no-underline transition-opacity duration-200 hover:opacity-75" title="${safeName}">
+                <a href="${productUrl}" class="product-name block text-[0.95rem] max-sm:text-[0.82rem] font-semibold text-slate-900 leading-snug tracking-tight line-clamp-2 min-h-[2.75em] mb-3 no-underline transition-opacity duration-200 hover:opacity-75" title="${safeName}">
                     ${safeName}
                 </a>
 
                 <!-- Блок цены -->
                 <div class="flex flex-row items-baseline gap-1.5 flex-wrap mb-3.5 max-sm:mb-2.5">
                     <div class="text-[1.45rem] max-sm:text-[1.15rem] font-bold text-blue-600 tracking-tight leading-none">
-                        ${formattedPrice}₾
+                        ${newVal > 0 ? formattedPrice + ' ₾' : 'ფასი ზუსტდება'}
                     </div>
                     ${formattedOldPrice ? `
                         <span class="text-[0.85rem] max-sm:text-[0.75rem] leading-none line-through decoration-slate-400 decoration-[1px] text-slate-400">
@@ -162,9 +164,9 @@
                 </div>
 
                 <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
-                <button type="button" class="bg-blue-600 text-white border-none py-2.5 px-3 max-sm:py-2 max-sm:px-2.5 rounded-lg max-sm:rounded-md cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 ease-out flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full mt-auto" aria-label="ყიდვა" onclick="window.triggerCardOrder('${uniqueId}', event)">
+                <button type="button" ${available ? '' : 'disabled'} class="bg-blue-600 text-white border-none min-h-11 py-2.5 px-3 rounded-xl cursor-pointer font-bold text-[0.95rem] max-sm:text-[0.8rem] transition-all duration-200 ease-out flex items-center justify-center gap-1.5 hover:bg-blue-700 active:scale-95 outline-none w-full mt-auto disabled:bg-slate-200 disabled:text-slate-600" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" class="max-sm:w-3.5 max-sm:h-3.5 shrink-0"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                    <span>ყიდვა</span>
+                    <span>${available ? 'ყიდვა' : 'არ არის მარაგში'}</span>
                 </button>
             </div>
         </div>`;
@@ -220,7 +222,7 @@
 
         const targetSlide = slides[nextIndex];
         if (targetSlide) {
-            track.scrollTo({ left: targetSlide.offsetLeft, behavior: 'smooth' });
+            track.scrollTo({ left: targetSlide.offsetLeft - slides[0].offsetLeft, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }
 
         clearTimeout(track._resetTimer);
@@ -241,13 +243,31 @@
         const scrollAmount = card ? card.offsetWidth + gap : 300;
         const maxScroll = container.scrollWidth - container.clientWidth;
 
-        if (direction === 1 && container.scrollLeft >= maxScroll - 10) {
-            container.scrollTo({ left: 0, behavior: 'smooth' });
-        } else if (direction === -1 && container.scrollLeft <= 10) {
-            container.scrollTo({ left: maxScroll, behavior: 'smooth' });
-        } else {
-            container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        container.scrollTo({ left: Math.max(0, Math.min(maxScroll, container.scrollLeft + direction * scrollAmount)), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    };
+
+    window.bindProductCarousel = function(id, leftId, rightId) {
+        const track = document.getElementById(id);
+        if (!track) return;
+        const update = () => {
+            const max = Math.max(0, track.scrollWidth - track.clientWidth);
+            const left = document.getElementById(leftId);
+            const right = document.getElementById(rightId);
+            if (left) left.disabled = track.scrollLeft <= 2;
+            if (right) right.disabled = track.scrollLeft >= max - 2;
+        };
+        if (!track.dataset.carouselBound) {
+            track.dataset.carouselBound = 'true';
+            track.addEventListener('scroll', update, { passive: true });
+            track.addEventListener('keydown', event => {
+                if (event.target !== track || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                event.preventDefault();
+                if (event.key === 'Home' || event.key === 'End') track.scrollTo({ left: event.key === 'Home' ? 0 : track.scrollWidth, behavior: 'auto' });
+                else window.scrollCarousel(id, event.key === 'ArrowRight' ? 1 : -1);
+            });
+            new ResizeObserver(update).observe(track);
         }
+        requestAnimationFrame(update);
     };
 
     // Слушатель скролла для синхронизации точек

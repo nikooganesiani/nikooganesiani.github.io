@@ -3,7 +3,13 @@ name: Build and Deploy
 on:
   push:
     branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -11,23 +17,30 @@ permissions:
   id-token: write
 
 jobs:
-  build-and-deploy-gh:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check storefront behavior
+        run: pnpm run check
 
       - name: Generate product pages
         run: node generate_pages.js
 
-      # ⚡ Скачиваем в /tmp/tailwindcss, чтобы файл не попадал в сборку Jekyll
       - name: Build Tailwind CSS
-        run: |
-          curl -sL https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64 -o /tmp/tailwindcss
-          chmod +x /tmp/tailwindcss
-          /tmp/tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify
+        run: pnpm run build:css
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -36,29 +49,18 @@ jobs:
           bundler: default
           bundler-cache: true
 
-      - name: Cache Jekyll build
-        uses: actions/cache@v6
-        with:
-          path: |
-            .jekyll-cache
-            _site
-          key: jekyll-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            jekyll-${{ runner.os }}-
-
       - name: Build Jekyll site
-        run: bundle exec jekyll build --incremental
+        run: bundle exec jekyll build
         env:
           JEKYLL_ENV: production
+
+      - name: Verify production homepage
+        run: pnpm run check:site
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5
         with:
           path: _site/
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5
 
       - name: Upload Build Artifact for Cloudflare
         if: github.event_name == 'workflow_dispatch'
@@ -68,8 +70,20 @@ jobs:
           path: _site/
           retention-days: 1
 
+  deploy-pages:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
   deploy-cloudflare:
-    needs: build-and-deploy-gh
+    needs: build
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:

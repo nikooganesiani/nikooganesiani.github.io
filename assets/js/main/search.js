@@ -1,151 +1,149 @@
-function setupSearch(inputId, resultsId, clearId) {
-    try {
-        const s = document.getElementById(inputId);
-        const r = document.getElementById(resultsId);
-        const c = document.getElementById(clearId);
-        if (!s) return;
-        
-        const renderResults = () => {
-            let q = s.value.trim();
-            if (c) {
-                if (q.length > 0) c.classList.add('show');
-                else c.classList.remove('show');
-            }
-            if (!q) {
-                if (r) {
-                    r.innerHTML = '';
-                    r.classList.remove('show');
-                    if (inputId === 'mobileSearchInput') r.style.display = 'none';
-                    else r.style.display = '';
-                }
-                return;
-            }
-            
-            window.fetchCatalogCached().then(d => {
-                if (s.value.trim() !== q) return;
-                if (!d || !Array.isArray(d.products)) return;
-
-                let qLower = q.toLowerCase();
-                let normalizedQ = window.normalizeQuery ? window.normalizeQuery(q) : qLower;
-                let f = d.products.filter(p => p && p.stockStatus !== 'out_of_stock' && 
-                    (((p.name || '').toLowerCase().includes(qLower)) || 
-                     ((p.name || '').toLowerCase().includes(normalizedQ)))
-                );
-                
-                if (r) {
-                    if (inputId === 'mobileSearchInput') {
-                        r.innerHTML = f.length ? f.map(p => {
-                            let catText = '';
-                            let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
-                            if (mainCatId && window.CATALOG_STRUCTURE?.[mainCatId]) {
-                                catText = window.CATALOG_STRUCTURE[mainCatId].title || '';
-                            }
-                            let oldP = (p.oldPrice || p.old_price) ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${String(p.oldPrice || p.old_price).replace(/₾/g, '')}₾</span>` : '';
-                            let imgSrc = (Array.isArray(p.images) && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
-                            return `<div class="flex gap-3 bg-transparent border-b border-slate-200 py-4 px-2 relative items-center transition-all duration-200 last:border-none cursor-pointer mb-2 hover:bg-slate-50" onclick="location.href='/product/${p.id}/'"><img class="w-16 h-16 rounded-lg object-contain bg-transparent shrink-0" src="${imgSrc}" onerror="this.src='/img/no-image.png'"><div class="flex-1 min-w-0"><div class="font-bold text-[0.95rem] text-slate-900 leading-snug mb-0.5 line-clamp-2 overflow-hidden text-ellipsis">${p.name || ''}</div><div class="text-[0.75rem] text-slate-400 mt-0.5 font-semibold">${catText}</div><div class="font-bold text-blue-600 text-[1.1rem] flex items-center flex-wrap gap-1.5">${String(p.price || 0).replace(/₾/g, '')}₾ ${oldP}</div></div></div>`;
-                        }).join('') : '<div class="text-center p-8 text-slate-400 font-semibold">ვერაფერი მოიძებნა</div>';
-                        r.style.display = 'flex';
-                    } else {
-                        r.innerHTML = f.length ? f.map(p => {
-                            let catText = '';
-                            let mainCatId = (Array.isArray(p.categories) && p.categories.length > 0) ? p.categories[0] : (p.category || p.categories);
-                            let subCatId = (Array.isArray(p.subcategories) && p.subcategories.length > 0) ? p.subcategories[0] : (p.subcategory || p.sub || p.subcategories);
-                            if (mainCatId && window.CATALOG_STRUCTURE?.[mainCatId]) {
-                                catText = window.CATALOG_STRUCTURE[mainCatId].title || '';
-                                if (subCatId) {
-                                    let sub = window.CATALOG_STRUCTURE[mainCatId].subs?.find(sb => sb.id === subCatId);
-                                    if (sub) catText += ` <span class="text-slate-300 mx-1">&bull;</span> ${sub.name} `;
-                                }
-                            }
-                            let oldPriceValue = p.oldPrice || p.old_price;
-                            let oldPriceHtml = oldPriceValue ? `<span class="text-[0.8rem] text-slate-400 line-through font-semibold ml-2">${String(oldPriceValue).replace(/₾/g, '')}₾</span>` : '';
-                            let imgSrc = (Array.isArray(p.images) && p.images.length > 0) ? p.images[0] : (p.image || '/img/no-image.png');
-                            return `<div class="flex items-center gap-4 p-3 cursor-pointer rounded-2xl transition-all duration-200 hover:bg-slate-50" onclick="location.href='/product/${p.id}/'"><img src="${imgSrc}" class="w-12 h-12 object-contain rounded-2xl bg-transparent shrink-0" onerror="this.src='/img/no-image.png'"><div class="flex-1 min-w-0"><div class="text-[0.95rem] font-bold whitespace-nowrap overflow-hidden text-ellipsis text-slate-900">${p.name || ''}</div><div class="text-[0.75rem] text-slate-400 font-semibold mt-0.5">${catText}</div><div class="font-bold text-blue-600 mt-0.5 flex items-center"><span>${String(p.price || 0).replace(/₾/g, '')}₾</span>${oldPriceHtml}</div></div></div>`;
-                        }).join('') : '<div class="p-8 text-center text-slate-400 font-semibold">ვერაფერი მოიძებნა</div>';
-                        r.style.display = '';
-                        r.classList.add('show');
-                    }
-                }
-            }).catch(err => console.error(err));
-        };
-
-        s.addEventListener('input', renderResults);
-        s.addEventListener('focus', function() {
-            if (this.value.trim().length > 0 && r && r.innerHTML !== '') {
-                if (inputId === 'mobileSearchInput') {
-                    r.style.display = 'flex';
-                } else {
-                    r.style.display = '';
-                    r.classList.add('show');
-                }
-            }
-        });
-
-        if (c) {
-            c.onclick = function() {
-                s.value = '';
-                s.focus();
-                c.classList.remove('show');
-                renderResults();
-            };
-        }
-
-        s.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const q = this.value.trim();
-                if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
-            }
-        });
-        
-        if (inputId === 'searchInput') { 
-            document.addEventListener('click', e => { 
-                const desktopBtn = document.getElementById('desktopSearchBtn');
-                if (!s.contains(e.target) && r && !r.contains(e.target) && (!desktopBtn || !desktopBtn.contains(e.target)) && (!c || !c.contains(e.target))) {
-                    r.classList.remove('show'); 
-                }
-            }); 
-        }
-    } catch(e) { console.error(e); }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const searchQ = urlParams.get('result') || urlParams.get('search');
-        if (searchQ) {
-            const s = document.getElementById('searchInput');
-            if (s) {
-                s.value = searchQ;
-                document.getElementById('desktopSearchClear')?.classList.add('show');
-            }
-        }
-    } catch(e) { console.error(e); }
+  'use strict';
 
-    try {
-        let desktopInput = document.getElementById('searchInput');
-        let parentContainer = document.querySelector('.group.relative.h-full') || desktopInput?.parentElement;
-        
-        if (desktopInput && parentContainer && !document.getElementById('desktopSearchResults')) {
-            let sr = document.createElement('div');
-            sr.className = 'absolute top-[calc(100%+10px)] left-0 right-0 bg-white w-full rounded-[1.5rem] shadow-[0_10px_25px_rgba(0,0,0,0.1)] border-none z-[1000] opacity-0 invisible scale-[0.98] -translate-y-3 transition-all duration-300 max-h-[400px] overflow-y-auto p-2 [&.show]:opacity-100 [&.show]:visible [&.show]:translate-y-0 [&.show]:scale-100 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden';
-            sr.id = 'desktopSearchResults';
-            parentContainer.appendChild(sr);
-        }
+  function setupSearch(inputId, resultsId, clearId, submitId) {
+    const input = document.getElementById(inputId);
+    const clear = document.getElementById(clearId);
+    const submit = document.getElementById(submitId);
+    if (!input) return;
+    let results = document.getElementById(resultsId);
+    const mobile = inputId === 'mobileSearchInput';
+    if (!results) {
+      results = document.createElement('div');
+      results.id = resultsId;
+      results.className = 'absolute top-[calc(100%+10px)] left-0 right-0 bg-white rounded-2xl shadow-xl border border-slate-200 z-[1000] max-h-[min(400px,65vh)] overflow-y-auto p-2';
+      input.parentElement.append(results);
+    }
+    results.hidden = true;
+    results.setAttribute('aria-label', 'ძიების შედეგები');
+    input.setAttribute('aria-controls', resultsId);
+    input.setAttribute('aria-expanded', 'false');
+    let timer;
+    let revision = 0;
+    let lastQuery = '';
 
-        setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear');
-        setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear');
-        
-        ['desktopSearchBtn', 'mobileSearchBtn'].forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.addEventListener('click', () => {
-                    const inputId = id === 'desktopSearchBtn' ? 'searchInput' : 'mobileSearchInput';
-                    const inputEl = document.getElementById(inputId);
-                    const q = inputEl?.value?.trim();
-                    if (q) window.location.href = '/search/?result=' + encodeURIComponent(q);
-                });
-            }
+    function show(visible) {
+      results.hidden = !visible;
+      if (mobile) results.style.display = visible ? 'flex' : 'none';
+      input.setAttribute('aria-expanded', String(visible));
+    }
+    function message(text, retry = false) {
+      results.replaceChildren();
+      const node = document.createElement('p');
+      node.className = 'search-message';
+      node.setAttribute('role', 'status');
+      node.textContent = text;
+      results.append(node);
+      if (retry) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'p-3 text-sm font-semibold text-blue-700 underline';
+        button.textContent = 'ხელახლა ცდა';
+        button.addEventListener('click', render);
+        results.append(button);
+      }
+      show(true);
+    }
+    async function render() {
+      const query = input.value.trim();
+      const request = ++revision;
+      clear?.classList.toggle('show', !!query);
+      if (!query) { results.replaceChildren(); show(false); return; }
+      message('ძიება…');
+      try {
+        const { products } = await window.fetchCatalogCached();
+        if (request !== revision || input.value.trim() !== query) return;
+        const direct = query.toLocaleLowerCase('ka');
+        const normalized = window.normalizeQuery?.(query) || direct;
+        const found = products.filter(product => product.stockStatus !== 'out_of_stock' &&
+          [product.name, product.brand, product.sku, product.id].some(value =>
+            String(value || '').toLowerCase().includes(direct) || String(value || '').toLowerCase().includes(normalized)));
+        if (!found.length) { message('ვერაფერი მოიძებნა. სცადეთ სხვა სიტყვა.'); return; }
+        const fragment = document.createDocumentFragment();
+        found.slice(0, 8).forEach(product => {
+          const link = document.createElement('a');
+          link.className = 'search-result';
+          link.href = '/product/' + encodeURIComponent(product.id) + '/';
+          const image = document.createElement('img');
+          const source = Array.isArray(product.images) ? product.images[0] : product.image;
+          image.src = window.safeProductImage?.(source) || '/img/no-image.svg';
+          image.alt = '';
+          image.width = 56;
+          image.height = 56;
+          image.loading = 'lazy';
+          image.onerror = () => { image.onerror = null; image.src = '/img/no-image.svg'; };
+          const copy = document.createElement('div');
+          copy.className = 'search-result-copy';
+          const name = document.createElement('div');
+          name.className = 'search-result-name';
+          name.textContent = product.name;
+          const price = document.createElement('div');
+          price.className = 'search-result-price';
+          price.textContent = String(product.price || '').replace(/₾/g, '').trim() + ' ₾';
+          copy.append(name, price);
+          link.append(image, copy);
+          fragment.append(link);
         });
-    } catch(e){}
+        const all = document.createElement('a');
+        all.href = '/search/?result=' + encodeURIComponent(query);
+        all.className = 'block p-3 text-center text-sm font-semibold text-blue-700';
+        all.textContent = `ყველა შედეგი (${found.length})`;
+        fragment.append(all);
+        results.replaceChildren(fragment);
+        lastQuery = query;
+        show(true);
+      } catch {
+        if (request === revision && input.value.trim() === query) message('ძიება ვერ შესრულდა. შეამოწმეთ კავშირი.', true);
+      }
+    }
+    function searchPage() {
+      const query = input.value.trim();
+      if (query) window.location.assign('/search/?result=' + encodeURIComponent(query));
+      else input.focus();
+    }
+    input.addEventListener('input', () => {
+      ++revision;
+      clearTimeout(timer);
+      clear?.classList.toggle('show', !!input.value);
+      if (!input.value.trim()) { results.replaceChildren(); show(false); return; }
+      timer = setTimeout(render, 180);
+    });
+    input.addEventListener('focus', () => {
+      if (input.value.trim() && lastQuery === input.value.trim() && results.children.length) show(true);
+    });
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); searchPage(); }
+      else if (event.key === 'Escape') { ++revision; clearTimeout(timer); show(false); }
+      else if (event.key === 'ArrowDown' && !results.hidden) {
+        event.preventDefault();
+        results.querySelector('a')?.focus();
+      }
+    });
+    results.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); input.focus(); show(false); return; }
+      if (!['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+      event.preventDefault();
+      const links = [...results.querySelectorAll('a, button')];
+      const index = links.indexOf(document.activeElement) + (event.key === 'ArrowDown' ? 1 : -1);
+      if (index < 0) input.focus();
+      else links[Math.min(index, links.length - 1)]?.focus();
+    });
+    clear?.addEventListener('click', () => { input.value = ''; render(); input.focus(); });
+    submit?.addEventListener('click', searchPage);
+    document.addEventListener('click', event => {
+      if (!input.parentElement.contains(event.target) && !results.contains(event.target)) { ++revision; clearTimeout(timer); show(false); }
+    });
+    input.parentElement.addEventListener('focusout', event => {
+      if (!mobile && !input.parentElement.contains(event.relatedTarget)) show(false);
+    });
+  }
+
+  setupSearch('searchInput', 'desktopSearchResults', 'desktopSearchClear', 'desktopSearchBtn');
+  setupSearch('mobileSearchInput', 'mobileSearchResults', 'mobileSearchClear', 'mobileSearchBtn');
+  const query = new URLSearchParams(window.location.search).get('result');
+  if (query) {
+    const input = document.getElementById('searchInput');
+    if (input) input.value = query;
+    document.getElementById('desktopSearchClear')?.classList.add('show');
+  }
 });

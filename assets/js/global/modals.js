@@ -17,7 +17,7 @@
   }
 
   function focusModal(modal) {
-    const target = modal.querySelector('[autofocus]') || getFocusables(modal)[0] || modal;
+    const target = modal.querySelector('[autofocus], input:not([type="hidden"]):not([tabindex="-1"])') || getFocusables(modal)[0] || modal;
     target.focus({ preventScroll: true });
   }
 
@@ -60,8 +60,10 @@
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto';
     void modal.offsetHeight;
     modal.classList.add('active');
+    if (trigger instanceof HTMLElement && trigger.getAttribute('aria-controls') === modal.id) trigger.setAttribute('aria-expanded', 'true');
     syncBackground();
     // Keep search focus in the click event so iOS can open the keyboard.
     focusModal(modal);
@@ -75,6 +77,8 @@
     const index = openModals.indexOf(modal);
     if (index !== -1) openModals.splice(index, 1);
     modal.classList.remove('active');
+    modal.style.pointerEvents = 'none';
+    document.querySelectorAll('[aria-controls="' + modal.id + '"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
     modal.inert = true;
     if (background.has(modal)) background.set(modal, true);
 
@@ -135,5 +139,16 @@
   document.addEventListener('focusin', event => {
     const modal = topModal();
     if (modal && !modal.contains(event.target)) focusModal(modal);
+  });
+
+  document.addEventListener('click', event => {
+    const button = event.target.closest('[data-close-modal]');
+    if (button) window.closeAppModal(button.closest('[role="dialog"], .modal'));
+  });
+
+  document.querySelectorAll('.modal').forEach(modal => {
+    if (modal.parentElement !== document.body) document.body.append(modal);
+    modal.inert = true;
+    modal.setAttribute('aria-hidden', 'true');
   });
 })();
