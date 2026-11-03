@@ -1,60 +1,44 @@
-<div id="productData" class="hidden" 
-     data-sku="{{ page.sku }}" 
-     data-name="{{ page.name | escape }}" 
-     data-price="{{ page.price }}" 
-     data-old-price="{{ page.oldPrice }}" 
-     data-subcat="{{ first_sub }}" 
-     data-cat="{{ first_cat }}">
-</div>
-
-<div class="flex flex-col opacity-0 animate-[fadeUp_0.5s_ease_forwards_0.2s]">
-    <style>
-        #dynamicFormInputs .relative > span.absolute {
-            margin-top: 2px !important;
-        }
-    </style>
-    <div class="sticky top-6 flex flex-col gap-4 rounded-3xl" id="stickyBuyBox">
-        <form id="inlineOrderForm" novalidate class="flex flex-col gap-3 w-full">
-            <div class="flex flex-col gap-2.5 mb-1">
-                <div class="inline-flex flex-col items-start justify-center min-w-[120px] shrink-0 gap-1.5 max-sm:hidden pb-1">
-                    <div class="flex items-center gap-4">
-                        <div class="text-[1.8rem] font-bold text-blue-700 leading-none tracking-tight flex items-center">
-                            {{ page.price | replace: '₾', '' }}<span class="text-inherit font-bold ml-0.5">₾</span>
-                        </div>
-                        {% if page.oldPrice != "" and page.oldPrice != nil %}
-                        <div class="text-[1.8rem] font-bold flex items-center leading-none tracking-tight line-through decoration-slate-400 decoration-[1px] text-slate-400 m-0">{{ page.oldPrice | replace: '₾', '' }}₾</div>
-                        {% endif %}
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[0.85rem] font-bold text-[#0A5733] bg-green-600/10 px-2.5 py-1 rounded-lg mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg> 
-                        უფასო მიწოდება
-                    </div>
-                </div>
-            </div>
-            
-            <div id="dynamicFormInputs" class="flex flex-col gap-3"></div>
-            <div id="dynamicBuyButton" class="w-full flex flex-col gap-3"></div>
-            <div class="text-center text-[0.8rem] text-slate-500 font-medium leading-relaxed">
-                «ყიდვა»-ზე დაჭერით თქვენ ეთანხმებით<br>
-                <a href="/info/privacy" class="text-slate-500 underline hover:text-slate-800 transition-colors">კონფიდენციალურობის პოლიტიკას</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('inlineOrderForm');
-    if (form) {
-        const observer = new MutationObserver(() => {
-            const spans = form.querySelectorAll('span');
-            spans.forEach(span => {
-                if (span.textContent.trim() === '+995') {
-                    span.remove();
-                }
-            });
-        });
-        observer.observe(form, { childList: true, subtree: true });
-    }
-});
-</script>
+<div id="productData" hidden data-id="{{ page.product_id | escape }}" data-sku="{{ page.sku | escape }}" data-name="{{ page.name | escape }}" data-price="{{ product_price }}" data-old-price="{{ page.oldPrice | escape }}" data-stock="{{ product_stock | escape }}" data-cat="{{ first_cat | escape }}" data-subcat="{{ first_sub | escape }}" data-image="{{ first_product_img | escape }}"></div>
+<aside class="product-buy-box" aria-label="შეკვეთა">
+  <div class="flex items-center justify-between gap-3 mb-5">
+    <span class="product-stock" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
+    <span class="text-xs text-slate-500">SKU: {{ page.sku | escape }}</span>
+  </div>
+  <div class="flex flex-wrap items-baseline gap-3 mb-2">
+    <strong class="text-4xl font-bold tracking-tight text-blue-700" data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong>
+    <del class="text-xl text-slate-500" data-product-old-price {% unless product_old_price > product_price %}hidden{% endunless %}>{{ page.oldPrice | remove: '₾' | escape }} ₾</del>
+    <span class="product-discount" id="saleBadge" {% unless product_old_price > product_price and product_price > 0 %}hidden{% endunless %}>{% if product_old_price > product_price %}−{{ product_old_price | minus: product_price | times: 100.0 | divided_by: product_old_price | round }}%{% endif %}</span>
+  </div>
+  <p class="text-sm text-slate-600 mb-6">უფასო მიწოდება · გადახდა მიღებისას</p>
+  <form id="inlineOrderForm" novalidate aria-label="პროდუქტის შეკვეთა" class="flex flex-col gap-4">
+    <fieldset id="inlineOrderFields" class="min-w-0 flex flex-col gap-4" {% unless product_available %}disabled hidden{% endunless %}>
+      <legend class="font-bold text-lg mb-3">შეუკვეთეთ მარტივად</legend>
+      <p class="text-sm text-slate-600 -mt-1">დატოვეთ ნომერი — შეკვეთის დეტალებს ოპერატორი შეგითანხმებთ.</p>
+      <input type="text" name="email_hp" id="inlineEmailHp" hidden tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div id="inlineNameWrapper">
+        <label for="inlineName" class="product-field-label">თქვენი სახელი</label>
+        <input type="text" name="name" id="inlineName" class="product-input" placeholder="სახელი" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="inlineNameError">
+        <p id="inlineNameError" class="product-field-error" hidden></p>
+      </div>
+      <div id="inlinePhoneWrapper">
+        <label for="inlinePhone" class="product-field-label">მობილურის ნომერი</label>
+        <div class="product-phone-field"><span aria-hidden="true">+995</span><input type="tel" name="phone" id="inlinePhone" class="product-input" placeholder="555 12 34 56" autocomplete="tel-national" inputmode="tel" required maxlength="24" aria-describedby="inlinePhoneHint inlinePhoneError"></div>
+        <p id="inlinePhoneHint" class="text-xs text-slate-500 mt-2">საქართველოს მობილურის 9-ნიშნა ნომერი</p>
+        <p id="inlinePhoneError" class="product-field-error" hidden></p>
+      </div>
+      <button type="submit" id="submitInlineOrderBtn" class="product-primary-button" disabled>ყიდვა</button>
+    </fieldset>
+    <p id="productAvailability" class="text-sm text-slate-600" role="status" {% if product_available %}hidden{% endif %}>{% if product_price <= 0 %}ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.{% else %}{{ product_stock_label }}. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.{% endif %}</p>
+    <a id="productAlternatives" class="product-primary-button" href="{% if first_cat %}/category/?{{ first_cat | url_encode }}{% else %}/{% endif %}" {% if product_available %}hidden{% endif %}>სხვა პროდუქტების ნახვა</a>
+    <p id="inlineOrderError" class="product-field-error" role="alert" hidden></p>
+    <p id="inlineOrderStatus" class="text-sm text-slate-600" role="status"></p>
+    <button type="button" id="productCatalogRetry" class="text-sm text-blue-700 underline self-start" hidden>მონაცემების განახლება</button>
+    <p class="text-xs text-slate-500 leading-relaxed">«ყიდვა»-ზე დაჭერით ეთანხმებით <a href="/info/privacy" class="underline hover:text-blue-700">კონფიდენციალურობის პოლიტიკას</a>.</p>
+  </form>
+  <noscript><p class="text-sm mt-4">ონლაინ შეკვეთისთვის ჩართეთ JavaScript ან დაგვირეკეთ: <a href="tel:+995551178990" class="underline">+995 551 17 89 90</a>.</p></noscript>
+  <div class="product-service-links">
+    <a href="/info/delivery"><span aria-hidden="true">↗</span><span><strong>უფასო მიწოდება</strong><small>საქართველოს მასშტაბით · გადახდა მიღებისას</small></span></a>
+    <a href="/info/warranty"><span aria-hidden="true">✓</span><span><strong>გარანტია და დაბრუნება</strong><small>{% if page.warranty != '' %}{{ page.warranty | escape }} · {% endif %}პირობების ნახვა</small></span></a>
+    <a href="tel:+995551178990"><span aria-hidden="true">☎</span><span><strong>დაგეხმარებით არჩევაში</strong><small>+995 551 17 89 90</small></span></a>
+  </div>
+</aside>

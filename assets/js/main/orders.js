@@ -3,6 +3,7 @@ const quickName = document.getElementById('quickName');
 const quickPhone = document.getElementById('quickPhone');
 
 let isQuickOrderSubmitting = false;
+let orderHistoryMemory = { ts: [], sigs: {} };
 
 // Настройки анти-спама для защиты бота заказов
 const ORDER_RATE_LIMIT = {
@@ -15,17 +16,18 @@ const ORDER_RATE_LIMIT = {
 function getOrderHistory() {
     try {
         const raw = localStorage.getItem('_enka_order_guard') || '';
-        const parsed = raw ? JSON.parse(raw) : { ts: [], sigs: {} };
+        const parsed = raw ? JSON.parse(raw) : orderHistoryMemory;
         return {
             ts: Array.isArray(parsed.ts) ? parsed.ts : [],
             sigs: parsed.sigs && typeof parsed.sigs === 'object' ? parsed.sigs : {}
         };
     } catch (e) {
-        return { ts: [], sigs: {} };
+        return orderHistoryMemory;
     }
 }
 
 function saveOrderHistory(history) {
+    orderHistoryMemory = history;
     try {
         localStorage.setItem('_enka_order_guard', JSON.stringify(history));
     } catch (e) {}
@@ -100,8 +102,9 @@ function showSpamError(form, message) {
 
 window.openOrderForm = function(product) {
     try {
-        if (isQuickOrderSubmitting) return;
-        if (!product?.id || product.stockStatus === 'out_of_stock' || !(parseFloat(product.price) > 0)) return;
+        if (isQuickOrderSubmitting || window.enkaOrderPending) return;
+        if (!product?.id || !window.isProductAvailable(product)) return;
+        product = { ...product, price: String(window.productPrice(product.price)), oldPrice: window.productPrice(product.oldPrice) > window.productPrice(product.price) ? String(window.productPrice(product.oldPrice)) : '' };
         document.getElementById('quickProductName').textContent = product.name || '';
         document.getElementById('quickProductPrice').textContent = String(product.price).replace(/₾/g, '').trim() + ' ₾';
         document.getElementById('quickOrderError').textContent = '';
@@ -137,7 +140,7 @@ if (quickForm) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        if (isQuickOrderSubmitting) return;
+        if (isQuickOrderSubmitting || window.enkaOrderPending) return;
 
         const hp = document.getElementById('quickEmailHp');
         if (hp && hp.value) return;
@@ -209,6 +212,7 @@ if (quickForm) {
         }
 
         isQuickOrderSubmitting = true;
+        window.enkaOrderPending = true;
 
         const submitBtn = quickForm.querySelector('button[type="submit"]');
         const originalContent = submitBtn ? submitBtn.innerHTML : '';
@@ -302,6 +306,7 @@ if (quickForm) {
             }
             isQuickOrderSubmitting = false;
         } finally {
+            window.enkaOrderPending = false;
             quickForm.removeAttribute('aria-busy');
             submitBtn?.removeAttribute('aria-label');
         }

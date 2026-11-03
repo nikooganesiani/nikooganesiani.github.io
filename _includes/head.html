@@ -1,16 +1,23 @@
+{% assign is_product_page = false %}
+{% if page.collection == 'products' or page.layout == 'product' %}{% assign is_product_page = true %}{% include product/state.html %}{% endif %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#155dfc">
     <link rel="canonical" href="{{ page.url | absolute_url }}">
     <meta property="og:site_name" content="ENKA Electronics">
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{% if is_product_page %}product{% else %}website{% endif %}">
     <meta property="og:title" content="{{ page.title | default: site.title | escape }} — ENKA Electronics">
     <meta property="og:description" content="{{ page.description | default: site.description | strip_html | escape }}">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
-    <meta property="og:image" content="{{ '/img/logohead.webp' | absolute_url }}">
+    <meta property="og:image" content="{% if is_product_page %}{{ first_product_img | absolute_url | escape }}{% else %}{{ '/img/logohead.webp' | absolute_url }}{% endif %}">
     <meta property="og:locale" content="ka_GE">
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="{% if is_product_page %}summary_large_image{% else %}summary{% endif %}">
+    {% if is_product_page %}
+    <meta property="product:price:amount" content="{{ product_price }}">
+    <meta property="product:price:currency" content="GEL">
+    <link rel="preload" as="image" href="{{ first_product_img | escape }}" fetchpriority="high">
+    {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
     <title>
         {%- assign is_file = false -%}
@@ -21,9 +28,9 @@
         {%- endif -%}
 
         {%- if page.name and is_file == false -%}
-            {{ page.name }} – ENKA Electronics
+            {{ page.name | escape }} – ENKA Electronics
         {%- elsif page.title -%}
-            {{ page.title }} – ENKA Electronics
+            {{ page.title | escape }} – ENKA Electronics
         {%- else -%}
             ENKA Electronics
         {%- endif -%}
@@ -36,14 +43,14 @@
   <meta name="description" content="{{ site.description | strip_html | escape }}">
 {%- endif -%}
     <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">
+    {% unless is_product_page %}<link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">{% endunless %}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://img.enkaelectronics.com.ge" crossorigin>
     {{ lcp_preload }}
     <script src="/capi.js" defer></script>
 
     <script>
-    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify }};
+    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify | replace: '<', '\u003c' }};
     </script>
 
 <style>

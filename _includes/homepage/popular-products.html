@@ -12,7 +12,7 @@
     {% for popular_id in popular_list %}
       {% assign product = site.products | where: 'product_id', popular_id | first %}
       {% unless product %}{% assign product = site.products | where: 'sku', popular_id | first %}{% endunless %}
-      {% if product %}{% include homepage/product-card.html product=product %}{% endif %}
+      {% if product %}{% unless product.product_id == page.product_id %}{% include homepage/product-card.html product=product %}{% endunless %}{% endif %}
     {% endfor %}
   </div>
   <p id="popularStatus" role="status" class="text-sm text-slate-600 mt-3"></p>

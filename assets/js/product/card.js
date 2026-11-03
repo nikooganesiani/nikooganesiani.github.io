@@ -19,9 +19,7 @@
 
     // Парсинг цены (поддерживает целые и дробные значения)
     const parsePrice = (val) => {
-        if (val === null || val === undefined) return 0;
-        const cleaned = String(val).replace(/,/g, '.').replace(/[^0-9.\-]/g, '');
-        return parseFloat(cleaned) || 0;
+        return window.productPrice(val);
     };
 
     // Форматирование цены для отображения
@@ -37,7 +35,7 @@
             event.stopPropagation();
         }
         const product = productStore.get(String(storeKey));
-        if (product && product.stockStatus !== 'out_of_stock' && parsePrice(product.price) > 0 && typeof window.openOrderForm === 'function') {
+        if (window.isProductAvailable(product) && typeof window.openOrderForm === 'function') {
             window.openOrderForm(product);
         }
     };
@@ -71,7 +69,7 @@
         // Расчет скидки
         const oldVal = parsePrice(p.oldPrice);
         const newVal = parsePrice(p.price);
-        const available = p.stockStatus !== 'out_of_stock' && newVal > 0;
+        const available = window.isProductAvailable(p);
         let discountBadge = '';
 
         if (oldVal > newVal && newVal > 0) {
@@ -265,7 +263,7 @@
                 if (event.key === 'Home' || event.key === 'End') track.scrollTo({ left: event.key === 'Home' ? 0 : track.scrollWidth, behavior: 'auto' });
                 else window.scrollCarousel(id, event.key === 'ArrowRight' ? 1 : -1);
             });
-            new ResizeObserver(update).observe(track);
+            if (typeof ResizeObserver !== 'undefined') new ResizeObserver(update).observe(track);
         }
         requestAnimationFrame(update);
     };

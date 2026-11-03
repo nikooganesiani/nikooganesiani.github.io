@@ -1,44 +1,32 @@
-window.copyProductLink = function(btn) {
-    try {
-        if (btn?.style) {
-            btn.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                if (btn?.style) btn.style.transform = '';
-            }, 200);
-        }
-
-        const url = window.location.href;
-
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url)
-                .then(() => {
-                    window.showToast?.('ბმული დაკოპირდა', { type: 'link', url });
-                })
-                .catch(() => {
-                    fallbackCopyText(url);
-                });
-        } else {
-            fallbackCopyText(url);
-        }
-    } catch (error) {
-        console.error('Error copying product link:', error);
+window.copyProductLink = async function(button) {
+  const url = new URL(window.location.pathname, window.location.origin).href;
+  const copied = () => window.showToast?.('ბმული დაკოპირდა', { type: 'link', url });
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+      copied();
+      return;
     }
+  } catch { /* Try the legacy clipboard before offering manual copying. */ }
+  const previous = document.activeElement;
+  const textarea = document.createElement('textarea');
+  textarea.value = url;
+  textarea.setAttribute('readonly', '');
+  textarea.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  document.body.appendChild(textarea);
+  let success = false;
+  try {
+    textarea.select();
+    success = document.execCommand('copy');
+  } catch { /* Manual copying stays available when clipboard access is blocked. */ }
+  finally {
+    textarea.remove();
+    previous?.focus({ preventScroll: true });
+  }
+  if (success) copied();
+  else {
+    const text = document.getElementById('copiedLinkText');
+    if (text) text.textContent = url;
+    window.openAppModal?.('linkModal', button);
+  }
 };
-
-function fallbackCopyText(url) {
-    try {
-        const textArea = document.createElement('textarea');
-        textArea.value = url;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand('copy');
-        textArea.remove();
-        window.showToast?.('ბმული დაკოპირდა', { type: 'link', url });
-    } catch (err) {
-        console.error('Fallback copy failed:', err);
-    }
-}

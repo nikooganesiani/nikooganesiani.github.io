@@ -1,0 +1,28 @@
+{%- assign product_price = page.price | remove: '₾' | plus: 0 -%}
+{%- assign product_old_price = page.oldPrice | remove: '₾' | plus: 0 -%}
+{%- assign product_stock = page.stockStatus | default: 'in_stock' | downcase | strip -%}
+{%- assign product_available = false -%}
+{%- assign product_availability = 'OutOfStock' -%}
+{%- assign product_stock_label = 'მარაგი ამოიწურა' -%}
+{%- if product_stock == 'in_stock' or product_stock == 'მარაგშია' -%}
+  {%- assign product_stock_label = 'მარაგშია' -%}
+  {%- if product_price > 0 -%}
+    {%- assign product_available = true -%}
+    {%- assign product_availability = 'InStock' -%}
+  {%- endif -%}
+{%- elsif product_stock == 'soon' or product_stock contains 'მალე' -%}
+  {%- assign product_stock_label = 'მალე იქნება' -%}
+{%- elsif product_stock != 'out_of_stock' and product_stock != 'მარაგი ამოიწურა' -%}
+  {%- assign product_stock_label = 'ხელმისაწვდომობა ზუსტდება' -%}
+{%- endif -%}
+{%- assign product_photos = '' | split: '' -%}
+{%- assign yt_id = '' -%}
+{%- for img in page.images -%}
+  {%- if img contains 'https://www.youtube.com/watch?v=' -%}
+    {%- if yt_id == '' -%}{%- assign yt_id = img | split: 'v=' | last -%}{%- endif -%}
+  {%- else -%}
+    {%- assign product_photos = product_photos | push: img -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if product_photos.size == 0 -%}{%- assign product_photos = product_photos | push: '/img/no-image.svg' -%}{%- endif -%}
+{%- assign first_product_img = product_photos | first -%}

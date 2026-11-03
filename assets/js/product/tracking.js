@@ -1,9 +1,9 @@
 (function () {
   const pDataset = document.getElementById('productData')?.dataset || {};
-  const sku = (pDataset.sku || '').trim();
+  const sku = (pDataset.id || pDataset.sku || '').trim();
   const name = pDataset.name || '';
   const rawPrice = pDataset.price || '';
-  const numericPrice = parseFloat(String(rawPrice).replace(/[^\d.]/g, '')) || 0;
+  const numericPrice = Number(rawPrice) || 0;
 
   function waitForCapi(callback) {
     if (typeof window.sendCapiEvent === 'function') {

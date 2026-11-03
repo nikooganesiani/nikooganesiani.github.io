@@ -1,37 +1,13 @@
-<div class="fixed inset-0 bg-white/98 z-[100000] flex-col opacity-0 transition-opacity duration-300 hidden [&.active]:opacity-100" id="imageZoomModal" onclick="closeImageZoom(event)">
-    <div class="flex-1 relative flex overflow-hidden items-center justify-center w-full">
-        <button class="absolute top-1/2 -translate-y-1/2 left-5 bg-transparent border-none w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer text-slate-900 transition-all z-10 outline-none hover:text-blue-600 active:scale-90 max-sm:hidden modal-nav-arrow" aria-label="წინა" onclick="scrollModalGallery(-1, event)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="w-8 h-8"><path d="m15 18-6-6 6-6"></path></svg>
-        </button>
-        
-        <div class="flex w-full h-full overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden modal-track" id="modalTrack">
-            {% for img in page.images %}
-                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
-                <div class="flex-[0_0_100%] h-full flex items-center justify-center snap-start p-8 max-sm:p-4 box-border relative modal-slide">
-                    <div class="flex items-center justify-center w-full h-full max-h-[85vh]">
-                        <img src="{{ img }}" alt="Zoom" width="800" height="800" loading="lazy" draggable="false" class="w-full h-full max-h-[85vh] rounded-xl border-none bg-transparent object-contain select-none" onmousemove="zoomImagePC(event, this)" onmouseleave="resetZoomPC(this)">
-                    </div>
-                </div>
-                {% endunless %}
-            {% endfor %}
-        </div>
-        
-        <button class="absolute top-1/2 -translate-y-1/2 right-5 bg-transparent border-none w-[50px] h-[50px] rounded-full flex items-center justify-center cursor-pointer text-slate-900 transition-all z-10 outline-none hover:text-blue-600 active:scale-90 max-sm:hidden modal-nav-arrow" aria-label="შემდეგი" onclick="scrollModalGallery(1, event)">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="w-8 h-8"><path d="m9 18 6-6-6-6"></path></svg>
-        </button>
+<div id="imageZoomModal" class="modal product-zoom hidden" role="dialog" aria-label="პროდუქტის ფოტოების გალერეა" aria-hidden="true" tabindex="-1">
+  <div class="product-zoom-content">
+    <div class="product-zoom-header"><span id="zoomCounter" role="status" class="text-sm text-slate-600">1 / {{ product_photos.size }}</span><button type="button" class="product-icon-button" data-close-modal aria-label="გალერეის დახურვა">✕</button></div>
+    <div id="modalTrack" class="product-gallery-track product-zoom-track" tabindex="0" role="group" aria-label="გადიდებული ფოტოები">
+      {% for img in product_photos %}<div class="modal-slide"><img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="1200" height="1200" loading="lazy" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'"></div>{% endfor %}
     </div>
-
-    <div class="p-6 max-sm:py-6 max-sm:px-4 bg-white text-center box-border w-full modal-thumb-area">
-        <div class="inline-flex gap-3 overflow-x-auto [scrollbar-width:none] max-w-full p-1 text-left" id="modalThumbStrip">
-            {% assign modal_idx = 0 %}
-            {% for img in page.images %}
-                {% unless img contains 'youtube.com' or img contains 'youtu.be' %}
-                <div class="w-[60px] h-[60px] border-2 border-transparent rounded-xl cursor-pointer opacity-60 transition-all duration-200 shrink-0 p-1 box-border bg-white modal-thumb [&.active]:border-blue-600 [&.active]:opacity-100 [&.active]:scale-105" onclick="scrollToModalSlide({{ modal_idx }}, event)">
-                    <img src="{{ img }}" alt="Thumb" width="800" height="800" loading="lazy" class="w-full h-full object-contain rounded-md pointer-events-none">
-                </div>
-                {% assign modal_idx = modal_idx | plus: 1 %}
-                {% endunless %}
-            {% endfor %}
-        </div>
+    <div class="product-zoom-footer">
+      <button type="button" class="product-icon-button" data-zoom-direction="-1" aria-label="წინა ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>←</button>
+      <div id="modalThumbStrip" class="product-thumbnails" role="group" aria-label="გადიდებული ფოტოს არჩევა">{% for img in product_photos %}<button type="button" class="product-thumbnail" data-zoom-index="{{ forloop.index0 }}" aria-label="გადიდებული ფოტო {{ forloop.index }}" aria-pressed="false"><img src="{{ img | escape }}" alt="" width="64" height="64" loading="lazy" onerror="this.onerror=null;this.src='/img/no-image.svg'"></button>{% endfor %}</div>
+      <button type="button" class="product-icon-button" data-zoom-direction="1" aria-label="შემდეგი ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>→</button>
     </div>
+  </div>
 </div>

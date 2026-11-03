@@ -5,6 +5,8 @@ const root = path.resolve(__dirname, '../_site');
 const port = Number(process.env.PORT || 4173);
 const mock = process.argv.includes('--mock-services');
 const catalogError = process.argv.includes('--catalog-error');
+const catalogFlag = process.argv.indexOf('--catalog-file');
+const catalogFile = catalogFlag >= 0 ? path.resolve(process.argv[catalogFlag + 1]) : path.join(__dirname, '../.local/catalog.json');
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain; charset=utf-8' };
 http.createServer((req, res) => {
   let pathname;
@@ -15,7 +17,7 @@ http.createServer((req, res) => {
     res.setHeader('Content-Type', 'application/json');
     if (pathname === '/__preview/catalog') {
       if (catalogError) { res.writeHead(503).end('{}'); return; }
-      res.end(fs.readFileSync(path.join(__dirname, '../.local/catalog.json'))); return;
+      try { res.end(fs.readFileSync(catalogFile)); } catch { res.writeHead(503).end('{}'); } return;
     }
     if (req.method !== 'POST') { res.writeHead(405).end('{}'); return; }
     let body = '';
@@ -23,7 +25,7 @@ http.createServer((req, res) => {
     req.on('end', () => {
       // Only local QA: no orders or customer details leave this machine.
       const failed = body.includes('555000000');
-      res.writeHead(failed ? 503 : 200).end(JSON.stringify(pathname.endsWith('/tracking') ? { data: [] } : { success: !failed }));
+      setTimeout(() => res.writeHead(failed ? 503 : 200).end(JSON.stringify(pathname.endsWith('/tracking') ? { data: [] } : { success: !failed })), 400);
     });
     return;
   }

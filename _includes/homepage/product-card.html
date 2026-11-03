@@ -1,9 +1,11 @@
 {% assign product = include.product %}
 {% assign price = product.price | remove: '₾' | plus: 0 %}
 {% assign old_price = product.oldPrice | remove: '₾' | plus: 0 %}
+{% assign card_image = '/img/no-image.svg' %}
+{% for image in product.images %}{% unless image contains 'youtube.com' or image contains 'youtu.be' %}{% assign card_image = image %}{% break %}{% endunless %}{% endfor %}
 <article class="product-card flex flex-col rounded-2xl overflow-hidden bg-white" data-product-id="{{ product.product_id | escape }}">
   <a href="{{ product.url | relative_url }}" class="block aspect-square bg-white p-2" tabindex="-1" aria-hidden="true">
-    <img src="{{ product.images.first | default: '/img/no-image.svg' | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='/img/no-image.svg'">
+    <img src="{{ card_image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='/img/no-image.svg'">
   </a>
   <div class="p-3 sm:p-4 flex flex-col flex-1">
     <a href="{{ product.url | relative_url }}" class="text-sm sm:text-base font-semibold leading-snug line-clamp-2 min-h-[2.75em] mb-3">{{ product.name | escape }}</a>

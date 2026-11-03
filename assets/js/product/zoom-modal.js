@@ -1,153 +1,116 @@
-let isZoomModalOpen = false;
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+  const track = document.getElementById('mainGalleryTrack');
+  const modalTrack = document.getElementById('modalTrack');
+  const modal = document.getElementById('imageZoomModal');
+  if (!track || !modalTrack || !modal) return;
+  const slides = [...track.children];
+  const positions = new WeakMap();
+  const behavior = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  const current = el => Math.max(0, Math.min(slides.length - 1, Math.round(el.scrollLeft / (el.clientWidth || 1))));
+  function go(el, index, instant = false) {
+    index = (index + slides.length) % slides.length;
+    positions.set(el, index);
+    el.scrollTo({ left: index * el.clientWidth, behavior: instant ? 'auto' : behavior() });
+  }
+  function sync(el, selector, counterId) {
+    const index = current(el);
+    positions.set(el, index);
+    document.querySelectorAll(selector).forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+      thumb.setAttribute('aria-pressed', String(i === index));
+    });
+    const counter = document.getElementById(counterId);
+    if (counter) counter.textContent = (index + 1) + ' / ' + slides.length;
+    if (el === track) slides.forEach((slide, i) => { slide.tabIndex = i === index ? 0 : -1; });
+  }
+  document.addEventListener('click', event => {
+    const photo = event.target.closest('[data-photo-index]');
+    const thumb = event.target.closest('[data-gallery-index]');
+    const arrow = event.target.closest('[data-gallery-direction]');
+    const zoomThumb = event.target.closest('[data-zoom-index]');
+    const zoomArrow = event.target.closest('[data-zoom-direction]');
+    if (photo) {
+      window.openAppModal(modal, photo);
+      go(modalTrack, Number(photo.dataset.photoIndex), true);
+      sync(modalTrack, '[data-zoom-index]', 'zoomCounter');
+    } else if (thumb) go(track, Number(thumb.dataset.galleryIndex));
+    else if (arrow) go(track, current(track) + Number(arrow.dataset.galleryDirection));
+    else if (zoomThumb) go(modalTrack, Number(zoomThumb.dataset.zoomIndex));
+    else if (zoomArrow) go(modalTrack, current(modalTrack) + Number(zoomArrow.dataset.zoomDirection));
+    else if (event.target === modal) window.closeAppModal(modal);
+  });
+  [track, modalTrack].forEach(el => {
+    let scheduled = false;
+    const update = () => sync(el, el === track ? '[data-gallery-index]' : '[data-zoom-index]', el === track ? 'galleryCounter' : 'zoomCounter');
+    el.addEventListener('scroll', () => {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(() => { update(); scheduled = false; });
+    }, { passive: true });
+    el.addEventListener('keydown', event => {
+      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      go(el, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(el) + (event.key === 'ArrowRight' ? 1 : -1));
+    });
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
+      const index = positions.get(el) || 0;
+      go(el, index, true);
+      update();
+    }).observe(el);
+    update();
+  });
+  modal.addEventListener('keydown', event => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    go(modalTrack, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(modalTrack) + (event.key === 'ArrowRight' ? 1 : -1));
+  });
 
-window.zoomImagePC = function(e, img) {
-    if (img.closest('#imageZoomModal')) return;
-    if (window.innerWidth < 1024) return;
-    img.style.transition = 'none'; 
-    const rect = img.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    img.style.transformOrigin = `${x}% ${y}%`;
-    img.style.transform = 'scale(2.2)';
-};
+  const specs = document.getElementById('specsBlock');
+  const expand = document.getElementById('btnExpandSpecs');
+  if (specs && expand) {
+    const measure = () => {
+      const overflowing = specs.scrollHeight > 328;
+      expand.hidden = !overflowing;
+      specs.classList.toggle('is-collapsible', overflowing);
+    };
+    expand.addEventListener('click', () => {
+      const expanded = expand.getAttribute('aria-expanded') !== 'true';
+      expand.setAttribute('aria-expanded', String(expanded));
+      specs.classList.toggle('expanded', expanded);
+      expand.textContent = expanded ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
+    });
+    measure();
+    if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measure).observe(specs.querySelector('dl'));
+    document.fonts?.ready.then(measure);
+  }
 
-window.resetZoomPC = function(img) {
-    if (img.closest('#imageZoomModal')) return;
-    if (window.innerWidth < 1024) return;
-    img.style.transition = 'transform 0.3s ease'; 
-    img.style.transform = 'scale(1)';
-};
+  window.scrollToForm = function() {
+    const form = document.getElementById('inlineOrderForm');
+    form.scrollIntoView({ behavior: behavior(), block: 'center' });
+    const target = form.dataset.available === 'true' ? document.getElementById('inlineName') : document.getElementById('productAvailability');
+    target?.setAttribute('tabindex', target.matches('input') ? '0' : '-1');
+    target?.focus({ preventScroll: true });
+  };
+  const bar = document.getElementById('mobileBottomBar');
+  const buy = document.getElementById('submitInlineOrderBtn');
+  document.documentElement.style.setProperty('--mobile-buy-bar-height', '82px');
+  if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(entries => {
+    bar.dataset.formVisible = String(entries[0].isIntersecting);
+  }, { threshold: 0.5 }).observe(buy);
 
-window.syncModalThumbs = function() {
-    const track = document.getElementById('modalTrack');
-    if (!track) return;
-    const index = Math.round(track.scrollLeft / track.clientWidth);
-    const thumbs = document.querySelectorAll('#modalThumbStrip .modal-thumb');
-    if (thumbs.length > 0) {
-        thumbs.forEach(t => t.classList.remove('active', 'border-blue-600', 'opacity-100', 'scale-105'));
-        if (thumbs[index]) {
-            thumbs[index].classList.add('active', 'border-blue-600', 'opacity-100', 'scale-105');
-            thumbs[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
-    }
-};
-
-window.openImageZoom = function(img, index) {
-    isZoomModalOpen = true; 
-    if (img) {
-        img.style.transition = 'none'; 
-        img.style.transform = 'scale(1)';
-    }
-    const modal = document.getElementById('imageZoomModal');
-    if (!modal) return;
-    modal.classList.remove('hidden'); 
-    modal.style.display = 'flex';
-    modal.offsetHeight; 
-    const modalTrack = document.getElementById('modalTrack');
-    if (modalTrack) {
-        modalTrack.style.scrollBehavior = 'auto';
-        modalTrack.scrollLeft = index * modalTrack.clientWidth;
-        void modalTrack.offsetWidth; 
-        modalTrack.style.scrollBehavior = 'smooth';
-        window.syncModalThumbs();
-    }
-    modal.classList.add('active'); 
-};
-
-window.closeImageZoom = function(e) {
-    if (e) {
-        const isThumbArea = e.target.closest('.modal-thumb-area');
-        const isArrow = e.target.closest('.modal-nav-arrow');
-        const isThumb = e.target.closest('.modal-thumb');
-        if (isArrow || isThumbArea || isThumb) return;
-    }
-    isZoomModalOpen = false;
-    const modal = document.getElementById('imageZoomModal');
-    if (!modal) return;
-    modal.classList.remove('active'); 
-    setTimeout(() => { 
-        modal.style.display = 'none'; 
-        modal.classList.add('hidden'); 
-    }, 300);
-};
-
-window.scrollModalGallery = function(dir, e) {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
-    const track = document.getElementById('modalTrack');
-    if (!track) return;
-    const width = track.clientWidth;
-    const maxScroll = track.scrollWidth - track.clientWidth;
-    if (dir === 1 && track.scrollLeft >= maxScroll - 10) { 
-        track.scrollTo({ left: 0, behavior: 'smooth' }); 
-    } else if (dir === -1 && track.scrollLeft <= 10) { 
-        track.scrollTo({ left: track.scrollWidth, behavior: 'smooth' }); 
-    } else { 
-        track.scrollBy({ left: dir * width, behavior: 'smooth' }); 
-    }
-};
-
-window.scrollToModalSlide = function(index, e) {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
-    const track = document.getElementById('modalTrack');
-    if (track) {
-        const width = track.clientWidth;
-        track.scrollTo({ left: index * width, behavior: 'smooth' });
-    }
-};
-
-window.scrollToForm = function() {
-    const target = document.getElementById('dynamicBuyButton');
-    if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-    const modalTrackEl = document.getElementById('modalTrack');
-    let modalScrollTimeout;
-    if (modalTrackEl) {
-        modalTrackEl.addEventListener('scroll', () => {
-            if (modalScrollTimeout) return;
-            modalScrollTimeout = window.requestAnimationFrame(() => {
-                window.syncModalThumbs();
-                modalScrollTimeout = null;
-            });
-        }, { passive: true });
-    }
-
-    const modalFullscreen = document.getElementById('imageZoomModal');
-    let tsY = 0, tsX = 0;
-    
-    if (modalFullscreen) {
-        modalFullscreen.addEventListener('touchstart', (e) => {
-            tsY = e.touches[0].clientY;
-            tsX = e.touches[0].clientX;
-        }, { passive: true });
-
-        modalFullscreen.addEventListener('touchmove', (e) => {
-            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
-            if (isTrack) {
-                const diffY = Math.abs(e.touches[0].clientY - tsY);
-                const diffX = Math.abs(e.touches[0].clientX - tsX);
-                if (diffY > diffX) e.preventDefault();
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        modalFullscreen.addEventListener('wheel', (e) => {
-            const isTrack = e.target.closest('.modal-track') || e.target.closest('#modalThumbStrip');
-            if (isTrack) {
-                if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
-            } else {
-                e.preventDefault();
-            }
-        }, { passive: false });
-    }
+  document.querySelectorAll('.product-video-play').forEach(link => link.addEventListener('click', event => {
+    const container = link.closest('[data-video-id]');
+    const id = container.dataset.videoId;
+    if (!/^[\w-]{11}$/.test(id)) return;
+    event.preventDefault();
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+    iframe.title = 'პროდუქტის ვიდეო განხილვა';
+    iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+    iframe.allowFullscreen = true;
+    container.replaceChildren(iframe);
+    iframe.focus();
+  }));
 });
-
-window.addEventListener('keydown', (e) => {
-    if (isZoomModalOpen && [32, 33, 34, 38, 40].includes(e.keyCode)) {
-        e.preventDefault();
-    }
-}, { passive: false });

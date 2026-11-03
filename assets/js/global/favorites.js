@@ -88,7 +88,10 @@
   }
 
   function getCatalog() {
-    return window.fetchCatalogCached().then(function(data) { return data.products; });
+    return window.fetchCatalogCached().then(function(data) { return data.products; }).catch(function(error) {
+      if (window.currentProduct) return [window.currentProduct];
+      throw error;
+    });
   }
 
   function same(a, b) {
@@ -167,7 +170,7 @@
     if (!images) return '';
     if (typeof images === 'string') return images;
     if (Array.isArray(images) && images.length) {
-      var first = images[0];
+      var first = images.find(function(image) { return typeof image === 'string' && !image.includes('youtube.com') && !image.includes('youtu.be'); });
       if (typeof first === 'string') return first;
       if (first && typeof first === 'object') {
         return first.url || first.src || first.image || first.path || '';
@@ -465,6 +468,7 @@
       btn.dataset.favBusy = '0';
       btn.classList.remove('is-loading');
       console.error('Favorite toggle error:', e);
+      window.showToast?.('რჩეულების შენახვა ვერ მოხერხდა. ბრაუზერის მეხსიერება მიუწვდომელია.');
     }
   };
 

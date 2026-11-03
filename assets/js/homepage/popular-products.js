@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const { products } = await window.fetchCatalogCached();
       const selected = ids.map(id => products.find(p => String(p.id) === id || String(p.sku) === id))
-        .filter(p => p && p.stockStatus !== 'out_of_stock');
+        .filter(p => window.isProductAvailable(p) && String(p.id) !== document.getElementById('productData')?.dataset.id);
       track.innerHTML = selected.map(p => window.createProductCardHTML(p, 'pop')).join('');
       status.textContent = selected.length ? '' : 'ამჟამად პოპულარული პროდუქტები არ არის.';
       window.syncFavButtons?.();

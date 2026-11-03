@@ -5,6 +5,18 @@
   let cached = null;
   let promise = null;
 
+  window.productPrice = value => {
+    const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
+    return /^\d+(?:\.\d{1,2})?$/.test(raw) ? Number(raw) : 0;
+  };
+  window.productStock = value => {
+    const stock = String(value || 'in_stock').trim().toLowerCase();
+    if (stock === 'out_of_stock' || stock === 'მარაგი ამოიწურა') return 'out_of_stock';
+    if (stock === 'soon' || stock.includes('მალე')) return 'soon';
+    return ['in_stock', 'მარაგშია'].includes(stock) ? 'in_stock' : 'unavailable';
+  };
+  window.isProductAvailable = product => !!product && window.productStock(product.stockStatus) === 'in_stock' && window.productPrice(product.price) > 0;
+
   window.escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   window.safeProductImage = value => {
     if (typeof value !== 'string' || !value.trim()) return '/img/no-image.svg';

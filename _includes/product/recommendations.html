@@ -1,0 +1,16 @@
+{% assign rendered = 0 %}
+{% capture recommendation_cards %}
+  {% for product in include.products %}{% unless include.exclude contains product %}{% include homepage/product-card.html product=product %}{% assign rendered = rendered | plus: 1 %}{% if rendered == 12 %}{% break %}{% endif %}{% endunless %}{% endfor %}
+{% endcapture %}
+<section class="mt-9" id="{{ include.prefix }}Section" aria-labelledby="{{ include.prefix }}Title" {% unless rendered > 0 %}hidden{% endunless %}>
+  <div class="flex items-center justify-between gap-3 mb-4">
+    <h2 id="{{ include.prefix }}Title" class="text-xl sm:text-2xl font-bold tracking-tight">{{ include.heading | escape }}</h2>
+    <div class="flex gap-2">
+      <button type="button" class="carousel-control" id="{{ include.prefix }}ArrowLeft" aria-label="წინა პროდუქტები" aria-controls="{{ include.prefix }}Scroll" onclick="scrollCarousel('{{ include.prefix }}Scroll', -1)" disabled>←</button>
+      <button type="button" class="carousel-control" id="{{ include.prefix }}ArrowRight" aria-label="შემდეგი პროდუქტები" aria-controls="{{ include.prefix }}Scroll" onclick="scrollCarousel('{{ include.prefix }}Scroll', 1)" disabled>→</button>
+    </div>
+  </div>
+  <div class="product-carousel" id="{{ include.prefix }}Scroll" role="group" aria-label="{{ include.heading | escape }}" tabindex="0">
+    {{ recommendation_cards }}
+  </div>
+</section>

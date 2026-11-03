@@ -1,6 +1,31 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
+function parsePrice(value) {
+  const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
+  return /^\d+(?:\.\d{1,2})?$/.test(raw) ? Number(raw) : NaN;
+}
+
+function normalizeStock(value) {
+  const stock = String(value || 'in_stock').trim().toLowerCase();
+  if (stock === 'out_of_stock' || stock === 'მარაგი ამოიწურა') return 'out_of_stock';
+  if (stock === 'soon' || stock.includes('მალე')) return 'soon';
+  return ['in_stock', 'მარაგშია'].includes(stock) ? 'in_stock' : 'unavailable';
+}
+
+function normalizeMedia(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  try {
+    const url = new URL(value, 'https://enkaelectronics.com.ge');
+    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) return null;
+    if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.youtu.be'].includes(url.hostname)) {
+      const id = url.hostname.endsWith('youtu.be') ? url.pathname.slice(1) : url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1];
+      return /^[\w-]{11}$/.test(id || '') ? 'https://www.youtube.com/watch?v=' + id : null;
+    }
+    return url.href;
+  } catch { return null; }
+}
+
 function normalizeCatalog(data) {
   const products = Array.isArray(data) ? data : data?.products;
   if (!Array.isArray(products) || !products.length) throw new Error('Catalog must contain products; refusing to build an empty shop.');
@@ -9,7 +34,7 @@ function normalizeCatalog(data) {
     if (!product || !/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(String(product.id || ''))) throw new Error('Invalid product ID.');
     if (seen.has(String(product.id))) throw new Error('Duplicate product ID: ' + product.id);
     if (typeof product.name !== 'string' || !product.name.trim()) throw new Error('Product name is required: ' + product.id);
-    if (!Number.isFinite(Number(String(product.price).replace(/₾/g, '').trim())) || Number(product.price) < 0) throw new Error('Invalid product price: ' + product.id);
+    if (!Number.isFinite(parsePrice(product.price))) throw new Error('Invalid product price: ' + product.id);
     seen.add(String(product.id));
   }
   return products;
@@ -26,16 +51,16 @@ function productFrontMatter(product) {
     name: product.name,
     title: product.name,
     brand: product.brand || 'ENKA Electronics',
-    price: product.price,
-    oldPrice: product.oldPrice || '',
-    stockStatus: product.stockStatus || 'in_stock',
-    images: Array.isArray(product.images) ? product.images.filter(img => typeof img === 'string') : product.image ? [product.image] : [],
+    price: String(parsePrice(product.price)),
+    oldPrice: parsePrice(product.oldPrice) > parsePrice(product.price) ? String(parsePrice(product.oldPrice)) : '',
+    stockStatus: normalizeStock(product.stockStatus),
+    images: [...new Set((Array.isArray(product.images) ? product.images : [product.image]).map(normalizeMedia).filter(Boolean))],
     specs: product.specs && typeof product.specs === 'object' ? product.specs : {},
     description: product.description || '',
     longDescription: product.longDescription || product.description || '',
-    warranty: product.warranty || '12 თვე',
-    categories: product.categories || [],
-    subcategories: product.subcategories || []
+    warranty: product.warranty || '',
+    categories: Array.isArray(product.categories) ? product.categories.filter(value => typeof value === 'string') : [],
+    subcategories: Array.isArray(product.subcategories) ? product.subcategories.filter(value => typeof value === 'string') : []
   };
   return '---\n' + Object.entries(metadata).map(([key, value]) => key + ': ' + JSON.stringify(value)).join('\n') + '\n---\n';
 }
@@ -61,7 +86,7 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
   console.log('Generated ' + products.length + ' product pages.');
 }
 
-module.exports = { normalizeCatalog, productFrontMatter, generatePages };
+module.exports = { normalizeCatalog, productFrontMatter, generatePages, parsePrice, normalizeStock, normalizeMedia };
 if (require.main === module) {
   const flag = process.argv.indexOf('--catalog-file');
   generatePages({ catalogFile: flag >= 0 ? process.argv[flag + 1] : undefined }).catch(error => { console.error(error.message); process.exitCode = 1; });
