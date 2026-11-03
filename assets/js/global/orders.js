@@ -55,5 +55,5 @@ window.renderOrders = renderOrders;
 window.openOrders = function(e) {
     if (e?.preventDefault) e.preventDefault();
     renderOrders();
-    window.openAppModal?.('ordersModal');
+    window.openAppModal?.('ordersModal', e?.currentTarget);
 };

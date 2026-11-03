@@ -1,598 +1,72 @@
-<!--
-  ENKA mobile navigation — include ONCE, directly before </body>.
-  Keep your existing modal / favorites / orders implementation.
-  Head: <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  Integration and optional sticky purchase bar: see README.md.
--->
-<style id="enka-mobile-nav-styles">
-  :root {
-    --enka-nav-accent: #175bff;
-    --enka-nav-text: #52627a;
-    --enka-nav-active-bg: #eaf0ff;
-    --enka-nav-min-height: 4.25rem;
-    --enka-nav-safe-bottom: env(safe-area-inset-bottom, 0px);
-    --enka-nav-safe-left: env(safe-area-inset-left, 0px);
-    --enka-nav-safe-right: env(safe-area-inset-right, 0px);
-    --enka-nav-offset: 0px;
-    --enka-nav-content-extra: 0px;
-    --enka-nav-layer: 100;
-  }
+{%- assign mobile_nav_current = '' -%}
+{%- if page.url == '/' or page.url == '/index.html' -%}
+  {%- assign mobile_nav_current = 'home' -%}
+{%- elsif page.url == '/category/' or page.layout == 'product' -%}
+  {%- assign mobile_nav_current = 'catalog' -%}
+{%- elsif page.url == '/search/' -%}
+  {%- assign mobile_nav_current = 'search' -%}
+{%- endif -%}
+{%- assign mobile_nav_item = 'group flex min-h-16 min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1 text-slate-500 no-underline touch-manipulation cursor-pointer hover:text-blue-600 data-[active=true]:text-blue-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600' -%}
+{%- assign mobile_nav_icon = 'relative flex h-8 w-11 shrink-0 items-center justify-center rounded-xl group-hover:bg-slate-100 group-data-[active=true]:bg-blue-50 motion-safe:transition motion-safe:group-active:scale-90 forced-colors:group-data-[active=true]:outline' -%}
+{%- assign mobile_nav_label = 'max-w-full text-center text-[clamp(10px,2.7vw,11px)] leading-4 font-semibold break-words' -%}
+{%- assign mobile_nav_badge = 'pointer-events-none absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] items-center justify-center rounded-full border-2 border-white bg-red-500 px-1 text-[9px] leading-none font-bold tabular-nums text-white' -%}
 
-  .enka-nav,
-  .enka-nav-spacer,
-  .enka-nav-feedback { display: none; }
-
-  .enka-nav *,
-  .enka-nav *::before,
-  .enka-nav *::after { box-sizing: border-box; }
-
-  @media (max-width: 639px) {
-    :root {
-      --enka-nav-offset: var(--enka-nav-measured-height,
-        calc(var(--enka-nav-min-height) + var(--enka-nav-safe-bottom)));
-    }
-
-    .enka-nav-spacer {
-      display: block;
-      height: calc(var(--enka-nav-offset) + var(--enka-nav-content-extra));
-      flex: 0 0 auto;
-      pointer-events: none;
-    }
-
-    .enka-nav {
-      display: block;
-      position: fixed;
-      inset: auto 0 0;
-      z-index: var(--enka-nav-layer);
-      margin: 0;
-      padding: 3px max(6px, var(--enka-nav-safe-right))
-        calc(3px + var(--enka-nav-safe-bottom))
-        max(6px, var(--enka-nav-safe-left));
-      border: 0;
-      border-top: 1px solid #e2e8f1;
-      background: #fff;
-      box-shadow: 0 -5px 22px rgb(20 42 80 / 5%);
-      color: var(--enka-nav-text);
-      isolation: isolate;
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-    }
-
-    @supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
-      .enka-nav {
-        background: rgb(255 255 255 / 96%);
-        -webkit-backdrop-filter: blur(16px);
-        backdrop-filter: blur(16px);
-      }
-    }
-
-    .enka-nav .enka-nav__list {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      align-items: stretch;
-      width: 100%;
-      max-width: 34rem;
-      min-height: calc(var(--enka-nav-min-height) - 7px);
-      margin: 0 auto;
-      padding: 0;
-      list-style: none;
-    }
-
-    .enka-nav .enka-nav__list > li {
-      display: flex;
-      min-width: 0;
-      margin: 0;
-      padding: 0;
-    }
-
-    .enka-nav .enka-nav__item {
-      appearance: none;
-      -webkit-appearance: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      position: relative;
-      width: 100%;
-      min-width: 0;
-      min-height: 60px;
-      margin: 0;
-      padding: 4px 1px;
-      border: 0;
-      border-radius: 12px;
-      background: transparent;
-      box-shadow: none;
-      color: var(--enka-nav-text);
-      font: inherit;
-      text-align: center;
-      text-decoration: none;
-      text-transform: none;
-      letter-spacing: normal;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    .enka-nav .enka-nav__item:focus-visible {
-      outline: 2px solid var(--enka-nav-accent);
-      outline-offset: -3px;
-    }
-
-    .enka-nav .enka-nav__icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      flex: 0 0 auto;
-      width: 42px;
-      height: 30px;
-      border-radius: 11px;
-      transition: background-color 160ms ease, transform 120ms ease;
-    }
-
-    .enka-nav .enka-nav__icon > svg {
-      display: block;
-      width: 24px;
-      height: 24px;
-      overflow: visible;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.9;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .enka-nav .enka-nav__label {
-      max-width: 100%;
-      color: inherit;
-      font-size: .6875rem;
-      font-weight: 600;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
-
-    .enka-nav .enka-nav__item[data-active="true"] { color: var(--enka-nav-accent); }
-    .enka-nav .enka-nav__item[data-active="true"] .enka-nav__icon {
-      background: var(--enka-nav-active-bg);
-    }
-    .enka-nav .enka-nav__item:active .enka-nav__icon { transform: scale(.92); }
-    .enka-nav .enka-nav__item:disabled { cursor: wait; }
-
-    .enka-nav .enka-nav__badge {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: -3px;
-      right: -1px;
-      min-width: 18px;
-      height: 18px;
-      margin: 0;
-      padding: 0 4px;
-      border: 2px solid #fff;
-      border-radius: 999px;
-      background: #d92344;
-      color: #fff;
-      font-family: system-ui, sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    /* Optional: add this class to your EXISTING fixed purchase bar. */
-    .enka-above-mobile-nav { bottom: calc(var(--enka-nav-offset) + 8px); }
-
-    .enka-nav-feedback:not(:empty) {
-      display: block;
-      position: fixed;
-      z-index: calc(var(--enka-nav-layer) + 1);
-      right: 12px;
-      bottom: calc(var(--enka-nav-offset) + var(--enka-nav-content-extra) + 12px);
-      left: 12px;
-      max-width: 30rem;
-      margin: 0 auto;
-      padding: 12px 16px;
-      border-radius: 12px;
-      background: #17253c;
-      color: #fff;
-      font: 500 .8125rem/1.5 system-ui, sans-serif;
-      box-shadow: 0 6px 24px rgb(15 23 42 / 15%);
-    }
-
-    /* Keep the reserved space stable while the on-screen keyboard is open. */
-    :root[data-enka-nav-keyboard] .enka-nav,
-    :root[data-enka-nav-keyboard] .enka-above-mobile-nav,
-    :root[data-enka-nav-keyboard] .enka-nav-feedback {
-      visibility: hidden;
-      pointer-events: none;
-    }
-  }
-
-  @media (max-width: 359px) {
-    .enka-nav .enka-nav__label { font-size: .625rem; }
-  }
-  @media (hover: hover) and (pointer: fine) and (max-width: 639px) {
-    .enka-nav .enka-nav__item:hover .enka-nav__icon { background: #f0f4fa; }
-    .enka-nav .enka-nav__item[data-active="true"]:hover .enka-nav__icon {
-      background: #dce7ff;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .enka-nav .enka-nav__icon { transition: none; }
-    .enka-nav .enka-nav__item:active .enka-nav__icon { transform: none; }
-  }
-  @media (forced-colors: active) {
-    .enka-nav .enka-nav__item[data-active="true"] .enka-nav__icon {
-      outline: 2px solid Highlight;
-    }
-    .enka-nav .enka-nav__badge { border-color: Canvas; }
-  }
-  @media print {
-    .enka-nav, .enka-nav-spacer, .enka-nav-feedback { display: none !important; }
-  }
-</style>
-
-<div class="enka-nav-spacer" aria-hidden="true"></div>
-<nav id="enka-mobile-nav" class="enka-nav" lang="ka"
-  aria-label="მთავარი ნავიგაცია" data-current="auto">
-  <ul class="enka-nav__list">
+<nav id="enka-mobile-nav" aria-label="მთავარი ნავიგაცია"
+     class="fixed inset-x-0 bottom-0 z-[100] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] pl-[max(4px,env(safe-area-inset-left,0px))] pr-[max(4px,env(safe-area-inset-right,0px))] shadow-[0_-4px_20px_rgb(15_23_42/0.04)] backdrop-blur-xl sm:hidden print:hidden">
+  <ul class="mx-auto grid max-w-lg grid-cols-5 list-none p-0 [&>li]:grid [&>li]:min-w-0">
     <li>
-      <a class="enka-nav__item" href="/" data-enka-action="home">
-        <span class="enka-nav__icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <a href="{{ '/' | relative_url }}" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'home' %}true{% else %}false{% endif %}"{% if mobile_nav_current == 'home' %} aria-current="page"{% endif %}>
+        <span class="{{ mobile_nav_icon }}">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/>
           </svg>
         </span>
-        <span class="enka-nav__label">მთავარი</span>
+        <span class="{{ mobile_nav_label }}">მთავარი</span>
       </a>
     </li>
     <li>
-      <button class="enka-nav__item" type="button" data-enka-action="catalog" data-enka-panel="navModal">
-        <span class="enka-nav__icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      <button type="button" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'catalog' %}true{% else %}false{% endif %}" aria-controls="navModal" aria-haspopup="dialog" aria-expanded="false">
+        <span class="{{ mobile_nav_icon }}">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
           </svg>
         </span>
-        <span class="enka-nav__label">კატალოგი</span>
+        <span class="{{ mobile_nav_label }}">კატალოგი</span>
       </button>
     </li>
     <li>
-      <button class="enka-nav__item" type="button" data-enka-action="search" data-enka-panel="searchModalMobile">
-        <span class="enka-nav__icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <button type="button" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'search' %}true{% else %}false{% endif %}" aria-controls="searchModalMobile" aria-haspopup="dialog" aria-expanded="false">
+        <span class="{{ mobile_nav_icon }}">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <circle cx="10.75" cy="10.75" r="7.25"/><path d="m16 16 4.5 4.5"/>
           </svg>
         </span>
-        <span class="enka-nav__label">ძიება</span>
+        <span class="{{ mobile_nav_label }}">ძიება</span>
       </button>
     </li>
     <li>
-      <button class="enka-nav__item" type="button" data-enka-action="favorites">
-        <span class="enka-nav__icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <button type="button" class="{{ mobile_nav_item }}" data-active="false" data-count-label="რჩეულები" aria-controls="favModal" aria-haspopup="dialog" aria-expanded="false">
+        <span class="{{ mobile_nav_icon }}">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="M20.3 4.9a5.1 5.1 0 0 0-7.2 0L12 6l-1.1-1.1a5.1 5.1 0 0 0-7.2 7.2L12 20.5l8.3-8.4a5.1 5.1 0 0 0 0-7.2z"/>
           </svg>
-          <span class="enka-nav__badge fav-badge" style="display:none" aria-hidden="true">0</span>
+          <span class="fav-badge {{ mobile_nav_badge }}" style="display:none" aria-hidden="true">0</span>
         </span>
-        <span class="enka-nav__label">რჩეულები</span>
+        <span class="{{ mobile_nav_label }}">რჩეულები</span>
       </button>
     </li>
     <li>
-      <button class="enka-nav__item" type="button" data-enka-action="orders">
-        <span class="enka-nav__icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <button type="button" class="{{ mobile_nav_item }}" data-active="false" data-count-label="შეკვეთები" aria-controls="ordersModal" aria-haspopup="dialog" aria-expanded="false">
+        <span class="{{ mobile_nav_icon }}">
+          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="m12 2 8.3 4.8a1.4 1.4 0 0 1 .7 1.2v8a1.4 1.4 0 0 1-.7 1.2L12 22l-8.3-4.8A1.4 1.4 0 0 1 3 16V8a1.4 1.4 0 0 1 .7-1.2z"/>
             <path d="m3.4 7.2 8.6 5 8.6-5M12 12.2V22M7.5 4.6l9 5.2"/>
           </svg>
-          <span class="enka-nav__badge orders-badge" style="display:none" aria-hidden="true">0</span>
+          <span class="orders-badge {{ mobile_nav_badge }}" style="display:none" aria-hidden="true">0</span>
         </span>
-        <span class="enka-nav__label">შეკვეთები</span>
+        <span class="{{ mobile_nav_label }}">შეკვეთები</span>
       </button>
     </li>
   </ul>
 </nav>
-<div id="enka-nav-feedback" class="enka-nav-feedback" lang="ka" role="status" aria-live="polite" aria-atomic="true"></div>
-
-<script>
-(() => {
-  'use strict';
-
-  const nav = document.getElementById('enka-mobile-nav');
-  if (!nav || window.EnkaMobileNav?.element === nav) return;
-  window.EnkaMobileNav?.destroy?.();
-
-  const root = document.documentElement;
-  const feedback = document.getElementById('enka-nav-feedback');
-  const items = new Map(Array.from(nav.querySelectorAll('[data-enka-action]'),
-    item => [item.dataset.enkaAction, item]));
-  const panels = new Map();
-  const manualPanels = new Map();
-  const cleanup = [];
-  const badgeObservers = [];
-  const overrides = new Map();
-  let destroyed = false;
-  let frame = 0;
-  let feedbackTimer = 0;
-  let pendingTrigger = null;
-  let lastOpenPanel = null;
-  let closedViewportHeight = window.innerHeight;
-  let viewportWidth = window.innerWidth;
-
-  function listen(target, type, listener, options) {
-    target.addEventListener(type, listener, options);
-    cleanup.push(() => target.removeEventListener(type, listener, options));
-  }
-
-  function isVisible(element) {
-    if (!element?.isConnected || element.closest('[hidden], [inert], [aria-hidden="true"]')) return false;
-    if (element instanceof HTMLDialogElement && !element.open) return false;
-    if (!element.getClientRects().length) return false;
-    for (let node = element; node; node = node.parentElement) {
-      const style = getComputedStyle(node);
-      if (style.visibility === 'hidden' || style.visibility === 'collapse' ||
-          style.display === 'none' || style.opacity === '0') return false;
-    }
-    return true;
-  }
-
-  function syncState() {
-    if (destroyed) return;
-    let openAction = null;
-    for (const [action, item] of items) {
-      const panel = panels.get(action)?.element;
-      const open = panel ? isVisible(panel) : manualPanels.get(action) === true;
-      if (panel || manualPanels.has(action)) {
-        item.setAttribute('aria-expanded', String(open));
-      } else {
-        item.removeAttribute('aria-expanded');
-      }
-      if (open) openAction = action;
-    }
-
-    const requested = nav.dataset.current || 'auto';
-    const current = requested === 'auto'
-      ? (window.location.pathname === '/' ? 'home' : null)
-      : (items.has(requested) ? requested : null);
-    for (const [action, item] of items) {
-      item.dataset.active = String(action === (openAction || current));
-      if (action === current) item.setAttribute('aria-current', action === 'home' ? 'page' : 'location');
-      else item.removeAttribute('aria-current');
-    }
-
-    // A fallback only: the application's modal controller owns the focus trap.
-    // Never steal focus from a different dialog, field, or navigation target.
-    if (lastOpenPanel && !openAction && pendingTrigger?.isConnected) {
-      const active = document.activeElement;
-      const closed = panels.get(lastOpenPanel)?.element;
-      if ((active === document.body || (closed && closed.contains(active))) &&
-          isVisible(pendingTrigger) && !pendingTrigger.disabled) {
-        pendingTrigger.focus({ preventScroll: true });
-      }
-      pendingTrigger = null;
-    }
-    lastOpenPanel = openAction;
-  }
-
-  function bindPanels() {
-    for (const [action, item] of items) {
-      const id = item.dataset.enkaPanel;
-      const element = id ? document.getElementById(id) : null;
-      if (panels.get(action)?.element === element) continue;
-      panels.get(action)?.observer.disconnect();
-      panels.delete(action);
-      item.removeAttribute('aria-controls');
-      item.removeAttribute('aria-haspopup');
-      if (!element) continue;
-      item.setAttribute('aria-controls', id);
-      if (element.matches('dialog, [role="dialog"], [aria-modal="true"]')) {
-        item.setAttribute('aria-haspopup', 'dialog');
-      }
-      const observer = new MutationObserver(schedule);
-      // Observe the panel and its wrappers, not the entire page's attributes.
-      for (let node = element; node && node !== document.body; node = node.parentElement) {
-        observer.observe(node, { attributes: true,
-          attributeFilter: ['class', 'style', 'hidden', 'inert', 'open', 'aria-hidden'] });
-      }
-      panels.set(action, { element, observer });
-    }
-    syncState();
-  }
-
-  function isTextEntry(element) {
-    if (!(element instanceof HTMLElement)) return false;
-    if (element.isContentEditable) return true;
-    if (element instanceof HTMLTextAreaElement) return !element.readOnly && !element.disabled;
-    return element instanceof HTMLInputElement && !element.readOnly && !element.disabled &&
-      /^(text|search|tel|email|url|password|number)$/.test(element.type);
-  }
-
-  function syncKeyboard() {
-    const viewport = window.visualViewport;
-    const editing = isTextEntry(document.activeElement);
-    if (Math.abs(window.innerWidth - viewportWidth) > 80) {
-      closedViewportHeight = window.innerHeight;
-      viewportWidth = window.innerWidth;
-    }
-    if (!editing) closedViewportHeight = window.innerHeight;
-    // Pinch zoom also shrinks visualViewport; do not mistake it for a keyboard.
-    const hidden = !!viewport && editing && Math.abs(viewport.scale - 1) < .05 &&
-      Math.max(closedViewportHeight, root.clientHeight, window.innerHeight) - viewport.height > 150;
-    root.toggleAttribute('data-enka-nav-keyboard', hidden);
-  }
-
-  function measure() {
-    const height = nav.getBoundingClientRect().height;
-    if (height > 0) root.style.setProperty('--enka-nav-measured-height', `${Math.ceil(height)}px`);
-  }
-
-  function schedule() {
-    if (frame || destroyed) return;
-    frame = requestAnimationFrame(() => {
-      frame = 0;
-      bindPanels();
-      syncKeyboard();
-      measure();
-    });
-  }
-
-  function syncBadge(action) {
-    const item = items.get(action);
-    const badge = item.querySelector('.enka-nav__badge');
-    let text = badge.textContent.trim();
-    const number = Number(text.replace(/\+$/, ''));
-    if (!Number.isFinite(number) || number <= 0) {
-      if (badge.style.display !== 'none') badge.style.display = 'none';
-    } else if (number > 99 && !text.endsWith('+')) {
-      text = '99+';
-      badge.textContent = text;
-    }
-    const visible = !badge.hidden && getComputedStyle(badge).display !== 'none' &&
-      Number.isFinite(number) && number > 0;
-    const label = item.querySelector('.enka-nav__label').textContent.trim();
-    const noun = action === 'favorites' ? 'პროდუქტი' : 'შეკვეთა';
-    const count = text.endsWith('+') ? '99-ზე მეტი' : String(number);
-    item.setAttribute('aria-label', visible
-      ? `${label}, ${count} ${noun}` : label);
-  }
-
-  function reportError(action, error) {
-    if (destroyed) return;
-    clearTimeout(feedbackTimer);
-    feedback.textContent = 'მოქმედება ვერ შესრულდა. სცადეთ ხელახლა.';
-    feedbackTimer = setTimeout(() => { feedback.textContent = ''; }, 5000);
-    nav.dispatchEvent(new CustomEvent('enka:nav-error', { bubbles: true, detail: { action, error } }));
-    console.warn('[ENKA navigation]', action, error);
-  }
-
-  function activate(action, event) {
-    const item = items.get(action);
-    let result;
-    clearTimeout(feedbackTimer);
-    feedback.textContent = '';
-    try {
-      pendingTrigger = item;
-      if (overrides.has(action)) {
-        result = overrides.get(action).call(window, event);
-      } else if (action === 'catalog' || action === 'search') {
-        if (typeof window.openAppModal !== 'function') throw new Error('openAppModal is unavailable');
-        result = window.openAppModal(item.dataset.enkaPanel);
-      } else {
-        const handler = action === 'favorites' ? window.openFavorites : window.openOrders;
-        if (typeof handler !== 'function') throw new Error(`${action} handler is unavailable`);
-        result = handler.call(window, event);
-      }
-      if (result && typeof result.then === 'function') {
-        item.disabled = true;
-        item.setAttribute('aria-busy', 'true');
-        Promise.resolve(result).catch(error => reportError(action, error)).finally(() => {
-          item.disabled = false;
-          item.removeAttribute('aria-busy');
-          if (!destroyed && pendingTrigger === item && document.activeElement === document.body && isVisible(item)) {
-            item.focus({ preventScroll: true });
-          }
-          schedule();
-        });
-      }
-    } catch (error) {
-      reportError(action, error);
-    }
-    schedule();
-  }
-
-  for (const [action, item] of items) {
-    if (action !== 'home') listen(item, 'click', event => activate(action, event));
-  }
-  for (const action of ['favorites', 'orders']) {
-    const observer = new MutationObserver(() => syncBadge(action));
-    observer.observe(items.get(action).querySelector('.enka-nav__badge'), {
-      childList: true, characterData: true, subtree: true, attributes: true,
-      attributeFilter: ['style', 'class', 'hidden']
-    });
-    badgeObservers.push(observer);
-    syncBadge(action);
-  }
-
-  // Support panels inserted/replaced after this include; ignore badge text updates.
-  const insertionObserver = new MutationObserver(records => {
-    if (records.some(record => [...record.addedNodes, ...record.removedNodes]
-        .some(node => node.nodeType === 1 && !nav.contains(node)))) schedule();
-  });
-  insertionObserver.observe(document.body, { childList: true, subtree: true });
-
-  const resizeObserver = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null;
-  resizeObserver?.observe(nav);
-  listen(window, 'resize', schedule, { passive: true });
-  listen(window, 'popstate', schedule);
-  listen(window, 'pageshow', schedule);
-  listen(document, 'focusin', schedule);
-  listen(document, 'focusout', schedule);
-  listen(document, 'transitionend', event => {
-    if ([...panels.values()].some(({ element }) => element.contains(event.target) ||
-        event.target.contains(element))) schedule();
-  });
-  listen(document, 'close', schedule, true);
-  if (window.visualViewport) listen(window.visualViewport, 'resize', schedule, { passive: true });
-
-  window.EnkaMobileNav = {
-    element: nav,
-    setCounts(counts = {}) {
-      for (const action of ['favorites', 'orders']) {
-        if (!Object.prototype.hasOwnProperty.call(counts, action)) continue;
-        const value = Number(counts[action]);
-        const count = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
-        const badge = items.get(action).querySelector('.enka-nav__badge');
-        badge.textContent = count > 99 ? '99+' : String(count);
-        badge.style.display = count > 0 ? 'inline-flex' : 'none';
-        badge.hidden = false;
-        syncBadge(action);
-      }
-    },
-    setCurrent(action = 'auto') {
-      nav.dataset.current = action || 'none';
-      syncState();
-    },
-    bindPanel(action, id) {
-      if (!items.has(action) || action === 'home') return;
-      items.get(action).dataset.enkaPanel = id || '';
-      manualPanels.delete(action);
-      bindPanels();
-    },
-    setPanelOpen(action, open) {
-      // For controllers without an observable DOM panel; call on BOTH open and close.
-      if (!items.has(action) || action === 'home') return;
-      manualPanels.set(action, !!open);
-      syncState();
-    },
-    setHandler(action, handler) {
-      if (!items.has(action) || action === 'home') return;
-      if (typeof handler === 'function') overrides.set(action, handler);
-      else overrides.delete(action);
-    },
-    refresh: schedule,
-    destroy() {
-      destroyed = true;
-      cancelAnimationFrame(frame);
-      clearTimeout(feedbackTimer);
-      cleanup.forEach(remove => remove());
-      panels.forEach(({ observer }) => observer.disconnect());
-      badgeObservers.forEach(observer => observer.disconnect());
-      insertionObserver.disconnect();
-      resizeObserver?.disconnect();
-      root.removeAttribute('data-enka-nav-keyboard');
-      root.style.removeProperty('--enka-nav-measured-height');
-      feedback.textContent = '';
-      if (window.EnkaMobileNav?.element === nav) delete window.EnkaMobileNav;
-    }
-  };
-
-  bindPanels();
-  syncKeyboard();
-  measure();
-})();
-</script>

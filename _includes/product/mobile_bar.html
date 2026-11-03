@@ -29,7 +29,7 @@
 </style>
 
 <div id="mobileBottomBar" 
-     class="hidden max-sm:flex fixed bottom-[calc(75px+env(safe-area-inset-bottom))] left-2 right-2 bg-white/95 backdrop-blur-[10px] border border-slate-200 rounded-2xl p-2 z-[90] items-center justify-between gap-2 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)]">
+     class="hidden max-sm:flex print:hidden fixed bottom-[calc(var(--mobile-nav-height)+10px)] left-2 right-2 bg-white/95 backdrop-blur-[10px] border border-slate-200 rounded-2xl p-2 z-[90] items-center justify-between gap-2 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)]">
     
     <div class="flex items-center gap-2.5 flex-1 min-w-0">
         <img src="{{ page.images[0] }}" 
