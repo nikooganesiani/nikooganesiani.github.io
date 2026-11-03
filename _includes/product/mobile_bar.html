@@ -1,94 +1,184 @@
-<div class="hidden max-sm:flex fixed bottom-[calc(75px+env(safe-area-inset-bottom))] left-2 right-2 bg-white/95 backdrop-blur-[10px] border border-slate-200 rounded-2xl p-2.5 z-[90] items-center gap-2 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1)]" id="mobileBottomBar">
-    <img src="{{ page.images[0] }}" class="w-10 h-10 rounded-lg object-contain bg-transparent border-none" alt="Product" width="80" height="80" loading="lazy">
-    <div class="flex-1 flex flex-col justify-center overflow-hidden">
-        <div class="flex items-baseline gap-1.5">
-            <div class="font-bold text-blue-600 text-[1.1rem] leading-none">{{ page.price | replace: '₾', '' }}₾</div>
-            {% if page.oldPrice != "" and page.oldPrice != nil %}
-            <div class="font-bold text-[1.1rem] line-through decoration-slate-400 decoration-[1px] text-slate-400">{{ page.oldPrice | replace: '₾', '' }}₾</div>
-            {% endif %}
+<div id="mobileBottomBar" 
+     class="hidden max-sm:flex fixed bottom-[calc(74px+env(safe-area-inset-bottom))] left-2.5 right-2.5 z-[90] items-center justify-between gap-2.5 bg-white/95 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-2 shadow-[0_8px_30px_rgb(15,23,42,0.12)] transition-transform duration-300">
+    
+    <div class="flex items-center gap-2.5 flex-1 min-w-0 cursor-pointer select-none active:opacity-80 transition-opacity" 
+         onclick="window.__ triggerSmartScroll && window.__triggerSmartScroll()">
+        
+        <div class="relative w-11 h-11 rounded-xl bg-slate-50 border border-slate-100 p-0.5 flex-shrink-0 flex items-center justify-center overflow-hidden">
+            <img src="{{ page.images[0] }}" 
+                 class="w-full h-full object-contain rounded-lg" 
+                 alt="Product" 
+                 width="88" 
+                 height="88" 
+                 decoding="async">
         </div>
-        <div class="text-[0.6rem] text-blue-600 font-bold flex items-center gap-1 mt-0.5">
-           უფასო მიწოდება
+
+        <div class="flex flex-col justify-center min-w-0 flex-1">
+            <div class="flex items-baseline gap-1.5 truncate">
+                <span class="font-extrabold text-blue-600 text-[1.15rem] leading-none tracking-tight">
+                    {{ page.price | replace: '₾', '' }}₾
+                </span>
+                {% if page.oldPrice != "" and page.oldPrice != nil %}
+                <span class="font-semibold text-[0.8rem] leading-none line-through decoration-slate-400/80 text-slate-400">
+                    {{ page.oldPrice | replace: '₾', '' }}₾
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="text-[0.68rem] text-emerald-600 font-semibold flex items-center gap-1 mt-1 leading-none truncate">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+                    <path d="M15 18H9"/>
+                    <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+                    <circle cx="17" cy="18" r="2"/>
+                    <circle cx="7" cy="18" r="2"/>
+                </svg>
+                <span class="truncate">უფასო მიწოდება</span>
+            </div>
         </div>
     </div>
-    <div class="flex gap-1.5 items-center" id="actionButtons">
-        <button class="w-9 h-9 rounded-lg bg-transparent text-slate-500 flex items-center justify-center border-none outline-none transition-all duration-200 cursor-pointer active:scale-90" aria-label="გაზიარება" onclick="copyProductLink(this)" title="გაზიარება">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-        </button>
-        <button class="w-9 h-9 rounded-lg bg-transparent text-slate-500 flex items-center justify-center border-none outline-none transition-all duration-200 cursor-pointer active:scale-90 btn-fav [&.active]:text-red-500" aria-label="დამატება რჩეულებში" onclick="toggleFav(event, this)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="[&.active>svg]:fill-current"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-        </button>
-        <button class="bg-blue-600 text-white border-none rounded-lg px-4 h-9 font-bold flex items-center gap-1.5 text-[0.9rem] transition-all duration-300 cursor-pointer active:scale-95 origin-right" id="buyButton" aria-label="ყიდვა" onclick="scrollToForm()" style="width: 0; padding-left: 0; padding-right: 0; margin: 0; opacity: 0; overflow: hidden; white-space: nowrap; border: none; min-width: 0;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-            <span class="flex-shrink-0">ყიდვა</span>
-        </button>
+
+    <div class="flex items-center flex-shrink-0" id="actionButtons">
+        <div class="flex items-center gap-1">
+            <button type="button"
+                    class="w-9 h-9 rounded-xl bg-slate-100/80 hover:bg-slate-100 text-slate-600 flex items-center justify-center border-none outline-none transition-all duration-200 cursor-pointer active:scale-90" 
+                    aria-label="გაზიარება" 
+                    onclick="window.__handleShare(this)" 
+                    title="გაზიარება">
+                <svg class="icon-share w-[18px] h-[18px] transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <svg class="icon-check hidden w-[18px] h-[18px] text-emerald-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+
+            <button type="button"
+                    class="w-9 h-9 rounded-xl bg-slate-100/80 hover:bg-slate-100 text-slate-600 flex items-center justify-center border-none outline-none transition-all duration-200 cursor-pointer active:scale-90 btn-fav [&.active]:text-red-500 [&.active]:bg-red-50 [&.active_svg]:fill-current" 
+                    aria-label="დამატება რჩეულებში" 
+                    onclick="toggleFav(event, this)">
+                <svg class="w-[18px] h-[18px] transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="buyButtonWrapper" 
+             data-visible="false"
+             class="grid grid-cols-[0fr] opacity-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] data-[visible=true]:grid-cols-[1fr] data-[visible=true]:opacity-100 data-[visible=true]:pointer-events-auto data-[visible=true]:pl-1.5">
+            <div class="overflow-hidden">
+                <button type="button"
+                        id="buyButton" 
+                        aria-label="ყიდვა" 
+                        onclick="window.__triggerSmartScroll()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white border-none rounded-xl px-3.5 h-9 font-bold flex items-center justify-center gap-1.5 text-[0.85rem] shadow-sm shadow-blue-600/25 transition-transform duration-150 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+                        <path d="M3 6h18"></path>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>ყიდვა</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
 (function() {
+    const wrapper = document.getElementById('buyButtonWrapper');
     const buyButton = document.getElementById('buyButton');
-    if (!buyButton) return;
+    if (!wrapper || !buyButton) return;
 
-    let isButtonVisible = false;
+    function findOrderTarget() {
+        const prioritySelectors = [
+            'form[data-buy-form]',
+            '#orderForm',
+            '#buyForm',
+            'form.order-form',
+            '.order-form'
+        ];
+        for (const selector of prioritySelectors) {
+            const el = document.querySelector(selector);
+            if (el) return el;
+        }
+        const telInput = document.querySelector('input[type="tel"], input[placeholder*="555"]');
+        if (telInput) return telInput.closest('form') || telInput.parentElement;
 
-    function showBuyButton() {
-        if (isButtonVisible) return;
-        isButtonVisible = true;
-        buyButton.style.width = '';
-        buyButton.style.paddingLeft = '';
-        buyButton.style.paddingRight = '';
-        buyButton.style.margin = '';
-        buyButton.style.opacity = '1';
-        buyButton.style.overflow = 'visible';
+        return document.querySelector('main form, form:not([role="search"])');
     }
 
-    function hideBuyButton() {
-        if (!isButtonVisible) return;
-        isButtonVisible = false;
-        buyButton.style.width = '0';
-        buyButton.style.paddingLeft = '0';
-        buyButton.style.paddingRight = '0';
-        buyButton.style.margin = '0';
-        buyButton.style.opacity = '0';
-        buyButton.style.overflow = 'hidden';
-    }
-
-    function checkScroll() {
-        const bar = document.getElementById('mobileBottomBar');
-        if (!bar) return;
-
-        const barRect = bar.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        
-        const buyButtonForm = document.querySelector('form[data-buy-form], #orderForm, form.order-form, .order-form, #buyForm, form');
-
-        if (buyButtonForm) {
-            const formRect = buyButtonForm.getBoundingClientRect();
-            if (formRect.top < windowHeight && formRect.bottom > 0) {
-                hideBuyButton();
-            } else if (formRect.top >= windowHeight || formRect.bottom <= 0) {
-                showBuyButton();
-            }
-        } else {
-            if (barRect.top < windowHeight && barRect.bottom > windowHeight * 0.3) {
-                showBuyButton();
-            } else if (barRect.bottom <= windowHeight * 0.3) {
-                hideBuyButton();
-            }
+    function setBuyButtonVisible(visible) {
+        const state = visible ? 'true' : 'false';
+        if (wrapper.getAttribute('data-visible') !== state) {
+            wrapper.setAttribute('data-visible', state);
+            buyButton.tabIndex = visible ? 0 : -1;
         }
     }
 
-    window.addEventListener('scroll', checkScroll, { passive: true });
-    window.addEventListener('resize', checkScroll, { passive: true });
+    window.__triggerSmartScroll = function() {
+        if (typeof window.scrollToForm === 'function') {
+            window.scrollToForm();
+            return;
+        }
+        const target = findOrderTarget();
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const firstInput = target.querySelector('input:not([type="hidden"])');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus({ preventScroll: true }), 450);
+            }
+        }
+    };
 
-    setTimeout(checkScroll, 100);
-    setTimeout(checkScroll, 500);
-    setTimeout(checkScroll, 1000);
+    window.__handleShare = function(btn) {
+        if (typeof window.copyProductLink === 'function') {
+            window.copyProductLink(btn);
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href);
+        }
 
-    document.addEventListener('DOMContentLoaded', checkScroll);
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        checkScroll();
+        const iconShare = btn.querySelector('.icon-share');
+        const iconCheck = btn.querySelector('.icon-check');
+        if (iconShare && iconCheck) {
+            iconShare.classList.add('hidden');
+            iconCheck.classList.remove('hidden');
+            clearTimeout(btn.__shareTimer);
+            btn.__shareTimer = setTimeout(() => {
+                iconCheck.classList.add('hidden');
+                iconShare.classList.remove('hidden');
+            }, 1500);
+        }
+    };
+
+    function initObserver() {
+        const target = findOrderTarget();
+        if (!target || !('IntersectionObserver' in window)) {
+            setBuyButtonVisible(true);
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                setBuyButtonVisible(!entry.isIntersecting);
+            });
+        }, {
+            root: null,
+            threshold: 0.05,
+            rootMargin: '0px 0px -60px 0px'
+        });
+
+        observer.observe(target);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initObserver);
+    } else {
+        initObserver();
     }
 })();
 </script>
