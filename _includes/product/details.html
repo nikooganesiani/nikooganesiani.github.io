@@ -13,7 +13,6 @@
       <div class="product-video" data-video-id="{{ yt_id | escape }}">
         <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="product-video-play" aria-label="ვიდეოს ნახვა YouTube-ზე (ახალი ფანჯარა)"><img src="https://i.ytimg.com/vi/{{ yt_id | escape }}/hqdefault.jpg" alt="" width="480" height="360" loading="lazy"><span class="product-video-play-icon">{% include icons.html name='play' size=26 %}</span><span class="product-video-play-label">ვიდეო მიმოხილვა</span></a>
       </div>
-      <a href="https://www.youtube.com/watch?v={{ yt_id | escape }}" target="_blank" rel="noopener noreferrer" class="product-detail-link">YouTube-ზე გახსნა{% include icons.html name='arrow-up-right' size=14 %}</a>
     </section>
     {% endif %}
   </section>
@@ -29,7 +28,7 @@
 </div>
 <div id="productDelivery" class="product-policy-details">
   <details>
-    <summary>{% include icons.html name='truck' size=21 %}<span>მიწოდება და გადახდა</span>{% include icons.html name='chevron-down' size=17 %}</summary>
+    <summary>{% include icons.html name='package' size=21 %}<span>მიწოდება და გადახდა</span>{% include icons.html name='chevron-down' size=17 %}</summary>
     <div><p>მიწოდება უფასოა საქართველოს მასშტაბით. მისამართსა და მიწოდების დეტალებს ოპერატორი შეგითანხმებთ. თანხას გადაიხდით ნივთის მიღებისას.</p><a href="/info/delivery" class="product-detail-link">დეტალური პირობები{% include icons.html name='chevron-right' size=13 %}</a></div>
   </details>
   <details>
