@@ -38,16 +38,7 @@ window.normalizeQuery = function(q) {
 };
 
 window.closeNavModal = function() {
-    const modal = document.getElementById('navModal');
-    if (!modal || modal.classList.contains('hidden')) return;
-    modal.classList.remove('active');
-    setTimeout(() => {
-        if (!modal.classList.contains('active')) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-    }, 150);
-    document.body.style.overflow = '';
+    window.closeAppModal?.('navModal');
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -65,9 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === navModal) window.closeNavModal();
         });
     }
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') window.closeNavModal();
-    });
 
     // Генерация структуры каталога
     try {

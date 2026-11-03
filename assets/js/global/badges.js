@@ -1,29 +1,35 @@
-window.updateBadges = function() {
+(() => {
+  'use strict';
+
+  function readCount(key) {
     try {
-        const favs = JSON.parse(localStorage.getItem('myFavs') || '[]');
-        const orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
-
-        const favCount = Array.isArray(favs) ? favs.length : 0;
-        const ordersCount = Array.isArray(orders) ? orders.length : 0;
-
-        document.querySelectorAll('.fav-badge').forEach((el) => {
-            if (!el) return;
-            el.innerText = String(favCount);
-            el.style.display = favCount > 0 ? 'flex' : 'none';
-        });
-
-        document.querySelectorAll('.orders-badge').forEach((el) => {
-            if (!el) return;
-            el.innerText = String(ordersCount);
-            el.style.display = ordersCount > 0 ? 'flex' : 'none';
-        });
-    } catch (error) {
-        console.error('Error updating badges:', error);
+      const entries = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(entries) ? entries.length : 0;
+    } catch {
+      return 0;
     }
-};
+  }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => window.updateBadges?.());
-} else {
-    window.updateBadges?.();
-}
+  window.updateBadges = function() {
+    for (const [key, selector] of [['myFavs', '.fav-badge'], ['myOrders', '.orders-badge']]) {
+      const count = readCount(key);
+      for (const badge of document.querySelectorAll(selector)) {
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.style.display = count > 0 ? 'flex' : 'none';
+        const button = badge.closest('button');
+        const label = button?.dataset.countLabel || button?.title;
+        if (label) button.setAttribute('aria-label', count > 0 ? label + ', ' + count : label);
+      }
+    }
+  };
+
+  window.addEventListener('storage', event => {
+    if (event.key === null || event.key === 'myFavs' || event.key === 'myOrders') window.updateBadges();
+  });
+  window.addEventListener('pageshow', window.updateBadges);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.updateBadges);
+  } else {
+    window.updateBadges();
+  }
+})();
