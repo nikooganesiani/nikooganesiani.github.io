@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     availability.textContent = price > 0 ? labels[stock] + '. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.' : 'ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.';
     const mobile = document.getElementById('mobileBuyLabel');
     mobile.textContent = available(product) ? 'ყიდვა' : 'დეტალურად';
+    document.querySelectorAll('[data-product-delivery]').forEach(el => { el.hidden = !available(product); });
+    document.querySelectorAll('.product-mobile-stock').forEach(el => { el.hidden = available(product); });
     const schemaElement = document.getElementById('productSchema');
     if (schemaElement) {
       try {

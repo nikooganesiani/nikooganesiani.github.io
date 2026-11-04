@@ -109,6 +109,7 @@ function fbclidFromFbc(fbc) {
 }
 
 function ensureIdentifiers() {
+  if (!window.enkaPrivacy?.allowsAnalytics()) return {};
   let fbp = IDS.fbp || readStored('_fbp');
   if (!fbp || !FBP_RE.test(fbp)) {
     fbp = 'fb.1.' + Date.now() + '.' + Math.floor(Math.random() * 1e13);
@@ -404,9 +405,14 @@ function resolveUserInfo(userInfo = {}, isPurchase = false) {
   return resolved;
 }
 
-ensureIdentifiers();
+window.addEventListener?.('enka:privacy-change', () => {
+  if (window.enkaPrivacy?.allowsAnalytics()) return;
+  IDS.fbp = IDS.fbc = IDS.eid = null;
+  SENT_EVENT_IDS.clear();
+});
 
 function sendCapiEvent(eventName, customData = {}, eventId = null, userInfo = {}) {
+  if (!window.enkaPrivacy?.allowsAnalytics()) return null;
   if (navigator.webdriver) return null;
 
   if (!eventName || typeof eventName !== 'string' || !eventName.trim()) {

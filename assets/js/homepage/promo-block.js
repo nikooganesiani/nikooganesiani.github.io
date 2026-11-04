@@ -18,16 +18,10 @@
     const slides = [...root.querySelectorAll('[data-promo-slide]')];
     const dots = [...root.querySelectorAll('[data-promo-dot]')];
     const worm = root.querySelector('[data-promo-worm]');
-    const pause = root.querySelector('[data-promo-pause]');
     const status = root.querySelector('[data-promo-status]');
     if (!track || slides.length < 2) return;
     let current = 0;
-    let timer;
     let settleTimer;
-    let paused = false;
-    let inView = false;
-    let hovering = false;
-    let focused = false;
     let pointer = null;
     let suppressClick = false;
     const offset = index => slides[index].offsetLeft - slides[0].offsetLeft;
@@ -39,15 +33,9 @@
       if (worm && dots[current]) worm.style.transform = `translateX(${dots[current].offsetLeft}px)`;
       if (announce && status) status.textContent = `${current + 1} / ${slides.length}: ${slides[current].dataset.title || ''}`;
     }
-    function schedule() {
-      clearTimeout(timer);
-      if (paused || reduced.matches || !inView || hovering || focused || pointer || document.hidden) return;
-      timer = setTimeout(() => go((current + 1) % slides.length, false), 5000);
-    }
     function go(index, announce = true) {
       sync(index, announce);
       track.scrollTo({ left: offset(current), behavior: reduced.matches ? 'auto' : 'smooth' });
-      schedule();
     }
     function settle() {
       if (pointer) return;
@@ -56,12 +44,6 @@
       sync(nearest);
     }
     dots.forEach((dot, index) => dot.addEventListener('click', () => go(index)));
-    pause?.addEventListener('click', () => {
-      paused = !paused;
-      pause.setAttribute('aria-pressed', String(paused));
-      pause.textContent = paused ? 'გაგრძელება' : 'შეჩერება';
-      schedule();
-    });
     root.addEventListener('keydown', event => {
       if (event.altKey || event.ctrlKey || event.metaKey || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
@@ -71,7 +53,6 @@
     });
     track.addEventListener('scroll', () => { clearTimeout(settleTimer); settleTimer = setTimeout(settle, 120); }, { passive: true });
     track.addEventListener('pointerdown', event => {
-      clearTimeout(timer);
       if (event.pointerType !== 'mouse' || event.button !== 0) return;
       pointer = { id: event.pointerId, x: event.clientX, scroll: track.scrollLeft, dragged: false };
     });
@@ -84,7 +65,7 @@
       track.scrollLeft = pointer.scroll - distance;
     });
     function release() {
-      if (!pointer) { schedule(); return; }
+      if (!pointer) return;
       const dragged = pointer.dragged;
       pointer = null;
       track.style.scrollSnapType = '';
@@ -95,23 +76,13 @@
         settle();
         go(current);
       }
-      schedule();
     }
     track.addEventListener('pointerup', release);
     track.addEventListener('pointercancel', release);
     track.addEventListener('lostpointercapture', release);
     track.addEventListener('pointerleave', () => { if (pointer && !pointer.dragged) release(); });
     track.addEventListener('click', event => { if (suppressClick) { event.preventDefault(); event.stopPropagation(); } }, true);
-    track.addEventListener('touchend', schedule, { passive: true });
-    root.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovering = true; schedule(); } });
-    root.addEventListener('pointerleave', event => { if (event.pointerType === 'mouse') { hovering = false; schedule(); } });
-    root.addEventListener('focusin', () => { focused = true; schedule(); });
-    root.addEventListener('focusout', event => { focused = root.contains(event.relatedTarget); schedule(); });
-    document.addEventListener('visibilitychange', schedule);
-    reduced.addEventListener('change', () => { track.scrollTo({ left: offset(current), behavior: 'instant' }); schedule(); });
-    window.addEventListener('pagehide', () => clearTimeout(timer));
-    window.addEventListener('pageshow', schedule);
-    new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; schedule(); }, { threshold: .2 }).observe(root);
+    reduced.addEventListener('change', () => { track.scrollTo({ left: offset(current), behavior: 'instant' }); });
     new ResizeObserver(() => { track.scrollTo({ left: offset(current), behavior: 'instant' }); sync(current); }).observe(track);
     sync(0);
   });

@@ -1,287 +1,46 @@
 ---
-layout: default
+layout: info
+info_key: warranty
 title: "გარანტია და დაბრუნება"
+description: "ENKA Electronics-ის გარანტიისა და დაბრუნების პირობები: ნაკლიანი საქონელი, 14-დღიანი უარის თქმის უფლება, თანხის ანაზღაურება და ჩამოსატვირთი განცხადების ნიმუში."
+eyebrow: "შეძენის შემდეგ"
+intro: "აქ ნახავთ, როგორ მოგვმართოთ ხარვეზის შემთხვევაში, როგორ დააბრუნოთ ონლაინ შეძენილი ნივთი და რა ვადები მოქმედებს."
 ---
-
-<style>
-    :root {
-        --primary-color: #2563eb;
-        --success-color: #059669;
-        --error-color: #dc2626;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --card-bg: #ffffff;
-        --accent-soft: #f8fafc;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .warranty-container {
-        max-width: 900px;
-        margin: 40px auto;
-        padding: 0 20px;
-    }
-
-    .warranty-card {
-        background: var(--card-bg);
-        border-radius: 40px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        overflow: hidden;
-    }
-
-    .card-header {
-        padding: 60px 40px 30px;
-        text-align: center;
-        background: linear-gradient(to bottom, #f1f5f9, transparent);
-    }
-
-    .card-header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--text-main);
-        letter-spacing: -0.03em;
-        margin: 0;
-    }
-
-    /* Главное правило - Баннер */
-    .alert-banner {
-        margin: 20px 40px;
-        padding: 24px;
-        background: #fff1f2;
-        border-radius: 24px;
-        border: 1px solid #ffe4e6;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        color: #991b1b;
-        animation: fadeInUp 0.5s ease;
-    }
-
-    .alert-banner svg {
-        flex-shrink: 0;
-        color: var(--error-color);
-    }
-
-    .alert-banner p {
-        margin: 0;
-        font-weight: 600;
-        line-height: 1.5;
-    }
-
-    /* Сетка сравнения: Что покрывается / Что нет */
-    .status-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        padding: 20px 40px;
-    }
-
-    .status-box {
-        padding: 30px;
-        border-radius: 32px;
-        transition: var(--transition);
-        border: 1px solid transparent;
-    }
-
-    .status-box.covered {
-        background: #f0fdf4;
-        border-color: #dcfce7;
-    }
-
-    .status-box.not-covered {
-        background: #fef2f2;
-        border-color: #fee2e2;
-    }
-
-    .status-box h3 {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-
-    .status-box.covered h3 { color: #166534; }
-    .status-box.not-covered h3 { color: #991b1b; }
-
-    .status-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .status-list li {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 12px;
-        font-size: 0.95rem;
-        line-height: 1.4;
-    }
-
-    .status-list svg {
-        flex-shrink: 0;
-        margin-top: 3px;
-    }
-
-    /* Секция Возврата и Формы */
-    .info-section {
-        margin: 20px 40px;
-        padding: 32px;
-        background: var(--accent-soft);
-        border-radius: 32px;
-        border: 1px solid #f1f5f9;
-    }
-
-    .info-section h3 {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--text-main);
-        margin-bottom: 20px;
-    }
-
-    .info-grid-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 12px;
-        list-style: none;
-        padding: 0;
-    }
-
-    .info-grid-list li {
-        background: white;
-        padding: 12px 16px;
-        border-radius: 12px;
-        font-size: 0.95rem;
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid #edf2f7;
-    }
-
-    .info-grid-list li::before {
-        content: "→";
-        color: var(--primary-color);
-        font-weight: bold;
-    }
-
-    /* Футер */
-    .footer-actions {
-        padding: 20px 40px 60px;
-        text-align: center;
-    }
-
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 14px 32px;
-        background: var(--text-main);
-        color: white;
-        border-radius: 100px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: var(--transition);
-    }
-
-    .back-link:hover {
-        background: var(--primary-color);
-        transform: scale(1.05);
-    }
-
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Адаптивность */
-    @media (max-width: 768px) {
-        .status-grid { grid-template-columns: 1fr; }
-        .card-header h1 { font-size: 1.8rem; }
-        .alert-banner, .status-grid, .info-section, .footer-actions {
-            padding: 20px;
-            margin: 10px 20px;
-        }
-    }
-</style>
-
-<div class="warranty-container">
-    <div class="warranty-card">
-        <header class="card-header">
-            <h1>გარანტია</h1>
-        </header>
-
-        <!-- Главное условие -->
-        <div class="alert-banner">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            <p>გარანტია ვრცელდება <strong>მხოლოდ ქარხნულ დეფექტზე</strong> და არ ფარავს გარეგან ზემოქმედებას.</p>
-        </div>
-
-        <div class="status-grid">
-            <!-- Что покрывается -->
-            <div class="status-box covered">
-                <h3>
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-                    რა ფარავს
-                </h3>
-                <ul class="status-list">
-                    <li>ქარხნული დეფექტი და/ან აწყობის ხარვეზი.</li>
-                </ul>
-            </div>
-
-            <!-- Что НЕ покрывается -->
-            <div class="status-box not-covered">
-                <h3>
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
-                    რა არ ფარავს
-                </h3>
-               <ul class="status-list">
-  <li>მექანიკური დაზიანება (დარტყმა, ბზარი, გაბზარვა)</li>
-  <li>სითხის ან ტენიანობის მოხვედრა</li>
-  <li>ქსელში ძაბვის ცვალებადობა, არასწორი/არასერტიფიცირებული დამტენის გამოყენება.</li>
-  <li>არაორიგინალი აქსესუარების გამოყენებით გამოწვეული დაზიანება.</li>
-  <li>პროგრამული უზრუნველყოფის (OS/Firmware) თვითნებური შეცვლა ან ვირუსები.</li>
-  <li>მომხმარებლის ან მესამე პირის მიერ მოწყობილობის თვითნებური გახსნა/შეკეთება.</li>
-  <li>ბუნებრივი ცვეთა (მაგ. ბატარეის რესურსის შემცირება, კორპუსის ნაკაწრები).</li>
-</ul>
-            </div>
-        </div>
-
-        <!-- Возврат -->
-        <div class="info-section">
-            <h3>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                დაბრუნების პოლიტიკა
-            </h3>
-            <ul class="info-grid-list">
-      <li>ვადის ათვლა იწყება პროდუქციის მომხმარებლისთვის (ან მის მიერ უფლებამოსილი პირისთვის) ჩაბარების მომენტიდან.</li>
-      <li>დაბრუნების უფლების გამოყენებისათვის მომხმარებელი ვალდებულია 14 დღის ვადაში შეატყობინოს კომპანიას (შეავსოს უარის თქმის ფორმა ან გამოაგზავნოს შეტყობინება ელ-ფოსტაზე/ნომერზე).</li>
-      <li>განაცხადის გაკეთების შემდეგ, მომხმარებელი ვალდებულია დაუბრუნოს ნივთი კომპანიას განაცხადიდან არაუგვიანეს 7 კალენდარული დღისა</li>
-      <li>დაბრუნებული საქონელი უნდა იყოს დაუზიანებელ მდგომარეობაში, პირვანდელი (საქონლის) იერით, სრული კომპლექტაციით, ქარხნული შეფუთვითა და ყველა დამცავი ფირით/ლუქით (ასეთის არსებობის შემთხვევაში).</li>
-      <li>საქონლის უკან დაბრუნების (ტრანსპორტირების/კურიერის) ხარჯებს ფარავს მომხმარებელი, გარდა იმ შემთხვევებისა, როდესაც ნივთს აღენიშნება ქარხნული დეფექტი ან მიწოდებულია არასწორი პროდუქტი.</li>
-      <li>მომხმარებლის მიერ ხელშეკრულებაზე უარის თქმის შემთხვევაში, გადახდილი თანხა უბრუნდება მომხმარებელს საბანკო ანგარიშზე/ბარათზე ჩარიცხვით, უარის თქმის შესახებ შეტყობინების მიღებიდან (ან ნივთის დაბრუნებიდან) არაუგვიანეს 14 კალენდარული დღისა.</li>
-            </ul>
-        </div>
-
-        <!-- Форма -->
-        <div class="info-section">
-            <h3>
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                ხელშეკრულებაზე უარის თქმის ფორმა
-            </h3>
-            <ul class="info-grid-list">
-                <li>შეკვეთის თარიღი</li>
-                <li>შეკვეთის მიღების თარიღი</li>
-                <li>მომხმარებლის სახელი</li>
-                <li>მომხმარებლის მისამართი</li>
-                <li>მომხმარებლის ხელმოწერა</li>
-                <li>ფორმის შევსების თარიღი</li>
-            </ul>
-        </div>
-    </div>
-</div>
+{% assign company = site.data.info.company %}
+<nav class="info-jump-links" aria-label="ამ გვერდზე"><a href="#guarantee">გარანტია</a><a href="#returns">დაბრუნება</a><a href="#refund">ანაზღაურება</a><a href="#request">განაცხადი</a></nav>
+<section class="info-section info-panel" id="guarantee" aria-labelledby="warranty-rights">
+  <div class="info-section-heading"><span class="info-icon">{% include icons.html name='shield' size=25 %}</span><h2 id="warranty-rights">თუ პროდუქტს ნაკლი აქვს</h2></div>
+  <p>ნაკლიანი საქონლის შემთხვევაში მოქმედებს კანონით გათვალისწინებული უფლებები: პირველ რიგში, უფასო შეკეთება ან შეცვლა, ხოლო შესაბამის შემთხვევებში — ფასის შემცირება ან ხელშეკრულებიდან გასვლა. აუცილებელ ხარჯებს მოვაჭრე ფარავს.</p>
+  <p>კანონისმიერი გარანტია მოქმედებს საქონლის ჩაბარებიდან 2 წლის განმავლობაში. დამატებითი კომერციული გარანტიის პირობები, არსებობის შემთხვევაში, მითითებულია პროდუქტთან ან საგარანტიო დოკუმენტში და არ ზღუდავს კანონით დადგენილ უფლებებს.</p>
+  <div class="info-note"><div><h3>დაზიანების მიზეზი მნიშვნელოვანია</h3><p>არასწორი გამოყენებით, დარტყმით, სითხით, შეუთავსებელი დამტენით ან თვითნებური შეკეთებით გამოწვეული დაზიანება და ბუნებრივი ცვეთა ქარხნულ ნაკლად არ ითვლება. თითოეული შემთხვევა ფასდება მიზეზის მიხედვით.</p></div></div>
+  <p class="info-small">კანონისმიერი გარანტიის შესახებ: <a href="https://gcca.gov.ge/index.php?m=375&amp;mid=392" target="_blank" rel="noopener noreferrer">GCCA-ის განმარტებები<span class="info-visually-hidden"> (ახალ ჩანართში)</span></a>.</p>
+</section>
+<section class="info-section" id="returns" aria-labelledby="warranty-return">
+  <div class="info-section-heading"><p class="info-eyebrow">ონლაინ შეძენილი პროდუქტი</p><h2 id="warranty-return">გადაიფიქრეთ შეძენა?</h2></div>
+  <p>კანონით გათვალისწინებული გამონაკლისების გარდა, შეგიძლიათ მიზეზის მითითების გარეშე უარი თქვათ დისტანციურ ხელშეკრულებაზე ნივთის მიღებიდან 14 კალენდარულ დღეში.</p>
+  <div class="info-grid info-grid--three info-deadlines">
+    <div class="info-card"><strong>14 <span>დღე</span></strong><h3>შეტყობინებისთვის</h3><p>ნივთის მიღებიდან გვაცნობეთ დაბრუნების გადაწყვეტილება.</p></div>
+    <div class="info-card"><strong>7 <span>დღე</span></strong><h3>გამოსაგზავნად</h3><p>უარის შეტყობინების შემდეგ დააბრუნეთ საქონელი.</p></div>
+    <div class="info-card"><strong>14 <span>დღე</span></strong><h3>ანაზღაურებისთვის</h3><p>უარის შეტყობინების მიღებიდან; იხილეთ პირობები ქვემოთ.</p></div>
+  </div>
+  <p class="info-small">ყველა ვადა კალენდარული დღეებით ითვლება.</p>
+  <h3>ნივთის მდგომარეობა და გამონაკლისები</h3>
+  <p>ნივთი შეგიძლიათ შეამოწმოთ მისი ბუნების, მახასიათებლებისა და ფუნქციონირების დასადგენად. ამაზე მეტი გამოყენებით ღირებულების შემცირება შეიძლება ანაზღაურებისას გაითვალისწინებოდეს. შეფუთვის გახსნა თავისთავად არ აუქმებს დაბრუნების უფლებას.</p>
+  <p>გამონაკლისებია, მაგალითად, ინდივიდუალურად დამზადებული საქონელი და ჰერმეტულად დაცული ნივთი, რომლის დაბრუნება გახსნის შემდეგ ჯანმრთელობის ან ჰიგიენის გამო შეუძლებელია. სრული ჩამონათვალი იხილეთ კანონის მე-14 მუხლში.</p>
+  <p>ჩვეულებრივი დაბრუნების პირდაპირ ხარჯს მომხმარებელი ფარავს; ნაკლიანი ან არასწორად მიწოდებული პროდუქტის შემთხვევაში — მოვაჭრე.</p>
+</section>
+<section class="info-section info-panel" id="refund" aria-labelledby="warranty-refund">
+  <h2 id="warranty-refund">თანხის დაბრუნება</h2>
+  <p>თანხა ბრუნდება უარის შეტყობინების მიღებიდან არაუგვიანეს 14 კალენდარული დღისა, გადახდის იმავე საშუალებით ან თქვენი თანხმობით სხვა საშუალებით, დამატებითი საფასურის გარეშე.</p>
+  <p>ანაზღაურება შეიძლება შეჩერდეს საქონლის ან მისი გაგზავნის მტკიცებულების მიღებამდე — რომელიც უფრო ადრე მოხდება, გარდა შემთხვევისა, როცა ნივთის უკან წაღება თავად ვიკისრეთ.</p>
+</section>
+<section class="info-section" id="request" aria-labelledby="warranty-request">
+  <div class="info-section-heading"><p class="info-eyebrow">მარტივი ნაბიჯები</p><h2 id="warranty-request">როგორ მოგვმართოთ</h2></div>
+  <ol class="info-steps" role="list">
+    <li><span class="info-step-number" aria-hidden="true">01</span><div><h3>გამოგვიგზავნეთ შეტყობინება</h3><p>მოგვწერეთ <a href="mailto:{{ company.email }}">{{ company.email }}</a>. დაბრუნებისას შეგიძლიათ გამოიყენოთ ნიმუში ან საკუთარი ცალსახა განცხადება. მიზეზის დასაბუთება უარისთვის საჭირო არ არის.</p></div></li>
+    <li><span class="info-step-number" aria-hidden="true">02</span><div><h3>შეათანხმეთ გამოგზავნა</h3><p>დაგვიკავშირდით ნივთის დაბრუნების მისამართისა და გზის დასაზუსტებლად. შეინახეთ გაგზავნის დამადასტურებელი დოკუმენტი. შეთანხმება არ ცვლის კანონით დადგენილ ვადებს.</p></div></li>
+    <li><span class="info-step-number" aria-hidden="true">03</span><div><h3>მოამზადეთ პროდუქტი</h3><p>დააბრუნეთ კომპლექტაციით და უსაფრთხოდ შეფუთეთ. შესაძლებლობის შემთხვევაში დაურთეთ ორიგინალი შეფუთვა. პირადი მოწყობილობიდან წაშალეთ თქვენი მონაცემები და გამოდით ანგარიშებიდან.</p></div></li>
+  </ol>
+  <div class="info-download"><span class="info-icon">{% include icons.html name='list' size=24 %}</span><div><h3>ხელშეკრულებაზე უარის თქმის ნიმუში</h3><p>ჩამოტვირთეთ, შეავსეთ და გამოგვიგზავნეთ ელფოსტით. ნიმუშის გამოყენება სავალდებულო არ არის.</p></div><a class="info-button info-button--secondary" href="{{ '/assets/documents/withdrawal-form.txt' | relative_url }}" download>ჩამოტვირთვა · TXT {% include icons.html name='arrow-up-right' size=18 %}</a></div>
+</section>
+<div class="info-source"><p>პირობები ეფუძნება <a href="https://matsne.gov.ge/ka/document/view/5420598" target="_blank" rel="noopener noreferrer">„მომხმარებლის უფლებების დაცვის შესახებ“ საქართველოს კანონს<span class="info-visually-hidden"> (ახალ ჩანართში)</span></a>. დავის შემთხვევაში შეგიძლიათ მიმართოთ <a href="https://gcca.gov.ge/" target="_blank" rel="noopener noreferrer">საქართველოს კონკურენციისა და მომხმარებლის დაცვის სააგენტოს<span class="info-visually-hidden"> (ახალ ჩანართში)</span></a>.</p></div>

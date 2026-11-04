@@ -1,0 +1,33 @@
+<div id="filtersBar" class="storefront-filters listing-js" hidden>
+  <div class="listing-toolbar">
+    <button id="mobileFilterBtn" type="button" class="listing-mobile-filter listing-control" aria-haspopup="dialog" aria-controls="mobileFilterModal" aria-expanded="false">
+      {% include icons.html name='sliders-horizontal' size=18 %}<span>ფილტრი</span><span id="mobileFilterDot" class="listing-filter-dot" hidden></span>
+    </button>
+    <div class="listing-desktop-price">
+      <span class="listing-price-label">ფასი</span>
+      <label class="sr-only" for="minPrice">მინიმალური ფასი (₾)</label>
+      <input id="minPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="დან">
+      <span class="listing-price-divider" aria-hidden="true">–</span>
+      <label class="sr-only" for="maxPrice">მაქსიმალური ფასი (₾)</label>
+      <input id="maxPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="მდე">
+      <span class="listing-price-currency" aria-hidden="true">₾</span>
+    </div>
+    <div class="listing-desktop-presets">{% include listing/price-presets.html %}</div>
+    <div class="listing-sort">
+      <label for="sortSelect" class="sr-only">პროდუქტების დალაგება</label>
+      <div class="listing-sort-field">
+        <span id="listingSortLabel" class="listing-sort-label" aria-hidden="true">{% if page.listing_mode == 'search' %}შესაბამისობით{% else %}რეკომენდებული{% endif %}</span>
+        <span id="listingSortCompact" class="listing-sort-compact" aria-hidden="true">დალაგება</span>
+        {% include icons.html name='chevron-down' size=16 %}
+        <select id="sortSelect" class="listing-control">
+          <option value="default">{% if page.listing_mode == 'search' %}შესაბამისობით{% else %}რეკომენდებული{% endif %}</option>
+          <option value="price-asc">ფასი: ზრდადობით</option>
+          <option value="price-desc">ფასი: კლებადობით</option>
+          <option value="name-asc">დასახელება: ა-ჰ</option>
+          <option value="name-desc">დასახელება: ჰ-ა</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div id="activeFilters" class="listing-active" hidden><p id="activeFiltersText"></p><button id="resetFilters" type="button">გასუფთავება</button></div>
+</div>

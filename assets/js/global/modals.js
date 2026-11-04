@@ -170,11 +170,7 @@
   document.addEventListener('keydown', event => {
     const modal = topModal();
     if (!modal) return;
-    if (event.key === 'Escape' && !event.isComposing) {
-      event.preventDefault();
-      event.stopPropagation();
-      window.closeAppModal(modal);
-    } else if (event.key === 'Tab') {
+    if (event.key === 'Tab') {
       const elements = getFocusables(modal);
       const first = elements[0] || modal;
       const last = elements[elements.length - 1] || modal;
@@ -186,6 +182,16 @@
       }
     }
   }, true);
+
+  // Nested controls (such as search suggestions) handle Escape before the dialog.
+  document.addEventListener('keydown', event => {
+    const modal = topModal();
+    if (modal && event.key === 'Escape' && !event.isComposing && !event.defaultPrevented) {
+      event.preventDefault();
+      event.stopPropagation();
+      window.closeAppModal(modal);
+    }
+  });
 
   document.addEventListener('focusin', event => {
     const modal = topModal();

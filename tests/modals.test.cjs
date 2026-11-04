@@ -175,6 +175,15 @@ test('Confirmation retains the return target when disabling submit has blurred t
   assert.equal(h.document.activeElement, h.trigger);
 });
 
+test('An Escape already handled by a nested control keeps its dialog open', () => {
+  const h = harness();
+  h.window.openAppModal(h.first, h.trigger);
+  h.emit('keydown', h.first.initial, { key: 'Escape', defaultPrevented: true });
+  assert.equal(h.first.classList.contains('active'), true);
+  h.emit('keydown', h.first.initial, { key: 'Escape' });
+  assert.equal(h.first.classList.contains('active'), false);
+});
+
 test('Reopening cancels an unfinished close, including reduced motion', () => {
   for (const reducedMotion of [false, true]) {
     const h = harness({ reducedMotion });

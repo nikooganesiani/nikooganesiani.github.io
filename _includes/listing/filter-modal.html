@@ -1,0 +1,14 @@
+<div id="mobileFilterModal" class="modal hidden" role="dialog" aria-labelledby="mobileFilterTitle" aria-hidden="true">
+  <div class="modal-panel">
+    <header class="modal-header"><div class="modal-heading"><h2 id="mobileFilterTitle" class="modal-title" tabindex="-1" data-modal-initial-focus>ფასის ფილტრი</h2><p class="modal-description">აირჩიეთ ფასის დიაპაზონი ლარში.</p></div>{% include modals/close-button.html %}</header>
+    <div class="modal-body">
+      <div class="listing-mobile-prices">
+        <div><label for="mobileMinPrice" class="modal-field-label">მინ. ფასი (₾)</label><div class="modal-field"><input id="mobileMinPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="დან"></div></div>
+        <div><label for="mobileMaxPrice" class="modal-field-label">მაქს. ფასი (₾)</label><div class="modal-field"><input id="mobileMaxPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="მდე"></div></div>
+      </div>
+      {% include listing/price-presets.html %}
+      <p id="mobileFilterPreview" class="modal-field-help" role="status" aria-live="polite" aria-atomic="true"></p>
+    </div>
+    <footer class="modal-footer listing-filter-actions"><button id="mobileResetBtn" type="button" class="modal-button modal-button--secondary">გასუფთავება</button><button id="mobileApplyBtn" type="button" class="modal-button">ჩვენება</button></footer>
+  </div>
+</div>

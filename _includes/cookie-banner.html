@@ -1,207 +1,25 @@
 <style>
-  #cookie-banner {
-    position: fixed;
-    top: auto;
-    left: 10px;
-    right: 10px;
-    bottom: calc(var(--mobile-nav-height, 65px) + 12px);
-    z-index: 150;
-    display: none;
-    justify-content: center;
-    pointer-events: none;
-  }
-  #cookie-banner.is-mounted {
-    display: flex;
-  }
-  #cookie-banner-card {
-    pointer-events: auto;
-    width: 100%;
-    max-width: 460px;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.04);
-    border-radius: 20px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    opacity: 0;
-    transform: translateY(-16px) scale(0.96);
-    transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  #cookie-banner-card.is-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  .cb-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    flex: 1;
-  }
-  .cb-icon {
-    flex-shrink: 0;
-    width: 32px;
-    height: 32px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, rgba(21, 93, 252, 0.14) 0%, rgba(21, 93, 252, 0.04) 100%);
-    border: 1px solid rgba(21, 93, 252, 0.15);
-    color: #155dfc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .cb-icon svg {
-    width: 18px;
-    height: 18px;
-  }
-  .cb-text {
-    min-width: 0;
-    flex: 1;
-    overflow: hidden;
-  }
-  .cb-title {
-    margin: 0;
-    font-size: clamp(10.5px, 2.7vw, 12px);
-    font-weight: 600;
-    color: #0f172a;
-    line-height: 1.35;
-    letter-spacing: -0.015em;
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .cb-desc {
-    margin: 2px 0 0 0;
-    font-size: clamp(10px, 2.5vw, 11.5px);
-    color: #64748b;
-    line-height: 1.35;
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .cb-link {
-    color: #155dfc;
-    font-weight: 500;
-    text-decoration: underline;
-    text-decoration-color: rgba(21, 93, 252, 0.35);
-    text-underline-offset: 3px;
-    transition: text-decoration-color 0.2s;
-  }
-  .cb-link:hover {
-    text-decoration-color: #155dfc;
-  }
-  .cb-btn {
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 8px 12px;
-    background: linear-gradient(180deg, #256aff 0%, #155dfc 100%);
-    color: #ffffff;
-    font-size: 11.5px;
-    font-weight: 600;
-    line-height: 1.2;
-    border: none;
-    border-radius: 11px;
-    box-shadow: 0 4px 12px rgba(21, 93, 252, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
-  }
-  .cb-btn:hover {
-    background: linear-gradient(180deg, #155dfc 0%, #1048cb 100%);
-    box-shadow: 0 6px 16px rgba(21, 93, 252, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  }
-  .cb-btn:active {
-    transform: scale(0.96);
-  }
-  .cb-btn svg {
-    width: 13px;
-    height: 13px;
-    stroke-width: 2.5;
-  }
-
-  /* Десктоп и планшеты (внизу экрана, крупнее, без перекрытия хедера) */
-  @media (min-width: 640px) {
-    #cookie-banner {
-      top: auto;
-      bottom: 24px;
-      left: 0;
-      right: 0;
-    }
-    #cookie-banner-card {
-      width: auto;
-      max-width: 600px;
-      border-radius: 24px;
-      padding: 14px 18px;
-      gap: 24px;
-      transform: translateY(16px) scale(0.96);
-    }
-    .cb-left {
-      gap: 14px;
-    }
-    .cb-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-    }
-    .cb-icon svg {
-      width: 22px;
-      height: 22px;
-    }
-    .cb-title {
-      font-size: 13.5px;
-    }
-    .cb-desc {
-      font-size: 12px;
-      margin-top: 3px;
-    }
-    .cb-btn {
-      padding: 10px 18px;
-      font-size: 13px;
-      border-radius: 13px;
-      gap: 6px;
-    }
-    .cb-btn svg {
-      width: 15px;
-      height: 15px;
-    }
-  }
+  #cookie-banner { position: fixed; left: 16px; right: 16px; bottom: calc(var(--mobile-nav-height, 65px) + 12px); z-index: 150; display: flex; justify-content: center; pointer-events: none; }
+  #cookie-banner-card { pointer-events: auto; width: 100%; max-width: 700px; padding: 20px; border: 1px solid #dbe3ef; border-radius: 18px; background: #fff; box-shadow: 0 8px 40px #1923341f; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 24px; }
+  .cb-text { flex: 1 1 280px; min-width: 0; }
+  .cb-title { margin: 0; color: #192334; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .cb-desc { margin: 6px 0 0; color: #586577; font-size: 12px; line-height: 1.7; }
+  .cb-link { color: #1048cb; text-decoration: underline; text-underline-offset: 3px; }
+  .cb-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cb-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border: 1px solid #155dfc; border-radius: 10px; background: #155dfc; color: #fff; font-size: 12px; font-weight: 600; line-height: 1.5; cursor: pointer; }
+  .cb-btn:hover { background: #1048cb; }
+  .cb-btn--secondary { background: #fff; color: #1048cb; border-color: #c9d6ec; }
+  .cb-btn--secondary:hover { background: #edf3ff; }
+  @media (min-width: 640px) { #cookie-banner { bottom: 24px; } }
+  @media (max-width: 639px) { #cookie-banner { left: 12px; right: 12px; } #cookie-banner-card { padding: 16px; gap: 14px; } .cb-text { flex-basis: 100%; } .cb-actions { width: 100%; } .cb-btn { flex: 1; } }
+  @media print { #cookie-banner { display: none !important; } }
 </style>
-
-<aside id="cookie-banner" role="region" aria-label="ქუქი-ფაილების შეტყობინება">
+<aside id="cookie-banner" role="region" aria-labelledby="cookie-banner-title" hidden>
   <div id="cookie-banner-card">
-    <div class="cb-left">
-      <div class="cb-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-          <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5Z" fill="currentColor" fill-opacity="0.15" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="8.5" cy="8.5" r="1" fill="currentColor"/>
-          <circle cx="15.5" cy="15.5" r="1" fill="currentColor"/>
-          <circle cx="12" cy="12" r="1" fill="currentColor"/>
-          <circle cx="11" cy="16.5" r="1" fill="currentColor"/>
-          <circle cx="7.5" cy="13.5" r="1" fill="currentColor"/>
-        </svg>
-      </div>
-
-      <div class="cb-text">
-        <p class="cb-title">საიტი იყენებს ქუქი-ფაილებს (Cookies).</p>
-        <p class="cb-desc">
-          იხილეთ <a href="/info/privacy" class="cb-link">კონფიდენციალურობის პოლიტიკა</a>.
-        </p>
-      </div>
+    <div class="cb-text">
+      <p class="cb-title" id="cookie-banner-title">სარეკლამო ანალიტიკის არჩევანი</p>
+      <p class="cb-desc">თქვენი თანხმობით Meta-ს ანალიტიკას რეკლამის შედეგების შესაფასებლად ვიყენებთ. არჩევანი შეკვეთას ხელს არ უშლის. <a href="{{ '/info/privacy#cookies' | relative_url }}" class="cb-link">მონაცემები და პარამეტრები</a>.</p>
     </div>
-
-    <button id="cookie-accept-btn" type="button" class="cb-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M20 6 9 17l-5-5"/>
-      </svg>
-      <span>ვეთანხმები</span>
-    </button>
+    <div class="cb-actions"><button id="cookie-decline-btn" type="button" class="cb-btn cb-btn--secondary">მხოლოდ აუცილებელი</button><button id="cookie-accept-btn" type="button" class="cb-btn">თანხმობა</button></div>
   </div>
 </aside>

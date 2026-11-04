@@ -1,0 +1,32 @@
+navigation:
+  - key: about
+    title: ჩვენ შესახებ
+    url: /info/about
+    icon: home
+  - key: contacts
+    title: კონტაქტები
+    url: /info/contacts
+    icon: phone
+  - key: delivery
+    title: გადახდა და მიწოდება
+    url: /info/delivery
+    icon: truck
+  - key: warranty
+    title: გარანტია და დაბრუნება
+    url: /info/warranty
+    icon: shield
+  - key: privacy
+    title: კონფიდენციალურობა
+    url: /info/privacy
+    icon: list
+company:
+  name: ENKA Electronics
+  legal_name: ინდივიდუალური მეწარმე ნინო ქურიძე
+  registration: "01030037652"
+  address: თბილისი, გიორგი ცაბაძის ქ. N8
+  phone: "+995 551 17 89 90"
+  phone_link: "+995551178990"
+  email: enka.electronics.ge@gmail.com
+  whatsapp: https://wa.me/995551178990
+  facebook: https://www.facebook.com/enkaelectronics
+  hours: ყოველდღე, 09:00–22:00

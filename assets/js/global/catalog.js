@@ -17,6 +17,20 @@
   };
   window.isProductAvailable = product => !!product && window.productStock(product.stockStatus) === 'in_stock' && window.productPrice(product.price) > 0;
 
+  // Suggestions and the full results page must agree, including Latin model names.
+  window.matchesCatalogSearch = (product, query) => {
+    if (!product || window.productStock(product.stockStatus) === 'out_of_stock') return false;
+    const raw = String(query || '').trim();
+    if (!raw) return false;
+    const lower = value => String(value ?? '').toLocaleLowerCase('ka');
+    const normalize = value => window.normalizeQuery?.(value) || value;
+    const text = [product.name, product.brand, product.sku, product.id].map(lower).join(' ');
+    const normalizedText = normalize(text);
+    const normalizedTerms = normalize(raw).split(/\s+/);
+    return lower(raw).split(/\s+/).every((term, index) => text.includes(term) ||
+      [normalizedTerms[index], normalize(term)].some(value => value && normalizedText.includes(value)));
+  };
+
   window.escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   window.safeProductImage = value => {
     if (typeof value !== 'string' || !value.trim()) return '/img/no-image.svg';

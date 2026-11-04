@@ -1,0 +1,9 @@
+<p id="listingStatus" class="sr-only listing-js" role="status" aria-live="polite" aria-atomic="true">პროდუქტები იტვირთება…</p>
+<div id="{{ include.grid_id }}" class="listing-grid listing-js" aria-busy="true">
+  {% for i in (1..8) %}<div class="listing-skeleton" aria-hidden="true"><div></div><span></span><span></span></div>{% endfor %}
+</div>
+<div id="loadMoreContainer" class="listing-pagination listing-js" hidden>
+  <p id="paginationCounterText"></p>
+  <progress id="paginationProgressBar" value="0" max="1" aria-label="ნაჩვენები პროდუქტები"></progress>
+  <button id="loadMoreBtn" type="button" class="listing-button" aria-controls="{{ include.grid_id }}">მეტის ნახვა</button>
+</div>

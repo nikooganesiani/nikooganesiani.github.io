@@ -1,284 +1,44 @@
 ---
-layout: default
+layout: info
+info_key: delivery
 title: "გადახდა და მიწოდება"
+description: "ENKA Electronics-ის უფასო მიწოდება მთელ საქართველოში. თბილისში 1–2, რეგიონებში 1–3 სამუშაო დღე. ადგილზე გადახდა ნაღდი ფულით ან ბარათით და შეკვეთის სტატუსის შემოწმება."
+eyebrow: "შეკვეთა და მიღება"
+intro: "შეარჩიეთ პროდუქტი ონლაინ. ჩვენ დაგიკავშირდებით, შევათანხმებთ დეტალებს და შეკვეთას თქვენს მისამართზე მოგიტანთ."
 ---
-
-<style>
-    :root {
-        --primary-color: #2563eb;
-        --success-color: #059669;
-        --text-main: #1e293b;
-        --text-muted: #64748b;
-        --card-bg: #ffffff;
-        --accent-soft: #f8fafc;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .delivery-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 0 20px;
-    }
-
-    .delivery-card {
-        background: var(--card-bg);
-        border-radius: 40px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        overflow: hidden;
-    }
-
-    .card-header {
-        padding: 60px 40px 30px;
-        text-align: center;
-        background: linear-gradient(to bottom, #f1f5f9, transparent);
-    }
-
-    .card-header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: var(--text-main);
-        letter-spacing: -0.03em;
-        margin: 0;
-    }
-
-    /* Баннер бесплатной доставки */
-    .delivery-hero {
-        margin: 20px 40px 40px;
-        padding: 40px;
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border-radius: 32px;
-        color: white;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .delivery-hero::after {
-        content: "🚚";
-        position: absolute;
-        right: -20px;
-        bottom: -10px;
-        font-size: 120px;
-        opacity: 0.1;
-        transform: rotate(-15deg);
-    }
-
-    .delivery-hero h2 {
-        font-size: 2rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        color: #f8fafc;
-    }
-
-    .delivery-hero p {
-        font-size: 1.1rem;
-        opacity: 0.8;
-        letter-spacing: 1px;
-    }
-
-    /* Таймлайн шагов */
-    .steps-timeline {
-        padding: 0 40px 40px;
-        position: relative;
-    }
-
-    .step-item {
-        display: flex;
-        gap: 24px;
-        margin-bottom: 30px;
-        position: relative;
-        animation: fadeInLeft 0.6s ease backwards;
-    }
-
-    .step-item:not(:last-child)::before {
-        content: "";
-        position: absolute;
-        left: 24px;
-        top: 48px;
-        bottom: -20px;
-        width: 2px;
-        background: #e2e8f0;
-    }
-
-    .step-badge {
-        width: 50px;
-        height: 50px;
-        background: white;
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 1.2rem;
-        flex-shrink: 0;
-        z-index: 1;
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.1);
-    }
-
-    .step-content {
-        padding-top: 12px;
-    }
-
-    .step-content p {
-        font-size: 1.05rem;
-        line-height: 1.6;
-        color: var(--text-main);
-        margin: 0;
-    }
-
-    /* Способы оплаты */
-    .payment-section {
-        margin: 0 40px 40px;
-        padding: 30px;
-        background: var(--accent-soft);
-        border-radius: 28px;
-        text-align: center;
-    }
-
-    .payment-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 20px;
-    }
-
-    .payment-methods {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .payment-chip {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 24px;
-        background: white;
-        border-radius: 100px;
-        font-weight: 700;
-        color: var(--text-main);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
-    }
-
-    .payment-chip svg {
-        color: var(--success-color);
-    }
-
-    /* Футер */
-    .footer-actions {
-        padding: 0 40px 60px;
-        text-align: center;
-    }
-
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 16px 36px;
-        background: var(--text-main);
-        color: white;
-        border-radius: 100px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: var(--transition);
-    }
-
-    .back-link:hover {
-        background: var(--primary-color);
-        transform: translateX(-5px);
-    }
-
-    /* Анимации */
-    @keyframes fadeInLeft {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
-    /* Адаптивность */
-    @media (max-width: 650px) {
-        .card-header h1 { font-size: 1.8rem; }
-        .delivery-hero { padding: 30px 20px; margin: 10px 20px 30px; }
-        .delivery-hero h2 { font-size: 1.5rem; }
-        .steps-timeline, .payment-section, .footer-actions { padding: 20px; margin: 10px 20px; }
-        .step-item { gap: 16px; }
-        .step-badge { width: 40px; height: 40px; font-size: 1rem; }
-        .step-item:not(:last-child)::before { left: 19px; top: 40px; }
-        .step-content p { font-size: 0.95rem; }
-    }
-</style>
-
-<div class="delivery-container">
-    <div class="delivery-card">
-        <header class="card-header">
-            <h1>გადახდა და მიწოდება</h1>
-        </header>
-
-        <!-- Бесплатная доставка Hero -->
-        <div class="delivery-hero">
-            <h2>უფასო მიწოდება</h2>
-            <p>მთელ საქართველოში</p>
-        </div>
-
-        <!-- Процесс заказа -->
-        <div class="steps-timeline">
-            <div class="step-item" style="animation-delay: 0.1s;">
-                <div class="step-badge">1</div>
-                <div class="step-content">
-                    <p>შეავსეთ სახელი და ტელეფონი შეკვეთის ფორმაში</p>
-                </div>
-            </div>
-
-            <div class="step-item" style="animation-delay: 0.2s;">
-                <div class="step-badge">2</div>
-                <div class="step-content">
-                    <p>დაგირეკავთ, შევთანხმდებით მისამართსა და მიტანის დროზე</p>
-                </div>
-            </div>
-
-            <div class="step-item" style="animation-delay: 0.3s;">
-                <div class="step-badge">3</div>
-                <div class="step-content">
-                    <p>თქვენს ნომერზე მიიღებთ SMS-ით კოდს, შეძლებთ შეკვეთის სტატუსის შემოწმებას პირდაპირ ჩვენს საიტზე</p>
-                </div>
-            </div>
-
-            <div class="step-item" style="animation-delay: 0.4s;">
-                <div class="step-badge">4</div>
-                <div class="step-content">
-                    <p>კურიერი მოგიტანთ პროდუქტს მითითებულ მისამართზე</p>
-                </div>
-            </div>
-
-            <div class="step-item" style="animation-delay: 0.5s;">
-                <div class="step-badge">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-                </div>
-                <div class="step-content">
-                    <p><strong>გადახდა</strong> შეგიძლიათ ნაღდი ანგარიშსწორებით ან ბარათით, გადახდის შემდეგ კურიერი გადმოგცემთ შეკვეთას</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Оплата -->
-        <div class="payment-section">
-            <div class="payment-title">გადახდის მეთოდები</div>
-            <div class="payment-methods">
-                <div class="payment-chip">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    ნაღდი
-                </div>
-                <div class="payment-chip">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    ბარათი
-                </div>
-            </div>
-        </div>
-    </div>
+{% assign company = site.data.info.company %}
+<div class="info-grid info-highlights">
+  <div class="info-highlight info-highlight--blue"><span class="info-icon">{% include icons.html name='truck' size=25 %}</span><div><p>მიწოდების საფასური</p><strong>0 ₾</strong><span>მთელ საქართველოში</span></div></div>
+  <div class="info-highlight"><span class="info-icon">{% include icons.html name='bag' size=25 %}</span><div><p>გადახდა</p><strong class="info-highlight-text">მიღებისას</strong><span>ნაღდი ფულით ან ბარათით</span></div></div>
 </div>
+<section class="info-section info-panel" aria-labelledby="delivery-process">
+  <h2 id="delivery-process">როგორ მივიღო შეკვეთა?</h2>
+  <ol class="info-steps" role="list">
+    <li><span class="info-step-number" aria-hidden="true">01</span><div><h3>დატოვეთ სახელი და ნომერი</h3><p>შეავსეთ პროდუქტის გვერდზე შეკვეთის ფორმა ან დაგვირეკეთ ნომერზე <a href="tel:{{ company.phone_link }}">{{ company.phone }}</a>.</p></div></li>
+    <li><span class="info-step-number" aria-hidden="true">02</span><div><h3>დაადასტურეთ ოპერატორთან</h3><p>ოპერატორი დაგირეკავთ პროდუქტის, ფასის, ზუსტი მისამართისა და მიწოდების დროის შესათანხმებლად. მიუთითეთ მოქმედი ტელეფონის ნომერი.</p></div></li>
+    <li><span class="info-step-number" aria-hidden="true">03</span><div><h3>თვალი ადევნეთ გზავნილს</h3><p>შეკვეთის გაგზავნის შემდეგ SMS-ით მიიღებთ ამანათის კოდს. ამ კოდით სტატუსს ჩვენს საიტზე შეამოწმებთ.</p></div></li>
+    <li><span class="info-step-number" aria-hidden="true">04</span><div><h3>მიიღეთ და გადაიხადეთ</h3><p>კურიერი დაგიკავშირდებათ და პროდუქტს შეთანხმებულ მისამართზე მოგიტანთ. გადახდა ხდება ადგილზე.</p></div></li>
+  </ol>
+</section>
+<section class="info-section" aria-labelledby="delivery-time">
+  <div class="info-section-heading"><p class="info-eyebrow">თქვენს მისამართამდე</p><h2 id="delivery-time">მიწოდების ვადები</h2></div>
+  <div class="info-table-wrap"><table class="info-table"><caption class="info-visually-hidden">სავარაუდო მიწოდების ვადა და საფასური მდებარეობის მიხედვით</caption><thead><tr><th scope="col">მდებარეობა</th><th scope="col">სავარაუდო ვადა</th><th scope="col">საფასური</th></tr></thead><tbody><tr><th scope="row">თბილისი</th><td>1–2 სამუშაო დღე</td><td><span class="info-free">უფასო</span></td></tr><tr><th scope="row">რეგიონები</th><td>1–3 სამუშაო დღე</td><td><span class="info-free">უფასო</span></td></tr></tbody></table></div>
+  <p class="info-small">ვადები საორიენტაციოა და ითვლება შეკვეთის დადასტურებიდან. ზუსტ დროს ოპერატორი შეგითანხმებთ. უქმე დღეებმა, ამინდმა ან მისამართის მდებარეობამ შესაძლოა მიწოდების დრო შეცვალოს.</p>
+</section>
+<section class="info-section info-panel" id="payment" aria-labelledby="delivery-payment">
+  <h2 id="delivery-payment">როგორ გადავიხადო?</h2>
+  <p>შეკვეთის თანხას იხდით მიღებისას, ლარში. შეგიძლიათ გადაიხადოთ ნაღდი ფულით ან ბარათით. ბარათით გადახდის სურვილი ოპერატორს წინასწარ უთხარით, რომ კურიერთან გადახდის მეთოდი დააზუსტოს.</p>
+  <div class="info-tags"><span>ნაღდი ანგარიშსწორება</span><span>საბანკო ბარათი</span><span>გადახდა ადგილზე</span></div>
+  <p class="info-small">საიტის შეკვეთის ფორმა საბანკო ბარათის მონაცემებს არ ითხოვს.</p>
+</section>
+<section class="info-section info-tracking" id="tracking" aria-labelledby="delivery-tracking">
+  <span class="info-icon">{% include icons.html name='package' size=27 %}</span><div><h2 id="delivery-tracking">სად არის ჩემი შეკვეთა?</h2><p>მოამზადეთ SMS-ით მიღებული ამანათის კოდი და შეამოწმეთ სტატუსი. თუ კოდი არ მიგიღიათ, დაგვიკავშირდით.</p></div>
+  <a class="info-button" href="{{ '/?orderstatus=' | relative_url }}" data-info-tracking>სტატუსის შემოწმება {% include icons.html name='arrow-right' size=18 %}</a>
+  <noscript><p>სტატუსის ონლაინ შესამოწმებლად საჭიროა JavaScript. ინფორმაციისთვის დარეკეთ <a href="tel:{{ company.phone_link }}">{{ company.phone }}</a>.</p></noscript>
+</section>
+<section class="info-section info-faq" aria-labelledby="delivery-faq">
+  <h2 id="delivery-faq">ხშირად დასმული კითხვები</h2>
+  <details><summary>როგორ შევცვალო მისამართი ან შეკვეთა?{% include icons.html name='chevron-down' size=19 %}</summary><div><p>შეძლებისდაგვარად მალე დაგვიკავშირდით. თუ ამანათი უკვე გაგზავნილია, ცვლილების შესაძლებლობასა და ვადას კურიერთან დავაზუსტებთ.</p></div></details>
+  <details><summary>შემიძლია პროდუქტის ადგილზე გატანა?{% include icons.html name='chevron-down' size=19 %}</summary><div><p>ვმუშაობთ ონლაინ და ფიზიკური მაღაზია არ გვაქვს. შეკვეთებს უფასო საკურიერო მომსახურებით ვაწვდით.</p></div></details>
+  <details><summary>რა ვქნა, თუ ამანათი დაზიანებულია ან სხვა ნივთი მივიღე?{% include icons.html name='chevron-down' size=19 %}</summary><div><p>შეინახეთ შეფუთვა, გადაიღეთ მდგომარეობის ამსახველი ფოტო და დაგვიკავშირდით. საკითხს განვიხილავთ <a href="{{ '/info/warranty' | relative_url }}">გარანტიისა და დაბრუნების პირობების</a> შესაბამისად.</p></div></details>
+</section>

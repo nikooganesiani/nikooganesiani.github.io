@@ -8,7 +8,7 @@
     <a href="{{ product.url | relative_url }}" class="product-card-image-link" tabindex="-1" aria-hidden="true"><img src="{{ card_image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="product-card-image" onerror="this.onerror=null;this.src='/img/no-image.svg'"></a>
   </div>
   <div class="product-info">
-    <a href="{{ product.url | relative_url }}" class="product-name">{{ product.name | escape }}</a>
+    <a href="{{ product.url | relative_url }}" class="product-name" title="{{ product.name | escape }}">{{ product.name | escape }}</a>
     <div class="product-card-prices">
       <span class="product-card-price">{{ product.price | remove: '₾' | escape }} ₾</span>
       {% if old_price > price %}<del class="product-card-old-price">{{ product.oldPrice | remove: '₾' | escape }} ₾</del>{% endif %}

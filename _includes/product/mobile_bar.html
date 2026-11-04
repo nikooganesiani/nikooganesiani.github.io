@@ -1,4 +1,13 @@
 <div id="mobileBottomBar" class="product-mobile-bar print:hidden" aria-label="პროდუქტის შეძენა">
-  <div class="product-mobile-price"><strong data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong><span data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span></div>
-  <button type="button" class="product-primary-button" id="buyButton" onclick="scrollToForm()">{% include icons.html name='bag' size=18 %}<span id="mobileBuyLabel">{% if product_available %}ყიდვა{% else %}დეტალურად{% endif %}</span></button>
+  <img class="product-mobile-image" src="{{ first_product_img | escape }}" alt="" width="84" height="84" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='/img/no-image.svg'">
+  <div class="product-mobile-price">
+    <div class="product-mobile-price-row"><strong data-product-price>{% if product_price > 0 %}{{ product_price }} ₾{% else %}ფასი ზუსტდება{% endif %}</strong><del data-product-old-price {% unless product_old_price > product_price and product_price > 0 %}hidden{% endunless %}>{{ page.oldPrice | remove: '₾' | escape }} ₾</del></div>
+    <span class="product-mobile-delivery" data-product-delivery {% unless product_available %}hidden{% endunless %}>{% include icons.html name='truck' size=14 %}<span>უფასო მიწოდება</span></span>
+    <span class="product-mobile-stock" data-product-stock data-stock="{{ product_stock | escape }}" {% if product_available %}hidden{% endif %}>{{ product_stock_label }}</span>
+  </div>
+  <div class="product-mobile-actions">
+    <button type="button" class="product-icon-button product-mobile-share" aria-label="ბმულის გაზიარება" onclick="copyProductLink(this)">{% include icons.html name='share' size=18 %}</button>
+    <button type="button" class="product-icon-button product-mobile-favorite btn-fav" aria-label="დამატება რჩეულებში" aria-pressed="false" onclick="toggleFav(event, this)">{% include icons.html name='heart' size=20 %}</button>
+    <button type="button" class="product-primary-button" id="buyButton" onclick="scrollToForm()">{% include icons.html name='bag' size=18 %}<span id="mobileBuyLabel">{% if product_available %}ყიდვა{% else %}დეტალურად{% endif %}</span></button>
+  </div>
 </div>

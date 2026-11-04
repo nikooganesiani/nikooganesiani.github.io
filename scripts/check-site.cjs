@@ -3,8 +3,18 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../_site');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const footerOf = value => value.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
+const footerOf = value => value.match(/<footer class="site-footer"[\s\S]*?<\/footer>/)?.[0];
 const sharedFooter = footerOf(html);
+function verifyHeader(value, label) {
+  assert.equal((value.match(/id="site-header"/g) || []).length, 1, label + ': one shared header');
+  const header = value.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
+  assert.ok(header, label + ': shared header markup');
+  assert.match(header, /<form[^>]+role="search"[^>]+action="\/search\/"[^>]+method="get"/, label + ': native search navigation');
+  assert.match(header, /<input[^>]+name="result"[^>]+id="searchInput"/, label + ': named search field');
+  assert.match(header, /href="tel:\+995551178990"/, label + ': direct contact');
+  assert.equal((value.match(/src="\/assets\/js\/global\/header.js"/g) || []).length, 1, label + ': one header controller');
+}
+verifyHeader(html, 'Homepage');
 assert.ok(sharedFooter?.includes('class="site-footer"'), 'Homepage must use the shared footer');
 assert.ok(!/{%|{{/.test(html), 'Unrendered Liquid on homepage');
 assert.equal((html.match(/<h1\b/g) || []).length, 1, 'Homepage needs one h1');
@@ -34,6 +44,7 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   const file = path.join(productsDir, entry.name, 'index.html');
   const productHtml = fs.readFileSync(file, 'utf8');
   const label = 'Product ' + entry.name + ': ';
+  verifyHeader(productHtml, label);
   assert.equal(footerOf(productHtml), sharedFooter, label + 'footer must match the shared homepage footer');
   assert.ok(productHtml.includes('class="site-breadcrumbs"'), label + 'shared breadcrumbs');
   assert.ok(!/{%|{{/.test(productHtml), label + 'unrendered Liquid');
@@ -72,8 +83,69 @@ assert.ok(productCount > 0, 'No product pages built');
 console.log('Verified ' + productCount + ' product pages: metadata, schema, availability, forms, unique scripts/IDs and local links.');
 for (const page of ['category', 'search']) {
   const pageHtml = fs.readFileSync(path.join(root, page, 'index.html'), 'utf8');
+  verifyHeader(pageHtml, page);
   assert.equal(footerOf(pageHtml), sharedFooter, page + ': footer must match the shared homepage footer');
   assert.ok(pageHtml.includes('class="site-breadcrumbs"'), page + ': shared breadcrumbs');
   assert.equal((pageHtml.match(/src="\/assets\/js\/global\/breadcrumbs.js"/g) || []).length, 1, page + ': one shared breadcrumb renderer');
+  assert.ok(!/{%|{{/.test(pageHtml), page + ': rendered Liquid');
+  assert.equal((pageHtml.match(/<h1\b/g) || []).length, 1, page + ': one h1');
+  const listingIds = [...pageHtml.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(listingIds).size, listingIds.length, page + ': unique IDs');
+  const listingScripts = [...pageHtml.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(listingScripts).size, listingScripts.length, page + ': unique scripts');
+  assert.ok(listingScripts.includes('/assets/js/main/catalog-listing.js'), page + ': shared listing controller');
+  assert.ok(listingScripts.includes('/assets/js/main/' + page + 'page.js'), page + ': correct page entry');
+  assert.ok(!listingScripts.includes('/assets/js/main/' + (page === 'search' ? 'category' : 'search') + 'page.js'), page + ': no unrelated page controller');
+  assert.match(pageHtml, /id="listingStatus"[^>]+role="status"/, page + ': announced results');
+  assert.match(pageHtml, /id="sortSelect" class="listing-control"/, page + ': native sorting');
+  assert.match(pageHtml, /id="mobileFilterModal" class="modal hidden" role="dialog" aria-labelledby="mobileFilterTitle"/, page + ': shared filter dialog');
+  for (const id of ['minPrice', 'maxPrice', 'mobileMinPrice', 'mobileMaxPrice', 'sortSelect']) assert.ok(pageHtml.includes('for="' + id + '"'), page + ': label for ' + id);
+  for (const id of ['minPrice', 'maxPrice', 'mobileMinPrice', 'mobileMaxPrice']) assert.match(pageHtml, new RegExp('<input id="' + id + '"[^>]+inputmode="numeric"[^>]+step="1"'), page + ': whole lari input ' + id);
+  assert.match(pageHtml, new RegExp('rel="canonical" href="https://enkaelectronics.com.ge/' + page + '/"'), page + ': canonical URL');
+  assert.ok(pageHtml.match(/<meta name="description" content="([^"]+)"/)?.[1].length > 60, page + ': useful description');
+  if (page === 'search') {
+    assert.match(pageHtml, /<meta name="robots" content="noindex, follow">/, page + ': search excluded from indexing');
+    assert.ok(!fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').includes('/search/'), page + ': search excluded from sitemap');
+    assert.match(pageHtml, /id="listingSearchInput" type="search" name="result"/, page + ': local search form');
+  } else assert.match(pageHtml, /<noscript>[\s\S]*class="product-card"/, page + ': usable catalog without JavaScript');
+  for (const [, resource] of pageHtml.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
+    const target = path.join(root, decodeURIComponent(resource.split('?')[0] || '/'));
+    assert.ok([target, target + '.html', path.join(target, 'index.html')].some(candidate => fs.existsSync(candidate)), page + ': missing local resource ' + resource);
+  }
 }
+assert.ok(!html.includes('/assets/js/main/catalog-listing.js'), 'Homepage must not load listing controllers');
 console.log('Shared footer and breadcrumbs verified on product, category and search pages.');
+const infoDescriptions = new Set();
+for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
+  const value = fs.readFileSync(path.join(root, 'info', page + '.html'), 'utf8');
+  const label = 'Info ' + page;
+  verifyHeader(value, label);
+  assert.ok(!/{%|{{/.test(value), label + ': rendered Liquid');
+  assert.equal((value.match(/<h1\b/g) || []).length, 1, label + ': one h1');
+  const infoIds = [...value.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(infoIds).size, infoIds.length, label + ': unique IDs');
+  const infoScripts = [...value.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
+  assert.equal(new Set(infoScripts).size, infoScripts.length, label + ': unique scripts');
+  assert.ok(infoScripts.indexOf('/assets/js/global/privacy.js') < infoScripts.indexOf('/capi.js'), label + ': consent loads before analytics');
+  assert.match(value, /href="\/assets\/css\/info.css"/, label + ': page stylesheet');
+  assert.match(value, /class="site-breadcrumbs"/, label + ': shared breadcrumbs');
+  const nav = value.match(/<nav class="info-nav"[\s\S]*?<\/nav>/)?.[0];
+  assert.equal((nav?.match(/aria-current="page"/g) || []).length, 1, label + ': one active information link');
+  assert.match(nav, new RegExp('href="/info/' + page + '" aria-current="page"'), label + ': correct active page');
+  const description = value.match(/<meta name="description" content="([^"]+)"/)?.[1];
+  assert.ok(description?.length > 40, label + ': useful description');
+  assert.ok(!infoDescriptions.has(description), label + ': distinct description');
+  infoDescriptions.add(description);
+  assert.match(value, new RegExp('rel="canonical" href="https://enkaelectronics.com.ge/info/' + page + '\\.html"'), label + ': preserved canonical URL');
+  for (const [, href] of value.matchAll(/(?:href|src)="(\/(?!\/)[^"]*)"/g)) {
+    const url = new URL(href.replace(/&amp;/g, '&'), 'https://enkaelectronics.com.ge');
+    const target = path.join(root, decodeURIComponent(url.pathname));
+    const resolved = [target, target + '.html', path.join(target, 'index.html')].find(file => fs.existsSync(file) && fs.statSync(file).isFile());
+    assert.ok(resolved, label + ': missing resource ' + href);
+    if (url.hash) assert.ok(fs.readFileSync(resolved, 'utf8').includes('id="' + url.hash.slice(1) + '"'), label + ': missing anchor ' + href);
+  }
+  for (const [, fragment] of value.matchAll(/href="#([^"]+)"/g)) assert.ok(infoIds.includes(fragment), label + ': missing in-page anchor ' + fragment);
+  for (const [, attributes] of value.matchAll(/<a\b([^>]*target="_blank"[^>]*)>/g)) assert.match(attributes, /rel="noopener noreferrer"/, label + ': safe external link');
+}
+console.log('All five information pages verified: metadata, navigation, unique IDs/scripts, local resources, anchors and download.');
+console.log('Shared header and native search verified on homepage, all products, category, search and information pages.');

@@ -37,15 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', event => {
     const photo = event.target.closest('[data-photo-index]');
     const thumb = event.target.closest('[data-gallery-index]');
-    const arrow = event.target.closest('[data-gallery-direction]');
     const zoomThumb = event.target.closest('[data-zoom-index]');
     const zoomArrow = event.target.closest('[data-zoom-direction]');
     if (photo) {
       window.openAppModal(modal, photo);
-      go(modalTrack, photo.hasAttribute('data-expand-current') ? current(track) : Number(photo.dataset.photoIndex), true);
+      go(modalTrack, Number(photo.dataset.photoIndex), true);
       sync(modalTrack, '[data-zoom-index]', 'zoomCounter');
     } else if (thumb) go(track, Number(thumb.dataset.galleryIndex));
-    else if (arrow) go(track, current(track) + Number(arrow.dataset.galleryDirection));
     else if (zoomThumb) go(modalTrack, Number(zoomThumb.dataset.zoomIndex));
     else if (zoomArrow) go(modalTrack, current(modalTrack) + Number(zoomArrow.dataset.zoomDirection));
   });
@@ -116,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   const bar = document.getElementById('mobileBottomBar');
   const buy = document.getElementById('submitInlineOrderBtn');
-  document.documentElement.style.setProperty('--mobile-buy-bar-height', '82px');
   let barUpdatePending = false;
   const updateBuyBar = () => {
     if (barUpdatePending) return;
@@ -126,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const navigation = document.getElementById('enka-mobile-nav');
       const bottomInset = navigation?.getBoundingClientRect().height || 0;
       const viewportHeight = Math.min(window.innerHeight, window.visualViewport?.height || window.innerHeight);
-      bar.dataset.formVisible = String(rect.width > 0 && rect.top >= 0 && rect.bottom <= viewportHeight - bottomInset);
+      const headerBottom = Math.max(0, document.getElementById('site-header')?.getBoundingClientRect().bottom || 0);
+      bar.dataset.formVisible = String(rect.width > 0 && rect.top >= headerBottom && rect.bottom <= viewportHeight - bottomInset);
       barUpdatePending = false;
     });
   };
@@ -135,9 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
   window.visualViewport?.addEventListener('resize', updateBuyBar, { passive: true });
   if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(updateBuyBar).observe(buy);
   if (typeof ResizeObserver !== 'undefined') new ResizeObserver(updateBuyBar).observe(document.getElementById('inlineOrderForm'));
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
-    document.documentElement.style.setProperty('--mobile-buy-bar-height', Math.ceil(bar.getBoundingClientRect().height + 6) + 'px');
-  }).observe(bar);
   updateBuyBar();
 
   document.querySelectorAll('.product-video-play').forEach(link => link.addEventListener('click', event => {

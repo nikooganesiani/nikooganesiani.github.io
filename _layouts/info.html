@@ -1,0 +1,33 @@
+---
+layout: default
+---
+{% assign company = site.data.info.company %}
+<div class="info-page">
+  {% include breadcrumbs.html current_label=page.title %}
+  <div class="info-shell">
+    <aside class="info-sidebar">
+      <nav class="info-nav" aria-label="საინფორმაციო გვერდები">
+        <p class="info-nav-label">ინფორმაცია</p>
+        <ul role="list">
+          {% for item in site.data.info.navigation %}
+          <li><a href="{{ item.url | relative_url }}"{% if item.key == page.info_key %} aria-current="page"{% endif %}>{% include icons.html name=item.icon size=19 %}<span>{{ item.title }}</span>{% include icons.html name='chevron-right' size=15 class='info-nav-arrow' %}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <div class="info-sidebar-help">
+        <span class="info-icon">{% include icons.html name='phone' size=21 %}</span>
+        <p class="info-help-title">დახმარება გჭირდებათ?</p><p>{{ company.hours }}</p>
+        <a href="tel:{{ company.phone_link }}">{{ company.phone }}</a>
+      </div>
+    </aside>
+    <article class="info-article" aria-labelledby="info-title">
+      <header class="info-heading"><p class="info-eyebrow">ENKA / {{ page.eyebrow }}</p><h1 id="info-title">{{ page.title }}</h1><p class="info-lead">{{ page.intro }}</p></header>
+      {{ content }}
+      <section class="info-help" aria-labelledby="info-help-title">
+        <div><p class="info-eyebrow">ჩვენ თქვენ გვერდით ვართ</p><h2 id="info-help-title">კითხვა დაგრჩათ?</h2><p>მოგვწერეთ ან დაგვირეკეთ — დაგეხმარებით.</p></div>
+        <a class="info-button" href="tel:{{ company.phone_link }}">{% include icons.html name='phone' size=18 %}{{ company.phone }}</a>
+      </section>
+    </article>
+  </div>
+</div>
+<script src="{{ '/assets/js/info.js' | relative_url }}" defer></script>

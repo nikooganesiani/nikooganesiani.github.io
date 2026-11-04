@@ -25,12 +25,11 @@
     {% endfor %}
   </div>
   {% if site.data.promo_block.size > 1 %}
-  <div class="flex items-center justify-center gap-4 pt-2">
+  <div class="flex items-center justify-center min-h-11 pt-2">
     <div class="relative flex items-center gap-2" data-promo-dots role="group" aria-label="აირჩიეთ შეთავაზება">
       {% for item in site.data.promo_block %}<button type="button" class="relative w-2 h-2 rounded-full bg-slate-300 cursor-pointer before:absolute before:-inset-2 before:content-['']" data-promo-dot aria-label="შეთავაზება {{ forloop.index }}: {{ item.title | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"></button>{% endfor %}
       <div class="absolute left-0 top-0 w-2 h-2 rounded-full bg-blue-600 pointer-events-none transition-transform motion-reduce:transition-none" data-promo-worm aria-hidden="true"></div>
     </div>
-    <button type="button" data-promo-pause aria-pressed="false" class="min-h-11 px-3 text-xs font-semibold text-slate-600 hover:text-blue-700">შეჩერება</button>
   </div>
   {% endif %}
 </section>

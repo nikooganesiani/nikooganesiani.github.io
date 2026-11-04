@@ -22,7 +22,10 @@
     }, 100);
   }
 
-  waitForCapi(function () {
+  let viewTracked = false;
+  function trackView() {
+    if (viewTracked || !window.enkaPrivacy?.allowsAnalytics() || typeof window.sendCapiEvent !== 'function') return;
+    viewTracked = true;
     window.sendCapiEvent('PageView');
 
     if (sku) {
@@ -34,5 +37,8 @@
         currency: 'GEL',
       });
     }
-  });
+  }
+  waitForCapi(trackView);
+  // A first-time visitor may choose consent after the product has rendered.
+  window.addEventListener('enka:privacy-change', trackView);
 })();
