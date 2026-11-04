@@ -3,6 +3,7 @@
 @import "./components/product-card.css";
 @import "./components/catalog.css";
 @import "./components/footer.css";
+@import "./components/modals.css";
 @source "../../_includes";
 @source "../../_layouts";
 @source "../js";
@@ -11,6 +12,7 @@
   html { scroll-padding-top: 88px; scrollbar-gutter: stable; }
   html.modal-open, html.modal-open body { overflow: hidden; overscroll-behavior: none; }
   :focus-visible { outline: 2px solid #155dfc !important; outline-offset: 3px; }
+  .modal-field input:focus-visible { outline: none !important; }
   button, a, input { touch-action: manipulation; }
   button:disabled { cursor: default; }
   [hidden] { display: none !important; }
@@ -22,9 +24,6 @@
 .storefront-page { width: 100%; max-width: 1280px; margin-inline: auto; padding-top: 12px; padding-inline: 24px; }
 @media (max-width: 639px) { .storefront-page { padding-inline: 16px; } }
 input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-.modal > :first-child { overscroll-behavior: contain; max-height: calc(100dvh - 32px); }
-.modal-close { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; color: #475569; background: #f1f5f9; cursor: pointer; }
-.modal-close:hover { background: #e2e8f0; }
 .search-result { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; color: #0f172a; text-decoration: none; }
 .search-result:hover, .search-result:focus { background: #eff6ff; }
 .search-result img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }

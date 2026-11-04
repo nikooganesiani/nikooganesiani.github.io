@@ -100,7 +100,7 @@ function showSpamError(form, message) {
     }, 5000);
 }
 
-window.openOrderForm = function(product) {
+window.openOrderForm = function(product, trigger) {
     try {
         if (isQuickOrderSubmitting || window.enkaOrderPending) return;
         if (!product?.id || !window.isProductAvailable(product)) return;
@@ -110,8 +110,6 @@ window.openOrderForm = function(product) {
         document.getElementById('quickOrderError').textContent = '';
         quickName?.removeAttribute('aria-invalid');
         quickPhone?.removeAttribute('aria-invalid');
-        if (quickName) quickName.value = '';
-        if (quickPhone) quickPhone.value = '';
         document.getElementById('quickFormWrapperName')?.classList.remove('error-border');
         document.getElementById('quickFormWrapperPhone')?.classList.remove('error-border');
 
@@ -125,7 +123,7 @@ window.openOrderForm = function(product) {
         if (modal) {
             modal.dataset.product = JSON.stringify(product || {});
         }
-        window.openAppModal?.('orderFormModal');
+        window.openAppModal?.('orderFormModal', trigger);
     } catch(e) { console.error(e); }
 };
 
@@ -188,17 +186,15 @@ if (quickForm) {
         if (!guard.allowed) {
             if (guard.reason === 'duplicate_exact') {
                 // Если человек отправил на 100% те же данные (не меняя телефон) — не спамим бота, просто показываем подтверждение
+                window.showOrderConfirm?.({
+                    save: false,
+                    name: name,
+                    phone: fullPhone,
+                    product: product.name,
+                    price: product.price,
+                    oldPrice: product.oldPrice || product.old_price
+                });
                 window.closeAppModal?.('orderFormModal');
-                setTimeout(() => {
-                    window.showOrderConfirm?.({
-                        save: false,
-                        name: name,
-                        phone: fullPhone,
-                        product: product.name,
-                        price: product.price,
-                        oldPrice: product.oldPrice || product.old_price
-                    });
-                }, 300);
                 return;
             }
             if (guard.reason === 'cooldown') {
@@ -218,7 +214,7 @@ if (quickForm) {
         const originalContent = submitBtn ? submitBtn.innerHTML : '';
 
         if (submitBtn) {
-            submitBtn.innerHTML = '<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-6 h-6 mx-auto"></div>';
+            submitBtn.innerHTML = '<span class="modal-loading"><span class="modal-spinner" aria-hidden="true"></span>იგზავნება…</span>';
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-label', 'შეკვეთა იგზავნება');
         }
@@ -274,21 +270,20 @@ if (quickForm) {
                     } catch (analyticsError) { console.error(analyticsError); }
                 }
 
+                window.showOrderConfirm?.({
+                    name: name,
+                    phone: fullPhone,
+                    product: product.name,
+                    price: product.price,
+                    oldPrice: product.oldPrice || product.old_price
+                });
                 window.closeAppModal?.('orderFormModal');
-                setTimeout(() => {
-                    window.showOrderConfirm?.({
-                        name: name,
-                        phone: fullPhone,
-                        product: product.name,
-                        price: product.price,
-                        oldPrice: product.oldPrice || product.old_price
-                    });
-                    if (submitBtn) {
-                        submitBtn.innerHTML = originalContent;
-                        submitBtn.disabled = false;
-                    }
-                    isQuickOrderSubmitting = false;
-                }, 400);
+                quickForm.reset();
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                }
+                isQuickOrderSubmitting = false;
             } else {
                 if (errorEl) errorEl.textContent = 'შეკვეთა ვერ გაიგზავნა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.';
                 if (submitBtn) {
@@ -309,6 +304,8 @@ if (quickForm) {
             window.enkaOrderPending = false;
             quickForm.removeAttribute('aria-busy');
             submitBtn?.removeAttribute('aria-label');
+            const modal = document.getElementById('orderFormModal');
+            if (modal?.classList.contains('active') && !modal.contains(document.activeElement)) submitBtn?.focus({ preventScroll: true });
         }
     });
 }

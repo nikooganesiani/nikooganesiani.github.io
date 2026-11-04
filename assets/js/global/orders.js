@@ -1,63 +1,26 @@
 function renderOrders() {
-    try {
-        const list = document.getElementById('ordersList');
-        let ordersRaw;
-        try { ordersRaw = localStorage.getItem('myOrders'); } catch { ordersRaw = null; }
-        let orders;
-        try { orders = ordersRaw ? JSON.parse(ordersRaw) : []; } catch { orders = []; }
-        if (!Array.isArray(orders)) orders = [];
-        const escape = window.escapeHTML;
-        const countEl = document.getElementById('ordersModalCount');
-
-        if (countEl) {
-            countEl.innerText = orders.length > 0 ? `(${orders.length})` : '';
-        }
-
-        if (!list) return;
-
-        if (!orders || orders.length === 0) {
-            list.innerHTML = `
-                <div class="text-center text-slate-400 py-12 font-semibold">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path>
-                        <path d="m3.3 7 8.7 5 8.7-5"></path>
-                        <path d="M12 22V12"></path>
-                    </svg>
-                    <br>შეკვეთები არ გაქვთ
-                </div>`;
-            return;
-        }
-
-        list.innerHTML = orders.map((o) => {
-            if (!o || typeof o !== 'object') return '';
-            const d = o.date ? new Date(o.date) : new Date();
-            const dateStr = !isNaN(d.getTime())
-                ? d.toLocaleDateString('ka-GE') + ' ' + d.toLocaleTimeString('ka-GE', { hour: '2-digit', minute: '2-digit' })
-                : '';
-            const priceFixed = String(o.price || '').includes('₾') ? o.price : `${String(o.price || '').trim()} ₾`;
-            const oldPHtml = (o.oldPrice && o.oldPrice !== 'null' && !String(o.oldPrice).includes('undefined'))
-                ? `<span class="text-[0.8rem] text-slate-400 line-through decoration-red-500 font-bold ml-1.5">${escape(o.oldPrice)}</span>`
-                : '';
-
-            return `
-                <div class="flex flex-col gap-0 bg-transparent border-b border-slate-200 py-4 px-2 relative items-start transition-all duration-200 last:border-none">
-                    <div class="flex justify-between w-full pb-1 mb-1">
-                        <span class="text-[0.8rem] text-slate-500 font-semibold">${dateStr}</span>
-                        <span class="text-[1rem] text-blue-600 font-bold flex items-center">${escape(priceFixed)} ${oldPHtml}</span>
-                    </div>
-                    <div class="whitespace-normal leading-snug text-[0.9rem] font-bold text-slate-900">${escape(o.product || '')}</div>
-                    <div class="text-[0.8rem] text-slate-500 mt-1 font-semibold">${escape(o.name || '')} • ${escape(o.phone || '')}</div>
-                </div>`;
-        }).join('');
-    } catch (error) {
-        console.error('Error rendering orders:', error);
-    }
+  const list = document.getElementById('ordersList');
+  if (!list) return;
+  let orders;
+  try { orders = JSON.parse(localStorage.getItem('myOrders') || '[]'); } catch { orders = []; }
+  orders = Array.isArray(orders) ? orders.filter(order => order && typeof order === 'object') : [];
+  const escape = window.escapeHTML;
+  const count = document.getElementById('ordersModalCount');
+  if (count) count.textContent = orders.length ? '(' + orders.length + ')' : '';
+  if (!orders.length) {
+    list.innerHTML = '<div class="modal-empty"><span class="modal-empty-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m12 3 9 5v9l-9 5-9-5V8l9-5ZM3 8l9 5 9-5M12 13v9"/></svg></span><h3>შეკვეთები ჯერ არ გაქვთ</h3><p>გაფორმებული შეკვეთები აქ გამოჩნდება. სხვა მოწყობილობაზე შეკვეთილი ამანათი შეგიძლიათ ნომრით შეამოწმოთ.</p><button type="button" class="modal-button modal-button--secondary" data-close-modal>პროდუქტების ნახვა</button></div>';
+    return;
+  }
+  list.innerHTML = orders.map(order => {
+    const date = new Date(order.date || '');
+    const dateText = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ka-GE', { day: 'numeric', month: 'short', year: 'numeric' });
+    const price = String(order.price || '').replace(/₾/g, '').trim();
+    return '<article class="modal-order"><div class="modal-order-meta"><span>' + escape(dateText) + '</span><span class="modal-order-price">' + escape(price ? price + ' ₾' : '—') + '</span></div><h3 class="modal-order-name">' + escape(order.product || '') + '</h3><p class="modal-order-contact">' + escape(order.name || '') + ' · ' + escape(order.phone || '') + '</p></article>';
+  }).join('');
 }
-
 window.renderOrders = renderOrders;
-
-window.openOrders = function(e) {
-    if (e?.preventDefault) e.preventDefault();
-    renderOrders();
-    window.openAppModal?.('ordersModal', e?.currentTarget);
+window.openOrders = function(event) {
+  event?.preventDefault?.();
+  renderOrders();
+  window.openAppModal?.('ordersModal', event?.currentTarget);
 };

@@ -1,5 +1,4 @@
 window.addEventListener('click', (e) => {
-    if (e.target?.classList?.contains('modal')) window.closeAppModal?.(e.target);
     if (e.target?.closest('.mobile-bottom-img')) window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -13,7 +12,7 @@ document.addEventListener('touchstart', function(e) {
 
 document.addEventListener('touchend', function(e) {
     setTimeout(function() {
-        if (document.activeElement && document.activeElement !== document.body) {
+        if (!document.documentElement.classList.contains('modal-open') && document.activeElement && document.activeElement !== document.body) {
             const tag = document.activeElement.tagName;
             if (tag === 'BUTTON' || tag === 'A' || document.activeElement.closest?.('.product-card, .similar-card, .thumb-card')) {
                 document.activeElement.blur();

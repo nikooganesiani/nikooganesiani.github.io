@@ -29,41 +29,6 @@
   </div>
 </section>
 
-<!-- Модальное окно (z-[9999] поверх нижнего меню) -->
-<div
-  id="categoryModal"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="categoryModalTitle"
-  aria-hidden="true"
-  class="modal fixed inset-0 z-[9999] hidden items-end sm:items-center justify-center sm:p-4 bg-black/45 backdrop-blur-xs opacity-0 transition-opacity duration-200 [&.active]:opacity-100 group"
->
-  <div
-    id="categoryModalBox"
-    class="relative w-full max-w-md bg-white rounded-t-[28px] sm:rounded-3xl overflow-hidden transform translate-y-6 opacity-0 transition-all duration-200 group-[.active]:translate-y-0 group-[.active]:opacity-100"
-  >
-    <!-- Тонкий ползунок шторки (только на мобильных) -->
-    <div class="w-9 h-1 bg-slate-300/80 rounded-full mx-auto mt-2.5 sm:hidden"></div>
-
-    <!-- Шапка -->
-    <div class="flex items-center justify-between px-5 pt-3.5 pb-3 sm:py-4 border-b border-slate-100">
-      <h3 id="categoryModalTitle" class="text-base sm:text-[17px] font-semibold text-slate-900 tracking-tight"></h3>
-      <button
-        type="button"
-        id="categoryModalClose"
-        aria-label="დახურვა"
-        class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Список подкатегорий (скроллбар скрыт визуально) -->
-    <div
-      id="categoryModalList"
-      class="p-3.5 sm:p-4 pb-6 sm:pb-4 grid grid-cols-1 gap-1.5 max-h-[65vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-    ></div>
-  </div>
+<div class="modal hidden" id="categoryModal" role="dialog" aria-labelledby="categoryModalTitle" aria-hidden="true">
+  <div id="categoryModalBox" class="modal-panel"><header class="modal-header"><div class="modal-heading"><h2 id="categoryModalTitle" class="modal-title" tabindex="-1" data-modal-initial-focus></h2><p class="modal-description">აირჩიეთ თქვენთვის სასურველი ქვეკატეგორია.</p></div>{% include modals/close-button.html %}</header><nav class="modal-body" aria-label="ქვეკატეგორიები"><div id="categoryModalList"></div></nav></div>
 </div>

@@ -22,6 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     const counter = document.getElementById(counterId);
     if (counter) counter.textContent = (index + 1) + ' / ' + slides.length;
+    if (el === modalTrack) {
+      const thumb = document.querySelector('#modalThumbStrip .active');
+      const strip = thumb?.parentElement;
+      if (strip?.clientWidth) {
+        const offset = thumb.getBoundingClientRect().left - strip.getBoundingClientRect().left;
+        if (offset < 0 || offset + thumb.offsetWidth > strip.clientWidth) {
+          strip.scrollTo({ left: strip.scrollLeft + offset - (strip.clientWidth - thumb.offsetWidth) / 2, behavior: 'instant' });
+        }
+      }
+    }
     if (el === track) slides.forEach((slide, i) => { slide.tabIndex = i === index ? 0 : -1; });
   }
   document.addEventListener('click', event => {
@@ -38,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (arrow) go(track, current(track) + Number(arrow.dataset.galleryDirection));
     else if (zoomThumb) go(modalTrack, Number(zoomThumb.dataset.zoomIndex));
     else if (zoomArrow) go(modalTrack, current(modalTrack) + Number(zoomArrow.dataset.zoomDirection));
-    else if (event.target === modal) window.closeAppModal(modal);
   });
   [track, modalTrack].forEach(el => {
     let scheduled = false;

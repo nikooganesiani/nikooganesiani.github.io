@@ -4,15 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalBox = document.getElementById('categoryModalBox');
   const modalTitle = document.getElementById('categoryModalTitle');
   const modalList = document.getElementById('categoryModalList');
-  const closeBtn = document.getElementById('categoryModalClose');
 
   if (!modal || !modalBox || !modalTitle || !modalList) return;
 
   const createSubcategoryLink = (catId, sub) => {
     const link = document.createElement('a');
     link.href = `/category/?${encodeURIComponent(catId)}&sub=${encodeURIComponent(sub.id)}`;
-    link.className =
-      'flex items-center justify-between px-4 py-3.5 rounded-xl bg-slate-50/80 hover:bg-[#155dfc]/[0.08] active:bg-[#155dfc]/[0.12] text-slate-800 hover:text-[#155dfc] transition-colors duration-150 text-[14px] font-medium group';
+    link.className = 'modal-subcategory';
     link.dataset.cat = catId;
     link.dataset.subcat = sub.id;
     link.dataset.name = sub.name;
@@ -33,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return link;
   };
 
-  const openModal = (catId, catName, subs) => {
+  const openModal = (catId, catName, subs, trigger) => {
     if (!Array.isArray(subs) || subs.length === 0) {
       window.location.href = `/category/?${encodeURIComponent(catId)}`;
       return;
@@ -51,12 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const all = createSubcategoryLink(catId, { id: '', name: 'ყველა პროდუქტი' });
     all.href = `/category/?${encodeURIComponent(catId)}`;
     modalList.prepend(all);
-    window.openAppModal(modal);
+    window.openAppModal(modal, trigger);
   };
 
-  const closeModal = () => {
-    window.closeAppModal(modal);
-  };
 
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.category-item-btn');
@@ -73,13 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
         subs = [];
       }
 
-      openModal(catId, catName, subs);
+      openModal(catId, catName, subs, btn);
       return;
     }
 
-    if (modal.classList.contains('active') && (e.target === modal || (closeBtn && closeBtn.contains(e.target)))) {
-      closeModal();
-    }
   });
 
 });

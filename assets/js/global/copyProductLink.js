@@ -26,7 +26,7 @@ window.copyProductLink = async function(button) {
   if (success) copied();
   else {
     const text = document.getElementById('copiedLinkText');
-    if (text) text.textContent = url;
+    if (text) text.value = url;
     window.openAppModal?.('linkModal', button);
   }
 };

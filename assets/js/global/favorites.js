@@ -304,10 +304,7 @@
     updateFavModalCount(favs.length);
 
     if (!favs.length) {
-      list.innerHTML =
-        '<div class="py-10 px-4 text-center text-slate-400 text-[15px] leading-relaxed">' +
-        'რჩეულებში ჯერ არაფერია' +
-        '</div>';
+      list.innerHTML = '<div class="modal-empty"><span class="modal-empty-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span><h3>რჩეულებში ჯერ არაფერია</h3><p>პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ.</p><button type="button" class="modal-button modal-button--secondary" data-close-modal>პროდუქტების ნახვა</button></div>';
       return;
     }
 
@@ -325,9 +322,9 @@
           '">' +
           '<a href="' +
           escapeHtml(href) +
-          '" class="shrink-0 w-16 h-16 rounded-2xl bg-slate-50 overflow-hidden flex items-center justify-center">' +
+          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-xl bg-slate-50 overflow-hidden flex items-center justify-center">' +
           (img
-            ? '<img src="' + escapeHtml(img) + '" alt="" class="w-full h-full object-contain">'
+            ? '<img src="' + escapeHtml(img) + '" alt="" width="64" height="64" loading="lazy" class="w-full h-full object-contain">'
             : '') +
           '</a>' +
           '<a href="' +
@@ -341,13 +338,13 @@
           price +
           '</span>' +
           (oldPrice
-            ? '<span class="text-[12px] text-slate-400 line-through">' + oldPrice + '</span>'
+            ? '<span class="text-[12px] text-slate-500 line-through">' + oldPrice + '</span>'
             : '') +
           '</div>' +
           '</a>' +
-          '<button type="button" class="fav-remove shrink-0 w-9 h-9 rounded-full text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition" data-fav-remove="' +
+          '<button type="button" class="fav-remove modal-close" data-fav-remove="' +
           index +
-          '" aria-label="წაშლა">✕</button>' +
+          '" aria-label="წაშლა რჩეულებიდან: ' + name + '"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>' +
           '</div>'
         );
       })
@@ -363,10 +360,6 @@
     var modal = getFavModal();
     if (!modal) return;
     modalBound = true;
-
-    modal.addEventListener('click', function (e) {
-      if (e.target === modal) closeFavorites();
-    });
 
     var list = document.getElementById('favList');
     if (list) {
@@ -388,6 +381,8 @@
     saveFavs(favs);
     if (removed) setButtonsState(hintsFromItem(removed), false);
     renderFavList();
+    const next = document.querySelectorAll('#favList [data-fav-remove]');
+    (next[Math.min(index, next.length - 1)] || document.getElementById('favModalTitle'))?.focus({ preventScroll: true });
     if (typeof window.showToast === 'function') window.showToast('წაშლილია რჩეულებიდან');
   }
 

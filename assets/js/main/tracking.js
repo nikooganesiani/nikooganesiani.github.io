@@ -1,5 +1,19 @@
 const statusMap = { 'ასაღები': 'შეკვეთა მზად არის', 'საწყობშია': 'მივიდა საწყობში', 'გატანილია ჩასაბარებლად': 'კურიერი გზაშია', 'ჩაბარებულია': 'ჩაბარებულია' };
 const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
+let trackingController;
+let trackingRevision = 0;
+
+function resetTrackingRequest() {
+    ++trackingRevision;
+    trackingController?.abort();
+    trackingController = null;
+    const button = document.getElementById('trackingCheckBtn');
+    if (button) {
+        button.disabled = false;
+        button.textContent = 'შემოწმება';
+        button.removeAttribute('aria-busy');
+    }
+}
 
 function parseGeorgianDate(dateStr) {
     if (!dateStr) return null;
@@ -30,16 +44,17 @@ function getStatusBadge(statusName) {
         clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
     };
     const badgeMap = {
-        'ჩაბარებულია': { class: 'bg-green-400/15 text-green-400', icon: icons.check, text: 'ჩაბარებულია' },
-        'ასაღები': { class: 'bg-blue-400/15 text-blue-400', icon: icons.clock, text: 'მზად არის' },
-        'საწყობშია': { class: 'bg-blue-400/15 text-blue-400', icon: icons.box, text: 'საწყობშია' },
-        'გატანილია ჩასაბარებლად': { class: 'bg-yellow-400/15 text-yellow-400', icon: icons.truck, text: 'გზაშია' }
+        'ჩაბარებულია': { class: 'bg-green-50 text-green-800', icon: icons.check, text: 'ჩაბარებულია' },
+        'ასაღები': { class: 'bg-blue-50 text-blue-800', icon: icons.clock, text: 'მზად არის' },
+        'საწყობშია': { class: 'bg-blue-50 text-blue-800', icon: icons.box, text: 'საწყობშია' },
+        'გატანილია ჩასაბარებლად': { class: 'bg-amber-50 text-amber-800', icon: icons.truck, text: 'გზაშია' }
     };
-    const badge = badgeMap[statusName] || { class: 'bg-slate-400/15 text-slate-400', icon: icons.box, text: window.escapeHTML(statusName || 'უცნობი') };
+    const badge = badgeMap[statusName] || { class: 'bg-slate-100 text-slate-700', icon: icons.box, text: window.escapeHTML(statusName || 'უცნობი') };
     return `<span class="inline-flex items-center px-4 py-2 rounded-full text-[0.85rem] font-bold leading-none ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
 }
 
 window.openTracking = function(id = '', updateURL = true) {
+    resetTrackingRequest();
     const url = new URL(window.location);
     if (id) { url.searchParams.set('orderstatus', id); } else { url.searchParams.set('orderstatus', ''); }
     if (updateURL && url.href !== window.location.href) history.pushState(null, '', url.pathname + url.search + url.hash);
@@ -49,11 +64,11 @@ window.openTracking = function(id = '', updateURL = true) {
     const trackingOrderId = document.getElementById('trackingOrderId');
     const trackingResult = document.getElementById('trackingResult');
     if (trackingOrderId) trackingOrderId.value = id;
+    trackingOrderId?.removeAttribute('aria-invalid');
     if (trackingResult) {
         trackingResult.style.display = 'none';
         trackingResult.innerHTML = '';
     }
-    if (!id && trackingOrderId) setTimeout(() => trackingOrderId.focus(), 100);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -81,9 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackingCheckBtn = document.getElementById('trackingCheckBtn');
     const trackingOrderId = document.getElementById('trackingOrderId');
     const trackingResult = document.getElementById('trackingResult');
+    document.getElementById('trackingModal')?.addEventListener('modal:close', resetTrackingRequest);
 
     if (trackingCheckBtn) {
         trackingCheckBtn.addEventListener('click', async () => {
+            if (trackingCheckBtn.disabled) return;
             let orderIdInput = trackingOrderId?.value?.trim() || '';
             if (!orderIdInput) {
                 trackingOrderId?.setAttribute('aria-invalid', 'true');
@@ -109,22 +126,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 trackingResult.innerHTML = '';
             }
             trackingCheckBtn.disabled = true;
-            trackingCheckBtn.innerHTML = '<div class="animate-spin rounded-full border-[3px] border-white/30 border-t-white w-6 h-6 mx-auto"></div>';
+            trackingCheckBtn.setAttribute('aria-busy', 'true');
+            trackingCheckBtn.innerHTML = '<span class="modal-loading"><span class="modal-spinner" aria-hidden="true"></span>მოწმდება…</span>';
+            const revision = ++trackingRevision;
+            const controller = new AbortController();
+            trackingController = controller;
+            const timeout = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const response = await fetch(window.WORKER_URL_TRACKING, {
                     method: 'POST',
-                    signal: AbortSignal.timeout(15000),
+                    signal: controller.signal,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ order_id: apiOrderId })
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
+                if (revision !== trackingRevision) return;
 
                 if (trackingResult) trackingResult.style.display = 'block';
                 if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
                     if (trackingResult) {
-                        trackingResult.innerHTML = `<div class="flex items-center justify-center gap-2 bg-red-500/10 text-red-500 p-4 rounded-xl text-[0.9rem] font-semibold animate-[fadeIn_0.3s_ease]"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> ვერ მოიძებნა. შეამოწმეთ ნომერი.</div>`;
+                        trackingResult.innerHTML = '<div class="modal-notice">შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი და სცადეთ ხელახლა.</div>';
                     }
                     return;
                 }
@@ -170,13 +193,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     trackingResult.innerHTML = `<div class="bg-slate-50 p-6 rounded-2xl border border-slate-200"><p class="text-[0.85rem] font-bold text-slate-500 mb-4 text-center uppercase tracking-wider">შეკვეთა #${window.escapeHTML(order.tracking_code || orderIdInput)}</p><div class="text-center mb-8">${getStatusBadge(currentStatus)}</div><div class="flex flex-col w-full mt-6">${timelineHtml}</div></div>`;
                 }
             } catch (error) {
+                if (revision !== trackingRevision) return;
                 if (trackingResult) {
                     trackingResult.style.display = 'block';
                     trackingResult.textContent = 'სტატუსის შემოწმება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.';
                 }
             } finally {
-                trackingCheckBtn.disabled = false;
-                trackingCheckBtn.textContent = 'შემოწმება';
+                clearTimeout(timeout);
+                if (revision === trackingRevision) {
+                    trackingController = null;
+                    trackingCheckBtn.disabled = false;
+                    trackingCheckBtn.removeAttribute('aria-busy');
+                    trackingCheckBtn.textContent = 'შემოწმება';
+                    const modal = document.getElementById('trackingModal');
+                    if (modal?.classList.contains('active') && !modal.contains(document.activeElement)) trackingCheckBtn.focus({ preventScroll: true });
+                }
             }
         });
 
