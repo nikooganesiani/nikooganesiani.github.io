@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const parsePrice = window.productPrice;
   const stockOf = window.productStock;
   const available = window.isProductAvailable;
-  const money = value => new Intl.NumberFormat('ka-GE', { maximumFractionDigits: 2 }).format(value) + ' ₾';
+  const money = value => new Intl.NumberFormat((window.enkaI18n?.locale || 'ka'), { maximumFractionDigits: 2 }).format(value) + ' ₾';
 
   function applyProduct(product) {
     const price = parsePrice(product.price);
@@ -32,6 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('productAlternatives').hidden = available(product);
     button.disabled = !available(product);
     document.querySelectorAll('[data-product-name]').forEach(el => { el.textContent = product.name; });
+    document.title = product.name + ' — ENKA Electronics';
+    const titleMeta = document.querySelector('meta[property="og:title"]');
+    if (titleMeta) titleMeta.content = document.title;
+    const descriptionMeta = document.querySelector('meta[name="description"]');
+    if (descriptionMeta && product.description !== undefined) descriptionMeta.content = product.description;
+    if (product.description !== undefined) {
+      const description = document.querySelector('.product-description');
+      if (description) description.textContent = product.longDescription || product.description || '';
+    }
+    if (product.specs && typeof product.specs === 'object') {
+      const entries = Object.entries(product.specs);
+      document.querySelectorAll('[data-product-highlight-index]').forEach(row => {
+        const entry = entries[Number(row.dataset.productHighlightIndex)];
+        if (entry) { row.querySelector('dt').textContent = entry[0]; row.querySelector('dd').textContent = entry[1]; }
+      });
+      const specs = document.querySelector('#specsBlock dl');
+      if (specs) specs.replaceChildren(...Object.entries(product.specs).map(([label, value]) => {
+        const row = document.createElement('div'); row.className = 'product-spec-row';
+        const term = document.createElement('dt'); term.textContent = label;
+        const detail = document.createElement('dd'); detail.textContent = String(value);
+        row.append(term, detail); return row;
+      }));
+    }
     document.querySelectorAll('[data-product-price]').forEach(el => { el.textContent = price > 0 ? money(price) : 'ფასი ზუსტდება'; });
     document.querySelectorAll('[data-product-old-price]').forEach(el => {
       el.textContent = money(oldPrice);
@@ -57,6 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const schema = JSON.parse(schemaElement.textContent);
         schema.name = product.name;
+        if (product.description !== undefined) schema.description = product.description;
         if (price > 0) schema.offers = {
           '@type': 'Offer', url: document.querySelector('link[rel="canonical"]').href,
           priceCurrency: 'GEL', price, availability: 'https://schema.org/' + (available(product) ? 'InStock' : 'OutOfStock'), itemCondition: 'https://schema.org/NewCondition'

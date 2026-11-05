@@ -1,0 +1,35 @@
+<details class="language-picker language-picker--{{ include.placement }}" data-language-picker dir="ltr">
+  <summary class="language-trigger notranslate" translate="no" aria-label="Language / ენა" aria-controls="languages-{{ include.placement }}">
+    <img class="language-flag" data-language-flag src="{{ '/img/flags/ge.svg' | relative_url }}" width="24" height="18" alt="">
+    <span class="language-code" data-language-code>KA</span>
+    {% include icons.html name='chevron-down' size=14 %}
+  </summary>
+  <div class="language-panel" id="languages-{{ include.placement }}">
+    <p class="language-heading">აირჩიეთ ენა</p>
+    <div class="language-primary">
+      {% for language in site.data.languages limit:3 %}
+      <button type="button" class="language-option notranslate" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}"{% if language.code == 'ka' %} aria-pressed="true"{% else %} aria-pressed="false"{% endif %}>
+        <img class="language-flag" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
+        <span dir="auto">{{ language.name }}</span><span class="language-option-code">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='language-check' %}
+      </button>
+      {% endfor %}
+    </div>
+    <details class="language-more">
+      <summary class="language-more-trigger"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18"/></svg><span>მეტი ენის ჩვენება</span>{% include icons.html name='chevron-down' size=14 %}</summary>
+      <label class="language-search"><span class="sr-only">Find a language</span>{% include icons.html name='search' size=16 %}<input type="search" data-language-search placeholder="Find a language…" autocomplete="off" maxlength="60"></label>
+      <div class="language-list">
+        {% for language in site.data.languages offset:3 %}
+        <button type="button" class="language-option notranslate" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}" aria-pressed="false">
+          <img class="language-flag" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
+          <span dir="auto">{{ language.name }}</span><span class="language-option-code">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='language-check' %}
+        </button>
+        {% endfor %}
+      </div>
+      <p class="language-empty" hidden>No languages found</p>
+    </details>
+    <p class="language-status" data-language-status role="status" aria-live="polite" hidden></p>
+    <button class="language-retry" type="button" data-language-retry hidden>Retry / სცადეთ ხელახლა</button>
+    <p class="language-attribution notranslate" translate="no">Auto translation · <a href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate</a></p>
+    <noscript><p class="language-status">Enable JavaScript for automatic translation.</p></noscript>
+  </div>
+</details>

@@ -1,7 +1,8 @@
 (() => {
   'use strict';
   const TTL = 5 * 60 * 1000;
-  const CACHE_KEY = 'catalogCache_v2';
+  const locale = window.enkaI18n?.locale || 'ka';
+  const CACHE_KEY = 'catalogCache_v3_' + locale;
   let cached = null;
   let promise = null;
 
@@ -57,7 +58,9 @@
     if (promise) return promise;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
-    promise = fetch(window.CATALOG_API_URL, { signal: controller.signal, credentials: 'omit' })
+    const url = new URL(window.CATALOG_API_URL, location.origin);
+    if (['ru', 'en'].includes(locale)) url.searchParams.set('lang', locale);
+    promise = fetch(url.href, { signal: controller.signal, credentials: 'omit' })
       .then(response => {
         if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
         return response.json();
@@ -65,7 +68,7 @@
       .then(data => {
         const products = Array.isArray(data) ? data : data?.products;
         if (!Array.isArray(products)) throw new Error('Invalid catalog');
-        cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ts: Date.now() };
+        cached = { products: products.filter(p => p && p.id && typeof p.name === 'string').map(p => window.enkaI18n?.product?.(p) || p), ts: Date.now() };
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
         return cached;
       })

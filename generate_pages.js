@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { buildLocalizations } = require('./scripts/build-localizations.cjs');
 
 function parsePrice(value) {
   const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -74,6 +75,7 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
     data = await response.json();
   }
   const products = normalizeCatalog(data);
+  buildLocalizations(root);
   const productsDir = path.join(root, '_products');
   fs.mkdirSync(productsDir, { recursive: true });
   for (const product of products) fs.writeFileSync(path.join(productsDir, product.id + '.md'), productFrontMatter(product));

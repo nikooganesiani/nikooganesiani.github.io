@@ -1,0 +1,12 @@
+{
+  "name": "enka-admin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check:cloudflare": "wrangler deploy --dry-run --config wrangler.example.jsonc --outdir ../.local/admin-worker-build"
+  },
+  "dependencies": { "jose": "6.2.15" },
+  "devDependencies": { "wrangler": "4.157.0" }
+}

@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
           price.className = 'search-result-price';
           const value = window.productPrice(product.price);
           const oldValue = window.productPrice(product.oldPrice);
-          const money = amount => new Intl.NumberFormat('ka-GE', { maximumFractionDigits: 2 }).format(amount) + ' ₾';
+          const money = amount => new Intl.NumberFormat((window.enkaI18n?.locale || 'ka'), { maximumFractionDigits: 2 }).format(amount) + ' ₾';
           const current = document.createElement('strong');
           current.textContent = value > 0 ? money(value) : 'ფასი ზუსტდება';
           price.append(current);

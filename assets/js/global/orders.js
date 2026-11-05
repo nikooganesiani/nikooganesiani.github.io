@@ -13,9 +13,9 @@ function renderOrders() {
   }
   list.innerHTML = orders.map(order => {
     const date = new Date(order.date || '');
-    const dateText = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('ka-GE', { day: 'numeric', month: 'short', year: 'numeric' });
+    const dateText = Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString((window.enkaI18n?.locale || 'ka'), { day: 'numeric', month: 'short', year: 'numeric' });
     const price = String(order.price || '').replace(/₾/g, '').trim();
-    return '<article class="modal-order"><div class="modal-order-meta"><span>' + escape(dateText) + '</span><span class="modal-order-price">' + escape(price ? price + ' ₾' : '—') + '</span></div><h3 class="modal-order-name">' + escape(order.product || '') + '</h3><p class="modal-order-contact">' + escape(order.name || '') + ' · ' + escape(order.phone || '') + '</p></article>';
+    return '<article class="modal-order"><div class="modal-order-meta"><span>' + escape(dateText) + '</span><span class="modal-order-price">' + escape(price ? price + ' ₾' : '—') + '</span></div><h3 class="modal-order-name">' + escape(order.product || '') + '</h3><p class="modal-order-contact notranslate" translate="no">' + escape(order.name || '') + ' · ' + escape(order.phone || '') + '</p></article>';
   }).join('');
 }
 window.renderOrders = renderOrders;

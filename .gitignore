@@ -8,3 +8,9 @@
 /.pnpm-store/
 /vendor/
 /assets/css/style.css
+/assets/i18n/data.js
+/admin/node_modules/
+/admin/.wrangler/
+/admin/wrangler.local.jsonc
+/admin/wrangler.*.local.jsonc
+/admin/.dev.vars*

@@ -20,7 +20,7 @@
   <section id="productSpecifications" aria-labelledby="productSpecsTitle">
     <h2 id="productSpecsTitle">მახასიათებლები</h2>
     <div id="specsBlock" class="product-specs">
-      <dl>{% for spec in page.specs %}<div class="product-spec-row"><dt>{{ spec[0] | escape }}</dt><dd>{{ spec[1] | escape }}</dd></div>{% endfor %}</dl>
+      <dl>{% for spec in page.specs %}<div class="product-spec-row"><dt>{{ spec[0] | escape }}</dt><dd{% if spec[0] == 'ბრენდი' or spec[0] == 'მოდელი' %} class="notranslate" translate="no"{% endif %}>{{ spec[1] | escape }}</dd></div>{% endfor %}</dl>
     </div>
     <button type="button" id="btnExpandSpecs" class="product-detail-link product-expand-specs" aria-controls="specsBlock" aria-expanded="false" hidden><span id="specsExpandLabel">ყველა მახასიათებელი</span>{% include icons.html name='chevron-down' size=15 %}</button>
   </section>

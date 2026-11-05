@@ -4,11 +4,15 @@
   "packageManager": "pnpm@11.25.0",
   "scripts": {
     "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify",
-    "check": "node --test tests/*.test.cjs",
+    "check": "node --test tests/*.test.cjs admin/tests/*.test.mjs",
     "check:site": "node scripts/check-site.cjs",
     "generate": "node generate_pages.js",
     "build": "pnpm run generate && pnpm run build:css && bundle exec jekyll build",
-    "preview": "node scripts/preview.cjs"
+    "preview": "node scripts/preview.cjs",
+    "admin:dev": "node admin/dev.mjs",
+    "admin:check": "node --test admin/tests/*.test.mjs",
+    "check:translations": "node scripts/check-translations.cjs",
+    "build:translations": "node scripts/build-localizations.cjs"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.4",

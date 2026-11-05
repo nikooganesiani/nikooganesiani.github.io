@@ -1,0 +1,170 @@
+[
+  {
+    "id": "smarthome",
+    "name": "ჭკვიანი სახლი",
+    "subs": [
+      {
+        "id": "sensors",
+        "name": "სენსორები"
+      },
+      {
+        "id": "lighting",
+        "name": "განათება"
+      },
+      {
+        "id": "security",
+        "name": "უსაფრთხოება"
+      }
+    ]
+  },
+  {
+    "id": "kitchen",
+    "name": "სამზარეულო",
+    "subs": [
+      {
+        "id": "grill",
+        "name": "გრილი და ტოსტერი"
+      },
+      {
+        "id": "kettle",
+        "name": "მადუღარა და ჩაიდანი"
+      },
+      {
+        "id": "coffee",
+        "name": "ყავის აპარატი"
+      },
+      {
+        "id": "blender",
+        "name": "ბლენდერი"
+      },
+      {
+        "id": "chopper",
+        "name": "ჩოფერი"
+      },
+      {
+        "id": "juicer",
+        "name": "წვენსაწური"
+      },
+      {
+        "id": "oven",
+        "name": "ღუმელი"
+      },
+      {
+        "id": "airfryer",
+        "name": "აეროგრილი"
+      },
+      {
+        "id": "mixer",
+        "name": "მიქსერი"
+      },
+      {
+        "id": "crepe",
+        "name": "ბლინის საცხობი"
+      },
+      {
+        "id": "meatgrinder",
+        "name": "ხორცსაკეპი"
+      },
+      {
+        "id": "gas",
+        "name": "გაზქურა"
+      },
+      {
+        "id": "pan",
+        "name": "ტაფა"
+      },
+      {
+        "id": "fryer",
+        "name": "ფრის აპარატი"
+      },
+      {
+        "id": "popcorn",
+        "name": "პოპკორნის აპარატი"
+      },
+      {
+        "id": "cottoncandy",
+        "name": "ბამბის ნაყინის აპარატი"
+      },
+      {
+        "id": "fruitdehydrator",
+        "name": "ჩირის აპარატი"
+      }
+    ]
+  },
+  {
+    "id": "homecare",
+    "name": "სახლის მოვლა",
+    "subs": [
+      {
+        "id": "vacuum",
+        "name": "მტვერსასრუტი"
+      },
+      {
+        "id": "iron",
+        "name": "უთო"
+      }
+    ]
+  },
+  {
+    "id": "selfcare",
+    "name": "თავის მოვლა",
+    "subs": [
+      {
+        "id": "hairclipper",
+        "name": "საპარსი და ტრიმერი"
+      },
+      {
+        "id": "hairdryer",
+        "name": "თმის ფენი"
+      },
+      {
+        "id": "curlingiron",
+        "name": "თმის სახვევი"
+      },
+      {
+        "id": "hairiron",
+        "name": "თმის უთო"
+      },
+      {
+        "id": "lintremover",
+        "name": "ბეწვის საცლელი"
+      },
+      {
+        "id": "scale",
+        "name": "სასწორი"
+      }
+    ]
+  },
+  {
+    "id": "building",
+    "name": "მშენებლობა",
+    "subs": [
+      {
+        "id": "tools",
+        "name": "ხელსაწყოები"
+      },
+      {
+        "id": "laser",
+        "name": "ლაზერული აპარატი"
+      }
+    ]
+  },
+  {
+    "id": "gadget",
+    "name": "გაჯეტები",
+    "subs": [
+      {
+        "id": "headphones",
+        "name": "ყურსასმენები"
+      },
+      {
+        "id": "accessories",
+        "name": "აქსესუარები"
+      },
+      {
+        "id": "smartwatch",
+        "name": "სმარტ საათი"
+      }
+    ]
+  }
+]

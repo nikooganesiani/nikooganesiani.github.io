@@ -54,8 +54,9 @@ test('Regeneration removes stale generated pages and preserves manually authored
   assert.ok(!fs.existsSync(path.join(root, '_products/stale.md')));
 });
 
-function catalogContext(fetch, storage = { getItem: () => null, setItem() {} }) {
+function catalogContext(fetch, storage = { getItem: () => null, setItem() {} }, locale = 'ka') {
   const context = vm.createContext({ window: { CATALOG_API_URL: 'https://example.test/catalog' }, location: { origin: 'https://example.test' }, sessionStorage: storage, fetch, AbortController, URL, setTimeout, clearTimeout, document: { addEventListener() {} } });
+  context.window.enkaI18n = { locale };
   vm.runInContext(read('assets/js/global/catalog.js'), context);
   return context;
 }
@@ -68,6 +69,18 @@ test('Concurrent homepage, search and favorites requests share one catalog reque
   assert.equal(first, second);
   await context.window.fetchCatalogCached();
   assert.equal(calls, 1);
+});
+
+test('Catalog requests and cached responses stay separate for each native language', async () => {
+  const cache = new Map(); const requests = [];
+  const storage = { getItem: key => cache.get(key), setItem: (key, value) => cache.set(key, value) };
+  const fetch = async url => { requests.push(url); return { ok: true, json: async () => ({ products: [product] }) }; };
+  for (const locale of ['ru', 'en', 'ka']) {
+    await catalogContext(fetch, storage, locale).window.fetchCatalogCached();
+    await catalogContext(fetch, storage, locale).window.fetchCatalogCached();
+  }
+  assert.deepEqual(requests, ['https://example.test/catalog?lang=ru', 'https://example.test/catalog?lang=en', 'https://example.test/catalog']);
+  assert.equal(cache.size, 3);
 });
 
 test('Failed and malformed catalog responses remain retryable', async () => {

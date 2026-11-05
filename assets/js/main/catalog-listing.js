@@ -82,7 +82,7 @@
       filtered.sort((a, b) => !a.priceValue - !b.priceValue || (a.priceValue - b.priceValue) * direction);
     } else if (state.sort.startsWith('name-')) {
       const direction = state.sort === 'name-asc' ? 1 : -1;
-      filtered.sort((a, b) => a.name.localeCompare(b.name, 'ka') * direction);
+      filtered.sort((a, b) => a.name.localeCompare(b.name, window.enkaI18n?.locale || 'ka') * direction);
     } else if (state.query) filtered.sort((a, b) => relevance(b, state.query) - relevance(a, state.query));
     return filtered;
   }

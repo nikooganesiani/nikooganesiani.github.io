@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "enka-catalog-api-v2-staging",
+  "main": "catalog-api-v2.mjs",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": { "STOREFRONT_BASE": "https://enkaelectronics.com.ge" },
+  "kv_namespaces": [{ "binding": "CATALOG_KV", "id": "00000000000000000000000000000000" }]
+}

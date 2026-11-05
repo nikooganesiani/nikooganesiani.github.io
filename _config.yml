@@ -13,6 +13,8 @@ include: [_pages]
 
 # Исключаем служебные файлы и папки из итогового билда
 exclude:
+  - TRANSLATIONS.md
+  - admin
   - vendor
   - node_modules
   - Gemfile

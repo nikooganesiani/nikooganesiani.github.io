@@ -11,7 +11,7 @@
       <div class="promo-slide w-full min-w-0 flex-[0_0_100%] snap-start relative" data-promo-slide data-product-id="{{ item.product_id | escape }}" data-title="{{ hero.name | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ site.data.promo_block.size }}">
         <a href="{{ hero.url | relative_url }}" class="hero-offer" draggable="false">
           <div class="hero-copy">
-            <span class="hero-eyebrow">ENKA PICKS</span>
+            <span class="hero-eyebrow notranslate" translate="no">ENKA PICKS</span>
             <h2 class="hero-title">{{ item.title | escape }}</h2>
             <p class="hero-description">{{ hero.name | escape }}</p>
             <div class="hero-prices"><strong data-hero-price>{{ hero.price | escape }} ₾</strong><del data-hero-old-price{% unless hero_old_price > hero_price %} hidden{% endunless %}>{{ hero.oldPrice | escape }} ₾</del></div>

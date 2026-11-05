@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (trackingResult) {
-                    trackingResult.innerHTML = `<div class="bg-slate-50 p-6 rounded-2xl border border-slate-200"><p class="text-[0.85rem] font-bold text-slate-500 mb-4 text-center uppercase tracking-wider">შეკვეთა #${window.escapeHTML(order.tracking_code || orderIdInput)}</p><div class="text-center mb-8">${getStatusBadge(currentStatus)}</div><div class="flex flex-col w-full mt-6">${timelineHtml}</div></div>`;
+                    trackingResult.innerHTML = `<div class="bg-slate-50 p-6 rounded-2xl border border-slate-200"><p class="text-[0.85rem] font-bold text-slate-500 mb-4 text-center uppercase tracking-wider">შეკვეთა #<span class="notranslate" translate="no">${window.escapeHTML(order.tracking_code || orderIdInput)}</span></p><div class="text-center mb-8">${getStatusBadge(currentStatus)}</div><div class="flex flex-col w-full mt-6">${timelineHtml}</div></div>`;
                 }
             } catch (error) {
                 if (revision !== trackingRevision) return;

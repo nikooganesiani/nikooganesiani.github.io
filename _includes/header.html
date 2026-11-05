@@ -25,6 +25,7 @@
       <div id="desktopSearchResults" class="header-search-results" role="region" aria-label="ძიების შედეგები" hidden></div>
     </form>
     <nav class="header-actions" aria-label="პირადი სივრცე">
+      {% include language-picker.html placement='header' %}
       <button type="button" class="header-action header-action--tracking" aria-controls="trackingModal" aria-haspopup="dialog" aria-expanded="false" data-header-panel="trackingModal" aria-label="შეკვეთის სტატუსი">
         <span class="header-action-icon">{% include icons.html name='truck' size=23 %}</span>
         <span class="header-action-label">სტატუსი</span>

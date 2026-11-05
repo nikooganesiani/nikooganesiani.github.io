@@ -13,6 +13,10 @@ function verifyHeader(value, label) {
   assert.match(header, /<input[^>]+name="result"[^>]+id="searchInput"/, label + ': named search field');
   assert.match(header, /href="tel:\+995551178990"/, label + ': direct contact');
   assert.equal((value.match(/src="\/assets\/js\/global\/header.js"/g) || []).length, 1, label + ': one header controller');
+  assert.equal((value.match(/data-language-picker\b/g) || []).length, 2, label + ': language selection in header and footer');
+  assert.equal((value.match(/src="\/assets\/js\/global\/languages.js"/g) || []).length, 1, label + ': one shared translation controller');
+  assert.equal((value.match(/id="site-translation-engine"/g) || []).length, 1, label + ': one translation engine');
+  assert.ok(!value.includes('translate.google.com/translate?'), label + ': forms remain on the store origin');
 }
 verifyHeader(html, 'Homepage');
 assert.ok(sharedFooter?.includes('class="site-footer"'), 'Homepage must use the shared footer');
@@ -32,7 +36,7 @@ for (const [, resource] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
 }
 assert.ok((html.match(/class="product-card(?:\s|")/g) || []).length > 0, 'Popular products need a server-rendered fallback');
 assert.ok(!html.includes('Halloween'), 'Outdated promo campaign on homepage');
-for (const forbidden of ['node_modules', 'scripts', 'tests', 'vendor', '.local', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']) {
+for (const forbidden of ['admin', 'node_modules', 'scripts', 'tests', 'vendor', '.local', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']) {
   assert.ok(!fs.existsSync(path.join(root, forbidden)), 'Development file published: ' + forbidden);
 }
 console.log('Homepage artifact verified: ' + checked + ' local references, unique scripts and IDs, rendered product fallback.');
