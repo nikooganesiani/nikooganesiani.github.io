@@ -16,7 +16,7 @@
       <div class="product-gallery-track" id="mainGalleryTrack" tabindex="0" role="group" aria-label="პროდუქტის ფოტოები; გამოიყენეთ ისრის ღილაკები">
         {% for img in product_photos %}
         <button type="button" class="main-gallery-slide" data-photo-index="{{ forloop.index0 }}" aria-label="ფოტო {{ forloop.index }} — გადიდება" aria-haspopup="dialog" aria-controls="imageZoomModal">
-          <img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="800" height="800" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'">
+          <img src="{{ img | escape }}" data-catalog-content alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="800" height="800" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'">
         </button>
         {% endfor %}
       </div>

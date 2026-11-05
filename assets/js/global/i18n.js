@@ -18,17 +18,11 @@
     if (dictionary.has(text.trim())) return text.replace(text.trim(), dictionary.get(text.trim()));
     return !exact && matcher ? text.replace(matcher, source => dictionary.get(source)) : text;
   };
-  const product = source => {
-    if (locale === 'ka') return source;
-    const result = { ...source };
-    for (const field of ['name', 'description', 'longDescription', 'warranty']) if (typeof source[field] === 'string') result[field] = t(source[field], true);
-    if (source.specs) result.specs = Object.fromEntries(Object.entries(source.specs).map(([key, value]) => [t(key, true), t(value, true)]));
-    return result;
-  };
-  window.enkaI18n = { locale, t, product };
+  window.enkaI18n = { locale, t };
   if (locale === 'ka') return;
   document.documentElement.lang = locale;
-  const excluded = 'script,style,textarea,[translate="no"],.notranslate,[contenteditable="true"]';
+  // Catalog content is localized exclusively by the published admin API.
+  const excluded = 'script,style,textarea,[translate="no"],.notranslate,[contenteditable="true"],.product-specs,.product-highlights,[data-product-name],.product-description,.product-name,.search-result-name,.modal-product-name,.modal-order-name,#confirmProduct,[data-product-warranty],[data-catalog-content]';
   function translate(root) {
     if (!root) return;
     if (root.nodeType === 3) {

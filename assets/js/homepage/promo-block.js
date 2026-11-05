@@ -5,6 +5,9 @@
     document.querySelectorAll('[data-promo-slide][data-product-id]').forEach(slide => {
       const product = products.find(item => String(item.id) === slide.dataset.productId);
       if (!product) return;
+      slide.dataset.title = product.name;
+      slide.querySelector('[data-product-name]').textContent = product.name;
+      slide.querySelector('[data-promo-image]').alt = product.name;
       const price = Number(product.price);
       const oldPrice = Number(product.oldPrice);
       if (price > 0) slide.querySelector('[data-hero-price]').textContent = product.price + ' ₾';

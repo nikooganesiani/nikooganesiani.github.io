@@ -96,4 +96,4 @@ node scripts/preview.cjs --mock-services
 
 ## Переводы RU/EN
 
-Полная инструкция для владельца: [TRANSLATIONS.md](TRANSLATIONS.md). Сохранённый словарь всего сайта — `assets/i18n/translations.json`, пакет переводов 76 товаров для импорта в админку — `admin/translations/ru-en.json`. RU/EN не загружают Google Translate. `node scripts/build-localizations.cjs` собирает словарь; после сборки `node scripts/check-translations.cjs` проверяет покрытие.
+Полная инструкция для владельца: [TRANSLATIONS.md](TRANSLATIONS.md). Словарь интерфейса и информационных страниц — `assets/i18n/translations.json`, архив уже импортированных переводов 76 товаров — `admin/translations/ru-en.json`. RU/EN не загружают Google Translate. `node scripts/build-localizations.cjs` собирает словарь; после сборки `node scripts/check-translations.cjs` проверяет покрытие.

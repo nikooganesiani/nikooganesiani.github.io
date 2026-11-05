@@ -1,8 +1,8 @@
 <div id="imageZoomModal" class="modal modal--gallery product-zoom hidden" role="dialog" aria-labelledby="zoomTitle" aria-hidden="true" tabindex="-1">
   <div class="product-zoom-content">
-    <div class="product-zoom-header"><h2 id="zoomTitle" class="product-zoom-title" tabindex="-1" data-modal-initial-focus>{{ page.name | escape }}</h2><span id="zoomCounter" role="status" aria-live="polite" aria-atomic="true">1 / {{ product_photos.size }}</span><button type="button" class="modal-close" data-close-modal aria-label="გალერეის დახურვა">{% include icons.html name='close' size=22 %}</button></div>
+    <div class="product-zoom-header"><h2 id="zoomTitle" class="product-zoom-title" tabindex="-1" data-modal-initial-focus data-product-name>{{ page.name | escape }}</h2><span id="zoomCounter" role="status" aria-live="polite" aria-atomic="true">1 / {{ product_photos.size }}</span><button type="button" class="modal-close" data-close-modal aria-label="გალერეის დახურვა">{% include icons.html name='close' size=22 %}</button></div>
     <div id="modalTrack" class="product-gallery-track product-zoom-track" tabindex="0" role="group" aria-label="გადიდებული ფოტოები">
-      {% for img in product_photos %}<div class="modal-slide"><img src="{{ img | escape }}" alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="1200" height="1200" loading="lazy" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'"></div>{% endfor %}
+      {% for img in product_photos %}<div class="modal-slide"><img src="{{ img | escape }}" data-catalog-content alt="{{ page.name | escape }} — ფოტო {{ forloop.index }}" width="1200" height="1200" loading="lazy" draggable="false" onerror="this.onerror=null;this.src='/img/no-image.svg'"></div>{% endfor %}
     </div>
     <div class="product-zoom-footer">
       <button type="button" class="product-icon-button" data-zoom-direction="-1" aria-label="წინა ფოტო" {% if product_photos.size <= 1 %}hidden{% endif %}>{% include icons.html name='chevron-left' size=20 %}</button>

@@ -41,7 +41,7 @@
 
   <div class="product-service-links">
     <a href="/info/delivery">{% include icons.html name='truck' size=22 %}<span><strong>უფასო მიწოდება</strong><small>საქართველოს ნებისმიერ წერტილში</small></span>{% include icons.html name='chevron-right' size=15 %}</a>
-    <a href="/info/warranty">{% include icons.html name='shield' size=22 %}<span><strong>გარანტია და დაბრუნება</strong><small>{% if page.warranty != '' %}{{ page.warranty | escape }} · {% endif %}გაეცანით პირობებს</small></span>{% include icons.html name='chevron-right' size=15 %}</a>
+    <a href="/info/warranty">{% include icons.html name='shield' size=22 %}<span><strong>გარანტია და დაბრუნება</strong><small>{% if page.warranty != '' %}<span data-product-warranty>{{ page.warranty | escape }}</span> · {% endif %}გაეცანით პირობებს</small></span>{% include icons.html name='chevron-right' size=15 %}</a>
   </div>
   <a class="product-contact" href="tel:+995551178990">{% include icons.html name='phone' size=15 %}<span>გაქვთ კითხვა?</span><strong>+995 551 17 89 90</strong></a>
 </div>

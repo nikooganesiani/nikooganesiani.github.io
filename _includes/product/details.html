@@ -33,6 +33,6 @@
   </details>
   <details>
     <summary>{% include icons.html name='shield' size=21 %}<span>გარანტია და დაბრუნება</span>{% include icons.html name='chevron-down' size=17 %}</summary>
-    <div><p>{% if page.warranty != '' %}გარანტია: {{ page.warranty | escape }}. {% endif %}გარანტიისა და დაბრუნების პირობები იხილეთ შესაბამის გვერდზე ან დაგვიკავშირდით ნომერზე <a href="tel:+995551178990">+995 551 17 89 90</a>.</p><a href="/info/warranty" class="product-detail-link">პირობების ნახვა{% include icons.html name='chevron-right' size=13 %}</a></div>
+    <div><p>{% if page.warranty != '' %}გარანტია: <span data-product-warranty>{{ page.warranty | escape }}</span>. {% endif %}გარანტიისა და დაბრუნების პირობები იხილეთ შესაბამის გვერდზე ან დაგვიკავშირდით ნომერზე <a href="tel:+995551178990">+995 551 17 89 90</a>.</p><a href="/info/warranty" class="product-detail-link">პირობების ნახვა{% include icons.html name='chevron-right' size=13 %}</a></div>
   </details>
 </div>

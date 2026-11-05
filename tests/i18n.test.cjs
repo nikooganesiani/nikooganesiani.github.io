@@ -50,20 +50,12 @@ test('Georgian and external translation languages keep the Georgian source dicti
   for(const locale of ['ka','de']){const p=page(locale);assert.equal(p.label.nodeValue,'  კატალოგი  ');assert.equal(p.window.enkaI18n.locale,'ka');}
 });
 
-test('Every packaged product field and specification has a complete native translation without losing rows or model codes',()=>{
+test('Interface registry contains no product names, descriptions, model codes or specification sources',()=>{
+  const dictionary=JSON.parse(fs.readFileSync(path.join(__dirname,'../assets/i18n/translations.json'),'utf8'));
   const bundle=JSON.parse(fs.readFileSync(path.join(__dirname,'../admin/translations/ru-en.json'),'utf8'));
-  for(const locale of ['ru','en']){
-    const i18n=page(locale).window.enkaI18n;
-    const records=bundle.translations[locale].products;
-    assert.equal(Object.keys(records).length,76);
-    for(const [id,record]of Object.entries(records)){
-      const source={id,specs:{}};
-      for(const [field,entry]of Object.entries(record.fields))source[field]=entry.source;
-      for(const [attribute,entry]of Object.entries(record.specs))source.specs[bundle.attributes[attribute].source]=entry.source;
-      const localized=i18n.product(source);
-      assert.equal(Object.keys(localized.specs).length,Object.keys(source.specs).length,id+' lost a specification');
-      for(const text of [localized.name,localized.description,localized.longDescription,localized.warranty,...Object.keys(localized.specs),...Object.values(localized.specs)])assert.ok(!/[\u10a0-\u10ff]/.test(text||''),id+' has untranslated text');
-      for(const code of source.name.match(/\b[A-Z]{1,7}(?:[-.][A-Z0-9]+)+\b/g)||[])assert.ok(localized.name.includes(code),id+' changed model '+code);
-    }
-  }
+  const taxonomy=JSON.parse(fs.readFileSync(path.join(__dirname,'../admin/public/taxonomy.json'),'utf8'));
+  const categories=new Set(taxonomy.flatMap(c=>[c.name,...c.subs.map(s=>s.name)]));
+  for(const p of Object.values(bundle.translations.ru.products)) for(const entry of [...Object.values(p.fields),...Object.values(p.specs)]) { if(!categories.has(entry.source.trim())) assert.equal(dictionary[entry.source.trim()],undefined,entry.source.slice(0,80)); };
+  for(const a of Object.values(bundle.attributes))assert.equal(dictionary[a.source.trim()],undefined,a.source);
+  for(const locale of ['ru','en'])assert.equal(page(locale).window.enkaI18n.product,undefined);
 });

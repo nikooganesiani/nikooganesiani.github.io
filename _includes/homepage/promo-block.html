@@ -13,12 +13,12 @@
           <div class="hero-copy">
             <span class="hero-eyebrow notranslate" translate="no">ENKA PICKS</span>
             <h2 class="hero-title">{{ item.title | escape }}</h2>
-            <p class="hero-description">{{ hero.name | escape }}</p>
+            <p class="hero-description" data-product-name>{{ hero.name | escape }}</p>
             <div class="hero-prices"><strong data-hero-price>{{ hero.price | escape }} ₾</strong><del data-hero-old-price{% unless hero_old_price > hero_price %} hidden{% endunless %}>{{ hero.oldPrice | escape }} ₾</del></div>
             <span class="hero-cta">პროდუქტის ნახვა <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span>
             <p class="hero-delivery">უფასო მიწოდება · გადახდა მიღებისას</p>
           </div>
-          <div class="hero-visual"><img src="{{ hero.images.first | escape }}" alt="{{ hero.name | escape }}" width="600" height="600" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"{% if forloop.first %} fetchpriority="high"{% endif %} decoding="async" draggable="false" data-promo-image></div>
+          <div class="hero-visual"><img src="{{ hero.images.first | escape }}" data-catalog-content alt="{{ hero.name | escape }}" width="600" height="600" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"{% if forloop.first %} fetchpriority="high"{% endif %} decoding="async" draggable="false" data-promo-image></div>
         </a>
       </div>
       {% endif %}

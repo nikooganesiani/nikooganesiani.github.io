@@ -144,3 +144,13 @@ test('Explicit application errors with HTTP 200 release the order guard', async 
   assert.equal(response.status, 200);
   assert.equal(calls, 2);
 });
+
+test('Published catalog translations remain authoritative without any interface-dictionary overlay', async () => {
+  const approved = { ...product, name: 'Server approved name', description: 'Server approved description', specs: { Power: '900 W' } };
+  const context = catalogContext(async () => ({ ok: true, json: async () => ({ products: [approved] }) }), undefined, 'en');
+  context.window.enkaI18n.product = () => { throw Error('Static catalog overlay must not run'); };
+  const result = await context.window.fetchCatalogCached();
+  assert.equal(result.products[0].name, approved.name);
+  assert.equal(result.products[0].description, approved.description);
+  assert.deepEqual(result.products[0].specs, approved.specs);
+});

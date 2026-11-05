@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (titleMeta) titleMeta.content = document.title;
     const descriptionMeta = document.querySelector('meta[name="description"]');
     if (descriptionMeta && product.description !== undefined) descriptionMeta.content = product.description;
+    const socialDescription = document.querySelector('meta[property="og:description"]');
+    if (socialDescription && product.description !== undefined) socialDescription.content = product.description;
+    document.querySelectorAll('#mainGalleryTrack img, #modalTrack img').forEach((image, index) => {
+      image.alt = product.name + ' — ' + (window.enkaI18n?.t('ფოტო') || 'ფოტო') + ' ' + (index + 1);
+    });
+    if (product.warranty !== undefined) document.querySelectorAll('[data-product-warranty]').forEach(el => { el.textContent = product.warranty; });
     if (product.description !== undefined) {
       const description = document.querySelector('.product-description');
       if (description) description.textContent = product.longDescription || product.description || '';

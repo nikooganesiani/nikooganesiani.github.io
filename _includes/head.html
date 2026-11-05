@@ -8,8 +8,8 @@
     <link rel="canonical" href="{{ page.url | absolute_url }}">
     <meta property="og:site_name" content="ENKA Electronics">
     <meta property="og:type" content="{% if is_product_page %}product{% else %}website{% endif %}">
-    <meta property="og:title" content="{{ page.title | default: site.title | escape }} — ENKA Electronics">
-    <meta property="og:description" content="{{ page.description | default: site.description | strip_html | escape }}">
+    <meta property="og:title" content="{{ page.title | default: site.title | escape }} — ENKA Electronics"{% if is_product_page %} data-catalog-content{% endif %}>
+    <meta property="og:description" content="{{ page.description | default: site.description | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% endif %}>
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     <meta property="og:image" content="{% if is_product_page %}{{ first_product_img | absolute_url | escape }}{% else %}{{ '/img/logohead.webp' | absolute_url }}{% endif %}">
     <meta property="og:locale" content="ka_GE">
@@ -22,7 +22,7 @@
     {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
     {% if page.layout == 'info' %}<link rel="stylesheet" href="{{ '/assets/css/info.css' | relative_url }}">{% endif %}
-    <title>
+    <title{% if is_product_page %} data-catalog-content{% endif %}>
         {%- assign is_file = false -%}
         {%- if page.name -%}
             {%- if page.name contains ".html" or page.name contains ".md" -%}
@@ -39,11 +39,11 @@
         {%- endif -%}
     </title>
 {%- if page.description -%}
-  <meta name="description" content="{{ page.description | strip_html | escape }}">
+  <meta name="description" content="{{ page.description | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% endif %}>
 {%- elsif page.excerpt -%}
-  <meta name="description" content="{{ page.excerpt | strip_html | escape }}">
+  <meta name="description" content="{{ page.excerpt | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% endif %}>
 {%- else -%}
-  <meta name="description" content="{{ site.description | strip_html | escape }}">
+  <meta name="description" content="{{ site.description | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% endif %}>
 {%- endif -%}
     <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
     {% unless is_product_page %}<link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">{% endunless %}
