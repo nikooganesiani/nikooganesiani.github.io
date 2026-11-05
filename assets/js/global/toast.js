@@ -8,7 +8,8 @@ window.showToast = function(msg, actionData = null) {
         toast.innerHTML = msg || '';
 
         if (actionData) {
-            toast.style.cursor = 'pointer';
+            toast.classList.add('cursor-pointer');
+            toast.classList.remove('cursor-default');
             toast.innerHTML += ' <svg width="18" height="18" class="ml-2 opacity-90 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>';
 
             toast.onclick = function() {
@@ -24,7 +25,8 @@ window.showToast = function(msg, actionData = null) {
                 toast.classList.remove('show');
             };
         } else {
-            toast.style.cursor = 'default';
+            toast.classList.add('cursor-default');
+            toast.classList.remove('cursor-pointer');
             toast.onclick = function() {
                 toast.classList.remove('show');
             };

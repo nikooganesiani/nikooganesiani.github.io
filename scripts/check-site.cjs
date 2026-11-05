@@ -6,6 +6,9 @@ const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const footerOf = value => value.match(/<footer class="site-footer"[\s\S]*?<\/footer>/)?.[0];
 const sharedFooter = footerOf(html);
 function verifyHeader(value, label) {
+  const stylesheets = [...value.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
+  assert.deepEqual(stylesheets, ['/assets/css/style.css'], label + ': one compiled Tailwind stylesheet');
+  assert.ok(!/<style\b/i.test(value), label + ': no inline CSS overlays');
   assert.equal((value.match(/id="site-header"/g) || []).length, 1, label + ': one shared header');
   const header = value.match(/<header class="site-header"[\s\S]*?<\/header>/)?.[0];
   assert.ok(header, label + ': shared header markup');
@@ -131,7 +134,8 @@ for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
   const infoScripts = [...value.matchAll(/<script[^>]+src="([^"]+)"/g)].map(match => match[1]);
   assert.equal(new Set(infoScripts).size, infoScripts.length, label + ': unique scripts');
   assert.ok(infoScripts.indexOf('/assets/js/global/privacy.js') < infoScripts.indexOf('/capi.js'), label + ': consent loads before analytics');
-  assert.match(value, /href="\/assets\/css\/info.css"/, label + ': page stylesheet');
+  assert.match(value, /href="\/assets\/css\/style.css"/, label + ': shared Tailwind stylesheet');
+  assert.ok(!/href="\/assets\/css\/(?:info|product)\.css"/.test(value), label + ': no standalone component stylesheet');
   assert.match(value, /class="site-breadcrumbs"/, label + ': shared breadcrumbs');
   const nav = value.match(/<nav class="info-nav"[\s\S]*?<\/nav>/)?.[0];
   assert.equal((nav?.match(/aria-current="page"/g) || []).length, 1, label + ': one active information link');

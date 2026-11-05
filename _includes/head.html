@@ -2,6 +2,7 @@
 {% if page.collection == 'products' or page.layout == 'product' %}{% assign is_product_page = true %}{% include product/state.html %}{% endif %}
 <head>
     <meta charset="UTF-8">
+    <script>document.documentElement.classList.remove('no-js');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#155dfc">
     {% if page.robots %}<meta name="robots" content="{{ page.robots | escape }}">{% endif %}
@@ -15,13 +16,11 @@
     <meta property="og:locale" content="ka_GE">
     <meta name="twitter:card" content="{% if is_product_page %}summary_large_image{% else %}summary{% endif %}">
     {% if is_product_page %}
-    <link rel="stylesheet" href="{{ '/assets/css/product.css' | relative_url }}">
     <meta property="product:price:amount" content="{{ product_price }}">
     <meta property="product:price:currency" content="GEL">
     <link rel="preload" as="image" href="{{ first_product_img | escape }}" fetchpriority="high">
     {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-    {% if page.layout == 'info' %}<link rel="stylesheet" href="{{ '/assets/css/info.css' | relative_url }}">{% endif %}
     <title{% if is_product_page %} data-catalog-content{% endif %}>
         {%- assign is_file = false -%}
         {%- if page.name -%}
@@ -57,19 +56,5 @@
     window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify | replace: '<', '\u003c' }};
     </script>
 
-<style>
-@font-face {
-  font-family: 'Google Sans Variable';
-  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2');
-  font-weight: 400 700;
-  font-style: normal;
-  font-display: swap;
-}
-::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
-* { font-family: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; text-rendering: optimizeLegibility; }
-@-moz-document url-prefix() { html { scrollbar-width: thin; scrollbar-color: #cbd5e1 #ffffff; } }
-@keyframes statusPulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-</style>
+
 </head>

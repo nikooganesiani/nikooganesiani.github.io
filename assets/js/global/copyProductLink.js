@@ -12,7 +12,7 @@ window.copyProductLink = async function(button) {
   const textarea = document.createElement('textarea');
   textarea.value = url;
   textarea.setAttribute('readonly', '');
-  textarea.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  textarea.className = 'fixed -left-[9999px] top-0';
   document.body.appendChild(textarea);
   let success = false;
   try {

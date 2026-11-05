@@ -7,7 +7,6 @@
 {% include listing/controls.html %}
 {% include listing/results.html grid_id='catalogContainer' %}
 <noscript>
-  <style>.listing-js { display: none !important; }</style>
   <p class="listing-notice">ქვემოთ მოცემულია სრული კატალოგი. კატეგორიის, ფასის ფილტრისა და ძიებისთვის ჩართეთ JavaScript.</p>
   <div class="listing-grid">
     {% for product in site.products %}{% unless product.stockStatus == 'out_of_stock' %}{% include homepage/product-card.html product=product %}{% endunless %}{% endfor %}

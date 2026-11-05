@@ -31,15 +31,14 @@
         <span class="header-action-label">სტატუსი</span>
       </button>
       <button type="button" class="header-action header-action--saved" aria-controls="favModal" aria-haspopup="dialog" aria-expanded="false" data-header-panel="favModal" data-count-label="რჩეულები" aria-label="რჩეულები">
-        <span class="header-action-icon">{% include icons.html name='heart' size=23 %}<span class="fav-badge header-badge" style="display:none" aria-hidden="true">0</span></span>
+        <span class="header-action-icon">{% include icons.html name='heart' size=23 %}<span class="fav-badge header-badge hidden" aria-hidden="true">0</span></span>
         <span class="header-action-label">რჩეულები</span>
       </button>
       <button type="button" class="header-action header-action--saved" aria-controls="ordersModal" aria-haspopup="dialog" aria-expanded="false" data-header-panel="ordersModal" data-count-label="შეკვეთები" aria-label="შეკვეთები">
-        <span class="header-action-icon">{% include icons.html name='package' size=23 %}<span class="orders-badge header-badge" style="display:none" aria-hidden="true">0</span></span>
+        <span class="header-action-icon">{% include icons.html name='package' size=23 %}<span class="orders-badge header-badge hidden" aria-hidden="true">0</span></span>
         <span class="header-action-label">შეკვეთები</span>
       </button>
       <a class="header-action header-action--phone" href="tel:+995551178990" aria-label="დაგვირეკეთ: +995 551 17 89 90">{% include icons.html name='phone' size=21 %}</a>
     </nav>
   </div>
-  <noscript><style>.site-header button[data-header-panel] { display: none; }</style></noscript>
 </header>

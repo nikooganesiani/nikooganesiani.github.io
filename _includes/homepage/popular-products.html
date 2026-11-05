@@ -1,6 +1,6 @@
 {% assign popular_list = site.data.popular_items.items | default: site.data.popular_items %}
 {% if popular_list and popular_list.size > 0 %}
-<section class="mt-8" id="popularSection" aria-labelledby="popularTitle" data-popular-ids="{{ popular_list | join: ',' | escape }}">
+<section class="{% if page.collection == 'products' or page.layout == 'product' %}mt-0{% else %}mt-8{% endif %}" id="popularSection" aria-labelledby="popularTitle" data-popular-ids="{{ popular_list | join: ',' | escape }}">
   <div class="catalog-section-heading">
     <h2 id="popularTitle" class="catalog-section-title">პოპულარული</h2>
     <div class="catalog-section-controls" aria-label="პოპულარული პროდუქტების ნავიგაცია">

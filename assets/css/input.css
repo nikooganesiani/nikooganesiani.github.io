@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./components/product.css";
 @import "./components/breadcrumbs.css";
 @import "./components/product-card.css";
 @import "./components/catalog.css";
@@ -7,67 +8,34 @@
 @import "./components/modals.css";
 @import "./components/header.css";
 @import "./components/languages.css";
+@import "./components/storefront.css";
+@import "./components/info.css";
+@import "./components/chrome.css";
+@import "./components/progress.css";
+
 @source "../../_includes";
 @source "../../_layouts";
+@source "../../_pages";
+@source "../../info";
+@source "../../index.html";
 @source "../js";
 
-@layer base {
-  html { scroll-padding-top: calc(var(--site-header-height, 80px) + 16px); scrollbar-gutter: stable; }
-  html.modal-open, html.modal-open body { overflow: hidden; overscroll-behavior: none; }
-  :focus-visible { outline: 2px solid #155dfc !important; outline-offset: 3px; }
-  .modal-field input:focus-visible, .header-search input:focus-visible { outline: none !important; }
-  .header-catalog:focus-visible { outline-color: #fff !important; outline-offset: -5px; }
-  button, a, input { touch-action: manipulation; }
-  button:disabled { cursor: default; }
-  [hidden] { display: none !important; }
+@theme {
+  --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --color-brand: #155dfc;
+  --color-brand-dark: #1048cb;
+  --color-ink: #202733;
+  --color-muted: #68717e;
+  --color-surface: #f6f7f9;
+  --color-line: #e8ebef;
 }
 
-.skip-link { position: fixed; left: 16px; top: -100px; z-index: 20000; border-radius: 12px; background: #fff; color: #155dfc; padding: 12px 20px; }
-.skip-link:focus { top: 12px; }
-.p-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
-.storefront-page { width: 100%; max-width: 1280px; margin-inline: auto; padding-top: 12px; padding-inline: 24px; }
-@media (max-width: 639px) { .storefront-page { padding-inline: 16px; } }
-input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-.search-result { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px; color: #0f172a; text-decoration: none; }
-.search-result:hover, .search-result:focus { background: #eff6ff; }
-.search-result img { width: 56px; height: 56px; object-fit: contain; flex-shrink: 0; }
-.search-result-copy { min-width: 0; }
-.search-result-name { font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
-.search-result-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; color: #155dfc; margin-top: 4px; font-variant-numeric: tabular-nums; }
-.search-result-price strong { font-weight: 600; }
-.search-result-price del { color: #68717e; font-size: .9em; font-weight: 400; text-decoration-thickness: 1px; }
-.search-message { padding: 24px 12px; text-align: center; font-size: 14px; color: #475569; }
-.hero-offer { display: grid; grid-template-columns: 1fr 1fr; min-height: 350px; align-items: center; background: #eaf1ff; border: 1px solid #dbe7ff; border-radius: 24px; overflow: hidden; color: #0f172a; text-decoration: none; }
-.hero-copy { padding: 36px 20px 36px 44px; }
-.hero-eyebrow { display: inline-block; color: #155dfc; font-size: 11px; font-weight: 700; letter-spacing: .18em; margin-bottom: 16px; }
-.hero-title { font-size: clamp(24px, 3.2vw, 40px); line-height: 1.2; font-weight: 700; max-width: 450px; letter-spacing: -.035em; }
-.hero-description { font-size: 14px; line-height: 1.5; color: #475569; margin-top: 12px; }
-.hero-prices { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin: 20px 0; }
-.hero-prices strong { color: #155dfc; font-size: 34px; line-height: 1; letter-spacing: -.03em; }
-.hero-prices del { color: #64748b; font-size: 18px; }
-.hero-cta { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 44px; padding: 12px 20px; background: #155dfc; border-radius: 12px; color: white; font-size: 14px; font-weight: 700; }
-.hero-offer:hover .hero-cta { background: #1048cb; }
-.hero-delivery { color: #475569; font-size: 12px; line-height: 1.5; margin-top: 14px; }
-.hero-visual { display: flex; justify-content: center; align-items: center; align-self: stretch; padding: 24px; background: #f5f8ff; }
-.hero-visual img { width: 100%; max-width: 340px; aspect-ratio: 1; max-height: 340px; object-fit: contain; border-radius: 20px; }
-.promo-slide:nth-child(2) .hero-offer { background: #edf7f3; border-color: #d5e9e0; }
-.promo-slide:nth-child(2) .hero-visual { background: #f3faf7; }
-
-@media (max-width: 639px) {
-  input, select, textarea { font-size: 16px !important; }
-  .hero-offer { min-height: 270px; grid-template-columns: 1.15fr 1fr; border-radius: 20px; }
-  .hero-copy { padding: 22px 8px 22px 20px; }
-  .hero-eyebrow { margin-bottom: 10px; font-size: 9px; }
-  .hero-title { font-size: clamp(20px, 5.3vw, 30px); }
-  .hero-description { font-size: 11px; margin-top: 8px; }
-  .hero-prices { gap: 7px; margin: 16px 0; }
-  .hero-prices strong { font-size: 27px; }
-  .hero-prices del { font-size: 14px; }
-  .hero-cta { font-size: 11px; padding: 10px; gap: 5px; }
-  .hero-delivery { font-size: 10px; }
-  .hero-visual { padding: 10px; }
-  .hero-visual img { border-radius: 12px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+@font-face {
+  font-family: 'Google Sans Variable';
+  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
+       url('/fonts/GoogleSansVariable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
 }

@@ -6,8 +6,6 @@
   const cfg = {
     min: 0.08,
     max: 0.94,
-    color: '#2563eb',
-    height: '3px',
     trickleInterval: 380,
     barMs: 460,
     doneMs: 280,
@@ -34,7 +32,6 @@
       (document.body || document.documentElement).appendChild(el);
     }
 
-    injectStyles();
     el.removeAttribute('style');
     el.classList.add('tpb-bar');
     if (!el.querySelector('.tpb-peg')) {
@@ -61,48 +58,6 @@
     start(handoff ? clamp(Math.max(handoff.p || 0, 0.5), cfg.min, cfg.max) : cfg.min);
     window.addEventListener('load', () => done(), { once: true });
   };
-
-  function injectStyles() {
-    if (document.getElementById('tpb-styles')) return;
-
-    const style = document.createElement('style');
-    style.id = 'tpb-styles';
-    style.textContent = `
-      .tpb-bar {
-        --tpb-color: ${cfg.color};
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: ${cfg.height};
-        z-index: 999999;
-        pointer-events: none;
-        transform: scaleX(0);
-        transform-origin: left center;
-        opacity: 0;
-        background: linear-gradient(90deg, #60a5fa 0%, var(--tpb-color) 55%, #1d4ed8 100%);
-        will-change: auto;
-      }
-      .tpb-bar.is-on { will-change: transform, opacity; }
-      .tpb-peg {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 96px;
-        height: 100%;
-        transform: rotate(2.5deg) translateY(-3px);
-        background: linear-gradient(90deg, transparent, rgba(191, 219, 254, 0.85));
-        opacity: 0.9;
-      }
-      @media (prefers-color-scheme: dark) {
-        .tpb-bar { --tpb-color: #3b82f6; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .tpb-bar { transition: none !important; }
-      }
-    `;
-    (document.head || document.documentElement).appendChild(style);
-  }
 
   function ms(value) {
     return reduceMotion ? '0.01s' : `${value}ms`;

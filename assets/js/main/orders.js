@@ -87,11 +87,7 @@ function showSpamError(form, message) {
     let errEl = form.querySelector('.enka-rate-limit-msg');
     if (!errEl) {
         errEl = document.createElement('div');
-        errEl.className = 'enka-rate-limit-msg text-red-500 text-sm text-center mt-2 font-medium';
-        errEl.style.color = '#ef4444';
-        errEl.style.marginTop = '8px';
-        errEl.style.textAlign = 'center';
-        errEl.style.fontSize = '13px';
+        errEl.className = 'enka-rate-limit-msg text-[#ef4444] text-[13px] text-center mt-2 font-medium';
         form.appendChild(errEl);
     }
     errEl.textContent = message;
