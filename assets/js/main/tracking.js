@@ -66,7 +66,7 @@ window.openTracking = function(id = '', updateURL = true) {
     if (trackingOrderId) trackingOrderId.value = id;
     trackingOrderId?.removeAttribute('aria-invalid');
     if (trackingResult) {
-        trackingResult.style.display = 'none';
+        trackingResult.hidden = true;
         trackingResult.innerHTML = '';
     }
 };
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!orderIdInput) {
                 trackingOrderId?.setAttribute('aria-invalid', 'true');
                 if (trackingResult) {
-                    trackingResult.style.display = 'block';
+                    trackingResult.hidden = false;
                     trackingResult.textContent = 'გთხოვთ, შეიყვანოთ შეკვეთის ნომერი.';
                 }
                 trackingOrderId?.focus();
@@ -122,12 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (trackingResult) {
-                trackingResult.style.display = 'none';
+                trackingResult.hidden = true;
                 trackingResult.innerHTML = '';
             }
             trackingCheckBtn.disabled = true;
             trackingCheckBtn.setAttribute('aria-busy', 'true');
-            trackingCheckBtn.innerHTML = '<span class="modal-loading"><span class="modal-spinner" aria-hidden="true"></span>მოწმდება…</span>';
+            trackingCheckBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-white motion-reduce:border-dotted" aria-hidden="true"></span>მოწმდება…</span>';
             const revision = ++trackingRevision;
             const controller = new AbortController();
             trackingController = controller;
@@ -144,10 +144,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (revision !== trackingRevision) return;
 
-                if (trackingResult) trackingResult.style.display = 'block';
+                if (trackingResult) trackingResult.hidden = false;
                 if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
                     if (trackingResult) {
-                        trackingResult.innerHTML = '<div class="modal-notice">შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი და სცადეთ ხელახლა.</div>';
+                        trackingResult.innerHTML = '<div class="p-3.5 border border-solid border-[#e2e8f0] rounded-xl bg-[#f7f8fa] text-[#475569] text-[length:13px] leading-[1.8]">შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი და სცადეთ ხელახლა.</div>';
                     }
                     return;
                 }
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 if (revision !== trackingRevision) return;
                 if (trackingResult) {
-                    trackingResult.style.display = 'block';
+                    trackingResult.hidden = false;
                     trackingResult.textContent = 'სტატუსის შემოწმება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.';
                 }
             } finally {

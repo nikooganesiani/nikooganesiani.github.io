@@ -1,35 +1,35 @@
-<details class="language-picker language-picker--{{ include.placement }}" data-language-picker dir="ltr">
-  <summary class="language-trigger notranslate" translate="no" aria-label="Language / ენა" aria-controls="languages-{{ include.placement }}">
-    <img class="language-flag" data-language-flag src="{{ '/img/flags/ge.svg' | relative_url }}" width="24" height="18" alt="">
-    <span class="language-code" data-language-code>KA</span>
+<details class="language-picker {% if include.placement == 'footer' %} language-picker--footer ms-auto [order:3] max-[640px]:[order:0] max-[640px]:mt-0 max-[640px]:mr-0 max-[640px]:mb-3 max-[640px]:ml-0 {% else %} language-picker--header {% endif %} relative flex-none text-[#343e4c] text-[length:13px] leading-[1.5] tracking-normal text-start [.header-actions_&]:me-2 max-[640px]:[.header-actions_&]:me-0 print:hidden" data-language-picker dir="ltr">
+  <summary class="language-trigger notranslate flex items-center justify-center gap-[7px] min-w-19 min-h-11 p-[9px] border border-solid border-[#e5e9ef] rounded-[10px] bg-white cursor-pointer list-none select-none [&::-webkit-details-marker]:hidden hover:bg-[#f3f6fc] hover:border-[#c8d7f5] [.language-picker[open]_>_&]:bg-[#f3f6fc] [.language-picker[open]_>_&]:border-[#c8d7f5] [&_>_svg]:text-[#7c8796] [.language-picker--footer_>_&]:border-[#434953] [.language-picker--footer_>_&]:bg-transparent [.language-picker--footer_>_&]:text-[#e4e8ee] [.language-picker--footer_>_&:hover]:bg-[#292f39] [.language-picker--footer[open]_>_&]:bg-[#292f39] max-[640px]:min-w-16 max-[640px]:gap-[5px] max-[640px]:p-2 max-[360px]:[.language-picker--header_>_&]:min-w-11 max-[360px]:[.language-picker--header_>_&]:py-2 max-[360px]:[.language-picker--header_>_&]:px-[5px] forced-colors:border-[CanvasText]" translate="no" aria-label="Language / ენა" aria-controls="languages-{{ include.placement }}">
+    <img class="block w-6 h-4.5 flex-none rounded-[3px] object-cover shadow-[0_0_0_1px_rgb(0_0_0_/_9%)]" data-language-flag src="{{ '/img/flags/ge.svg' | relative_url }}" width="24" height="18" alt="">
+    <span class="text-[length:11px] font-semibold max-[360px]:[.language-picker--header_&]:hidden" data-language-code>KA</span>
     {% include icons.html name='chevron-down' size=14 %}
   </summary>
-  <div class="language-panel" id="languages-{{ include.placement }}">
-    <p class="language-heading">აირჩიეთ ენა</p>
-    <div class="language-primary">
+  <div class="absolute [inset-inline-end:0] top-[calc(100%_+_10px)] z-[110] w-[min(316px,_calc(100vw_-_32px))] max-h-[min(620px,_calc(100dvh_-_var(--site-header-height,_80px)_-_24px))] overflow-y-auto overscroll-contain p-3 border border-solid border-[#e4e8ee] rounded-2xl bg-white text-[#343e4c] shadow-[0_14px_44px_rgb(28_38_56_/_16%)] [.language-picker--footer_&]:top-auto [.language-picker--footer_&]:bottom-[calc(100%_+_10px)] [.language-picker--footer_&]:max-h-[min(620px,_calc(100dvh_-_100px))] max-[640px]:[.language-picker--header_&]:fixed max-[640px]:[.language-picker--header_&]:[inset-inline:16px] max-[640px]:[.language-picker--header_&]:top-[calc(var(--site-header-height,_64px)_+_8px)] max-[640px]:[.language-picker--header_&]:w-auto max-[640px]:[.language-picker--footer_&]:[inset-inline-start:0] max-[640px]:[.language-picker--footer_&]:[inset-inline-end:auto] max-[640px]:[.language-picker--footer_&]:max-w-[calc(100vw_-_48px)] forced-colors:border-[CanvasText]" id="languages-{{ include.placement }}">
+    <p class="mt-0.5 mr-2.5 mb-2.5 ml-2.5 text-[#7b8593] text-[length:11px] font-medium">აირჩიეთ ენა</p>
+    <div>
       {% for language in site.data.languages limit:3 %}
-      <button type="button" class="language-option notranslate" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}"{% if language.code == 'ka' %} aria-pressed="true"{% else %} aria-pressed="false"{% endif %}>
-        <img class="language-flag" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
-        <span dir="auto">{{ language.name }}</span><span class="language-option-code">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='language-check' %}
+      <button type="button" class="language-option notranslate flex items-center gap-3 w-full min-h-11 p-2.5 border-0 rounded-[9px] bg-transparent text-[#343e4c] text-start [font:inherit] cursor-pointer [&_>_span[dir]]:flex-1 [&_>_span[dir]]:min-w-0 hover:bg-surface [&[aria-pressed=true]]:bg-[#eef4ff] [&[aria-pressed=true]]:text-brand forced-colors:[&[aria-pressed=true]]:[outline:1px_solid_Highlight]" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}"{% if language.code == 'ka' %} aria-pressed="true"{% else %} aria-pressed="false"{% endif %}>
+        <img class="block w-6 h-4.5 flex-none rounded-[3px] object-cover shadow-[0_0_0_1px_rgb(0_0_0_/_9%)]" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
+        <span dir="auto">{{ language.name }}</span><span class="text-[#8d96a4] text-[length:10px]">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='flex-none text-brand invisible [.language-option[aria-pressed=true]_&]:visible' %}
       </button>
       {% endfor %}
     </div>
-    <details class="language-more">
-      <summary class="language-more-trigger"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18"/></svg><span>მეტი ენის ჩვენება</span>{% include icons.html name='chevron-down' size=14 %}</summary>
-      <label class="language-search"><span class="sr-only">Find a language</span>{% include icons.html name='search' size=16 %}<input type="search" data-language-search placeholder="Find a language…" autocomplete="off" maxlength="60"></label>
-      <div class="language-list">
+    <details class="language-more mt-2 pt-2 border-t border-solid border-t-[#edf0f4]">
+      <summary class="[&::-webkit-details-marker]:hidden flex items-center gap-3 min-h-11 py-[9px] px-2.5 rounded-[9px] text-[#576171] cursor-pointer list-none [&_>_span]:flex-1 [&_>_span]:text-[length:12px] [&_>_svg:first-child]:mx-0.5 [&_>_svg:first-child]:flex-none hover:bg-surface [.language-more[open]_>_&_>_svg:last-child]:transform-[rotate(180deg)]"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18"/></svg><span>მეტი ენის ჩვენება</span>{% include icons.html name='chevron-down' size=14 %}</summary>
+      <label class="flex items-center gap-2 my-2.5 py-0 px-2.5 border border-solid border-[#e1e5eb] rounded-[9px] text-[#7b8593] [&_input]:w-full [&_input]:min-w-0 [&_input]:h-11 [&_input]:border-0 [&_input]:bg-transparent [&_input]:text-[#343e4c] [&_input]:text-[length:14px] [&_input]:[outline:none] focus-within:[outline:2px_solid_#155dfc] focus-within:[outline-offset:2px] [&_input:focus-visible]:[outline:none]!"><span class="sr-only">Find a language</span>{% include icons.html name='search' size=16 %}<input type="search" data-language-search placeholder="Find a language…" autocomplete="off" maxlength="60"></label>
+      <div class="language-list max-h-61 overflow-y-auto overscroll-contain [scrollbar-width:thin]">
         {% for language in site.data.languages offset:3 %}
-        <button type="button" class="language-option notranslate" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}" aria-pressed="false">
-          <img class="language-flag" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
-          <span dir="auto">{{ language.name }}</span><span class="language-option-code">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='language-check' %}
+        <button type="button" class="language-option notranslate flex items-center gap-3 w-full min-h-11 p-2.5 border-0 rounded-[9px] bg-transparent text-[#343e4c] text-start [font:inherit] cursor-pointer [&_>_span[dir]]:flex-1 [&_>_span[dir]]:min-w-0 hover:bg-surface [&[aria-pressed=true]]:bg-[#eef4ff] [&[aria-pressed=true]]:text-brand forced-colors:[&[aria-pressed=true]]:[outline:1px_solid_Highlight]" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}" aria-pressed="false">
+          <img class="block w-6 h-4.5 flex-none rounded-[3px] object-cover shadow-[0_0_0_1px_rgb(0_0_0_/_9%)]" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
+          <span dir="auto">{{ language.name }}</span><span class="text-[#8d96a4] text-[length:10px]">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='flex-none text-brand invisible [.language-option[aria-pressed=true]_&]:visible' %}
         </button>
         {% endfor %}
       </div>
-      <p class="language-empty" hidden>No languages found</p>
+      <p class="language-empty m-2.5 text-muted text-[length:12px]" hidden>No languages found</p>
     </details>
-    <p class="language-status" data-language-status role="status" aria-live="polite" hidden></p>
-    <button class="language-retry" type="button" data-language-retry hidden>Retry / სცადეთ ხელახლა</button>
-    <p class="language-attribution notranslate" translate="no">Auto translation · <a href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate</a></p>
-    <noscript><p class="language-status">Enable JavaScript for automatic translation.</p></noscript>
+    <p class="m-2.5 text-muted text-[length:12px]" data-language-status role="status" aria-live="polite" hidden></p>
+    <button class="block my-2 mx-2.5 border-0 bg-transparent text-brand text-[length:12px] underline cursor-pointer" type="button" data-language-retry hidden>Retry / სცადეთ ხელახლა</button>
+    <p class="language-attribution notranslate mt-2.5 mr-2.5 mb-0 ml-2.5 pt-2.5 border-t border-solid border-t-[#edf0f4] text-[#9099a6] text-[length:10px] [&_a]:text-[#64748b] [&_a]:underline [&_a]:underline-offset-[2px]" translate="no">Auto translation · <a href="https://translate.google.com/" target="_blank" rel="noopener noreferrer">Google Translate</a></p>
+    <noscript><p class="m-2.5 text-muted text-[length:12px]">Enable JavaScript for automatic translation.</p></noscript>
   </div>
 </details>

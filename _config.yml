@@ -30,7 +30,6 @@ exclude:
   - README.md
   - generate_pages.js
   - assets/css/input.css
-  - assets/css/components
   - .github
   - .gitignore
   - .git

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const createSubcategoryLink = (catId, sub) => {
     const link = document.createElement('a');
     link.href = `/category/?${encodeURIComponent(catId)}&sub=${encodeURIComponent(sub.id)}`;
-    link.className = 'modal-subcategory';
+    link.className = 'flex items-center justify-between gap-3 p-3 rounded-[9px] leading-[1.6] no-underline [overflow-wrap:anywhere] min-h-13 text-[#344050] text-[length:14px] [&:first-child]:mb-1.5 [&:first-child]:bg-[#f0f5ff] [&:first-child]:text-brand [&:first-child]:font-semibold [&_svg]:shrink-0 [&_svg]:text-[#85909e] [@media(hover:_hover)]:hover:bg-[#f0f5ff] [@media(hover:_hover)]:hover:text-brand';
     link.dataset.cat = catId;
     link.dataset.subcat = sub.id;
     link.dataset.name = sub.name;

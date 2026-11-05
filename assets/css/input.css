@@ -1,23 +1,11 @@
-@import "tailwindcss";
-@import "./components/product.css";
-@import "./components/breadcrumbs.css";
-@import "./components/product-card.css";
-@import "./components/catalog.css";
-@import "./components/listing.css";
-@import "./components/footer.css";
-@import "./components/modals.css";
-@import "./components/header.css";
-@import "./components/languages.css";
-@import "./components/storefront.css";
-@import "./components/info.css";
-@import "./components/chrome.css";
-@import "./components/progress.css";
+@import "tailwindcss" source(none);
 
 @source "../../_includes";
 @source "../../_layouts";
 @source "../../_pages";
 @source "../../info";
 @source "../../index.html";
+@source "../../capi.js";
 @source "../js";
 
 @theme {
@@ -38,4 +26,15 @@
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
+}
+
+/* Animation frames cannot be expressed with utility classes. */
+@keyframes listing-pulse {
+  to { opacity: .45; }
+}
+
+@keyframes statusPulse {
+  0% { box-shadow: 0 0 0 0 rgb(34 197 94 / .4); }
+  70% { box-shadow: 0 0 0 15px rgb(34 197 94 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0); }
 }

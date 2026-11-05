@@ -2,30 +2,30 @@
 layout: default
 ---
 {% assign company = site.data.info.company %}
-<div class="info-page">
+<div class="max-w-320 my-0 mx-auto pt-5 pr-6 pb-18 pl-6 max-[900px]:pt-4 max-[640px]:pt-3 max-[640px]:pr-4 max-[640px]:pb-10 max-[640px]:pl-4 print:p-0 print:max-w-none">
   {% include breadcrumbs.html current_label=page.title %}
-  <div class="info-shell">
-    <aside class="info-sidebar">
-      <nav class="info-nav" aria-label="საინფორმაციო გვერდები">
-        <p class="info-nav-label">ინფორმაცია</p>
+  <div class="grid grid-cols-[240px_minmax(0,_1fr)] gap-11 [align-items:start] min-[900px]:max-[1100px]:grid-cols-[215px_minmax(0,_1fr)] min-[900px]:max-[1100px]:gap-7 max-[900px]:grid-cols-[1fr] max-[900px]:gap-6.5 max-[640px]:gap-6 print:block">
+    <aside class="sticky top-[calc(var(--site-header-height,_80px)_+_24px)] min-[900px]:[@media(max-height:_700px)]:static max-[900px]:static max-[900px]:min-w-0 print:hidden!">
+      <nav data-info-nav class="pt-5 pr-3 pb-3 pl-3 border border-solid border-[#e2e7ef] bg-white rounded-[18px] [&_ul]:list-none [&_ul]:p-0 [&_ul]:m-0 [&_ul]:grid [&_ul]:gap-1 [&_a]:flex [&_a]:items-center [&_a]:gap-[11px] [&_a]:min-h-12 [&_a]:p-3 [&_a]:rounded-[10px] [&_a]:text-[#475569] [&_a]:no-underline [&_a]:text-[length:13px] [&_a]:leading-[1.5] [&_a]:font-semibold [&_a:hover]:bg-[#f4f6f9] [&_a:hover]:text-brand [&_a[aria-current=page]]:bg-[#edf3ff] [&_a[aria-current=page]]:text-brand-dark [&_a_span]:min-w-0 [&_a_span]:[overflow-wrap:anywhere] max-[900px]:p-2 max-[900px]:rounded-[14px] max-[900px]:[&_ul]:flex max-[900px]:[&_ul]:flex-wrap max-[900px]:[&_ul]:gap-1 max-[900px]:[&_a]:text-[length:12px] max-[900px]:[&_a]:py-2.5 max-[900px]:[&_a]:px-3 max-[900px]:[&_a]:gap-2 max-[900px]:[&_a_>_svg:not(.info-nav-arrow)]:w-[17px] max-[900px]:[&_a_>_svg:not(.info-nav-arrow)]:h-[17px] max-[640px]:[&_a]:text-[length:11px] max-[640px]:[&_a]:min-h-11 max-[640px]:[&_a]:py-[9px] max-[640px]:[&_a]:px-2.5 max-[640px]:[&_ul]:grid max-[640px]:[&_ul]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[640px]:[&_li:last-child]:col-span-full" aria-label="საინფორმაციო გვერდები">
+        <p class="pt-0 pr-3 pb-3.5 pl-3 text-muted text-[length:11px] font-bold tracking-[.06em] max-[900px]:hidden">ინფორმაცია</p>
         <ul role="list">
           {% for item in site.data.info.navigation %}
-          <li><a href="{{ item.url | relative_url }}"{% if item.key == page.info_key %} aria-current="page"{% endif %}>{% include icons.html name=item.icon size=19 %}<span>{{ item.title }}</span>{% include icons.html name='chevron-right' size=15 class='info-nav-arrow' %}</a></li>
+          <li><a href="{{ item.url | relative_url }}"{% if item.key == page.info_key %} aria-current="page"{% endif %}>{% include icons.html name=item.icon size=19 %}<span>{{ item.title }}</span>{% include icons.html name='chevron-right' size=15 class='info-nav-arrow ml-auto max-[900px]:hidden' %}</a></li>
           {% endfor %}
         </ul>
       </nav>
-      <div class="info-sidebar-help">
-        <span class="info-icon">{% include icons.html name='phone' size=21 %}</span>
-        <p class="info-help-title">დახმარება გჭირდებათ?</p><p>{{ company.hours }}</p>
+      <div class="mt-5 p-6 text-muted text-[length:12px] leading-[1.7] [&_>_a]:inline-flex [&_>_a]:items-center [&_>_a]:min-h-11 [&_>_a]:text-brand [&_>_a]:text-[length:15px] [&_>_a]:font-semibold [&_>_a]:no-underline [&_>_a]:whitespace-nowrap max-[900px]:hidden">
+        <span class="info-icon [.info-section-heading_>_&]:mb-4.5 [.info-card_>_&]:mb-5.5 inline-flex flex-none items-center justify-center w-11 h-11 rounded-[13px] text-brand bg-[#edf3ff] [.info-note_&]:bg-white [.info-about-copy_>_&]:mb-5.5 [.info-contact--primary_&]:bg-brand [.info-contact--primary_&]:text-white [.info-highlight--blue_&]:bg-white [.info-tracking_>_&]:bg-white">{% include icons.html name='phone' size=21 %}</span>
+        <p class="mt-4 mr-0 mb-1.5 ml-0 text-[#202a3b] text-[length:14px] font-bold">დახმარება გჭირდებათ?</p><p>{{ company.hours }}</p>
         <a href="tel:{{ company.phone_link }}">{{ company.phone }}</a>
       </div>
     </aside>
-    <article class="info-article" aria-labelledby="info-title">
-      <header class="info-heading"><p class="info-eyebrow">ENKA / {{ page.eyebrow }}</p><h1 id="info-title">{{ page.title }}</h1><p class="info-lead">{{ page.intro }}</p></header>
+    <article class="min-w-0 text-[#475569] text-[length:15px] leading-[1.85] [overflow-wrap:anywhere] [:where(&_h2)]:mt-0 [:where(&_h2)]:mr-0 [:where(&_h2)]:mb-4 [:where(&_h2)]:ml-0 [:where(&_h2)]:text-[#192334] [:where(&_h2)]:text-[length:22px] [:where(&_h2)]:font-bold [:where(&_h2)]:leading-[1.5] [:where(&_h2)]:tracking-[-.025em] [:where(&_h3)]:mt-0 [:where(&_h3)]:mr-0 [:where(&_h3)]:mb-2.5 [:where(&_h3)]:ml-0 [:where(&_h3)]:text-[#202a3b] [:where(&_h3)]:text-[length:16px] [:where(&_h3)]:font-bold [:where(&_h3)]:leading-[1.6] [&_p_+_p]:mt-3.5 [&_p_+_h3]:mt-7 [&_p_a:not([class])]:text-brand-dark [&_p_a:not([class])]:underline [&_p_a:not([class])]:underline-offset-[3px] [&_dd_a]:text-brand-dark [&_dd_a]:underline [&_dd_a]:underline-offset-[3px] max-[640px]:text-[length:14px] max-[640px]:[&_h2]:text-[length:20px] max-[640px]:[&_h3]:text-[length:15px] print:text-black print:text-[length:11pt]" aria-labelledby="info-title">
+      <header class="pt-2.5 pr-0 pb-8 pl-0 [&_h1]:m-0 [&_h1]:text-[#192334] [&_h1]:text-[length:clamp(28px,_3vw,_38px)] [&_h1]:font-bold [&_h1]:tracking-[-.035em] [&_h1]:leading-[1.3] max-[900px]:pt-0 max-[640px]:pb-6 max-[640px]:[&_h1]:text-[length:28px] max-[640px]:[&_h1]:leading-[1.45] print:[&_h1]:text-[length:26px]"><p class="info-eyebrow mt-0 mr-0 mb-3 ml-0 text-brand text-[length:11px] font-bold tracking-[.07em] leading-[1.6]">ENKA / {{ page.eyebrow }}</p><h1 id="info-title">{{ page.title }}</h1><p class="max-w-167.5 mt-4.5 text-[length:16px] leading-[1.85] text-[#586577] max-[640px]:text-[length:14px] max-[640px]:mt-3.5">{{ page.intro }}</p></header>
       {{ content }}
-      <section class="info-help" aria-labelledby="info-help-title">
-        <div><p class="info-eyebrow">ჩვენ თქვენ გვერდით ვართ</p><h2 id="info-help-title">კითხვა დაგრჩათ?</h2><p>მოგვწერეთ ან დაგვირეკეთ — დაგეხმარებით.</p></div>
-        <a class="info-button" href="tel:{{ company.phone_link }}">{% include icons.html name='phone' size=18 %}{{ company.phone }}</a>
+      <section class="info-help flex items-center flex-wrap justify-between gap-6 mt-12 p-7.5 bg-white border border-solid border-[#e2e7ef] rounded-[20px] [&_h2]:text-[length:22px] [&_h2]:mb-2 [&_p:not(.info-eyebrow)]:text-[length:13px] max-[640px]:p-5.5 max-[640px]:rounded-2xl max-[640px]:mt-8 print:hidden!" aria-labelledby="info-help-title">
+        <div><p class="info-eyebrow mt-0 mr-0 mb-3 ml-0 text-brand text-[length:11px] font-bold tracking-[.07em] leading-[1.6]">ჩვენ თქვენ გვერდით ვართ</p><h2 id="info-help-title">კითხვა დაგრჩათ?</h2><p>მოგვწერეთ ან დაგვირეკეთ — დაგეხმარებით.</p></div>
+        <a class="inline-flex justify-center items-center gap-2.5 min-h-11.5 py-3 px-4.5 border border-solid border-brand rounded-[11px] bg-brand text-white text-[length:13px] font-semibold leading-[1.5] text-center no-underline cursor-pointer [transition:background_.15s,_border-color_.15s] hover:bg-brand-dark hover:border-brand-dark [&[aria-pressed=true]]:shadow-[0_0_0_3px_#155dfc26] [.info-help_>_&]:whitespace-nowrap max-[640px]:[.info-tracking_>_&]:w-full max-[640px]:[.info-download_>_&]:w-full" href="tel:{{ company.phone_link }}">{% include icons.html name='phone' size=18 %}{{ company.phone }}</a>
       </section>
     </article>
   </div>

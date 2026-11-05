@@ -7,7 +7,6 @@
     min: 0.08,
     max: 0.94,
     trickleInterval: 380,
-    barMs: 460,
     doneMs: 280,
     fadeMs: 260,
     minShowMs: 260,
@@ -33,10 +32,10 @@
     }
 
     el.removeAttribute('style');
-    el.classList.add('tpb-bar');
+    el.classList.add("fixed", "top-0", "left-0", "w-full", "h-[3px]", "z-[999999]", "pointer-events-none", "opacity-0", "origin-left", "transform-[scaleX(var(--tpb-progress,0))]", "[transition:transform_460ms_cubic-bezier(0.22,1,0.36,1),opacity_260ms_ease]", "data-[transition=none]:transition-none", "data-[transition=done]:[transition:transform_280ms_cubic-bezier(0.16,1,0.3,1),opacity_260ms_ease]", "[--tpb-color:#2563eb]", "[background:linear-gradient(90deg,#60a5fa_0%,var(--tpb-color)_55%,#1d4ed8_100%)]", "will-change-auto", "[&.is-on]:will-change-[transform,opacity]", "dark:[--tpb-color:#3b82f6]", "motion-reduce:transition-none!");
     if (!el.querySelector('.tpb-peg')) {
       const peg = document.createElement('span');
-      peg.className = 'tpb-peg';
+      peg.className = 'tpb-peg absolute right-0 top-0 w-24 h-full transform-[rotate(2.5deg)_translateY(-3px)] [background:linear-gradient(90deg,transparent,rgba(191,219,254,0.85))] opacity-90';
       el.appendChild(peg);
     }
 
@@ -59,20 +58,14 @@
     window.addEventListener('load', () => done(), { once: true });
   };
 
-  function ms(value) {
-    return reduceMotion ? '0.01s' : `${value}ms`;
+  // Completion timers above match these Tailwind transition states.
+  function setTransition(mode) {
+    el.dataset.transition = mode;
   }
 
-  function setTransition(mode) {
-    if (mode === 'none') {
-      el.style.transition = 'none';
-      return;
-    }
-    const t = mode === 'done' ? cfg.doneMs : cfg.barMs;
-    const easing = mode === 'done'
-      ? 'cubic-bezier(0.16, 1, 0.3, 1)'
-      : 'cubic-bezier(0.22, 1, 0.36, 1)';
-    el.style.transition = `transform ${ms(t)} ${easing}, opacity ${ms(cfg.fadeMs)} ease`;
+  function setVisible(visible) {
+    el.classList.toggle('opacity-0', !visible);
+    el.classList.toggle('opacity-100', visible);
   }
 
   function reflow() {
@@ -92,16 +85,16 @@
 
     if (immediate) {
       setTransition('none');
-      el.style.transform = `scaleX(${status})`;
-      el.style.opacity = status > 0 ? '1' : '0';
+      el.style.setProperty('--tpb-progress', String(status));
+      setVisible(status > 0);
       reflow();
       setTransition('bar');
       return;
     }
 
     setTransition(complete ? 'done' : 'bar');
-    el.style.opacity = '1';
-    el.style.transform = `scaleX(${status})`;
+    setVisible(true);
+    el.style.setProperty('--tpb-progress', String(status));
   }
 
   function inc(amount) {
@@ -163,7 +156,7 @@
       set(1, { complete: true });
 
       doneId = window.setTimeout(() => {
-        el.style.opacity = '0';
+        setVisible(false);
         hideId = window.setTimeout(resetSilent, reduceMotion ? 0 : cfg.fadeMs + 30);
       }, reduceMotion ? 0 : cfg.doneMs);
     }, wait);
@@ -172,8 +165,8 @@
   function resetSilent() {
     clearTimers();
     setTransition('none');
-    el.style.opacity = '0';
-    el.style.transform = 'scaleX(0)';
+    setVisible(false);
+    el.style.setProperty('--tpb-progress', '0');
     el.classList.remove('is-on');
     status = null;
     fading = false;

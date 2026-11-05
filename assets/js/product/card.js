@@ -76,7 +76,7 @@
             const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
             if (percent > 0) {
                 discountBadge = `
-                <div class="product-card-discount">
+                <div class="absolute top-2.5 left-2.5 z-[10] py-1 px-2 rounded-md text-[length:12px] leading-[1.5] font-semibold bg-[#ef4444] text-white pointer-events-none select-none">
                     -${percent}%
                 </div>`;
             }
@@ -88,17 +88,17 @@
 
         if (hasMultipleImages) {
             dotsHtml = `
-            <div class="product-card-dots" id="dots-${uniqueId}">
+            <div class="absolute bottom-2.5 left-0 right-0 z-[10] flex items-center justify-center gap-1.5 pointer-events-none max-[1024px]:hidden" id="dots-${uniqueId}">
                 ${imgs.map((_, i) => `
-                    <div class="dot ${i === 0 ? 'active' : ''}"></div>
+                    <div class="${i === 0 ? 'active' : ''} [.product-card_&]:w-1 [.product-card_&]:h-1 [.product-card_&]:rounded-[50%] [.product-card_&]:bg-[#0f172a33] [.product-card_&]:[transition:transform_.2s,_background_.2s] [.product-card_&.active]:bg-brand [.product-card_&.active]:transform-[scale(1.25)]"></div>
                 `).join('')}
             </div>`;
 
             arrowsHtml = `
-            <button type="button" class="card-nav-arrow prev" aria-label="წინა" onclick="scrollCardGallery('${uniqueId}', -1, event)">
+            <button type="button" class="prev [.product-card_&]:absolute [.product-card_&]:top-[50%] [.product-card_&]:transform-[translateY(-50%)] [.product-card_&]:z-[20] [.product-card_&]:flex [.product-card_&]:items-center [.product-card_&]:justify-center [.product-card_&]:w-7 [.product-card_&]:h-7 [.product-card_&]:border [.product-card_&]:border-solid [.product-card_&]:border-[#e3e7ed] [.product-card_&]:rounded-[50%] [.product-card_&]:bg-[#fffffff0] [.product-card_&]:text-[#687485] [.product-card_&]:opacity-[0] [.product-card_&]:cursor-pointer [.product-card_&]:[transition:color_.2s,_opacity_.2s] [.product-card_&.prev]:left-2 [.product-card_&.next]:right-2 [.product-card:hover_&]:opacity-[1] [.product-card:focus-within_&]:opacity-[1] [.product-card_&:hover]:text-brand [.product-card_&_svg]:w-4 [.product-card_&_svg]:h-4 max-[1024px]:[.product-card_&]:hidden" aria-label="წინა" onclick="scrollCardGallery('${uniqueId}', -1, event)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m15 18-6-6 6-6"/></svg>
             </button>
-            <button type="button" class="card-nav-arrow next" aria-label="შემდეგი" onclick="scrollCardGallery('${uniqueId}', 1, event)">
+            <button type="button" class="next [.product-card_&]:absolute [.product-card_&]:top-[50%] [.product-card_&]:transform-[translateY(-50%)] [.product-card_&]:z-[20] [.product-card_&]:flex [.product-card_&]:items-center [.product-card_&]:justify-center [.product-card_&]:w-7 [.product-card_&]:h-7 [.product-card_&]:border [.product-card_&]:border-solid [.product-card_&]:border-[#e3e7ed] [.product-card_&]:rounded-[50%] [.product-card_&]:bg-[#fffffff0] [.product-card_&]:text-[#687485] [.product-card_&]:opacity-[0] [.product-card_&]:cursor-pointer [.product-card_&]:[transition:color_.2s,_opacity_.2s] [.product-card_&.prev]:left-2 [.product-card_&.next]:right-2 [.product-card:hover_&]:opacity-[1] [.product-card:focus-within_&]:opacity-[1] [.product-card_&:hover]:text-brand [.product-card_&_svg]:w-4 [.product-card_&_svg]:h-4 max-[1024px]:[.product-card_&]:hidden" aria-label="შემდეგი" onclick="scrollCardGallery('${uniqueId}', 1, event)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="m9 18 6-6-6-6"/></svg>
             </button>`;
         }
@@ -107,24 +107,24 @@
         const formattedOldPrice = oldVal > newVal ? formatPriceDisplay(p.oldPrice) : '';
 
         return `
-        <div class="product-card" data-product-id="${safeId}">
+        <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[#2c3644] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_72px)_/_4)] [.product-carousel_>_&]:snap-start max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_16px)_/_2)]" data-product-id="${safeId}">
 
             <!-- Блок изображения -->
-            <div class="product-card-media">
+            <div class="relative w-full aspect-square bg-transparent rounded-xl overflow-hidden">
                 ${discountBadge}
 
-                <button type="button" class="product-card-favorite btn-fav-card" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+                <button type="button" class="btn-fav-card absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-[50%] bg-transparent text-[#8893a1] cursor-pointer [transition:color_.2s,_background_.2s] hover:bg-white hover:text-[#d14b62] [&.active]:text-[#d14b62] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 </button>
 
                 ${arrowsHtml}
 
                 <!-- overflow-x-hidden не перехватывает свайп пальцем/тачпадом у родительской карусели, а gap-2 исключает попадание края соседнего фото -->
-                <div class="product-images-track" id="track-${uniqueId}">
+                <div class="product-images-track flex w-full h-full gap-2 overflow-x-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="track-${uniqueId}">
                     ${imgs.map((img) => `
-                        <div class="product-card-slide">
-                            <a href="${productUrl}" class="product-card-image-link" draggable="false" tabindex="-1" aria-hidden="true">
-                                <img class="product-card-image"
+                        <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full bg-transparent overflow-hidden snap-start">
+                            <a href="${productUrl}" class="block w-full h-full" draggable="false" tabindex="-1" aria-hidden="true">
+                                <img class="block w-full h-full object-contain object-center mix-blend-multiply"
                                      src="${escapeHtml(img)}"
                                      alt="${safeName}"
                                      width="600"
@@ -142,28 +142,28 @@
             </div>
 
             <!-- Информация о товаре -->
-            <div class="product-info">
+            <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
 
                 <!-- Название до двух строк -->
-                <a href="${productUrl}" class="product-name" title="${safeName}">
+                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[#414b59] mb-2 no-underline hover:text-brand max-[768px]:text-[length:12px]" title="${safeName}">
                     ${safeName}
                 </a>
 
                 <!-- Блок цены -->
-                <div class="product-card-prices">
-                    <div class="product-card-price">
+                <div class="flex items-baseline flex-wrap gap-1.5 mb-3">
+                    <div class="text-brand text-[length:20px] font-semibold leading-[1.15] max-[768px]:text-[length:19px] max-[360px]:text-[length:18px]">
                         ${newVal > 0 ? formattedPrice + ' ₾' : 'ფასი ზუსტდება'}
                     </div>
                     ${formattedOldPrice ? `
-                        <span class="product-card-old-price">
+                        <span class="text-[#929ba8] text-[length:12px] leading-[1.4] line-through [text-decoration-thickness:1px]">
                             ${formattedOldPrice}₾
                         </span>
                     ` : ''}
                 </div>
 
                 <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
-                <button type="button" ${available ? 'aria-haspopup="dialog" aria-controls="orderFormModal" aria-expanded="false"' : 'disabled'} class="product-card-action" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" class="product-card-action-icon"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <button type="button" ${available ? 'aria-haspopup="dialog" aria-controls="orderFormModal" aria-expanded="false"' : 'disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[#eceff3] disabled:text-[#929ba8] disabled:bg-[#f7f8fa] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                     <span>${available ? 'ყიდვა' : 'არ არის მარაგში'}</span>
                 </button>
             </div>

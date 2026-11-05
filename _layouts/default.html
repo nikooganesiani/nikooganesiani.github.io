@@ -2,10 +2,10 @@
 # Этот блок обязателен для Jekyll, можно оставить пустым
 ---
 <!DOCTYPE html>
-<html lang="ka" class="no-js [--mobile-nav-height:calc(65px+env(safe-area-inset-bottom,0px))]">
+<html lang="ka" class="{% include document-classes.html %}">
 {% include head.html %}
-<body class="{% if page.collection == 'products' or page.layout == 'product' %}page-product bg-white text-ink{% else %}bg-slate-50 text-slate-900{% endif %} min-h-screen flex flex-col max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
-    <a href="#main-content" class="skip-link">მთავარ შინაარსზე გადასვლა</a>
+<body class="{% if page.collection == 'products' or page.layout == 'product' %} bg-white text-ink {% else %} bg-slate-50 text-slate-900 {% endif %} min-h-screen flex flex-col max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
+    <a href="#main-content" class="fixed left-4 -top-25 z-[20000] rounded-xl bg-white text-brand py-3 px-5 focus:top-3 print:hidden!">მთავარ შინაარსზე გადასვლა</a>
     {% include header.html %}
 
     <main id="main-content" tabindex="-1" class="flex-1">{{ content }}</main>
@@ -25,6 +25,6 @@
     {% include modals/order_confirm.html %}
 
     {% include scripts_main.html %}
-    <div id="site-translation-engine" class="translation-engine notranslate" translate="no" aria-hidden="true" inert></div>
+    <div id="site-translation-engine" class="notranslate fixed -top-2500 -left-2500 w-[1px] h-[1px] overflow-hidden print:hidden" translate="no" aria-hidden="true" inert></div>
 </body>
 </html>

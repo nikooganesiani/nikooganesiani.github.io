@@ -11,16 +11,16 @@ layout: default
   {% if sub.id == first_sub %}{% assign sub_name = sub.name %}{% break %}{% endif %}
 {% endfor %}
 
-<div class="storefront-page product-page">
+<div class="[--p-ink:#202733] [--p-muted:#66707e] [--p-line:#e8ebef] [--p-soft:#f6f7f9] [--p-blue:#155dfc] pb-18 max-[768px]:pb-12 motion-reduce:[&_*]:[transition:none]! motion-reduce:[&_*]:[animation-duration:.01ms]! w-full max-w-320 mx-auto pt-3 px-6 max-[640px]:px-4">
   {% include product/breadcrumbs.html %}
-  <div class="product-overview">
+  <div class="grid grid-cols-[minmax(0,_1.38fr)_minmax(0,_1fr)] grid-rows-[auto_1fr] [grid-template-areas:'gallery_intro'_'gallery_purchase'] gap-x-[clamp(36px,_5vw,_72px)] [align-items:start] max-[1101px]:grid-cols-[minmax(0,_1.15fr)_minmax(0,_1fr)] max-[1101px]:gap-x-9 min-[768px]:max-[901px]:gap-x-7 min-[768px]:max-[901px]:grid-cols-[minmax(0,_1fr)_minmax(0,_1fr)] max-[768px]:grid-cols-[minmax(0,_1fr)] max-[768px]:grid-rows-[auto_auto_auto] max-[768px]:[grid-template-areas:'intro'_'gallery'_'purchase'] max-[768px]:gap-6 max-[360px]:gap-5 print:block">
     {% include product/intro.html %}
     {% include product/gallery.html %}
     {% include product/buy_box.html %}
   </div>
   {% include product/details.html %}
   {% include product/similar.html %}
-  <div class="product-popular">{% include homepage/popular-products.html %}</div>
+  <div class="mt-13 max-[768px]:mt-9.5">{% include homepage/popular-products.html %}</div>
 </div>
 {% include product/mobile_bar.html %}
 {% include product/zoom_modal.html %}

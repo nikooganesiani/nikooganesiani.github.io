@@ -101,8 +101,7 @@
     }
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    modal.style.display = 'flex';
-    modal.style.pointerEvents = 'auto';
+    modal.classList.remove('pointer-events-none');
     void modal.offsetHeight;
     modal.classList.add('active');
     if (trigger instanceof HTMLElement && trigger.getAttribute('aria-controls') === modal.id) trigger.setAttribute('aria-expanded', 'true');
@@ -126,7 +125,7 @@
     }
     if (index !== -1) openModals.splice(index, 1);
     modal.classList.remove('active');
-    modal.style.pointerEvents = 'none';
+    modal.classList.add('pointer-events-none');
     document.querySelectorAll('[aria-controls="' + modal.id + '"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
     modal.inert = true;
     if (background.has(modal)) background.set(modal, true);
@@ -160,7 +159,6 @@
     clearTimeout(closeTimers.get(modal));
     closeTimers.set(modal, setTimeout(() => {
       if (!modal.classList.contains('active')) {
-        modal.style.display = 'none';
         modal.classList.add('hidden');
         modal.classList.remove('flex');
       }

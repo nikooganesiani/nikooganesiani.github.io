@@ -156,19 +156,19 @@ function showOrderGuardToast(message, isWarning = true) {
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'enka-guard-toast';
-      toast.style.cssText =
-        'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:999999;' +
-        'padding:12px 20px;border-radius:10px;color:#fff;font-size:14px;font-weight:600;' +
-        'box-shadow:0 10px 25px rgba(0,0,0,0.25);transition:opacity 0.3s ease;text-align:center;max-width:90vw;';
+      toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[999999] py-3 px-5 rounded-[10px] text-white text-[14px] font-semibold shadow-[0_10px_25px_rgb(0_0_0/0.25)] transition-opacity duration-300 ease-[ease] text-center max-w-[90vw] opacity-0 data-[warning=true]:bg-[#dc2626] data-[warning=false]:bg-[#16a34a]';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
       document.body.appendChild(toast);
     }
-    toast.style.backgroundColor = isWarning ? '#dc2626' : '#16a34a';
-    toast.style.opacity = '1';
+    toast.dataset.warning = String(isWarning);
+    toast.classList.remove('opacity-0');
+    toast.classList.add('opacity-100');
     toast.textContent = message;
 
     clearTimeout(toast._hideTimer);
     toast._hideTimer = setTimeout(() => {
-      if (toast) toast.style.opacity = '0';
+      if (toast) { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0'); }
     }, 4000);
   } catch (e) {}
 }

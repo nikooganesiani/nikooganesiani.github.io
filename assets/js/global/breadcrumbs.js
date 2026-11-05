@@ -21,7 +21,7 @@
         crumb.classList.add('breadcrumb-category');
       }
       if (item.current) {
-        crumb.classList.add('breadcrumb-current');
+        crumb.classList.add("breadcrumb-current", "[.site-breadcrumbs_&]:shrink");
         label.id = 'breadcrumbCategoryName';
         const current = document.createElement('span');
         current.className = link.className;

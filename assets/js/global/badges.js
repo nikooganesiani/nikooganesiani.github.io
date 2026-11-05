@@ -15,7 +15,8 @@
       const count = readCount(key);
       for (const badge of document.querySelectorAll(selector)) {
         badge.textContent = count > 99 ? '99+' : String(count);
-        badge.style.display = count > 0 ? 'flex' : 'none';
+        badge.classList.toggle('hidden', count <= 0);
+        badge.classList.toggle('flex', count > 0);
         const button = badge.closest('button');
         const label = button?.dataset.countLabel || button?.title;
         if (label) button.setAttribute('aria-label', count > 0 ? label + ', ' + count : label);

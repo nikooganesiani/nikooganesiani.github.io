@@ -63,7 +63,7 @@
       if (!pointer || event.pointerId !== pointer.id) return;
       const distance = event.clientX - pointer.x;
       if (!pointer.dragged && Math.abs(distance) < 6) return;
-      if (!pointer.dragged) { pointer.dragged = true; track.setPointerCapture(event.pointerId); track.style.scrollSnapType = 'none'; track.style.cursor = 'grabbing'; }
+      if (!pointer.dragged) { pointer.dragged = true; track.setPointerCapture(event.pointerId); track.dataset.dragging = 'true'; }
       event.preventDefault();
       track.scrollLeft = pointer.scroll - distance;
     });
@@ -71,8 +71,7 @@
       if (!pointer) return;
       const dragged = pointer.dragged;
       pointer = null;
-      track.style.scrollSnapType = '';
-      track.style.cursor = '';
+      delete track.dataset.dragging;
       if (dragged) {
         suppressClick = true;
         setTimeout(() => { suppressClick = false; }, 200);

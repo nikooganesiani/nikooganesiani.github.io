@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function show(visible) {
       results.hidden = !visible;
-      if (mobile) results.style.display = visible ? 'flex' : 'none';
       if (visible) positionResults();
     }
     function dismiss() {
@@ -57,13 +56,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function message(text, retry = false) {
       results.replaceChildren();
       const node = document.createElement('p');
-      node.className = 'search-message';
+      node.className = '[.modal-search-results_&]:py-7 [.modal-search-results_&]:px-2 [.modal-search-results_&]:leading-[1.8] py-6 px-3 text-center text-[length:14px] text-[#475569]';
       node.textContent = text;
       results.append(node);
       if (retry) {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'search-retry';
+        button.className = 'flex items-center justify-center min-h-12 p-3 border-0 rounded-lg bg-transparent text-brand text-[length:13px] font-semibold text-center no-underline cursor-pointer hover:bg-[#eff4ff] w-full';
         button.textContent = 'ხელახლა ცდა';
         button.addEventListener('click', () => { input.focus(); render(); });
         results.append(button);
@@ -91,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fragment = document.createDocumentFragment();
         found.slice(0, 6).forEach(product => {
           const link = document.createElement('a');
-          link.className = 'search-result';
+          link.className = 'search-result [.modal-search-results_&]:min-h-20 [.modal-search-results_&]:border-b [.modal-search-results_&]:border-solid [.modal-search-results_&]:border-b-[#f1f3f6] [.modal-search-results_&]:rounded-[10px] [.header-search-results_&]:p-2.5 [.header-search-results_&]:rounded-[9px] [.header-search-results_.search-result_+_&]:border-t [.header-search-results_.search-result_+_&]:border-solid [.header-search-results_.search-result_+_&]:border-t-[#f1f3f6] flex items-center gap-3 p-3 rounded-xl text-[#0f172a] no-underline hover:bg-[#eff6ff] focus:bg-[#eff6ff] [&_img]:w-14 [&_img]:h-14 [&_img]:object-contain [&_img]:shrink-0';
           link.href = '/product/' + encodeURIComponent(product.id) + '/';
           const image = document.createElement('img');
           const source = Array.isArray(product.images) ? product.images[0] : product.image;
@@ -103,12 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
           image.decoding = 'async';
           image.onerror = () => { image.onerror = null; image.src = '/img/no-image.svg'; };
           const copy = document.createElement('div');
-          copy.className = 'search-result-copy';
+          copy.className = 'min-w-0';
           const name = document.createElement('div');
-          name.className = 'search-result-name';
+          name.className = 'search-result-name [.header-search-results_&]:text-[length:13px] [.header-search-results_&]:font-medium text-[length:14px] font-semibold [overflow-wrap:anywhere]';
           name.textContent = product.name;
           const price = document.createElement('div');
-          price.className = 'search-result-price';
+          price.className = '[.header-search-results_&]:text-[length:13px] flex flex-wrap items-baseline gap-y-1 gap-x-2 text-brand mt-1 tabular-nums [&_strong]:font-semibold [&_del]:text-muted [&_del]:text-[length:.9em] [&_del]:font-normal [&_del]:[text-decoration-thickness:1px]';
           const value = window.productPrice(product.price);
           const oldValue = window.productPrice(product.oldPrice);
           const money = amount => new Intl.NumberFormat((window.enkaI18n?.locale || 'ka'), { maximumFractionDigits: 2 }).format(amount) + ' ₾';
@@ -127,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const all = document.createElement('a');
         all.href = '/search/?result=' + encodeURIComponent(query);
-        all.className = 'search-all-results';
+        all.className = 'flex items-center justify-center min-h-12 p-3 border-0 rounded-lg bg-transparent text-brand text-[length:13px] font-semibold text-center no-underline cursor-pointer hover:bg-[#eff4ff]';
         all.textContent = 'ყველა შედეგი (' + found.length + ')';
         fragment.append(all);
         results.replaceChildren(fragment);

@@ -134,9 +134,11 @@ test('Keyboard navigation enters results, returns to the field, and consumes onl
 
 test('Closing the mobile dialog prevents a late result from repopulating it', async () => {
   const h = harness({ mobile: true }); h.type('sokany'); await h.runTimers();
-  h.root.fire('modal:close'); await h.resolve(0);
+  h.root.fire('modal:close');
+  const contentBeforeResponse = [...h.results.children];
+  await h.resolve(0);
   assert.equal(h.results.hidden, true);
-  assert.equal(h.results.style.display, 'none');
+  assert.deepEqual(h.results.children, contentBeforeResponse);
 });
 
 test('The click that opens a prefilled mobile dialog does not cancel its search', async () => {

@@ -1,4 +1,4 @@
-<svg class="p-icon{% if include.class %} {{ include.class | escape }}{% endif %}" width="{{ include.size | default: 20 }}" height="{{ include.size | default: 20 }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+<svg class="{% if include.class %} {{ include.class | escape }} {% endif %} inline-block align-middle shrink-0" width="{{ include.size | default: 20 }}" height="{{ include.size | default: 20 }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
 {% case include.name %}
 {% when 'home' %}<path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2Z"/>
 {% when 'chevron-right' %}<path d="m9 5 7 7-7 7"/>

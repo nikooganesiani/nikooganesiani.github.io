@@ -12,7 +12,7 @@
 {%- assign mobile_nav_badge = 'pointer-events-none absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] items-center justify-center rounded-full border-2 border-white bg-red-500 px-1 text-[9px] leading-none font-bold tabular-nums text-white' -%}
 
 <nav id="enka-mobile-nav" aria-label="მთავარი ნავიგაცია"
-     class="fixed inset-x-0 bottom-0 z-[100] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] pl-[max(4px,env(safe-area-inset-left,0px))] pr-[max(4px,env(safe-area-inset-right,0px))] shadow-[0_-4px_20px_rgb(15_23_42/0.04)] backdrop-blur-xl sm:hidden print:hidden">
+     class="fixed inset-x-0 bottom-0 z-[100] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] pl-[max(4px,env(safe-area-inset-left,0px))] pr-[max(4px,env(safe-area-inset-right,0px))] shadow-[0_-4px_20px_rgb(15_23_42/0.04)] backdrop-blur-xl sm:hidden print:hidden print:hidden!">
   <ul class="mx-auto grid max-w-lg grid-cols-5 list-none p-0 [&>li]:grid [&>li]:min-w-0">
     <li>
       <a href="{{ '/' | relative_url }}" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'home' %}true{% else %}false{% endif %}"{% if mobile_nav_current == 'home' %} aria-current="page"{% endif %}>

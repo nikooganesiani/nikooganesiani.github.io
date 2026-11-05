@@ -1,25 +1,25 @@
-<div id="filtersBar" class="storefront-filters listing-js" hidden>
-  <div class="listing-toolbar">
-    <button id="mobileFilterBtn" type="button" class="listing-mobile-filter listing-control" aria-haspopup="dialog" aria-controls="mobileFilterModal" aria-expanded="false">
-      {% include icons.html name='sliders-horizontal' size=18 %}<span>ფილტრი</span><span id="mobileFilterDot" class="listing-filter-dot" hidden></span>
+<div id="filtersBar" class="sticky top-[var(--site-header-height,_80px)] z-[30] mb-6 py-3 px-0 border-b border-solid border-b-[#e1e5eb] bg-[#f8fafc] max-[768px]:py-3 max-[768px]:mb-5 [@media(max-height:_540px)]:static [.no-js_&]:hidden!" hidden>
+  <div class="flex items-center gap-3 min-w-0 max-[768px]:grid max-[768px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[768px]:gap-3">
+    <button id="mobileFilterBtn" type="button" class="items-center justify-center gap-2 h-11 py-0 px-3.5 border border-solid border-[#e1e5eb] rounded-lg bg-white text-[#414b59] text-[length:14px] font-medium leading-[20px] cursor-pointer hover:border-[#b5c9f1] hidden max-[768px]:inline-flex max-[768px]:w-full" aria-haspopup="dialog" aria-controls="mobileFilterModal" aria-expanded="false">
+      {% include icons.html name='sliders-horizontal' size=18 %}<span>ფილტრი</span><span id="mobileFilterDot" class="[flex:0_0_6px] h-1.5 rounded-[50%] bg-brand" hidden></span>
     </button>
-    <div class="listing-desktop-price">
-      <span class="listing-price-label">ფასი</span>
+    <div class="flex items-center [flex:0_0_256px] gap-2 h-11 px-3 border border-solid border-[#e1e5eb] rounded-lg bg-white text-muted text-[length:13px] leading-[20px] [&_input]:w-0 [&_input]:flex-1 [&_input]:min-w-0 [&_input]:h-10.5 [&_input]:p-0 [&_input]:text-[#26303e] [&_input]:bg-transparent [&_input]:text-[length:14px] [&_input]:leading-[20px] [&_input]:tabular-nums [&_input]:[appearance:textfield] [&_input::placeholder]:text-muted [&_input::-webkit-inner-spin-button]:appearance-none [&_input::-webkit-inner-spin-button]:m-0 [&_input::-webkit-outer-spin-button]:appearance-none [&_input::-webkit-outer-spin-button]:m-0 max-[768px]:hidden">
+      <span class="shrink-0">ფასი</span>
       <label class="sr-only" for="minPrice">მინიმალური ფასი (₾)</label>
       <input id="minPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="დან">
-      <span class="listing-price-divider" aria-hidden="true">–</span>
+      <span class="text-[#a3abb7]" aria-hidden="true">–</span>
       <label class="sr-only" for="maxPrice">მაქსიმალური ფასი (₾)</label>
       <input id="maxPrice" type="number" inputmode="numeric" min="0" max="1000000000" step="1" placeholder="მდე">
-      <span class="listing-price-currency" aria-hidden="true">₾</span>
+      <span class="shrink-0" aria-hidden="true">₾</span>
     </div>
-    <div class="listing-desktop-presets">{% include listing/price-presets.html %}</div>
-    <div class="listing-sort">
+    <div class="min-w-0 max-[1200px]:hidden">{% include listing/price-presets.html %}</div>
+    <div class="[flex:0_0_232px] min-w-0 ml-auto [&_select]:absolute [&_select]:[inset:0] [&_select]:z-[1] [&_select]:w-full [&_select]:h-full [&_select]:m-0 [&_select]:p-0 [&_select]:border-0 [&_select]:border-current [&_select]:rounded-[inherit] [&_select]:opacity-[0] [&_select]:text-[length:16px] [&_select]:cursor-pointer max-[768px]:m-0">
       <label for="sortSelect" class="sr-only">პროდუქტების დალაგება</label>
-      <div class="listing-sort-field">
-        <span id="listingSortLabel" class="listing-sort-label" aria-hidden="true">{% if page.listing_mode == 'search' %}შესაბამისობით{% else %}რეკომენდებული{% endif %}</span>
-        <span id="listingSortCompact" class="listing-sort-compact" aria-hidden="true">დალაგება</span>
+      <div class="relative flex items-center justify-between gap-3 w-full h-11 px-3.5 border border-solid border-[#e1e5eb] rounded-lg bg-white text-[#414b59] text-[length:13px] font-medium leading-[20px] hover:border-[#b5c9f1] focus-within:[outline:2px_solid_#155dfc] focus-within:[outline-offset:3px] [&_svg]:[flex:0_0_16px] [&_svg]:text-muted max-[768px]:justify-center max-[768px]:gap-2 max-[768px]:px-2.5 max-[768px]:text-[length:14px]">
+        <span id="listingSortLabel" class="max-[768px]:hidden" aria-hidden="true">{% if page.listing_mode == 'search' %}შესაბამისობით{% else %}რეკომენდებული{% endif %}</span>
+        <span id="listingSortCompact" class="hidden max-[768px]:inline" aria-hidden="true">დალაგება</span>
         {% include icons.html name='chevron-down' size=16 %}
-        <select id="sortSelect" class="listing-control">
+        <select id="sortSelect" class="inline-flex items-center justify-center gap-2 h-11 py-0 px-3.5 border border-solid border-[#e1e5eb] rounded-lg bg-white text-[#414b59] text-[length:14px] font-medium leading-[20px] cursor-pointer hover:border-[#b5c9f1]">
           <option value="default">{% if page.listing_mode == 'search' %}შესაბამისობით{% else %}რეკომენდებული{% endif %}</option>
           <option value="price-asc">ფასი: ზრდადობით</option>
           <option value="price-desc">ფასი: კლებადობით</option>
@@ -29,5 +29,5 @@
       </div>
     </div>
   </div>
-  <div id="activeFilters" class="listing-active" hidden><p id="activeFiltersText"></p><button id="resetFilters" type="button">გასუფთავება</button></div>
+  <div id="activeFilters" class="flex items-center justify-between gap-3 mt-3 text-muted text-[length:13px] leading-[20px] [&_p]:min-w-0 [&_p]:m-0 [&_p]:[overflow-wrap:anywhere] [&_button]:shrink-0 [&_button]:min-h-8 [&_button]:px-2 [&_button]:rounded-lg [&_button]:text-brand [&_button]:text-[length:13px] [&_button]:font-medium [&_button]:cursor-pointer [&_button:hover]:bg-[#eff4ff]" hidden><p id="activeFiltersText"></p><button id="resetFilters" type="button">გასუფთავება</button></div>
 </div>

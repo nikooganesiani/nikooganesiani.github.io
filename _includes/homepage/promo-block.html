@@ -2,23 +2,23 @@
 <section class="relative w-full my-3 select-none" aria-roledescription="კარუსელი" aria-label="სპეციალური შეთავაზებები" data-promo-block>
   <p class="sr-only">ბანერებს შორის გადასასვლელად გამოიყენეთ მარცხენა და მარჯვენა ისრები.</p>
   <div class="sr-only" data-promo-status aria-live="polite" aria-atomic="true"></div>
-  <div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain rounded-3xl" data-promo-track>
+  <div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain rounded-3xl data-[dragging=true]:snap-none data-[dragging=true]:cursor-grabbing" data-promo-track>
     {% for item in site.data.promo_block %}
       {% assign hero = site.products | where: 'product_id', item.product_id | first %}
       {% if hero %}
       {% assign hero_price = hero.price | plus: 0 %}
       {% assign hero_old_price = hero.oldPrice | plus: 0 %}
       <div class="promo-slide w-full min-w-0 flex-[0_0_100%] snap-start relative" data-promo-slide data-product-id="{{ item.product_id | escape }}" data-title="{{ hero.name | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ site.data.promo_block.size }}">
-        <a href="{{ hero.url | relative_url }}" class="hero-offer" draggable="false">
-          <div class="hero-copy">
-            <span class="hero-eyebrow notranslate" translate="no">ENKA PICKS</span>
-            <h2 class="hero-title">{{ item.title | escape }}</h2>
-            <p class="hero-description" data-product-name>{{ hero.name | escape }}</p>
-            <div class="hero-prices"><strong data-hero-price>{{ hero.price | escape }} ₾</strong><del data-hero-old-price{% unless hero_old_price > hero_price %} hidden{% endunless %}>{{ hero.oldPrice | escape }} ₾</del></div>
-            <span class="hero-cta">პროდუქტის ნახვა <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span>
-            <p class="hero-delivery">უფასო მიწოდება · გადახდა მიღებისას</p>
+        <a href="{{ hero.url | relative_url }}" class="hero-offer grid grid-cols-[1fr_1fr] min-h-87.5 items-center bg-[#eaf1ff] border border-solid border-[#dbe7ff] rounded-3xl overflow-hidden text-[#0f172a] no-underline [.promo-slide:nth-child(2)_&]:bg-[#edf7f3] [.promo-slide:nth-child(2)_&]:border-[#d5e9e0] max-[640px]:min-h-67.5 max-[640px]:grid-cols-[1.15fr_1fr] max-[640px]:rounded-[20px]" draggable="false">
+          <div class="pt-9 pr-5 pb-9 pl-11 max-[640px]:pt-5.5 max-[640px]:pr-2 max-[640px]:pb-5.5 max-[640px]:pl-5">
+            <span class="notranslate inline-block text-brand text-[length:11px] font-bold tracking-[.18em] mb-4 max-[640px]:mb-2.5 max-[640px]:text-[length:9px]" translate="no">ENKA PICKS</span>
+            <h2 class="text-[length:clamp(24px,_3.2vw,_40px)] leading-[1.2] font-bold max-w-112.5 tracking-[-.035em] max-[640px]:text-[length:clamp(20px,_5.3vw,_30px)]">{{ item.title | escape }}</h2>
+            <p class="text-[length:14px] leading-[1.5] text-[#475569] mt-3 max-[640px]:text-[length:11px] max-[640px]:mt-2" data-product-name>{{ hero.name | escape }}</p>
+            <div class="flex flex-wrap items-baseline gap-3 my-5 mx-0 [&_strong]:text-brand [&_strong]:text-[length:34px] [&_strong]:leading-[1] [&_strong]:tracking-[-.03em] [&_del]:text-[#64748b] [&_del]:text-[length:18px] max-[640px]:gap-[7px] max-[640px]:my-4 max-[640px]:mx-0 max-[640px]:[&_strong]:text-[length:27px] max-[640px]:[&_del]:text-[length:14px]"><strong data-hero-price>{{ hero.price | escape }} ₾</strong><del data-hero-old-price{% unless hero_old_price > hero_price %} hidden{% endunless %}>{{ hero.oldPrice | escape }} ₾</del></div>
+            <span class="inline-flex items-center justify-center gap-2.5 min-h-11 py-3 px-5 bg-brand rounded-xl text-white text-[length:14px] font-bold [.hero-offer:hover_&]:bg-brand-dark max-[640px]:text-[length:11px] max-[640px]:p-2.5 max-[640px]:gap-[5px]">პროდუქტის ნახვა <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></span>
+            <p class="text-[#475569] text-[length:12px] leading-[1.5] mt-3.5 max-[640px]:text-[length:10px]">უფასო მიწოდება · გადახდა მიღებისას</p>
           </div>
-          <div class="hero-visual"><img src="{{ hero.images.first | escape }}" data-catalog-content alt="{{ hero.name | escape }}" width="600" height="600" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"{% if forloop.first %} fetchpriority="high"{% endif %} decoding="async" draggable="false" data-promo-image></div>
+          <div class="flex justify-center items-center self-stretch p-6 bg-[#f5f8ff] [&_img]:w-full [&_img]:max-w-85 [&_img]:aspect-square [&_img]:max-h-85 [&_img]:object-contain [&_img]:rounded-[20px] [.promo-slide:nth-child(2)_&]:bg-[#f3faf7] max-[640px]:p-2.5 max-[640px]:[&_img]:rounded-xl"><img src="{{ hero.images.first | escape }}" data-catalog-content alt="{{ hero.name | escape }}" width="600" height="600" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"{% if forloop.first %} fetchpriority="high"{% endif %} decoding="async" draggable="false" data-promo-image></div>
         </a>
       </div>
       {% endif %}
