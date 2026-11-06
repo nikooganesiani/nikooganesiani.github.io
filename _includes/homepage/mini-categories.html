@@ -1,32 +1,37 @@
-<!-- _includes/categories.html -->
-<section class="w-full py-4 sm:py-6" aria-labelledby="categoriesTitle">
-  <h2 id="categoriesTitle" class="text-xl sm:text-2xl font-bold tracking-tight mb-4">კატეგორიები</h2>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-    {% for category in site.data.catalog %}
-      {% assign cat_id = category[0] %}
-      {% assign cat_info = category[1] %}
-      <a
-        href="/category/?{{ cat_id | url_encode }}"
-        aria-haspopup="dialog"
-        aria-controls="categoryModal"
-        aria-expanded="false"
-        class="category-item-btn group flex flex-row sm:flex-col items-center sm:justify-center gap-3 sm:gap-2.5 p-2.5 sm:p-4 rounded-2xl bg-white border border-slate-200/70 hover:border-[#155dfc]/40 active:bg-slate-50 transition-colors duration-150 text-left sm:text-center cursor-pointer outline-none"
-        data-cat="{{ cat_id }}"
-        data-name="{{ cat_info.title | escape }}"
-        data-subs='{{ cat_info.subs | jsonify | escape }}'
-      >
-        <!-- Иконка -->
-        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#155dfc]/[0.07] text-[#155dfc] flex items-center justify-center shrink-0 group-hover:bg-[#155dfc] group-hover:text-white transition-colors duration-150 [&>svg]:w-5 [&>svg]:h-5 sm:[&>svg]:w-6 sm:[&>svg]:h-6">
-          {{ cat_info.icon }}
-        </div>
-
-        <!-- Название -->
-        <span class="text-xs sm:text-[13px] font-semibold text-slate-800 group-hover:text-[#155dfc] leading-tight line-clamp-2 sm:line-clamp-1 transition-colors duration-150">
-          {{ cat_info.title }}
-        </span>
-      </a>
-    {% endfor %}
-  </div>
+<!-- Category illustrations are keyed by catalog ID, independently of display order. -->
+<section class="my-5 sm:my-6" aria-label="კატეგორიები" data-category-tiles>
+  <nav aria-label="კატეგორიები">
+    <ul class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+      {% for category in site.data.catalog %}
+        {% assign cat_id = category[0] %}
+        {% assign cat_info = category[1] %}
+        {% assign pattern = '' %}
+        {% assign object_position = '' %}
+        {% case cat_id %}
+          {% when 'smarthome' %}{% assign pattern = "bg-[url('/img/categories/patterns/smarthome.svg')]" %}{% assign object_position = 'bg-[position:0%_0%]' %}
+          {% when 'kitchen' %}{% assign pattern = "bg-[url('/img/categories/patterns/kitchen.svg')]" %}{% assign object_position = 'bg-[position:50%_0%]' %}
+          {% when 'homecare' %}{% assign pattern = "bg-[url('/img/categories/patterns/homecare.svg')]" %}{% assign object_position = 'bg-[position:100%_0%]' %}
+          {% when 'selfcare' %}{% assign pattern = "bg-[url('/img/categories/patterns/selfcare.svg')]" %}{% assign object_position = 'bg-[position:0%_100%]' %}
+          {% when 'building' %}{% assign pattern = "bg-[url('/img/categories/patterns/building.svg')]" %}{% assign object_position = 'bg-[position:50%_100%]' %}
+          {% when 'gadget' %}{% assign pattern = "bg-[url('/img/categories/patterns/gadget.svg')]" %}{% assign object_position = 'bg-[position:100%_100%]' %}
+        {% endcase %}
+        <li class="min-w-0">
+          <a href="/category/?{{ cat_id | url_encode }}"
+             class="category-item-btn group relative block h-26 overflow-hidden rounded-xl bg-[#e5edff] p-3 text-[#15356b] no-underline outline-offset-3 transition-colors [@media(hover:_hover)]:hover:bg-[#d9e5ff] motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-brand"
+             aria-haspopup="dialog" aria-controls="categoryModal" aria-expanded="false"
+             data-cat="{{ cat_id }}" data-name="{{ cat_info.title | escape }}" data-subs='{{ cat_info.subs | jsonify | escape }}'>
+            <div class="pointer-events-none absolute inset-0 bg-[length:128px_128px] opacity-65 {{ pattern }}" aria-hidden="true"></div>
+            <span data-category-title class="relative z-10 block max-w-[82%] text-xs leading-[1.4] font-semibold">{{ cat_info.title }}</span>
+            {% if object_position != empty %}
+            <div data-category-art class="pointer-events-none absolute -right-1 -bottom-4 size-23 bg-[url('/img/categories/objects.webp')] bg-[length:300%_200%] bg-no-repeat {{ object_position }} transition-transform duration-200 [@media(hover:_hover)]:group-hover:-translate-y-1 motion-reduce:transition-none sm:size-25" aria-hidden="true"></div>
+            {% else %}
+            <span class="pointer-events-none absolute right-3 bottom-2 text-brand/35 [&>svg]:size-14" aria-hidden="true">{{ cat_info.icon }}</span>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
 </section>
 
 <div class="modal hidden fixed [inset:var(--modal-viewport-top,_0px)_0_auto] z-[10000] w-full h-[var(--modal-viewport-height,_100dvh)] items-center justify-center p-6 bg-[rgb(15_23_42_/_.4)] opacity-[0] [transition:opacity_180ms_ease] overscroll-contain [-webkit-tap-highlight-color:transparent] [&.active]:opacity-[1] [&.modal--gallery]:items-center [&.modal--gallery]:p-0 [&.modal--gallery]:bg-white max-[640px]:items-end max-[640px]:pt-[max(12px,_env(safe-area-inset-top))] max-[640px]:pr-[max(10px,_env(safe-area-inset-right))] max-[640px]:pb-[max(10px,_env(safe-area-inset-bottom))] max-[640px]:pl-[max(10px,_env(safe-area-inset-left))] [@media(max-height:_540px)]:min-[640px]:p-3 motion-reduce:[transition:none]" id="categoryModal" role="dialog" aria-labelledby="categoryModalTitle" aria-hidden="true">

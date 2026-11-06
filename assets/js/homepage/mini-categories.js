@@ -1,4 +1,4 @@
-// assets/js/categories.js
+// Homepage category tiles: native links remain usable if modal support is unavailable.
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('categoryModal');
   const modalBox = document.getElementById('categoryModalBox');
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.category-item-btn');
     if (btn) {
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || typeof window.openAppModal !== 'function') return;
       e.preventDefault();
       const catId = btn.dataset.cat || '';
       const catName = btn.dataset.name || '';
