@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
       const orderData = { event_name: 'Purchase', name, phone, product: product.name, price: product.price, product_id: product.id, event_id: eventId, source: 'Страница товара' };
-      const response = window.ENKA_TURNSTILE_SITE_KEY
+      const response = window.ENKA_TURNSTILE_SITE_KEY && typeof window.submitEnkaOrder === 'function'
         ? await window.submitEnkaOrder(form, orderData)
         : await fetch(window.WORKER_URL, {
           method: 'POST',

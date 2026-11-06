@@ -230,7 +230,7 @@ if (quickForm) {
                 event_id: eventId,
                 source: 'Быстрый заказ'
             };
-            const response = window.ENKA_TURNSTILE_SITE_KEY
+            const response = window.ENKA_TURNSTILE_SITE_KEY && typeof window.submitEnkaOrder === 'function'
                 ? await window.submitEnkaOrder(quickForm, orderData)
                 : await fetch(window.WORKER_URL, {
                     method: 'POST',
