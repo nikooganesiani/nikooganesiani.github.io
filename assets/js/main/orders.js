@@ -220,24 +220,27 @@ if (quickForm) {
             const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
 
-            const response = await fetch(window.WORKER_URL, {
-                method: 'POST',
-                signal: AbortSignal.timeout(20000),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'EnkaOrderForm'
-                },
-                body: JSON.stringify({
-                    event_name: 'Purchase',
-                    name: name,
-                    phone: fullPhone,
-                    product: product.name || '',
-                    price: product.price || 0,
-                    product_id: product.id || slugFromUrl,
-                    event_id: eventId,
-                    source: 'Быстрый заказ'
-                })
-            });
+            const orderData = {
+                event_name: 'Purchase',
+                name: name,
+                phone: fullPhone,
+                product: product.name || '',
+                price: product.price || 0,
+                product_id: product.id || slugFromUrl,
+                event_id: eventId,
+                source: 'Быстрый заказ'
+            };
+            const response = window.ENKA_TURNSTILE_SITE_KEY && typeof window.submitEnkaOrder === 'function'
+                ? await window.submitEnkaOrder(quickForm, orderData)
+                : await fetch(window.WORKER_URL, {
+                    method: 'POST',
+                    signal: AbortSignal.timeout(20000),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'EnkaOrderForm'
+                    },
+                    body: JSON.stringify(orderData)
+                });
 
             const result = await response.clone().json().catch(() => null);
             if (response.ok && result?.ok !== false && result?.success !== false && !result?.error) {

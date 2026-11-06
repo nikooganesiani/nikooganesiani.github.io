@@ -91,6 +91,14 @@ test('Inline order waits for acceptance, blocks repeated submit, and sends canon
   assert.equal(h.element('submitInlineOrderBtn').disabled, false);
 });
 
+test('Inline order can submit while the new intake script is still missing from a cached page', async () => {
+  let target;
+  const h = harness(async url => { target = url; return new Response('{}'); }, { ENKA_TURNSTILE_SITE_KEY: 'fixture' });
+  await h.submit();
+  assert.equal(target, 'https://example.test/order');
+  assert.equal(h.confirmations.length, 1);
+});
+
 test('HTTP, application, network and timeout failures never confirm or track a purchase and allow retry', async () => {
   for (const failure of [() => new Response('{}', { status: 503 }), () => new Response('{"success":false}'), () => new Response('{"ok":false}'), () => new Response('{"error":"unavailable"}'), () => { throw new Error('offline'); }, () => { throw new DOMException('Timed out', 'TimeoutError'); }]) {
     let calls = 0;
