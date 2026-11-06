@@ -34,7 +34,7 @@ test('Media accepts safe photos and canonical YouTube URLs, deduplicates and dro
   assert.match(yaml, /images: \["https:\/\/example.com\/photo.webp"\]/);
 });
 
-function harness(fetch, overrides = {}) {
+function harness(submitEnkaOrder, overrides = {}) {
   const elements = new Map();
   function element(id) {
     if (!elements.has(id)) elements.set(id, {
@@ -47,10 +47,10 @@ function harness(fetch, overrides = {}) {
     });
     return elements.get(id);
   }
-  const confirmations = [], analytics = [], recorded = [];
+  const confirmations = [], analytics = [], recorded = [], directFetches = [];
   const context = vm.createContext({
     window: {
-      WORKER_URL: 'https://example.test/order',
+      submitEnkaOrder,
       currentProduct: { id: 'canonical-slug', sku: 'different-sku', name: 'Test', price: '19.95', oldPrice: '', stockStatus: 'in_stock' },
       formatPhoneInput() {},
       showOrderConfirm: data => confirmations.push(data),
@@ -60,19 +60,19 @@ function harness(fetch, overrides = {}) {
     document: { getElementById: element, addEventListener(type, fn) { if (type === 'DOMContentLoaded') fn(); } },
     checkOrderSpamGuard: () => ({ allowed: true, exactSignature: 'signature' }),
     recordSuccessfulOrder: signature => recorded.push(signature),
-    fetch, AbortSignal, Promise, console
+    fetch(...args) { directFetches.push(args); throw new Error('Unexpected direct fetch'); }, AbortSignal, Promise, console
   });
   element('inlineOrderForm').dataset.available = 'true';
   element('inlineName').value = 'Test Name';
   element('inlinePhone').value = '+995 555 12 34 56';
   vm.runInContext(read('assets/js/product/inline-order.js'), context);
   const submit = () => element('inlineOrderForm').events.submit({ preventDefault() {} });
-  return { context, element, submit, confirmations, analytics, recorded };
+  return { context, element, submit, confirmations, analytics, recorded, directFetches };
 }
 
-test('Inline order waits for acceptance, blocks repeated submit, and sends canonical identity and decimal price', async () => {
+test('Inline order waits for acceptance, blocks repeated submit, and preserves canonical identity and the analytics price', async () => {
   let resolve, calls = 0, body;
-  const h = harness((url, options) => { calls++; body = JSON.parse(options.body); return new Promise(r => { resolve = r; }); });
+  const h = harness((form, data) => { calls++; body = data; return new Promise(r => { resolve = r; }); });
   const pending = h.submit();
   await h.submit();
   assert.equal(calls, 1);
@@ -81,22 +81,24 @@ test('Inline order waits for acceptance, blocks repeated submit, and sends canon
   assert.equal(h.element('inlineOrderForm').attrs['aria-busy'], 'true');
   assert.equal(body.product_id, 'canonical-slug');
   assert.equal(body.phone, '+995555123456');
-  assert.equal(body.price, '19.95');
   resolve(new Response('{"success":true}'));
   await pending;
   assert.equal(h.confirmations.length, 1);
   assert.equal(h.analytics.length, 1);
+  assert.equal(h.analytics[0][1].value, 19.95);
   assert.deepEqual(h.recorded, ['signature']);
   assert.equal(h.context.window.enkaOrderPending, false);
   assert.equal(h.element('submitInlineOrderBtn').disabled, false);
 });
 
-test('Inline order can submit while the new intake script is still missing from a cached page', async () => {
-  let target;
-  const h = harness(async url => { target = url; return new Response('{}'); }, { ENKA_TURNSTILE_SITE_KEY: 'fixture' });
+test('Missing order adapter shows an error without submitting or tracking an order', async () => {
+  const h = harness(undefined, { WORKER_URL: 'https://example.test/order', ENKA_TURNSTILE_SITE_KEY: 'fixture' });
   await h.submit();
-  assert.equal(target, 'https://example.test/order');
-  assert.equal(h.confirmations.length, 1);
+  assert.equal(h.confirmations.length, 0);
+  assert.equal(h.analytics.length, 0);
+  assert.equal(h.directFetches.length, 0);
+  assert.equal(h.element('inlineOrderError').hidden, false);
+  assert.equal(h.element('submitInlineOrderBtn').disabled, false);
 });
 
 test('HTTP, application, network and timeout failures never confirm or track a purchase and allow retry', async () => {

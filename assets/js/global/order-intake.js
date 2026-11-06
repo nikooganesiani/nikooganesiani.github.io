@@ -80,6 +80,7 @@
   }
 
   window.submitEnkaOrder = async function (form, data) {
+    if (!window.ENKA_TURNSTILE_SITE_KEY) throw new Error("Turnstile site key is missing");
     const payload = {
       name: data.name.trim(),
       phone: data.phone.replace(/\s+/g, ""),

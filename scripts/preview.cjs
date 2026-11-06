@@ -36,7 +36,9 @@ http.createServer((req, res) => {
   if (!fs.existsSync(target) || !fs.statSync(target).isFile()) { res.writeHead(404).end('Not found'); return; }
   res.setHeader('Content-Type', types[path.extname(target)] || 'application/octet-stream');
   if (mock && pathname === '/assets/js/main/config.js') {
-    res.end("window.CATALOG_API_URL='/__preview/catalog'; window.WORKER_URL='/__preview/order'; window.WORKER_URL_TRACKING='/__preview/tracking';");
+    res.end("window.CATALOG_API_URL='/__preview/catalog'; window.WORKER_URL_TRACKING='/__preview/tracking';");
+  } else if (mock && pathname === '/assets/js/global/order-intake.js') {
+    res.end("window.submitEnkaOrder = (_form, order) => fetch('/__preview/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });");
   } else if (mock && pathname === '/capi.js') {
     res.end('// Analytics disabled in isolated local QA.');
   } else fs.createReadStream(target).pipe(res);

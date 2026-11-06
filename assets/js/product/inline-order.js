@@ -61,15 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.setAttribute('aria-busy', 'true');
     try {
       const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
-      const orderData = { event_name: 'Purchase', name, phone, product: product.name, price: product.price, product_id: product.id, event_id: eventId, source: 'Страница товара' };
-      const response = window.ENKA_TURNSTILE_SITE_KEY && typeof window.submitEnkaOrder === 'function'
-        ? await window.submitEnkaOrder(form, orderData)
-        : await fetch(window.WORKER_URL, {
-          method: 'POST',
-          signal: AbortSignal.timeout(20000),
-          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'EnkaOrderForm' },
-          body: JSON.stringify(orderData)
-        });
+      const response = await window.submitEnkaOrder(form, { name, phone, product_id: product.id });
       const result = await response.clone().json().catch(() => null);
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
       recordSuccessfulOrder(guard.exactSignature);
