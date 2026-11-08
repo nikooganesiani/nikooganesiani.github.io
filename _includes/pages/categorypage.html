@@ -8,7 +8,7 @@
 {% include listing/results.html grid_id='catalogContainer' %}
 <noscript>
   <p class="p-5 mb-6 rounded-xl bg-[#eaf1ff] text-[#505b6b] leading-[1.8] [&_a]:text-brand [&_a]:underline">ქვემოთ მოცემულია სრული კატალოგი. კატეგორიის, ფასის ფილტრისა და ძიებისთვის ჩართეთ JavaScript.</p>
-  <div class="grid grid-cols-[repeat(4,_minmax(0,_1fr))] gap-y-8 gap-x-6 [align-items:start] max-[1024px]:grid-cols-[repeat(3,_minmax(0,_1fr))] max-[1024px]:gap-y-7 max-[1024px]:gap-x-5 max-[768px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[768px]:gap-y-7 max-[768px]:gap-x-4 max-[640px]:gap-x-3 max-[640px]:[&.listing-grid--single]:grid-cols-[minmax(0,_1fr)]">
+  <div class="grid grid-cols-[repeat(5,_minmax(0,_1fr))] gap-y-8 gap-x-6 [align-items:start] max-[1024px]:grid-cols-[repeat(3,_minmax(0,_1fr))] max-[1024px]:gap-y-7 max-[1024px]:gap-x-5 max-[768px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[768px]:gap-y-7 max-[768px]:gap-x-4 max-[640px]:gap-x-3 max-[640px]:[&.listing-grid--single]:grid-cols-[minmax(0,_1fr)]">
     {% for product in site.products %}{% unless product.stockStatus == 'out_of_stock' %}{% include homepage/product-card.html product=product %}{% endunless %}{% endfor %}
   </div>
 </noscript>
