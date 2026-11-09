@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.4",
+    "sharp": "0.35.5",
     "tailwindcss": "4.3.4"
   }
 }

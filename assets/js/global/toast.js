@@ -10,7 +10,7 @@ window.showToast = function(msg, actionData = null) {
         if (actionData) {
             toast.classList.add('cursor-pointer');
             toast.classList.remove('cursor-default');
-            toast.innerHTML += ' <svg width="18" height="18" class="ml-2 opacity-90 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+            toast.innerHTML += ' <svg width="18" height="18" class="ml-2 opacity-90 shrink-0" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M8.3 4.3a1 1 0 0 1 1.4 0l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 1 1-1.4-1.4l6.3-6.3-6.3-6.3a1 1 0 0 1 0-1.4"/></svg>';
 
             toast.onclick = function() {
                 if (actionData === 'fav') {

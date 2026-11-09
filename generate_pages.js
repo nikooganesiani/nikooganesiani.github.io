@@ -86,10 +86,13 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
     if (/^---\r?\ngenerated: true\r?\n/.test(fs.readFileSync(fullPath, 'utf8'))) fs.unlinkSync(fullPath);
   }
   console.log('Generated ' + products.length + ' product pages.');
+  return products;
 }
 
 module.exports = { normalizeCatalog, productFrontMatter, generatePages, parsePrice, normalizeStock, normalizeMedia };
 if (require.main === module) {
   const flag = process.argv.indexOf('--catalog-file');
-  generatePages({ catalogFile: flag >= 0 ? process.argv[flag + 1] : undefined }).catch(error => { console.error(error.message); process.exitCode = 1; });
+  generatePages({ catalogFile: flag >= 0 ? process.argv[flag + 1] : undefined })
+    .then(products => require('./scripts/build-photo-index.cjs').buildPhotoIndex(products, require('sharp')))
+    .catch(error => { console.error(error.message); process.exitCode = 1; });
 }

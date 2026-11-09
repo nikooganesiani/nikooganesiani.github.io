@@ -38,10 +38,10 @@ function parseGeorgianDate(dateStr) {
 function getStatusBadge(statusName) {
     const iconBox = (svg) => `<span class="inline-flex mr-2">${svg}</span>`;
     const icons = {
-        box: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>',
-        truck: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>',
-        check: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>',
-        clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>'
+        box: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m12 2-3.5 1.9 8.7 5L21 7zm-5.5 3L3 7l9 5 3.2-1.8zM2 8.7v9a1 1 0 0 0 .5.9l8.5 4.7V13.7zm11 5v9.6l8.5-4.7a1 1 0 0 0 .5-.9v-9z"/></svg>',
+        truck: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h.2a3 3 0 0 0 5.6 0h6.4a3 3 0 0 0 5.6 0H22a1 1 0 0 0 1-1v-4a1 1 0 0 0-.3-.7l-4-4A1 1 0 0 0 18 7h-3V5a1 1 0 0 0-1-1zm12 5v4h6l-4-4zm-9 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2m12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clip-rule="evenodd"/></svg>',
+        check: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.7 5.3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-1.4 0l-5-5a1 1 0 0 1 1.4-1.4l4.3 4.3L19.3 5.3a1 1 0 0 1 1.4 0"/></svg>',
+        clock: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m1 4h-2v7l5 3 1-1.7-4-2.4z" clip-rule="evenodd"/></svg>'
     };
     const badgeMap = {
         'ჩაბარებულია': { class: 'bg-green-50 text-green-800', icon: icons.check, text: 'ჩაბარებულია' },

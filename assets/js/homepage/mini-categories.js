@@ -22,9 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const arrow = document.createElement('span');
     arrow.className = 'text-slate-400 group-hover:text-[#155dfc] transition-colors shrink-0';
     arrow.innerHTML = `
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-      </svg>
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.3 4.3a1 1 0 0 1 1.4 0l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 1 1-1.4-1.4l6.3-6.3-6.3-6.3a1 1 0 0 1 0-1.4"/></svg>
     `;
 
     link.append(titleSpan, arrow);

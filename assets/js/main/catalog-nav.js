@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('dynamicNavAccordion');
   if (!container || !window.CATALOG_STRUCTURE) return;
   const escape = window.escapeHTML;
-  const arrow = '<svg class="shrink-0 text-[#85909e] [transition:transform_180ms_ease] [.modal-category-toggle[aria-expanded=true]_&]:transform-[rotate(180deg)] motion-reduce:[transition:none]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+  const arrow = '<svg class="shrink-0 text-[#85909e] [transition:transform_180ms_ease] [.modal-category-toggle[aria-expanded=true]_&]:transform-[rotate(180deg)] motion-reduce:[transition:none]" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M5.3 8.3a1 1 0 0 1 1.4 0l5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 0-1.4"/></svg>';
   const columns = [[], []];
   let index = 0;
   for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE)) {

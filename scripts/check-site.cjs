@@ -20,6 +20,11 @@ function verifyHeader(value, label) {
   assert.match(header, /<input[^>]+name="result"[^>]+id="searchInput"/, label + ': named search field');
   assert.match(header, /href="tel:\+995551178990"/, label + ': direct contact');
   assert.equal((value.match(/src="\/assets\/js\/global\/header.js"/g) || []).length, 1, label + ': one header controller');
+  assert.equal((value.match(/src="\/assets\/js\/main\/photo-search.js"/g) || []).length, 1, label + ': one photo search controller');
+  assert.equal((value.match(/id="photoSearchModal"/g) || []).length, 1, label + ': one shared photo search dialog');
+  assert.match(header, /data-photo-search/, label + ': photo search in the shared header');
+  assert.ok(!/<svg\b[^>]*\bstroke="currentColor"/.test(value), label + ': filled interface icons');
+  assert.ok(!/<script\b[^>]*src="[^"]*\/(?:tf|mobilenet)\.min\.js"/.test(value), label + ': recognition libraries load only after choosing a photo');
   assert.equal((value.match(/data-language-picker\b/g) || []).length, 2, label + ': language selection in header and footer');
   assert.equal((value.match(/src="\/assets\/js\/global\/languages.js"/g) || []).length, 1, label + ': one shared translation controller');
   assert.equal((value.match(/id="site-translation-engine"/g) || []).length, 1, label + ': one translation engine');
