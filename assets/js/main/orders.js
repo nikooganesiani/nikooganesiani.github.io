@@ -223,7 +223,8 @@ if (quickForm) {
             const response = await window.submitEnkaOrder(quickForm, {
                 name,
                 phone: fullPhone,
-                product_id: product.id || slugFromUrl
+                product_id: product.id || slugFromUrl,
+                expected_price: numericPrice
             });
 
             const result = await response.clone().json().catch(() => null);
@@ -268,7 +269,7 @@ if (quickForm) {
                 }
                 isQuickOrderSubmitting = false;
             } else {
-                if (errorEl) errorEl.textContent = 'შეკვეთა ვერ გაიგზავნა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.';
+                if (errorEl) errorEl.textContent = result?.error === 'catalog_changed' ? 'ფასი შეიცვალა. განაახლეთ გვერდი და ხელახლა დაადასტურეთ შეკვეთა.' : 'შეკვეთა ვერ გაიგზავნა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.';
                 if (submitBtn) {
                     submitBtn.innerHTML = originalContent;
                     submitBtn.disabled = false;

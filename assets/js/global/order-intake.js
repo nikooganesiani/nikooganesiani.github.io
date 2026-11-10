@@ -84,7 +84,7 @@
     const payload = {
       name: data.name.trim(),
       phone: data.phone.replace(/\s+/g, ""),
-      items: [{ site_id: String(data.product_id), quantity: 1 }],
+      items: [{ site_id: String(data.product_id), quantity: 1, ...(data.expected_price != null ? { expected_price: data.expected_price } : {}) }],
     };
     const identity = await requestIdentity(payload);
     const key = pendingKey(identity);

@@ -53,7 +53,7 @@
     return raw.filter(product => {
       if (!product?.id || typeof product.name !== 'string' || !product.name.trim() || seen.has(String(product.id))) return false;
       seen.add(String(product.id));
-      return window.productStock(product.stockStatus) !== 'out_of_stock';
+      return product.orderable === true || window.productStock(product.stockStatus) !== 'out_of_stock';
     }).map(product => ({ ...product, priceValue: window.productPrice(product.price) }));
   }
   function baseProducts(products, state, mode) {

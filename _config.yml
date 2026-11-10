@@ -28,6 +28,7 @@ exclude:
   - .local
   - AGENTS.md
   - README.md
+  - CATALOG_SUPABASE.md
   - generate_pages.js
   - assets/css/input.css
   - .github

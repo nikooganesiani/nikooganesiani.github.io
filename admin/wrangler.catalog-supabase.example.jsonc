@@ -1,0 +1,13 @@
+{
+ "$schema":"./node_modules/wrangler/config-schema.json",
+ "name":"catalog-api",
+ "main":"catalog-api-supabase.mjs",
+ "compatibility_date":"2026-11-01",
+ "workers_dev":false,
+ "preview_urls":false,
+ "vars":{
+  "SUPABASE_URL":"https://zilumtvyowzgpwswewtj.supabase.co",
+  "SUPABASE_PUBLISHABLE_KEY":"sb_publishable_v4y4TJmRnSYnB0olPWb0kQ_q42o2o6L",
+  "STOREFRONT_BASE":"https://enkaelectronics.com.ge"
+ }
+}

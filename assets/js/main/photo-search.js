@@ -148,7 +148,7 @@
         ]);
         clearTimeout(deadline); ensureActive();
         const query = await embedding(model, image); ensureActive();
-        const products = catalog.products.filter(p => window.productStock(p.stockStatus) !== 'out_of_stock');
+        const products = catalog.products.filter(p => p.orderable === true || window.productStock(p.stockStatus) !== 'out_of_stock');
         if (index.model !== MODEL || !Array.isArray(index.items)) throw new Error('Invalid index');
         say('კატალოგში მსგავსი პროდუქტების ძიება…');
         const indexed = new Map(index.items.map(item => [item.id, item]));

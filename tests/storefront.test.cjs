@@ -92,6 +92,12 @@ test('Failed and malformed catalog responses remain retryable', async () => {
   assert.equal(calls, 3);
 });
 
+test('Supabase catalog uses a publishable key and the RPC locale parameter',async()=>{
+ const calls=[];const context=catalogContext(async(url,options)=>{calls.push({url,options});return {ok:true,json:async()=>({products:[product]})};},undefined,'ru');
+ context.window.CATALOG_API_URL='https://example.supabase.co/rest/v1/rpc/enka_catalog';context.window.CATALOG_API_KEY='sb_publishable_fixture';
+ await context.window.fetchCatalogCached();assert.equal(calls[0].url,'https://example.supabase.co/rest/v1/rpc/enka_catalog?p_locale=ru');assert.equal(calls[0].options.headers.apikey,'sb_publishable_fixture');assert.equal(calls[0].options.credentials,'omit');
+});
+
 test('Catalog and product cards work with blocked storage and escape untrusted content', async () => {
   const context = catalogContext(async () => ({ ok: true, json: async () => [product] }), { getItem() { throw Error('blocked'); }, setItem() { throw Error('blocked'); } });
   await context.window.fetchCatalogCached();

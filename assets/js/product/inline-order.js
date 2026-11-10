@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (invalidPhone) inputError(phoneInput, 'მიუთითეთ 9-ნიშნა მობილურის ნომერი, რომელიც იწყება 5-ით.');
     if (invalidName || invalidPhone) { (invalidName ? nameInput : phoneInput).focus(); return; }
     const product = { ...window.currentProduct };
-    if (!product.id || !(Number(product.price) > 0) || product.stockStatus !== 'in_stock') return;
+    if (!product.id || !(Number(product.price) > 0) || (product.orderable !== true && product.stockStatus !== 'in_stock')) return;
     const phone = '+995' + phoneRaw;
     const guard = checkOrderSpamGuard(name, phone, product.id);
     const confirmation = { name, phone, product: product.name, price: product.price, oldPrice: product.oldPrice };
@@ -61,8 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     form.setAttribute('aria-busy', 'true');
     try {
       const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
-      const response = await window.submitEnkaOrder(form, { name, phone, product_id: product.id });
+      const response = await window.submitEnkaOrder(form, { name, phone, product_id: product.id, expected_price: Number(product.price) });
       const result = await response.clone().json().catch(() => null);
+      if (response.status === 409 && result?.error === 'catalog_changed') { showError('ფასი შეიცვალა. განაახლეთ გვერდი და ხელახლა დაადასტურეთ შეკვეთა.'); return; }
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
       recordSuccessfulOrder(guard.exactSignature);
       try {

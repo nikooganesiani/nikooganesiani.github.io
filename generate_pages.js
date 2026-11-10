@@ -70,7 +70,8 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
   let data;
   if (catalogFile) data = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
   else {
-    const response = await fetch('https://api.enkaelectronics.com.ge/catalog', { signal: AbortSignal.timeout(20000) });
+    const backend = require('./catalog-backend.json');
+    const response = await fetch(backend.url + '?p_locale=ka', { headers: { apikey: backend.publishableKey }, signal: AbortSignal.timeout(20000) });
     if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
     data = await response.json();
   }
