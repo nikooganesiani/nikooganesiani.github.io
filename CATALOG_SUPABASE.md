@@ -28,4 +28,4 @@ GET `https://zilumtvyowzgpwswewtj.supabase.co/rest/v1/rpc/enka_catalog?p_locale=
 
 ## Проверка
 
-96 Node-тестов и сборка словаря проходят. Оба Worker прошли Wrangler `--dry-run` с примерными настройками; это проверка сборки, а не действующих привязок. Ruby/Bundler локально не найдены, полный Jekyll build ещё не подтверждён. Рабочие сервисы этим кодом пока не изменены.
+96 Node-тестов и сборка словаря проходят. Оба Worker прошли Wrangler `--dry-run` с примерными настройками; это проверка сборки, а не действующих привязок. Ruby/Bundler локально не найдены. Полная генерация 82 карточек, CSS, Jekyll build, проверка HTML и покрытия RU/EN успешно прошли в [GitHub Actions](https://github.com/nikooganesiani/nikooganesiani.github.io/actions/runs/42814242512) для `4d445735bacaa85fea2b5027e28b7e30cd09c345`. Обе deploy-задачи пропущены; [PR #4](https://github.com/nikooganesiani/nikooganesiani.github.io/pull/4) остаётся черновиком. Рабочие сервисы этим кодом пока не изменены.
