@@ -25,6 +25,7 @@ exclude:
   - pnpm-workspace.yaml
   - scripts
   - tests
+  - test-fixtures
   - .local
   - AGENTS.md
   - README.md

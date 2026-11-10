@@ -40,7 +40,12 @@ jobs:
         run: pnpm run check
 
       - name: Generate product pages
-        run: node generate_pages.js
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            node generate_pages.js --catalog-file test-fixtures/catalog.json
+          else
+            node generate_pages.js
+          fi
 
       - name: Build Tailwind CSS
         run: pnpm run build:css
