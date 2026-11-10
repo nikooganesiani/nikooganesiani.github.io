@@ -1,3 +1,4 @@
+{% assign company = site.data.studio.company | default: site.data.info.company %}
 {%- assign header_action = 'inline-flex items-center justify-center shrink-0 w-11 h-11 border-0 rounded-xl bg-transparent text-[#586273] cursor-pointer hover:bg-surface hover:text-brand [&[aria-expanded=true]]:bg-[#eef4ff] [&[aria-expanded=true]]:text-brand motion-safe:transition-colors' -%}
 {%- assign header_badge = 'hidden absolute -top-1.5 -right-2 items-center justify-center min-w-4 h-4 px-1 border-2 border-white rounded-full bg-brand text-white text-[length:9px] font-semibold leading-none tabular-nums pointer-events-none' -%}
 <header class="sticky top-[calc(-1_*_var(--header-utility-height))] z-[100] flex-none bg-white border-b border-line [@media(max-height:_500px)]:relative [@media(max-height:_500px)]:top-auto print:hidden! [.no-js_&_button[data-header-panel]]:hidden!" id="site-header">
@@ -8,7 +9,7 @@
         <a href="{{ '/info/delivery' | relative_url }}"{% if page.url contains '/info/delivery' %} aria-current="page"{% endif %}>მიწოდება</a>
         <a href="{{ '/info/warranty' | relative_url }}"{% if page.url contains '/info/warranty' %} aria-current="page"{% endif %}>გარანტია</a>
         <a href="{{ '/info/contacts' | relative_url }}"{% if page.url contains '/info/contacts' %} aria-current="page"{% endif %}>კონტაქტი</a>
-        <a class="tabular-nums whitespace-nowrap text-ink" href="tel:+995551178990">+995 551 17 89 90</a>
+        <a class="tabular-nums whitespace-nowrap text-ink" href="tel:{{ company.phone_link | escape }}">{{ company.phone | escape }}</a>
       </nav>
     </div>
   </div>
@@ -35,7 +36,7 @@
       <button type="button" class="{{ header_action }} max-[640px]:hidden" aria-controls="ordersModal" aria-haspopup="dialog" aria-expanded="false" data-header-panel="ordersModal" data-count-label="შეკვეთები" aria-label="შეკვეთები" title="შეკვეთები">
         <span class="relative flex items-center justify-center">{% include icons.html name='package' size=22 %}<span class="orders-badge {{ header_badge }}" aria-hidden="true">0</span></span>
       </button>
-      <a class="{{ header_action | remove: 'inline-flex' }} hidden max-[640px]:inline-flex" href="tel:+995551178990" aria-label="დაგვირეკეთ: +995 551 17 89 90">{% include icons.html name='phone' size=20 %}</a>
+      <a class="{{ header_action | remove: 'inline-flex' }} hidden max-[640px]:inline-flex" href="tel:{{ company.phone_link | escape }}" aria-label="დაგვირეკეთ: {{ company.phone | escape }}">{% include icons.html name='phone' size=20 %}</a>
     </nav>
   </div>
 </header>

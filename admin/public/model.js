@@ -1,3 +1,5 @@
+import './store-engine.js';
+export const storeEngine = globalThis.EnkaStoreEngine;
 export const LOCALES = ['ru', 'en'];
 export const TEXT_FIELDS = ['name', 'description', 'longDescription', 'warranty'];
 export const FIELD_LABELS = { name: 'Название', description: 'Описание', longDescription: 'Подробное описание', warranty: 'Гарантия' };
@@ -71,7 +73,8 @@ export function validateDocument(document) {
       }
     }
   }
-  if (new TextEncoder().encode(JSON.stringify(document)).length > 1500000) errors.push('Каталог с переводами превышает 1,5 МБ. Разделите импорт.');
+  if (document.store !== undefined && !errors.length) errors.push(...storeEngine.validate(document.store, products));
+  if (new TextEncoder().encode(JSON.stringify(document)).length > 3500000) errors.push('Каталог с переводами превышает 3,5 МБ. Разделите импорт.');
   return [...new Set(errors)].slice(0, 100);
 }
 function validEntry(entry) {
@@ -93,7 +96,14 @@ export function createDocument(catalog) {
   const source = Array.isArray(catalog) ? { products: catalog } : clone(catalog);
   // This pointer belongs to publication, never to editable source content.
   if (plain(source)) delete source._enkaPublication;
+  const store = source?._enkaStore;
+  if (plain(source)) delete source._enkaStore;
+  // An API export may contain calculated prices; restore the editable base values.
+  for (const product of source?.products || []) if (product._enkaBase) {
+    Object.assign(product, product._enkaBase); delete product._enkaBase; delete product._enkaCampaign;
+  }
   const document = { schemaVersion: 1, catalog: source, translations: { ru: { products: {} }, en: { products: {} } }, attributes: {} };
+  if (store) { document.store = store; storeEngine.migrateBanners(store); }
   if (!plain(source) || !Array.isArray(source.products)) throw new Error('В файле нет массива products.');
   registerAttributes(document);
   const errors = validateDocument(document);
@@ -106,8 +116,10 @@ export function importDocument(value, existing) {
   if (!value?.schemaVersion && !value?.document?.schemaVersion && existing) {
     document.attributes = clone(existing.attributes);
     for (const locale of LOCALES) document.translations[locale] = clone(existing.translations[locale]);
+    if (existing.store) document.store = clone(existing.store);
     registerAttributes(document);
   }
+  storeEngine.migrateBanners(document.store);
   const errors = validateDocument(document);
   if (errors.length) throw new Error(errors.join('\n'));
   return document;
@@ -132,6 +144,7 @@ export function importTranslations(value, existing) {
       copy(document.attributes[id].labels, locale, value.attributes[oldId]?.labels?.[locale], label);
     }
   }
+  storeEngine.migrateBanners(document.store);
   const errors = validateDocument(document);
   if (errors.length) throw new Error(errors.join('\n'));
   return document;
@@ -211,5 +224,6 @@ export function catalogDiff(before, after) {
   const removed = [...previous.keys()].filter(id => !next.has(id));
   const changed = [...next.keys()].filter(id => previous.has(id) && JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id)));
   const translationsChanged = JSON.stringify(before?.translations || {}) !== JSON.stringify(after.translations) || JSON.stringify(before?.attributes || {}) !== JSON.stringify(after.attributes);
-  return { added, removed, changed, translationsChanged };
+  const storeChanges = ['categories', 'campaigns', 'heroes', 'strings', 'company'].filter(key => JSON.stringify(before?.store?.[key]) !== JSON.stringify(after.store?.[key]));
+  return { added, removed, changed, translationsChanged, storeChanges };
 }

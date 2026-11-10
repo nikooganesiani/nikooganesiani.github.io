@@ -1,7 +1,8 @@
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const dictionary=JSON.parse(fs.readFileSync('assets/i18n/translations.json','utf8'));
+const store=fs.existsSync('_data/studio.json')?JSON.parse(fs.readFileSync('_data/studio.json','utf8')).store:undefined;
 const decode=s=>s.replace(/&#(x[\da-f]+|\d+);/gi,(_,n)=>String.fromCodePoint(n[0].toLowerCase()==='x'?parseInt(n.slice(1),16):Number(n))).replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-function translator(locale){const window={ENKA_TRANSLATIONS:dictionary};vm.runInNewContext(fs.readFileSync('assets/js/global/i18n.js','utf8'),{window,document:{cookie:'',documentElement:{},querySelector(){},body:null},localStorage:{getItem:()=>locale},MutationObserver:class{observe(){}}});return window.enkaI18n;}
+function translator(locale){const window={ENKA_TRANSLATIONS:dictionary,ENKA_STORE:store};vm.runInNewContext(fs.readFileSync('assets/js/global/i18n.js','utf8'),{window,document:{cookie:'',documentElement:{},querySelector(){},body:null},localStorage:{getItem:()=>locale},MutationObserver:class{observe(){}}});return window.enkaI18n;}
 const missing=[];let pages=0;
 function check(source,file,translation,exact=false){if(!/[\u10a0-\u10ff]/.test(source))return;const result=translation.t(decode(source).trim(),exact);if(/[\u10a0-\u10ff]/.test(result))missing.push({file,source:source.trim().slice(0,140)});}
 function walk(dir,fn){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p,fn);else fn(p);}}

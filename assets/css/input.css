@@ -1,4 +1,5 @@
 @import "tailwindcss" source(none);
+@import "../../admin/public/store-visuals.css";
 
 @source "../../_includes";
 @source "../../_layouts";

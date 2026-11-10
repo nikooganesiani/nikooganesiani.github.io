@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!container || !window.CATALOG_STRUCTURE) return;
   const escape = window.escapeHTML;
   const arrow = '<svg class="shrink-0 text-[#85909e] [transition:transform_180ms_ease] [.modal-category-toggle[aria-expanded=true]_&]:transform-[rotate(180deg)] motion-reduce:[transition:none]" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M5.3 8.3a1 1 0 0 1 1.4 0l5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 0-1.4"/></svg>';
+  function renderNavigation() {
   const columns = [[], []];
   let index = 0;
   for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE)) {
@@ -39,6 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     columns[index++ % 2].push(item);
   }
   container.innerHTML = columns.map(items => '<div class="flex flex-col gap-3 min-w-0 max-[640px]:contents">' + items.join('') + '</div>').join('');
+  }
+  renderNavigation();
+  window.addEventListener('enka:store-change', renderNavigation);
   container.addEventListener('click', event => {
     const toggle = event.target.closest('.modal-category-toggle');
     if (!toggle) return;

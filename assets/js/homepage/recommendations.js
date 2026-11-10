@@ -12,10 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const esc = window.escapeHTML;
   const structure = window.CATALOG_STRUCTURE || {};
   const labels = new Map();
+  function updateLabels() {
+  labels.clear();
   for (const [id, category] of Object.entries(structure)) {
     labels.set('category:' + id, category.title);
     category.subs?.forEach(sub => labels.set('sub:' + sub.id, sub.name));
   }
+  }
+  updateLabels();
   // Only the incoming same-site navigation, without saving or exporting a browsing trail.
   const context = engine.navigationContext(document.referrer, location.origin, structure);
   let catalog = null;
@@ -110,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
     append(4);
   }
   window.addEventListener('enka:personalization-change', rebuild);
+  window.addEventListener('enka:store-change', () => { updateLabels(); rebuild(); });
+  window.addEventListener('enka:prices-change', event => { catalog=event.detail.products; rebuild(); });
   window.addEventListener('enka:personalization-choice', rebuild);
   window.addEventListener('pageshow', event => { if (event.persisted) rebuild(); });
   async function load() {

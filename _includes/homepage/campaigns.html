@@ -1,0 +1,11 @@
+{% for campaign in site.data.studio.campaignRows %}
+<section class="my-9{% if campaign.template == 'featured' %} rounded-3xl bg-blue-50 p-5 sm:p-7{% endif %}" aria-label="{{ campaign.title | escape }}">
+  <h2 class="mb-5 text-[length:22px] font-semibold tracking-tight text-slate-900">{{ campaign.title | escape }}</h2>
+  <div class="{% if campaign.template == 'compact' %}grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4{% else %}product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pb-3{% endif %}" tabindex="0" role="group" aria-label="{{ campaign.title | escape }}">
+    {% for campaign_product_id in campaign.productIds %}
+      {% assign campaign_product = site.products | where: 'product_id', campaign_product_id | first %}
+      {% if campaign_product %}{% include homepage/product-card.html product=campaign_product %}{% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}

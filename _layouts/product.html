@@ -1,10 +1,13 @@
 ---
 layout: default
 ---
+{% assign store_catalog = site.data.catalog %}
+{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
+
 {% include product/state.html %}
 {% assign first_cat = page.categories | first %}
 {% assign first_sub = page.subcategories | first %}
-{% assign cat_data = site.data.catalog[first_cat] %}
+{% assign cat_data = store_catalog[first_cat] %}
 {% assign cat_name = cat_data.title | default: first_cat %}
 {% assign sub_name = first_sub %}
 {% for sub in cat_data.subs %}

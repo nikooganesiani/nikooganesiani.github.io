@@ -256,6 +256,7 @@
       const url = routeURL(state, mode);
       if (url !== window.location.pathname + window.location.search + window.location.hash) window.history[method]({}, '', url);
     }
+    window.addEventListener('enka:prices-change', event => { products=prepareProducts(event.detail.products); if(loaded)render(); });
     function commit(patch, method = 'pushState', append = false) {
       clearTimeout(priceTimer);
       const range = priceRange(byId('minPrice').value, byId('maxPrice').value);

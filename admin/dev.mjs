@@ -56,7 +56,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (url.pathname.startsWith('/api/')) {
       const chunks = []; let size = 0;
-      for await (const chunk of req) { size += chunk.length; if (size > 1800000) throw new ApiError(413, 'Запрос слишком большой.'); chunks.push(chunk); }
+      for await (const chunk of req) { size += chunk.length; if (size > 4000000) throw new ApiError(413, 'Запрос слишком большой.'); chunks.push(chunk); }
       const request = new Request(url, { method: req.method, headers: req.headers, ...(!['GET', 'HEAD'].includes(req.method) ? { body: Buffer.concat(chunks) } : {}) });
       let response;
       if (url.pathname === '/api/upload' && req.method === 'POST') {
@@ -68,7 +68,11 @@ const server = http.createServer(async (req, res) => {
       res.end(Buffer.from(await response.arrayBuffer())); return;
     }
     let target;
-    if (url.pathname.startsWith('/media/')) {
+    if (/^\/img\/(categories|banners)\//.test(url.pathname)) {
+      const categoryRoot=path.resolve(root,'../img',url.pathname.split('/')[2]);
+      target=path.resolve(categoryRoot,decodeURIComponent(url.pathname.split('/').slice(3).join('/')));
+      if(!target.startsWith(categoryRoot+path.sep)){res.writeHead(403).end();return;}
+    } else if (url.pathname.startsWith('/media/')) {
       const name = url.pathname.slice(7);
       if (!/^[a-f0-9-]+\.webp$/.test(name)) { res.writeHead(404).end(); return; }
       target = path.join(directory, 'media', name);

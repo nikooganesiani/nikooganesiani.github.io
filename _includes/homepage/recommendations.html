@@ -1,6 +1,8 @@
+{% assign store_catalog = site.data.catalog %}
+{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 <section id="recommendationsSection" class="mt-9" aria-label="პროდუქტები თქვენთვის" data-popular-ids="{{ site.data.popular_items.items | default: site.data.popular_items | join: ',' | escape }}">
   <div id="recommendationFeed" class="space-y-10 sm:space-y-12">
-    {% for recommendation_category in site.data.catalog %}
+    {% for recommendation_category in store_catalog %}
       {% assign recommendation_category_id = recommendation_category[0] %}
       {% assign recommendation_products = site.products | where_exp: 'item', 'item.categories contains recommendation_category_id' %}
       {% capture recommendation_cards %}

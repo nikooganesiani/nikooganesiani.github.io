@@ -46,6 +46,19 @@ test('Editorial dictionaries localize text and accessible fields without touchin
 test('Native locale restores from cookie when browser storage is blocked',()=>{
   const p=page('ru',true);assert.equal(p.window.enkaI18n.locale,'ru');assert.equal(p.label.nodeValue,'  Каталог  ');
 });
+
+test('Studio edits replace already rendered translations and can restore built-in text',()=>{
+  const p=page('ru');
+  p.window.enkaI18n.setStore({strings:{'კატალოგი':{ru:'Весь ассортимент'}}});
+  assert.equal(p.label.nodeValue,'  Весь ассортимент  ');
+  p.window.enkaI18n.setStore({strings:{'კატალოგი':{ru:'Все товары'}}});
+  assert.equal(p.label.nodeValue,'  Все товары  ');
+  p.window.enkaI18n.setStore({strings:{'კატალოგი':{ru:''}}});
+  assert.equal(p.label.nodeValue,'  Каталог  ');
+  assert.equal(p.source.nodeValue,'კატალოგი');
+  const ka=page('ka');ka.window.enkaI18n.setStore({strings:{'კატალოგი':{ka:'ყველა პროდუქტი'}}});
+  assert.equal(ka.label.nodeValue,'  ყველა პროდუქტი  ');
+});
 test('Georgian and external translation languages keep the Georgian source dictionary',()=>{
   for(const locale of ['ka','de']){const p=page(locale);assert.equal(p.label.nodeValue,'  კატალოგი  ');assert.equal(p.window.enkaI18n.locale,'ka');}
 });

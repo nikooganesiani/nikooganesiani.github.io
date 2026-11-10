@@ -1,0 +1,170 @@
+{
+  "smarthome": {
+    "title": "ჭკვიანი სახლი",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M11 2a1 1 0 0 1 2 0v2h-2zM4.2 3l1.5-1L7 4.3 5.3 5.4zm14.1-1 1.5 1-1.1 2.4L17 4.3zM2 8h3v2H2zm17 0h3v2h-3zM11 6a5 5 0 0 0-3 8.5V17h8v-2.5A5 5 0 0 0 11 6m-3 13h8v1a3 3 0 0 1-6 0H8z\"/></svg>",
+    "subs": [
+      {
+        "id": "sensors",
+        "name": "სენსორები"
+      },
+      {
+        "id": "lighting",
+        "name": "განათება"
+      },
+      {
+        "id": "security",
+        "name": "უსაფრთხოება"
+      }
+    ]
+  },
+  "kitchen": {
+    "title": "სამზარეულო",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" d=\"M4 2h2v3H4zm5 0h2v3H9zm5 0h2v3h-2zM2 7h16v1h1a5 5 0 0 1 0 10h-1.4A6 6 0 0 1 12 22H8a6 6 0 0 1-6-6zm16 3v6h1a3 3 0 1 0 0-6z\" clip-rule=\"evenodd\"/></svg>",
+    "subs": [
+      {
+        "id": "grill",
+        "name": "გრილი და ტოსტერი"
+      },
+      {
+        "id": "kettle",
+        "name": "მადუღარა და ჩაიდანი"
+      },
+      {
+        "id": "coffee",
+        "name": "ყავის აპარატი"
+      },
+      {
+        "id": "blender",
+        "name": "ბლენდერი"
+      },
+      {
+        "id": "chopper",
+        "name": "ჩოფერი"
+      },
+      {
+        "id": "juicer",
+        "name": "წვენსაწური"
+      },
+      {
+        "id": "oven",
+        "name": "ღუმელი"
+      },
+      {
+        "id": "airfryer",
+        "name": "აეროგრილი"
+      },
+      {
+        "id": "mixer",
+        "name": "მიქსერი"
+      },
+      {
+        "id": "crepe",
+        "name": "ბლინის საცხობი"
+      },
+      {
+        "id": "meatgrinder",
+        "name": "ხორცსაკეპი"
+      },
+      {
+        "id": "gas",
+        "name": "გაზქურა"
+      },
+      {
+        "id": "pan",
+        "name": "ტაფა"
+      },
+      {
+        "id": "fryer",
+        "name": "ფრის აპარატი"
+      },
+      {
+        "id": "popcorn",
+        "name": "პოპკორნის აპარატი"
+      },
+      {
+        "id": "cottoncandy",
+        "name": "ბამბის ნაყინის აპარატი"
+      },
+      {
+        "id": "fruitdehydrator",
+        "name": "ჩირის აპარატი"
+      }
+    ]
+  },
+  "homecare": {
+    "title": "სახლის მოვლა",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" d=\"M5 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm1 3h4v2H6zm9 0h2v2h-2zm-3 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10m-3 5a3 3 0 0 0 6 0z\" clip-rule=\"evenodd\"/></svg>",
+    "subs": [
+      {
+        "id": "vacuum",
+        "name": "მტვერსასრუტი"
+      },
+      {
+        "id": "iron",
+        "name": "უთო"
+      }
+    ]
+  },
+  "selfcare": {
+    "title": "თავის მოვლა",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 21s-9.5-5.6-9.5-12A5.5 5.5 0 0 1 12 5.2 5.5 5.5 0 0 1 21.5 9C21.5 15.4 12 21 12 21\"/></svg>",
+    "subs": [
+      {
+        "id": "hairclipper",
+        "name": "საპარსი და ტრიმერი"
+      },
+      {
+        "id": "hairdryer",
+        "name": "თმის ფენი"
+      },
+      {
+        "id": "curlingiron",
+        "name": "თმის სახვევი"
+      },
+      {
+        "id": "hairiron",
+        "name": "თმის უთო"
+      },
+      {
+        "id": "lintremover",
+        "name": "ბეწვის საცლელი"
+      },
+      {
+        "id": "scale",
+        "name": "სასწორი"
+      }
+    ]
+  },
+  "building": {
+    "title": "მშენებლობა",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M11 2h2v9h-2zM9 4a8 8 0 0 0-5 7v3H2v5h20v-5h-2v-3a8 8 0 0 0-5-7v8H9zM2 21h20v2H2z\"/></svg>",
+    "subs": [
+      {
+        "id": "tools",
+        "name": "ხელსაწყოები"
+      },
+      {
+        "id": "laser",
+        "name": "ლაზერული აპარატი"
+      }
+    ]
+  },
+  "gadget": {
+    "title": "გაჯეტები",
+    "icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" d=\"M3 3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8v2H7v2h10v-2h-4v-2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 2h18v10H3z\" clip-rule=\"evenodd\"/></svg>",
+    "subs": [
+      {
+        "id": "headphones",
+        "name": "ყურსასმენები"
+      },
+      {
+        "id": "accessories",
+        "name": "აქსესუარები"
+      },
+      {
+        "id": "smartwatch",
+        "name": "სმარტ საათი"
+      }
+    ]
+  }
+}

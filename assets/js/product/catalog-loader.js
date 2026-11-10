@@ -145,6 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   applyProduct(snapshot);
+  window.addEventListener('enka:prices-change', event => {
+    if(window.enkaOrderPending)return;
+    const product=event.detail.products.find(p=>String(p.id)===String(snapshot.id));
+    if(product)applyProduct(product);
+  });
   retry.addEventListener('click', load);
   window.refreshProduct = load;
   window.addEventListener('enka:personalization-choice', () => {

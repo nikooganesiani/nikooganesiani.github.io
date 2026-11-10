@@ -1,3 +1,5 @@
+{% assign store_catalog = site.data.catalog %}
+{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 <nav class="site-breadcrumbs flex items-center justify-between gap-6 mb-8 min-w-0 text-muted [&_ol]:flex [&_ol]:items-center [&_ol]:gap-3 [&_ol]:min-w-0 [&_ol]:p-0 [&_ol]:m-0 [&_ol]:list-none [&_li]:flex [&_li]:items-center [&_li]:min-w-0 [&_li]:shrink-0 min-[1440px]:mb-10 max-[768px]:gap-4 max-[768px]:mb-6 max-[768px]:[&_ol]:gap-[9px] max-[768px]:[&_ol]:overflow-hidden" data-breadcrumbs aria-label="ნავიგაციის ჯაჭვი">
   <ol{% if include.dynamic %} id="categoryBreadcrumbsList"{% endif %} itemscope itemtype="https://schema.org/BreadcrumbList">
     {% include breadcrumb-item.html kind='home' href='/' label='მთავარი' position=1 %}
@@ -19,6 +21,6 @@
   {% if include.dynamic %}
     <template data-breadcrumb-item>{% include breadcrumb-item.html href='#' label='' position=2 %}</template>
     <template data-breadcrumb-separator>{% include breadcrumb-separator.html %}</template>
-    {% for category in site.data.catalog %}<template data-breadcrumb-icon="{{ category[0] | escape }}">{{ category[1].icon }}</template>{% endfor %}
+    {% for category in store_catalog %}<template data-breadcrumb-icon="{{ category[0] | escape }}">{{ category[1].icon }}</template>{% endfor %}
   {% endif %}
 </nav>

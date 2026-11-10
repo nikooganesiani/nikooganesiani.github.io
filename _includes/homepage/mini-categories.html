@@ -1,8 +1,13 @@
+{% assign store_catalog = site.data.catalog %}
+{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 <!-- Category illustrations are keyed by catalog ID, independently of display order. -->
 <section class="my-5 sm:my-6" aria-label="კატეგორიები" data-category-tiles>
   <nav aria-label="კატეგორიები">
     <ul class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
-      {% for category in site.data.catalog %}
+      {% if site.data.studio.categoryTiles %}
+      {% for tile in site.data.studio.categoryTiles %}<li class="min-w-0">{{ tile }}</li>{% endfor %}
+      {% else %}
+      {% for category in store_catalog %}
         {% assign cat_id = category[0] %}
         {% assign cat_info = category[1] %}
         {% assign pattern = '' %}
@@ -30,6 +35,7 @@
           </a>
         </li>
       {% endfor %}
+      {% endif %}
     </ul>
   </nav>
 </section>

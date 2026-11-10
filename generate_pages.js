@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { buildLocalizations } = require('./scripts/build-localizations.cjs');
+const { buildStoreContent } = require('./scripts/build-store-content.cjs');
 
 function parsePrice(value) {
   const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -74,7 +75,8 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
     if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
     data = await response.json();
   }
-  const products = normalizeCatalog(data);
+  normalizeCatalog(data);
+  const products = await buildStoreContent(data, root);
   buildLocalizations(root);
   const productsDir = path.join(root, '_products');
   fs.mkdirSync(productsDir, { recursive: true });

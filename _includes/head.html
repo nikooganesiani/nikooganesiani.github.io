@@ -1,3 +1,5 @@
+{% assign store_catalog = site.data.catalog %}
+{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 {% assign is_product_page = false %}
 {% if page.collection == 'products' or page.layout == 'product' %}{% assign is_product_page = true %}{% include product/state.html %}{% endif %}
 <head>
@@ -53,7 +55,9 @@
     <script src="/capi.js" defer></script>
 
     <script>
-    window.CATALOG_STRUCTURE = {{ site.data.catalog | jsonify | replace: '<', '\u003c' }};
+    window.CATALOG_STRUCTURE = {{ store_catalog | jsonify | replace: '<', '\u003c' }};
+    window.ENKA_STORE = {{ site.data.studio.store | jsonify | replace: '<', '\u003c' }};
+    window.ENKA_COMPANY = {{ site.data.studio.company | default: site.data.info.company | jsonify | replace: '<', '\u003c' }};
     </script>
 
 

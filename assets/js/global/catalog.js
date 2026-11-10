@@ -2,9 +2,17 @@
   'use strict';
   const TTL = 5 * 60 * 1000;
   const locale = window.enkaI18n?.locale || 'ka';
-  const CACHE_KEY = 'catalogCache_v4_' + locale;
+  const CACHE_KEY = 'catalogCache_v5_' + locale;
   let cached = null;
   let promise = null;
+  function prepare(value) {
+    if(value.store && globalThis.EnkaStoreEngine) {
+      value.products = globalThis.EnkaStoreEngine.applyProducts(value.products,value.store);
+      window.enkaStorefront?.apply(value.store,value.products);
+    }
+    return value;
+  }
+  window.addEventListener?.('enka:prices-change', event => { if(cached)cached.products=event.detail.products; });
 
   window.productPrice = value => {
     const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -54,7 +62,7 @@
         if (saved && Array.isArray(saved.products) && Date.now() - saved.ts < TTL) cached = saved;
       } catch { /* Storage is optional. */ }
     }
-    if (cached && Date.now() - cached.ts < TTL) return Promise.resolve(cached);
+    if (cached && Date.now() - cached.ts < TTL) return Promise.resolve(prepare(cached));
     if (promise) return promise;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
@@ -68,9 +76,9 @@
       .then(data => {
         const products = Array.isArray(data) ? data : data?.products;
         if (!Array.isArray(products)) throw new Error('Invalid catalog');
-        cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ts: Date.now() };
+        cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
-        return cached;
+        return prepare(cached);
       })
       .finally(() => { clearTimeout(timer); promise = null; });
     return promise;

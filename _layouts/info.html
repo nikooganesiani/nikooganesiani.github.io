@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-{% assign company = site.data.info.company %}
+{% assign company = site.data.studio.company | default: site.data.info.company %}
 <div class="max-w-320 my-0 mx-auto pt-5 pr-6 pb-18 pl-6 max-[900px]:pt-4 max-[640px]:pt-3 max-[640px]:pr-4 max-[640px]:pb-10 max-[640px]:pl-4 print:p-0 print:max-w-none">
   {% include breadcrumbs.html current_label=page.title %}
   <div class="grid grid-cols-[240px_minmax(0,_1fr)] gap-11 [align-items:start] min-[900px]:max-[1100px]:grid-cols-[215px_minmax(0,_1fr)] min-[900px]:max-[1100px]:gap-7 max-[900px]:grid-cols-[1fr] max-[900px]:gap-6.5 max-[640px]:gap-6 print:block">
@@ -16,8 +16,8 @@ layout: default
       </nav>
       <div class="mt-5 p-6 text-muted text-[length:12px] leading-[1.7] [&_>_a]:inline-flex [&_>_a]:items-center [&_>_a]:min-h-11 [&_>_a]:text-brand [&_>_a]:text-[length:15px] [&_>_a]:font-semibold [&_>_a]:no-underline [&_>_a]:whitespace-nowrap max-[900px]:hidden">
         <span class="info-icon [.info-section-heading_>_&]:mb-4.5 [.info-card_>_&]:mb-5.5 inline-flex flex-none items-center justify-center w-11 h-11 rounded-[13px] text-brand bg-[#edf3ff] [.info-note_&]:bg-white [.info-about-copy_>_&]:mb-5.5 [.info-contact--primary_&]:bg-brand [.info-contact--primary_&]:text-white [.info-highlight--blue_&]:bg-white [.info-tracking_>_&]:bg-white">{% include icons.html name='phone' size=21 %}</span>
-        <p class="mt-4 mr-0 mb-1.5 ml-0 text-[#202a3b] text-[length:14px] font-bold">დახმარება გჭირდებათ?</p><p>{{ company.hours }}</p>
-        <a href="tel:{{ company.phone_link }}">{{ company.phone }}</a>
+        <p class="mt-4 mr-0 mb-1.5 ml-0 text-[#202a3b] text-[length:14px] font-bold">დახმარება გჭირდებათ?</p><p>{{ company.hours | escape }}</p>
+        <a href="tel:{{ company.phone_link | escape }}">{{ company.phone | escape }}</a>
       </div>
     </aside>
     <article class="min-w-0 text-[#475569] text-[length:15px] leading-[1.85] [overflow-wrap:anywhere] [:where(&_h2)]:mt-0 [:where(&_h2)]:mr-0 [:where(&_h2)]:mb-4 [:where(&_h2)]:ml-0 [:where(&_h2)]:text-[#192334] [:where(&_h2)]:text-[length:22px] [:where(&_h2)]:font-bold [:where(&_h2)]:leading-[1.5] [:where(&_h2)]:tracking-[-.025em] [:where(&_h3)]:mt-0 [:where(&_h3)]:mr-0 [:where(&_h3)]:mb-2.5 [:where(&_h3)]:ml-0 [:where(&_h3)]:text-[#202a3b] [:where(&_h3)]:text-[length:16px] [:where(&_h3)]:font-bold [:where(&_h3)]:leading-[1.6] [&_p_+_p]:mt-3.5 [&_p_+_h3]:mt-7 [&_p_a:not([class])]:text-brand-dark [&_p_a:not([class])]:underline [&_p_a:not([class])]:underline-offset-[3px] [&_dd_a]:text-brand-dark [&_dd_a]:underline [&_dd_a]:underline-offset-[3px] max-[640px]:text-[length:14px] max-[640px]:[&_h2]:text-[length:20px] max-[640px]:[&_h3]:text-[length:15px] print:text-black print:text-[length:11pt]" aria-labelledby="info-title">
@@ -25,7 +25,7 @@ layout: default
       {{ content }}
       <section class="info-help flex items-center flex-wrap justify-between gap-6 mt-12 p-7.5 bg-white border border-solid border-[#e2e7ef] rounded-[20px] [&_h2]:text-[length:22px] [&_h2]:mb-2 [&_p:not(.info-eyebrow)]:text-[length:13px] max-[640px]:p-5.5 max-[640px]:rounded-2xl max-[640px]:mt-8 print:hidden!" aria-labelledby="info-help-title">
         <div><p class="info-eyebrow mt-0 mr-0 mb-3 ml-0 text-brand text-[length:11px] font-bold tracking-[.07em] leading-[1.6]">ჩვენ თქვენ გვერდით ვართ</p><h2 id="info-help-title">კითხვა დაგრჩათ?</h2><p>მოგვწერეთ ან დაგვირეკეთ — დაგეხმარებით.</p></div>
-        <a class="inline-flex justify-center items-center gap-2.5 min-h-11.5 py-3 px-4.5 border border-solid border-brand rounded-[11px] bg-brand text-white text-[length:13px] font-semibold leading-[1.5] text-center no-underline cursor-pointer [transition:background_.15s,_border-color_.15s] hover:bg-brand-dark hover:border-brand-dark [&[aria-pressed=true]]:shadow-[0_0_0_3px_#155dfc26] [.info-help_>_&]:whitespace-nowrap max-[640px]:[.info-tracking_>_&]:w-full max-[640px]:[.info-download_>_&]:w-full" href="tel:{{ company.phone_link }}">{% include icons.html name='phone' size=18 %}{{ company.phone }}</a>
+        <a class="inline-flex justify-center items-center gap-2.5 min-h-11.5 py-3 px-4.5 border border-solid border-brand rounded-[11px] bg-brand text-white text-[length:13px] font-semibold leading-[1.5] text-center no-underline cursor-pointer [transition:background_.15s,_border-color_.15s] hover:bg-brand-dark hover:border-brand-dark [&[aria-pressed=true]]:shadow-[0_0_0_3px_#155dfc26] [.info-help_>_&]:whitespace-nowrap max-[640px]:[.info-tracking_>_&]:w-full max-[640px]:[.info-download_>_&]:w-full" href="tel:{{ company.phone_link | escape }}">{% include icons.html name='phone' size=18 %}{{ company.phone | escape }}</a>
       </section>
     </article>
   </div>

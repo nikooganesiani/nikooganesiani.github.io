@@ -99,6 +99,7 @@ function showSpamError(form, message) {
 window.openOrderForm = function(product, trigger) {
     try {
         if (isQuickOrderSubmitting || window.enkaOrderPending) return;
+        if (window.ENKA_STORE && globalThis.EnkaStoreEngine && product) product=globalThis.EnkaStoreEngine.applyProducts([product],window.ENKA_STORE)[0];
         if (!product?.id || !window.isProductAvailable(product)) return;
         product = { ...product, price: String(window.productPrice(product.price)), oldPrice: window.productPrice(product.oldPrice) > window.productPrice(product.price) ? String(window.productPrice(product.oldPrice)) : '' };
         document.getElementById('quickProductName').textContent = product.name || '';
@@ -122,6 +123,15 @@ window.openOrderForm = function(product, trigger) {
         window.openAppModal?.('orderFormModal', trigger);
     } catch(e) { console.error(e); }
 };
+
+window.addEventListener?.('enka:prices-change', event => {
+    if(isQuickOrderSubmitting || window.enkaOrderPending)return;
+    const modal=document.getElementById('orderFormModal');
+    if(!modal?.dataset.product)return;
+    let saved;try{saved=JSON.parse(modal.dataset.product);}catch{return;}
+    const product=event.detail.products.find(p=>String(p.id)===String(saved.id));
+    if(product){modal.dataset.product=JSON.stringify(product);document.getElementById('quickProductPrice').textContent=product.price+' ₾';}
+});
 
 if (quickPhone) {
     quickPhone.addEventListener('input', function() {
