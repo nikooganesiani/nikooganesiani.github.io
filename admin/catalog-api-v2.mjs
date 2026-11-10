@@ -4,7 +4,7 @@ import { readPublishedCatalog } from './server/published.mjs';
 import { stockOf, priceOf } from './public/model.js';
 
 const xml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[char]);
-function feed(catalog, site) {
+export function feed(catalog, site) {
   const items = catalog.products.map(product => {
     const price = priceOf(product.price); const old = priceOf(product.oldPrice); const discount = Number.isFinite(old) && old > price;
     const photos = (product.images || []).filter(image => /^https:\/\//.test(image) && !/youtu\.?be/.test(image));
