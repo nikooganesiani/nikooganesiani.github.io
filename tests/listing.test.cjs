@@ -8,7 +8,7 @@ const structure = { kitchen: { title: 'სამზარეულო', subs: [{
 function context(extra = {}) {
   const scope = vm.createContext({ URL, URLSearchParams, setTimeout, clearTimeout,
     document: { addEventListener() {} }, window: { location: { search: '', hash: '' }, CATALOG_STRUCTURE: structure }, ...extra });
-  for (const file of ['assets/js/global/catalog.js', 'assets/js/main/catalog-nav.js', 'assets/js/main/catalog-listing.js']) vm.runInContext(read(file), scope);
+  for (const file of ['admin/public/store-engine.js', 'assets/js/global/catalog.js', 'assets/js/main/catalog-nav.js', 'assets/js/main/catalog-listing.js']) vm.runInContext(read(file), scope);
   return scope;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
@@ -133,7 +133,7 @@ function harness({ mode = 'category', search = '', blockedStorage = false } = {}
   window.CatalogListing.mount(mode);
   const flush = async () => { for (let i = 0; i < 5; i++) await Promise.resolve(); };
   return { nodes, presets, pending, history, location, document, grid: nodes[mode === 'search' ? 'searchResultsGrid' : 'catalogContainer'],
-    async resolve(products) { pending.at(-1).resolve({ products }); await flush(); }, async reject() { pending.at(-1).reject(Error('offline')); await flush(); },
+    async resolve(products,store) { pending.at(-1).resolve({ products,store }); await flush(); }, async reject() { pending.at(-1).reject(Error('offline')); await flush(); },
     backTo(search) { location.search = search; handlers.popstate(); }, runTimers() { const tasks = [...timers.values()]; timers.clear(); tasks.forEach(fn => fn()); } };
 }
 
@@ -186,4 +186,19 @@ test('Empty queries do not fetch, and an unknown search category stays visible a
   assert.ok(h.nodes.listingPills.children.some(link => link.dataset.listingValue === 'missing'));
   h.nodes.resetFilters.click();
   assert.equal(h.grid.children.length, 4); assert.ok(!h.location.search.includes('cat='));
+});
+const renamedStore={categories:[{id:'appliances',aliases:['kitchen'],subs:[{id:'espresso',aliases:['coffee']}]}]};
+test('Renamed category links resolve canonical IDs while retaining filters and campaign parameters',()=>{
+  const scope=context();scope.window.ENKA_STORE=renamedStore;const api=scope.window.CatalogListing;
+  for(const search of ['?kitchen&sub=coffee&max=99&utm_source=ad','?category=kitchen&sub=coffee&max=99&utm_source=ad']){
+    const state=api.readState(search,'category');assert.equal(state.category,'appliances');assert.equal(state.sub,'espresso');assert.equal(state.max,'99');
+    const url=new URL(api.routeURL(state,'category',search),'https://shop.test');assert.equal(url.searchParams.get('category'),'appliances');assert.equal(url.searchParams.get('sub'),'espresso');assert.equal(url.searchParams.get('utm_source'),'ad');
+  }
+  assert.equal(api.readState('?result=coffee&cat=kitchen','search').category,'appliances');
+});
+test('A category alias fetched after mount replaces the old URL and selects renamed product assignments',async()=>{
+  const h=harness({search:'?kitchen&sub=coffee&max=99&utm_source=ad'});
+  await h.resolve([{id:'coffee-new',name:'Coffee',price:'49',categories:['appliances'],subcategories:['espresso']}],renamedStore);
+  assert.equal(h.grid.children.length,1);assert.equal(h.grid.children[0].dataset.productId,'coffee-new');
+  const params=new URLSearchParams(h.location.search);assert.equal(params.get('category'),'appliances');assert.equal(params.get('sub'),'espresso');assert.equal(params.get('max'),'99');assert.equal(params.get('utm_source'),'ad');
 });

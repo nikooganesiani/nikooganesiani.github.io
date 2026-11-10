@@ -24,7 +24,35 @@
   }
   const banners = store => (store?.heroes || []).filter(h=>plain(h) && h.enabled && (h.type==='image' || (h.type===undefined && !Object.hasOwn(h,'productId'))) && safeImage(h.image) && safeLink(h.link));
   const colorOK = value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value);
-  const categoryAppearance = category => ({ backgroundColor:'#e5edff', textColor:'#15356b', backgroundImage: ['smarthome','kitchen','homecare','selfcare','building','gadget'].includes(category.id) ? `/img/categories/patterns/${category.id}.svg` : '', backgroundFit:'tile', backgroundOpacity:0.65, image:'', useDefaultImage:true, showIllustration:true, imageSize:100, imageX:100, imageY:100, showTitle:true, ...category.appearance });
+  const artworkIds=['smarthome','kitchen','homecare','selfcare','building','gadget'];
+  const categoryAppearance = category => ({ backgroundColor:'#e5edff', textColor:'#15356b', backgroundImage: artworkIds.includes(category.artworkId || category.id) ? `/img/categories/patterns/${category.artworkId || category.id}.svg` : '', backgroundFit:'tile', backgroundOpacity:0.65, image:'', useDefaultImage:true, showIllustration:true, imageSize:100, imageX:100, imageY:100, showTitle:true, ...category.appearance });
+  const campaignAppearance = rule => ({backgroundColor:rule.template==='featured'?'#eff6ff':'#ffffff',textColor:'#0f172a',backgroundImage:'',backgroundFit:'tile',backgroundOpacity:0.25,patternSize:128,...rule.appearance});
+  const sectionKey=value=>String(value ?? '').trim().toLowerCase();
+  const sectionItems=(store,kind)=>{const categories=Array.isArray(store?.categories)?store.categories:[];return kind==='category'?categories:categories.flatMap(c=>Array.isArray(c?.subs)?c.subs:[]);};
+  function resolveSection(store, category, sub) {
+    const find=(items,key)=>items.find(item=>sectionKey(item.id)===sectionKey(key) || item.aliases?.some(alias=>sectionKey(alias)===sectionKey(key)));
+    const parent=find(sectionItems(store,'category'),category);
+    const child=find(parent?parent.subs:sectionItems(store,'sub'),sub);
+    return {category:parent?.id || category,sub:child?.id || sub};
+  }
+  function renameSection(store, products, kind, oldId, value) {
+    if(!['category','sub'].includes(kind))throw Error('Раздел не найден.');
+    const items=sectionItems(store,kind);const item=items.find(item=>item.id===oldId);
+    if(!item)throw Error('Раздел не найден.');
+    const next=typeof value==='string'?sectionKey(value):'';
+    if(!idOK(next))throw Error('ID: используйте латинские буквы, цифры, дефис или подчёркивание, до 150 символов.');
+    if(['all','category','sub','cat','result','q','search','min','max','sort','page','order','fbclid','gclid','msclkid'].includes(next) || next.startsWith('utm_'))throw Error('Этот ID зарезервирован для адресов сайта. Выберите другой.');
+    if(items.some(other=>other!==item && [other.id,...(other.aliases || [])].some(id=>sectionKey(id)===next)))throw Error('Этот ID уже используется разделом или его старой ссылкой.');
+    if(next===oldId)return false;
+    const aliases=[...new Set([...(item.aliases || []),oldId])].filter(id=>sectionKey(id)!==next);
+    if(aliases.length>100)throw Error('Достигнут лимит предыдущих ID: 100.');
+    if(kind==='category' && !item.artworkId && artworkIds.includes(oldId))item.artworkId=oldId;
+    item.id=next;item.aliases=aliases;
+    const replace=list=>[...new Set(list.map(id=>id===oldId?next:id))];
+    for(const product of products){const key=kind==='category'?'categories':'subcategories';product[key]=replace(product[key] || []);}
+    for(const campaign of store.campaigns || []){const key=kind==='category'?'categoryIds':'subcategoryIds';campaign[key]=replace(campaign[key] || []);}
+    return true;
+  }
   function appearanceErrors(value, category = false) {
     if (value === undefined) return [];
     if (!plain(value)) return ['Оформление: неверная структура.'];
@@ -86,9 +114,22 @@
       if (!plain(category) || !idOK(category.id) || cats.has(category.id) || !titleOK(category.title) || typeof category.visible !== 'boolean' || !idOK(category.icon)) { errors.push('Категории: проверьте ID, названия, иконку и видимость.'); continue; }
       cats.add(category.id);
       errors.push(...appearanceErrors(category.appearance, true));
+      if(category.artworkId!==undefined && !artworkIds.includes(category.artworkId))errors.push('Категории: неверная стандартная иллюстрация.');
       for (const sub of list(category.subs, 200, 'Подкатегории')) {
         if (!plain(sub) || !idOK(sub.id) || subs.has(sub.id) || !titleOK(sub.title) || typeof sub.visible !== 'boolean') errors.push('Подкатегории: ID должны быть уникальными, названия заполнены.');
         else subs.add(sub.id);
+      }
+    }
+    // Current and previous IDs share one case-insensitive namespace per section type.
+    for(const kind of ['category','sub']) {
+      const used=new Set();
+      for(const item of sectionItems(store,kind).filter(plain)) {
+        const aliases=item.aliases===undefined?[]:list(item.aliases,100,'Предыдущие ID');
+        for(const value of [item.id,...aliases]) {
+          const key=sectionKey(value);
+          if(!idOK(value) || key==='all' || used.has(key))errors.push('ID разделов и их предыдущие ID должны быть корректными и уникальными.');
+          used.add(key);
+        }
       }
     }
     for (const p of products) {
@@ -99,6 +140,8 @@
     for (const rule of list(store.campaigns, 100, 'Акции')) {
       if (!plain(rule) || !idOK(rule.id) || ids.has(rule.id) || !titleOK(rule.title)) { errors.push('Акции: проверьте ID и заголовки.'); continue; }
       ids.add(rule.id);
+      errors.push(...appearanceErrors(rule.appearance,true));
+      if(rule.appearance?.patternSize!==undefined && (!Number.isFinite(rule.appearance.patternSize) || rule.appearance.patternSize<16 || rule.appearance.patternSize>1024))errors.push('Размер узора должен быть от 16 до 1024 px.');
       if (typeof rule.enabled !== 'boolean' || (rule.isTemplate !== undefined && typeof rule.isTemplate !== 'boolean') || typeof rule.showRow !== 'boolean' || !Number.isFinite(rule.percent) || rule.percent <= 0 || rule.percent >= 100 || !Number.isInteger(rule.limit) || rule.limit < 1 || rule.limit > 48 || !['cards', 'compact', 'featured'].includes(rule.template)) errors.push(`Акция «${text(rule.title, 'ru')}»: процент должен быть больше 0 и меньше 100; проверьте шаблон и количество (1–48).`);
       for (const key of ['startsAt', 'endsAt']) if (typeof rule[key] !== 'string' || (rule[key] && (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{3})?)?(?:Z|[+-]\d{2}:\d{2})$/.test(rule[key]) || !Number.isFinite(Date.parse(rule[key]))))) errors.push('Акции: некорректная дата с часовым поясом.');
       if (rule.startsAt && rule.endsAt && Date.parse(rule.startsAt) >= Date.parse(rule.endsAt)) errors.push('Акции: окончание должно быть позже начала.');
@@ -127,5 +170,5 @@
     }
     return [...new Set(errors)];
   }
-  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, migrateBanners, banners };
+  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, migrateBanners, banners, renameSection, resolveSection };
 })();

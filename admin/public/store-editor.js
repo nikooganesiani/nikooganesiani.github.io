@@ -1,7 +1,7 @@
 import { t, ui } from './studio-i18n.js';
 import defaults from './store-defaults.js';
 import { dateControl, createDatePicker } from './date-picker.js';
-import { clone, storeEngine as engine } from './model.js';
+import { clone, localizedProduct, storeEngine as engine } from './model.js';
 import './store-visuals.js';
 import { getLocale } from './studio-i18n.js';
 const visuals=globalThis.EnkaStoreVisuals;
@@ -41,20 +41,39 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   const id = prefix => prefix+'-'+crypto.randomUUID().slice(0,8);
   const title = item => engine.text(item.title,getLocale());
   const options = items => items.map(item=>[item.id,title(item)]);
+  function sectionIdEditor(item,index,sub) {
+    const kind=sub===undefined?'category':'sub';
+    return ui`<div class="studio-id-editor"><label class="field"><span class="field-label">${t(kind==='category'?'ID категории':'ID подкатегории')}</span><input data-section-id value="${e(item.id)}" maxlength="150" autocomplete="off" autocapitalize="none" spellcheck="false"><span class="field-hint">Латинские буквы, цифры, дефис и подчёркивание. Примените новый ID отдельной кнопкой.</span></label>${button('rename-section',t('Изменить ID'),`data-kind="${kind}" data-index="${index}"${sub===undefined?'':` data-sub="${sub}"`}`)}${item.aliases?.length?`<p class="field-hint">${t('Предыдущие ID:')} ${e(item.aliases.join(', '))}</p>`:''}</div>`;
+  }
   function categories() {
-    return ui`<p class="studio-help">Названия доступны на трёх языках. Стрелки меняют порядок на сайте. Скрытый раздел остаётся у товаров, но не показывается в навигации. Адреса существующих разделов сохраняются.</p>${button('add-category',t('+ Добавить категорию'))}<div class="studio-stack">${store().categories.map((c,i)=>ui`<details class="studio-card" data-category-id="${e(c.id)}"><summary><strong>${e(title(c))}</strong><span>${c.subs.length} подкатегорий · ${c.visible?t('Видна'):t('Скрыта')}</span></summary><div class="studio-card-body"><div class="studio-actions">${moves('categories',i,store().categories.length)}${button('delete-category',t('Удалить'),`data-index="${i}"`)}<small>ID: ${e(c.id)}</small></div><div class="studio-grid">${titles(`categories.${i}.title`)}${input(t('Показывать в навигации'),`categories.${i}.visible`,{type:'checkbox'})}${input(t('Иконка в меню'),`categories.${i}.icon`,{options:defaults.categories.map(c=>[c.id,title(c)])})}</div>${categoryDesign(c,i)}<h3>Подкатегории</h3>${c.subs.map((s,j)=>`<div class="studio-sub"><div class="studio-grid">${titles(`categories.${i}.subs.${j}.title`)}${input(t('Показывать'),`categories.${i}.subs.${j}.visible`,{type:'checkbox'})}</div><div class="studio-actions">${moves(`categories.${i}.subs`,j,c.subs.length)}${button('delete-sub',t('Удалить подкатегорию'),`data-index="${i}" data-sub="${j}"`)}<small>ID: ${e(s.id)}</small></div></div>`).join('')}${button('add-sub',t('+ Подкатегория'),`data-index="${i}"`)}</div></details>`).join('')}</div>`;
+    return ui`<p class="studio-help">Названия доступны на трёх языках. Стрелки меняют порядок на сайте. Скрытый раздел остаётся у товаров, но не показывается в навигации. ID можно менять отдельно: товары и акции обновятся автоматически, а старые ссылки сохранятся.</p>${button('add-category',t('+ Добавить категорию'))}<div class="studio-stack">${store().categories.map((c,i)=>ui`<details class="studio-card" data-category-id="${e(c.id)}"><summary><strong>${e(title(c))}</strong><span>${c.subs.length} подкатегорий · ${c.visible?t('Видна'):t('Скрыта')}</span></summary><div class="studio-card-body"><div class="studio-actions">${moves('categories',i,store().categories.length)}${button('delete-category',t('Удалить'),`data-index="${i}"`)}</div>${sectionIdEditor(c,i)}<div class="studio-grid">${titles(`categories.${i}.title`)}${input(t('Показывать в навигации'),`categories.${i}.visible`,{type:'checkbox'})}${input(t('Иконка в меню'),`categories.${i}.icon`,{options:defaults.categories.map(c=>[c.id,title(c)])})}</div>${categoryDesign(c,i)}<h3>Подкатегории</h3>${c.subs.map((s,j)=>`<div class="studio-sub"><div class="studio-grid">${titles(`categories.${i}.subs.${j}.title`)}${input(t('Показывать'),`categories.${i}.subs.${j}.visible`,{type:'checkbox'})}</div><div class="studio-actions">${moves(`categories.${i}.subs`,j,c.subs.length)}${button('delete-sub',t('Удалить подкатегорию'),`data-index="${i}" data-sub="${j}"`)}</div>${sectionIdEditor(s,i,j)}</div>`).join('')}${button('add-sub',t('+ Подкатегория'),`data-index="${i}"`)}</div></details>`).join('')}</div>`;
   }
   function campaignPreview(rule) {
     const now = previewAt ? Date.parse(previewAt) : Date.now();
     const products = state.document.catalog.products.filter(p=>engine.matches(p,rule));
     const priced = engine.applyProducts(products,store(),now);
     const status = rule.isTemplate?t('Шаблон'):!rule.enabled?t('Выключена'):rule.startsAt && now<Date.parse(rule.startsAt)?t('Запланирована'):rule.endsAt && now>=Date.parse(rule.endsAt)?t('Завершена'):t('Действует');
-    return ui`<div class="studio-preview"><h3>${status} · ${products.length} товаров в составе</h3><p>Расчёт от текущей цены товара. При пересечении действует самая выгодная акция, без сложения процентов. Акционная цена округляется вниз до целого лари: 41,65 → 41 ₾. Минимальная акционная цена — 1 ₾.</p>${dateControl(t('Проверить на дату · время Тбилиси (UTC+4)'),'preview',previewAt)}<div class="table-scroll"><table class="product-table"><thead><tr><th>Товар</th><th>Обычная цена</th><th>По этой акции</th><th>Итог на дату</th></tr></thead><tbody>${priced.slice(0,60).map((p,index)=>`<tr><td>${e(p.name)}</td><td>${e(products[index].price)} ₾</td><td>${e(engine.campaignPrice(products[index].price,rule.percent))} ₾</td><td>${e(p.price)} ₾${p._enkaCampaign && p._enkaCampaign!==rule.id?t(' · другая акция'):''}</td></tr>`).join('')}</tbody></table></div>${products.length>60?t('<p>Первые 60 товаров; акция применяется ко всему составу.</p>'):''}</div>`;
+    return ui`<div class="studio-row-preview"><h3>Предпросмотр ряда</h3>${previewControls()}<p class="field-hint">Оформление показано независимо от расписания и включения акции.</p><div class="studio-preview-device" data-device="${previewDevice}" data-campaign-design-preview>${campaignDesignHTML(rule)}</div></div><div class="studio-preview"><h3>${status} · ${products.length} товаров в составе</h3><p>Расчёт от текущей цены товара. При пересечении действует самая выгодная акция, без сложения процентов. Акционная цена округляется вниз до целого лари: 41,65 → 41 ₾. Минимальная акционная цена — 1 ₾.</p>${dateControl(t('Проверить на дату · время Тбилиси (UTC+4)'),'preview',previewAt)}<div class="table-scroll"><table class="product-table"><thead><tr><th>Товар</th><th>Обычная цена</th><th>По этой акции</th><th>Итог на дату</th></tr></thead><tbody>${priced.slice(0,60).map((p,index)=>`<tr><td>${e(p.name)}</td><td>${e(products[index].price)} ₾</td><td>${e(engine.campaignPrice(products[index].price,rule.percent))} ₾</td><td>${e(p.price)} ₾${p._enkaCampaign && p._enkaCampaign!==rule.id?t(' · другая акция'):''}</td></tr>`).join('')}</tbody></table></div>${products.length>60?t('<p>Первые 60 товаров; акция применяется ко всему составу.</p>'):''}</div>`;
+  }
+  function campaignDesign(rule,index) {
+    const a=engine.campaignAppearance(rule);const p=`campaigns.${index}.appearance`;
+    return ui`<h3>Фон ряда на главной</h3><p class="studio-help">Выберите цвет и картинку-узор. Настройки работают с любым оформлением ряда.</p><div class="studio-grid">${input(t('Цвет фона'),p+'.backgroundColor',{type:'color',value:a.backgroundColor})}${input(t('Цвет заголовка ряда'),p+'.textColor',{type:'color',value:a.textColor})}${mediaField(t('Фоновая картинка / узор'),p+'.backgroundImage',a.backgroundImage)}${input(t('Режим фона'),p+'.backgroundFit',{value:a.backgroundFit,options:[['tile',t('Повторять узор')],['cover',t('Заполнить фон')],['contain',t('Вместить фон')]]})}${numberField(t('Непрозрачность фона (0–1)'),p+'.backgroundOpacity',a.backgroundOpacity)}${numberField(t('Размер узора, px (16–1024)'),p+'.patternSize',a.patternSize)}</div>${button('reset-campaign-design',t('Вернуть стандартное оформление'),`data-index="${index}"`)}`;
+  }
+  function campaignDesignHTML(rule) {
+    const previewRule={...rule,enabled:true,isTemplate:false,startsAt:'',endsAt:'',showRow:true};
+    const products=engine.applyProducts(state.document.catalog.products,{campaigns:[previewRule]});
+    const row=engine.rows(products,{campaigns:[previewRule]})[0];
+    const frame=visuals.campaignFrame(rule,previewLocale);
+    const cards=(row?.products || []).map(product=>{
+      const p=localizedProduct(state.document,product,previewLocale);const image=p.images?.find(url=>engine.safeImage(url));
+      return `<article class="studio-campaign-card">${image?`<img src="${e(image)}" alt="" loading="lazy">`:''}<strong lang="${previewLocale}">${e(p.name)}</strong><span>${e(p.price)} ₾</span></article>`;
+    }).join('') || `<p class="field-hint">${t('Выберите товары для предпросмотра ряда.')}</p>`;
+    return frame.start+cards+frame.end;
   }
   function campaigns() {
     const list = store().campaigns; let index = list.findIndex(c=>c.id===selected); if(index<0)index=0;
     const rule = list[index]; selected=rule?.id || ''; const p=`campaigns.${index}`;
-    return ui`<p class="studio-help">Выберите целые разделы или отдельные товары и исключения. Даты необязательны: пустое начало — сразу, пустое окончание — бессрочно. Конец интервала не включается. Шаблоны сохраняют настройки для будущих акций и не дают скидку.</p><div class="studio-actions">${button('add-campaign',t('+ Новая акция'))}</div><div class="studio-columns"><nav class="studio-list" aria-label="Список акций">${list.map(c=>button('select-campaign',e(title(c))+(c.isTemplate?t(' · шаблон'):c.enabled?t(' · включена'):t(' · выключена')),`data-id="${e(c.id)}" aria-pressed="${c.id===selected}"`)).join('')}</nav><div>${rule?ui`<article class="studio-card studio-card-body"><div class="studio-actions">${moves('campaigns',index,list.length)}${button('copy-campaign',t('Дублировать'),`data-index="${index}"`)}${button('template-campaign',rule.isTemplate?t('Создать акцию из шаблона'):t('Сохранить как шаблон'),`data-index="${index}"`)}${button('delete-campaign',t('Удалить'),`data-index="${index}"`)}</div><div class="studio-grid">${titles(p+'.title')}${input(t('Включить акцию'),p+'.enabled',{type:'checkbox',hint:rule.isTemplate?t('Сначала создайте акцию из шаблона.'):''})}${input(t('Скидка, %'),p+'.percent',{type:'number'})}${input(t('Начало · Тбилиси (UTC+4)'),p+'.startsAt',{type:'datetime-local',value:rule.startsAt})}${input(t('Окончание · Тбилиси (UTC+4)'),p+'.endsAt',{type:'datetime-local',value:rule.endsAt})}${input(t('Целые категории'),p+'.categoryIds',{options:options(store().categories),multi:true})}${input(t('Целые подкатегории'),p+'.subcategoryIds',{options:options(store().categories.flatMap(c=>c.subs)),multi:true})}</div><div class="studio-help">Отметьте нужные разделы галочками. Для отдельных товаров используйте поиск ниже.</div><label class="field"><span class="field-label">Найти товар по названию, ID или артикулу</span><input id="campaign-product-search" type="search" placeholder="Введите название"></label><div id="campaign-product-choices">${productChoices(index,'')}</div><div class="studio-grid">${input(t('Показать товарный ряд на главной'),p+'.showRow',{type:'checkbox'})}${input(t('Оформление ряда'),p+'.template',{options:[['cards',t('Карточки · горизонтальный ряд')],['compact',t('Компактный · сетка')],['featured',t('Акцентный · цветной фон')]]})}${input(t('Количество товаров в ряду (1–48)'),p+'.limit',{type:'number'})}</div></article><div id="campaign-preview">${campaignPreview(rule)}</div>`:t('<div class="studio-card studio-card-body"><h2>Здесь появятся ваши акции</h2><p>Создайте первую акцию и проверьте её состав и цены перед публикацией.</p></div>')}</div></div>`;
+    return ui`<p class="studio-help">Выберите целые разделы или отдельные товары и исключения. Даты необязательны: пустое начало — сразу, пустое окончание — бессрочно. Конец интервала не включается. Шаблоны сохраняют настройки для будущих акций и не дают скидку.</p><div class="studio-actions">${button('add-campaign',t('+ Новая акция'))}</div><div class="studio-columns"><nav class="studio-list" aria-label="Список акций">${list.map(c=>button('select-campaign',e(title(c))+(c.isTemplate?t(' · шаблон'):c.enabled?t(' · включена'):t(' · выключена')),`data-id="${e(c.id)}" aria-pressed="${c.id===selected}"`)).join('')}</nav><div>${rule?ui`<article class="studio-card studio-card-body"><div class="studio-actions">${moves('campaigns',index,list.length)}${button('copy-campaign',t('Дублировать'),`data-index="${index}"`)}${button('template-campaign',rule.isTemplate?t('Создать акцию из шаблона'):t('Сохранить как шаблон'),`data-index="${index}"`)}${button('delete-campaign',t('Удалить'),`data-index="${index}"`)}</div><div class="studio-grid">${titles(p+'.title')}${input(t('Включить акцию'),p+'.enabled',{type:'checkbox',hint:rule.isTemplate?t('Сначала создайте акцию из шаблона.'):''})}${input(t('Скидка, %'),p+'.percent',{type:'number'})}${input(t('Начало · Тбилиси (UTC+4)'),p+'.startsAt',{type:'datetime-local',value:rule.startsAt})}${input(t('Окончание · Тбилиси (UTC+4)'),p+'.endsAt',{type:'datetime-local',value:rule.endsAt})}${input(t('Целые категории'),p+'.categoryIds',{options:options(store().categories),multi:true})}${input(t('Целые подкатегории'),p+'.subcategoryIds',{options:options(store().categories.flatMap(c=>c.subs)),multi:true})}</div><div class="studio-help">Отметьте нужные разделы галочками. Для отдельных товаров используйте поиск ниже.</div><label class="field"><span class="field-label">Найти товар по названию, ID или артикулу</span><input id="campaign-product-search" type="search" placeholder="Введите название"></label><div id="campaign-product-choices">${productChoices(index,'')}</div><div class="studio-grid">${input(t('Показать товарный ряд на главной'),p+'.showRow',{type:'checkbox'})}${input(t('Оформление ряда'),p+'.template',{options:[['cards',t('Карточки · горизонтальный ряд')],['compact',t('Компактный · сетка')],['featured',t('Акцентный · цветной фон')]]})}${input(t('Количество товаров в ряду (1–48)'),p+'.limit',{type:'number'})}</div>${campaignDesign(rule,index)}</article><div id="campaign-preview">${campaignPreview(rule)}</div>`:t('<div class="studio-card studio-card-body"><h2>Здесь появятся ваши акции</h2><p>Создайте первую акцию и проверьте её состав и цены перед публикацией.</p></div>')}</div></div>`;
   }
   function productChoices(index,filter) {
     const rule=store().campaigns[index];
@@ -83,9 +102,13 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   function setValue(path,value) {
     const parts=path.split('.');const key=parts.pop();
     if(parts[0]==='categories' && parts[2]==='appearance' && !store().categories[parts[1]].appearance)store().categories[parts[1]].appearance=engine.categoryAppearance(store().categories[parts[1]]);
+    if(parts[0]==='campaigns' && parts[2]==='appearance' && !store().campaigns[parts[1]].appearance)store().campaigns[parts[1]].appearance=engine.campaignAppearance(store().campaigns[parts[1]]);
     valueAt(parts.join('.'))[key]=value;
   }
   function refreshVisuals() {
+    const campaign=root.querySelector('[data-campaign-design-preview]');
+    if(campaign){const rule=store().campaigns.find(c=>c.id===selected);if(rule){campaign.dataset.device=previewDevice;campaign.innerHTML=campaignDesignHTML(rule);visuals.apply(campaign,state.session?.storefrontBase?.startsWith('https://')?state.session.storefrontBase:'');}}
+
     root.querySelectorAll('[data-visual-locale]').forEach(el=>el.value=previewLocale);
     root.querySelectorAll('[data-visual-device]').forEach(el=>el.value=previewDevice);
     root.querySelectorAll('[data-visual-preview]').forEach(target=>{
@@ -117,7 +140,7 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     root.querySelectorAll('details[data-category-id]').forEach(el=>el.open=open.has(el.dataset.categoryId));
     refreshVisuals();
   }
-  function refreshPreview() { const rule=store().campaigns.find(c=>c.id===selected); const target=root.querySelector('#campaign-preview'); if(rule&&target)target.innerHTML=campaignPreview(rule); }
+  function refreshPreview() { const rule=store().campaigns.find(c=>c.id===selected); const target=root.querySelector('#campaign-preview'); if(rule&&target){target.innerHTML=campaignPreview(rule);refreshVisuals();} }
   function refreshChoices(index, focused) {
     const box=root.querySelector('#campaign-product-choices');
     const scroll=box.querySelector('.studio-product-choices')?.scrollTop || 0;
@@ -131,7 +154,7 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     if(target.id==='campaign-product-search') {const i=store().campaigns.findIndex(c=>c.id===selected);root.querySelector('#campaign-product-choices').innerHTML=productChoices(i,target.value);return;}
     if(target.dataset.siteString!==undefined) {const source=Object.keys(store().strings)[Number(target.dataset.siteString)];store().strings[source][target.dataset.locale]=target.value;markDirty();return;}
     if(target.dataset.storePath && !['checkbox','datetime-local'].includes(target.type) && target.tagName!=='SELECT') {
-      const parts=target.dataset.storePath.split('.');const key=parts.pop();setValue(target.dataset.storePath,target.type==='number'?Number(target.value):target.value);markDirty();if(state.view==='campaigns')refreshPreview();refreshVisuals();
+      const parts=target.dataset.storePath.split('.');const key=parts.pop();setValue(target.dataset.storePath,target.type==='number'?Number(target.value):target.value);markDirty();if(state.view==='campaigns')refreshPreview();else refreshVisuals();
     }
   });
   root.addEventListener('change',async event=>{
@@ -144,8 +167,9 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     if(target.id==='site-text-missing'){onlyMissing=target.checked;textPage=0;render();return;}
     if(target.dataset.storeChoice){const parts=target.dataset.storeChoice.split('.');const key=parts.pop();const parent=valueAt(parts.join('.'));parent[key]=target.checked?[...new Set([...parent[key],target.value])]:parent[key].filter(id=>id!==target.value);markDirty();refreshPreview();return;}
     if(target.dataset.campaignProduct!==undefined){const index=Number(target.dataset.campaignProduct);const rule=store().campaigns[index];rule[target.dataset.key]=target.checked?[...new Set([...rule[target.dataset.key],target.value])]:rule[target.dataset.key].filter(id=>id!==target.value);markDirty();refreshPreview();refreshChoices(index,target);return;}
-    if(target.dataset.storePath){const parts=target.dataset.storePath.split('.');const key=parts.pop();setValue(target.dataset.storePath,target.type==='checkbox'?target.checked:target.type==='datetime-local'?(target.value?target.value+':00+04:00':''):target.multiple?[...target.selectedOptions].map(o=>o.value):target.type==='number'?Number(target.value):target.value);markDirty();refreshPreview();refreshVisuals();}
+    if(target.dataset.storePath){const parts=target.dataset.storePath.split('.');const key=parts.pop();setValue(target.dataset.storePath,target.type==='checkbox'?target.checked:target.type==='datetime-local'?(target.value?target.value+':00+04:00':''):target.multiple?[...target.selectedOptions].map(o=>o.value):target.type==='number'?Number(target.value):target.value);markDirty();if(key==='template')render();else if(state.view==='campaigns')refreshPreview();else refreshVisuals();}
   });
+  root.addEventListener('keydown',event=>{if(event.key==='Enter' && event.target.matches('[data-section-id]')){event.preventDefault();event.target.closest('.studio-id-editor').querySelector('button').click();}});
   root.addEventListener('click',async event=>{
     if(event.target.closest('[data-visual-preview] a')){event.preventDefault();return;}
     if(state.busy)return;
@@ -161,6 +185,23 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     }
     const b=event.target.closest('[data-store-action]');if(!b)return;
     const action=b.dataset.storeAction;const i=Number(b.dataset.index);const s=store();
+    if(action==='rename-section') {
+      const field=b.closest('.studio-id-editor').querySelector('[data-section-id]');
+      const item=b.dataset.kind==='category'?s.categories[i]:s.categories[i].subs[Number(b.dataset.sub)];
+      const candidate=clone(state.document);
+      try {
+        if(!engine.renameSection(candidate.store,candidate.catalog.products,b.dataset.kind,item.id,field.value))return;
+        const renamed=b.dataset.kind==='category'?candidate.store.categories[i]:candidate.store.categories[i].subs[Number(b.dataset.sub)];
+        if(!await confirmMessage(t('Изменить ID раздела?'),item.id+' → '+renamed.id+'\n\n'+t('Назначения товаров и настройки акций обновятся автоматически. Старые ссылки продолжат работать после публикации.'),t('Изменить ID')))return;
+        if(b.dataset.kind==='category'){
+          b.closest('[data-category-id]').dataset.categoryId=renamed.id;
+          if(state.category===item.id)state.category=renamed.id;
+        }
+        state.document=candidate;markDirty();renderApp();toast(t('ID изменён в черновике. Сохраните и опубликуйте изменения.'));
+      } catch(error){toast(t(error.message),true);field.focus();}
+      return;
+    }
+    if(action==='reset-campaign-design'){delete s.campaigns[i].appearance;markDirty();render();return;}
     if(action==='clear-media'){setValue(b.dataset.path,'');markDirty();render();return;}
     if(action==='reset-category-design'){delete s.categories[i].appearance;markDirty();render();return;}
     if(action==='select-campaign'){selected=b.dataset.id;previewAt='';render();return;}

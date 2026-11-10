@@ -17,7 +17,7 @@ async function buildStoreContent(data, root = process.cwd()) {
     const priced=store?engine.applyProducts(data.products,store):[];
     const catalog=store?engine.structure(store,'ka',fallback):{};
     const content = store ? { store, catalog, heroes: engine.banners(store).map(h=>({id:h.id, title:engine.text(h.title), html:visuals.hero(h,'ka',true)})), company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
-      campaignRows:engine.rows(priced,store).map(row=>({id:row.id,title:engine.text(row.title),template:row.template,productIds:row.products.map(p=>p.id)})) } : {};
+      campaignRows:engine.rows(priced,store).map(row=>({id:row.id,title:engine.text(row.title),template:row.template,appearance:row.appearance,frame:visuals.campaignFrame(row,'ka',true),productIds:row.products.map(p=>p.id)})) } : {};
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));
   }
   const assets = path.join(root, 'assets/js/global');

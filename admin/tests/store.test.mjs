@@ -118,3 +118,49 @@ test('Restoring an older snapshot cannot resurrect retired product banner layout
   assert.deepEqual(restored.document.store.heroes,[]);assert.deepEqual(restored.document.catalog,legacy.document.catalog);
   await h.service.publish({expectedRevision:2},'editor');assert.deepEqual(h.values.get('catalog')._enkaStore.heroes,[]);h.db.close();
 });
+
+test('Renaming categories and subcategories keeps assignments, discounts, artwork and old links',()=>{
+  const d=document();d.store.campaigns=[rule()];const before=clone(d.catalog.products[0]);
+  const category=d.store.categories.find(c=>c.id==='kitchen');const artwork=engine.categoryAppearance(category);
+  assert.equal(engine.renameSection(d.store,d.catalog.products,'category','kitchen',' APPLIANCES '),true);
+  assert.equal(engine.renameSection(d.store,d.catalog.products,'sub','coffee','espresso'),true);
+  assert.deepEqual(d.catalog.products[0].categories,['appliances']);assert.deepEqual(d.catalog.products[0].subcategories,['espresso']);
+  assert.deepEqual(d.store.campaigns[0].categoryIds,['appliances']);assert.deepEqual(category.aliases,['kitchen']);
+  assert.deepEqual(engine.categoryAppearance(category),artwork);assert.equal(category.artworkId,'kitchen');
+  assert.deepEqual(engine.resolveSection(d.store,'KITCHEN','COFFEE'),{category:'appliances',sub:'espresso'});
+  assert.equal(engine.applyProducts(d.catalog.products,d.store,NOW)[0].price,'84');
+  assert.deepEqual({...d.catalog.products[0],categories:before.categories,subcategories:before.subcategories},before);
+  assert.deepEqual(validateDocument(d),[]);assert.deepEqual(importDocument({document:d}).store,d.store);
+  assert.equal(engine.renameSection(d.store,d.catalog.products,'category','appliances','kitchen'),true);
+  assert.deepEqual(category.aliases,['appliances']);assert.deepEqual(engine.resolveSection(d.store,'appliances','coffee'),{category:'kitchen',sub:'espresso'});
+});
+
+test('ID changes reject collisions, reserved routes and invalid input before touching the draft',()=>{
+  for(const next of ['smarthome','SMARTHOME','all','page','utm_offer','__proto__','../test','bad id','ქართული','a'.repeat(151),'']){
+    const d=document();const before=clone(d);assert.throws(()=>engine.renameSection(d.store,d.catalog.products,'category','kitchen',next));assert.deepEqual(d,before,next);
+  }
+  const d=document();d.store.categories[0].aliases=['old-home'];const before=clone(d);
+  assert.throws(()=>engine.renameSection(d.store,d.catalog.products,'category','kitchen','old-home'));assert.deepEqual(d,before);
+  assert.equal(engine.renameSection(d.store,d.catalog.products,'category','kitchen','kitchen'),false);assert.deepEqual(d,before);
+  for(const aliases of [['smarthome'],['OLD','old'],['../bad'],{},Array(101).fill('old')]){
+    const bad=document();bad.store.categories.find(c=>c.id==='kitchen').aliases=aliases;assert.ok(validateDocument(bad).length);
+  }
+});
+
+test('Published and restored versions retain category aliases together with product references',async()=>{
+  const h=harness();await h.service.initialize({products:[product()]});const d=document();
+  engine.renameSection(d.store,d.catalog.products,'category','kitchen','appliances');
+  engine.renameSection(d.store,d.catalog.products,'sub','coffee','espresso');
+  h.service.save({expectedRevision:1,document:d},'editor');await h.service.publish({expectedRevision:2},'editor');
+  const live=await readPublishedCatalog(async key=>clone(h.values.get(key)),'ka');
+  assert.deepEqual(live.products[0].categories,['appliances']);assert.deepEqual(engine.resolveSection(live._enkaStore,'kitchen','coffee'),{category:'appliances',sub:'espresso'});
+  const restored=h.service.restore({expectedRevision:2,revision:2},'editor');assert.deepEqual(restored.document.store,d.store);assert.deepEqual(restored.document.catalog,d.catalog);h.db.close();
+});
+
+test('Campaign background settings travel through draft, publication and history with base catalog unchanged',async()=>{
+  const h=harness();await h.service.initialize({products:[product()]});const d=document();const catalog=clone(d.catalog);
+  const appearance={backgroundColor:'#662233',textColor:'#ffffff',backgroundImage:'https://images.example/pattern.webp',backgroundFit:'tile',backgroundOpacity:0.3,patternSize:64};
+  d.store.campaigns=[rule({startsAt:'',endsAt:'',appearance})];h.service.save({expectedRevision:1,document:d},'editor');await h.service.publish({expectedRevision:2},'editor');
+  const live=await readPublishedCatalog(async key=>clone(h.values.get(key)),'ka');assert.deepEqual(live._enkaStore.campaigns[0].appearance,appearance);assert.deepEqual(h.service.view().document.catalog,catalog);
+  const restored=h.service.restore({expectedRevision:2,revision:2},'editor');assert.deepEqual(restored.document.store.campaigns[0].appearance,appearance);h.db.close();
+});

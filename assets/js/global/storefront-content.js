@@ -52,9 +52,9 @@
   function campaignRows(store) {
     const root=document.querySelector('[data-studio-campaigns]');if(!root)return;
     root.innerHTML=engine.rows(products,store).map(row=>{
-      const compact=row.template==='compact';const featured=row.template==='featured';
-      return `<section class="my-9${featured?' rounded-3xl bg-blue-50 p-5 sm:p-7':''}" aria-label="${esc(label(row.title))}"><h2 class="mb-5 text-[length:22px] font-semibold tracking-tight text-slate-900">${esc(label(row.title))}</h2><div class="${compact?'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4':'product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pb-3'}" tabindex="0" role="group" aria-label="${esc(label(row.title))}">${row.products.map(p=>window.createProductCardHTML?.(p,'studio-'+row.id) || '').join('')}</div></section>`;
-    }).join('');window.syncFavButtons?.();
+      const frame=globalThis.EnkaStoreVisuals.campaignFrame(row,locale());
+      return frame.start+row.products.map(p=>window.createProductCardHTML?.(p,'studio-'+row.id) || '').join('')+frame.end;
+    }).join('');globalThis.EnkaStoreVisuals.apply(root);window.syncFavButtons?.();
   }
   function render() {
     if(!current)return;

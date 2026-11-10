@@ -75,3 +75,31 @@ test('Old layouts are removed on open and import; existing image banners lose pr
   const api=await readPublishedCatalog(async key=>key==='catalog'?published:null);
   assert.deepEqual(api._enkaStore.heroes,[image]);assert.equal(published._enkaStore.heroes.length,3,'API reads must not mutate publication history');
 });
+
+const campaign=(extra={})=>({id:'sale',title:{ka:'აქცია',ru:'Акция',en:'Offer'},enabled:true,percent:20,startsAt:'',endsAt:'',categoryIds:['gadget'],subcategoryIds:[],productIds:[],excludeIds:[],template:'featured',showRow:true,limit:8,...extra});
+test('Every campaign layout supports a shared background without changing discounts or row membership',()=>{
+  const d=fixture();const appearance={backgroundColor:'#173d2a',textColor:'#ffffff',backgroundImage:'/img/pattern.svg',backgroundFit:'tile',backgroundOpacity:0.35,patternSize:96};
+  for(const template of ['cards','compact','featured']){
+    d.store.campaigns=[campaign({template,appearance})];assert.deepEqual(validateDocument(d),[]);
+    const priced=engine.applyProducts(d.catalog.products,d.store);assert.equal(priced[0].price,'80');assert.equal(engine.rows(priced,d.store)[0].products[0].id,product.id);
+    const frame=visuals.campaignFrame(d.store.campaigns[0],'en');assert.match(frame.start,/enka-campaign-custom/);assert.match(frame.start,/background-color:#173d2a/);assert.match(frame.start,/color:#ffffff/);assert.match(frame.start,/96px 96px/);assert.match(frame.start,/opacity:0.35/);assert.match(frame.start,/pointer|aria-hidden="true"/);assert.doesNotMatch(frame.start,/ style=/);
+    assert.equal(frame.start.includes('enka-campaign-compact'),template==='compact');
+  }
+  assert.equal(engine.campaignAppearance(campaign()).backgroundColor,'#eff6ff');
+  assert.ok(!visuals.campaignFrame(campaign({template:'cards'})).start.includes('enka-campaign-decorated'));
+  assert.match(visuals.campaignFrame(campaign({title:{ka:'<script>test</script>'}})).start,/&lt;script&gt;/);
+});
+
+test('Unsafe or malformed campaign backgrounds cannot enter a saved/imported document',()=>{
+  for(const appearance of [null,{backgroundColor:'red;position:fixed'},{textColor:'#fff'}, {backgroundImage:'javascript:alert(1)'},{backgroundImage:"https://example.com/');color:red"},{backgroundFit:'stretch'},{backgroundOpacity:2},{backgroundOpacity:'0.5'},{patternSize:0},{patternSize:1025},{patternSize:'128'}]){
+    const d=fixture();d.store.campaigns=[campaign({appearance})];assert.ok(validateDocument(d).length,JSON.stringify(appearance));assert.throws(()=>importDocument({document:d}));
+  }
+});
+
+test('Static campaign backgrounds use the same frame as Studio and survive export/import',async t=>{
+  const d=fixture();d.store.campaigns=[campaign({appearance:{backgroundColor:'#ffcc88',textColor:'#223344',backgroundImage:'https://images.example/pattern.webp',backgroundFit:'cover',backgroundOpacity:0.2,patternSize:128}})];
+  assert.deepEqual(importDocument({document:d}).store.campaigns,d.store.campaigns);
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'enka-campaign-design-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'_data'));
+  await buildStoreContent({...d.catalog,_enkaStore:d.store},root);const output=JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json')));
+  assert.deepEqual(output.campaignRows[0].frame,visuals.campaignFrame(d.store.campaigns[0],'ka',true));assert.deepEqual(output.campaignRows[0].appearance,d.store.campaigns[0].appearance);assert.deepEqual(output.campaignRows[0].productIds,[product.id]);assert.match(output.campaignRows[0].frame.start,/background-size:cover/);
+});

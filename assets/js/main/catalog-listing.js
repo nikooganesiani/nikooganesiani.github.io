@@ -21,18 +21,22 @@
   function legacyCategories(params) {
     return [...params].filter(([key, value]) => !value && key.trim() && !ROUTE_KEYS.has(key) && !/^(utm_|fbclid$|gclid$|msclkid$)/i.test(key)).map(([key]) => key);
   }
+  function resolveState(state, store=window.ENKA_STORE) {
+    const resolved=globalThis.EnkaStoreEngine?.resolveSection(store,state.category,state.sub);
+    return resolved?{...state,category:slug(resolved.category),sub:slug(resolved.sub)}:state;
+  }
   function readState(search, mode) {
     const params = new URLSearchParams(search);
     const query = ['result', 'q', 'search'].map(key => params.get(key)?.trim()).find(Boolean) || '';
     const page = params.get('page') || '1';
-    return {
+    return resolveState({
       category: slug(params.get(mode === 'search' ? 'cat' : 'category') || (mode === 'category' ? legacyCategories(params)[0] : '')) || 'all',
       sub: mode === 'category' ? slug(params.get('sub')) || 'all' : 'all',
       query: query.slice(0, 200),
       ...priceRange(params.get('min'), params.get('max')),
       sort: SORTS.has(params.get('sort')) ? params.get('sort') : 'default',
       page: /^\d+$/.test(page) ? Math.max(1, Math.min(10000, Number(page))) : 1
-    };
+    });
   }
   function routeURL(state, mode, search = window.location.search) {
     const params = new URLSearchParams(search);
@@ -257,6 +261,7 @@
       if (url !== window.location.pathname + window.location.search + window.location.hash) window.history[method]({}, '', url);
     }
     window.addEventListener('enka:prices-change', event => { products=prepareProducts(event.detail.products); if(loaded)render(); });
+    window.addEventListener('enka:store-change',()=>{state=resolveState(state);if(loaded){render();saveURL('replaceState');}});
     function commit(patch, method = 'pushState', append = false) {
       clearTimeout(priceTimer);
       const range = priceRange(byId('minPrice').value, byId('maxPrice').value);
@@ -288,6 +293,7 @@
       if (retry) { retry.setAttribute('disabled', ''); retry.textContent = 'იტვირთება…'; }
       try {
         const data = await window.fetchCatalogCached();
+        state=resolveState(state,data?.store || window.ENKA_STORE);
         products = prepareProducts(Array.isArray(data) ? data : data?.products);
         loaded = true;
         render();

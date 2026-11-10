@@ -7,7 +7,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8');
 
 test('An open storefront starts and ends a scheduled campaign without refetching or compounding discounts',()=>{
   let now=Date.parse('2026-11-10T12:00:00+04:00');
-  const timers=new Map();let serial=0;const events=[];const listeners={};const rows={innerHTML:''};
+  const timers=new Map();let serial=0;const events=[];const listeners={};const rows={innerHTML:'',querySelectorAll:()=>[]};
   const window={CATALOG_STRUCTURE:{},escapeHTML:String,enkaI18n:{locale:'ru',t:String,setStore(){}},
     createProductCardHTML:product=>`<article>${product.id}:${product.price}</article>`,
     dispatchEvent:event=>events.push(event),safeProductImage:String};
@@ -15,6 +15,7 @@ test('An open storefront starts and ends a scheduled campaign without refetching
   class Clock extends Date{static now(){return now;}}
   const context=vm.createContext({window,document,Date:Clock,structuredClone,URL,CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},setTimeout:(callback,delay)=>{timers.set(++serial,{callback,delay});return serial;},clearTimeout:key=>timers.delete(key)});
   vm.runInContext(read('admin/public/store-engine.js'),context);
+  vm.runInContext(read('admin/public/store-visuals.js'),context);
   vm.runInContext(read('assets/js/global/storefront-content.js'),context);
   const store={categories:[],heroes:[],company:{},campaigns:[{id:'sale',enabled:true,percent:15,startsAt:new Date(now+1000).toISOString(),endsAt:new Date(now+3000).toISOString(),title:{ka:'Sale',ru:'Кухня'},categoryIds:['kitchen'],subcategoryIds:[],productIds:[],excludeIds:[],showRow:true,template:'cards',limit:8}]};
   window.enkaStorefront.apply(store,[{id:'mixer',price:'49',oldPrice:'',categories:['kitchen']}]);
