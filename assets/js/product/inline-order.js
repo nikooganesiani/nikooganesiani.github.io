@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
       } catch { /* Analytics must not change an accepted order. */ }
+      try { window.enkaPersonalization?.record('purchase', String(product.id)); } catch { /* Recommendations must not affect an accepted order. */ }
       window.showOrderConfirm?.(confirmation);
     } catch {
       showError('შეკვეთის დადასტურება ვერ მოხერხდა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.');

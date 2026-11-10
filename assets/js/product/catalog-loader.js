@@ -121,14 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const product = products.find(p => String(p.id) === String(snapshot.id));
       applyProduct(product || { ...snapshot, stockStatus: 'unavailable' });
       status.textContent = product ? '' : 'ეს პროდუქტი ამჟამად არ არის ხელმისაწვდომი. დაგვიკავშირდით ან აირჩიეთ მსგავსი.';
-      let recent = [];
-      try {
-        const saved = JSON.parse(localStorage.getItem('recentIds') || '[]');
-        if (Array.isArray(saved)) recent = saved.filter(id => typeof id === 'string' || typeof id === 'number').map(String);
-      } catch { /* History is optional. */ }
+      const history = window.enkaPersonalization?.allowed() ? window.enkaPersonalization.snapshot().events : [];
+      let recent = history.filter(event => event.kind === 'view').slice().reverse().map(event => event.ref);
       recent = [...new Set(recent)].filter(id => id !== String(snapshot.id)).slice(0, 19);
       render('recent', recent.map(id => products.find(p => String(p.id) === id)).filter(Boolean).slice(0, 12));
-      try { localStorage.setItem('recentIds', JSON.stringify([String(snapshot.id), ...recent])); } catch { /* Storage is optional. */ }
       const others = products.filter(p => String(p.id) !== String(snapshot.id) && available(p));
       const sub = dataset.subcat ? others.filter(p => Array.isArray(p.subcategories) && p.subcategories.includes(dataset.subcat)).slice(0, 12) : [];
       const used = new Set(sub.map(p => String(p.id)));
@@ -151,5 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
   applyProduct(snapshot);
   retry.addEventListener('click', load);
   window.refreshProduct = load;
+  window.addEventListener('enka:personalization-choice', () => {
+    if (!window.enkaPersonalization?.allowed()) render('recent', []);
+    else load();
+  });
   load();
 });

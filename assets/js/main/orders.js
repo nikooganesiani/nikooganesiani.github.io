@@ -228,6 +228,7 @@ if (quickForm) {
 
             const result = await response.clone().json().catch(() => null);
             if (response.ok && result?.ok !== false && result?.success !== false && !result?.error) {
+                try { window.enkaPersonalization?.record('purchase', String(product.id || slugFromUrl)); } catch { /* Recommendations must not affect an accepted order. */ }
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
 

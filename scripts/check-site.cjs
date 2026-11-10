@@ -47,6 +47,11 @@ for (const [, resource] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
   checked++;
 }
 assert.ok((html.match(/class="product-card(?:\s|")/g) || []).length > 0, 'Popular products need a server-rendered fallback');
+assert.match(html, /id="recommendationFeed"/, 'Homepage contains the automatic recommendation feed');
+assert.ok(!/data-personalization-controls|id="recommendationInterests"|data-recommendation-hide/.test(html), 'Homepage recommendations must not require configuring interests');
+const recommendationCatalog = JSON.parse(html.match(/id="recommendationCatalog">([\s\S]*?)<\/script>/)?.[1] || 'null');
+assert.ok(Array.isArray(recommendationCatalog) && recommendationCatalog.length > 0, 'Offline recommendations contain a valid embedded catalog');
+assert.equal(new Set(recommendationCatalog.map(product => String(product.id))).size, recommendationCatalog.length, 'Embedded recommendation IDs are unique');
 assert.ok(!html.includes('Halloween'), 'Outdated promo campaign on homepage');
 for (const forbidden of ['admin', 'node_modules', 'scripts', 'tests', 'vendor', '.local', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']) {
   assert.ok(!fs.existsSync(path.join(root, forbidden)), 'Development file published: ' + forbidden);

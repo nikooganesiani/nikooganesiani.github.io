@@ -1,0 +1,37 @@
+<section id="recommendationsSection" class="mt-9" aria-label="პროდუქტები თქვენთვის" data-popular-ids="{{ site.data.popular_items.items | default: site.data.popular_items | join: ',' | escape }}">
+  <div id="recommendationFeed" class="space-y-10 sm:space-y-12">
+    {% for recommendation_category in site.data.catalog %}
+      {% assign recommendation_category_id = recommendation_category[0] %}
+      {% assign recommendation_products = site.products | where_exp: 'item', 'item.categories contains recommendation_category_id' %}
+      {% capture recommendation_cards %}
+        {% assign recommendation_count = 0 %}
+        {% for product in recommendation_products %}
+          {% assign recommendation_price = product.price | remove: '₾' | plus: 0 %}
+          {% assign recommendation_stock = product.stockStatus | default: 'in_stock' %}
+          {% if recommendation_price > 0 %}{% if recommendation_stock == 'in_stock' or recommendation_stock == 'მარაგშია' %}
+            {% include homepage/product-card.html product=product %}
+            {% assign recommendation_count = recommendation_count | plus: 1 %}
+            {% if recommendation_count >= 8 %}{% break %}{% endif %}
+          {% endif %}{% endif %}
+        {% endfor %}
+      {% endcapture %}
+      {% if recommendation_count > 0 %}
+      <section aria-labelledby="recommendationFallback-{{ recommendation_category_id }}">
+        <h2 id="recommendationFallback-{{ recommendation_category_id }}" class="mb-5 text-[length:22px] font-semibold tracking-tight text-slate-900">{{ recommendation_category[1].title }}</h2>
+        <div class="product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pb-2.5 [&::-webkit-scrollbar]:hidden max-[768px]:gap-4" tabindex="0" role="group" aria-label="{{ recommendation_category[1].title | escape }}">{{ recommendation_cards }}</div>
+      </section>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <p id="recommendationsStatus" class="mt-6 text-sm leading-relaxed text-slate-600 empty:hidden" role="status" aria-live="polite"></p>
+  <div class="mt-5 flex flex-wrap items-center gap-3">
+    <button id="recommendationsMore" type="button" class="sr-only focus:not-sr-only focus:min-h-11 focus:rounded-xl focus:bg-brand focus:px-6 focus:py-3 focus:text-white" hidden>მეტი პროდუქტის ნახვა</button>
+    <button id="recommendationsRetry" type="button" class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-brand hover:bg-blue-50" hidden>ხელახლა ცდა</button>
+  </div>
+  <noscript><p class="mt-5 text-sm text-slate-600">პერსონალური რეკომენდაციებისთვის ჩართეთ JavaScript. ყველა პროდუქტი ხელმისაწვდომია <a class="text-brand underline" href="/category/">კატალოგში</a>.</p></noscript>
+</section>
+<script type="application/json" id="recommendationCatalog">[
+{%- for product in site.products -%}
+  {"id":{{ product.product_id | jsonify | replace: '<', '\u003c' }},"sku":{{ product.sku | jsonify | replace: '<', '\u003c' }},"name":{{ product.name | jsonify | replace: '<', '\u003c' }},"brand":{{ product.brand | jsonify | replace: '<', '\u003c' }},"price":{{ product.price | jsonify | replace: '<', '\u003c' }},"oldPrice":{{ product.oldPrice | jsonify | replace: '<', '\u003c' }},"stockStatus":{{ product.stockStatus | jsonify | replace: '<', '\u003c' }},"categories":{{ product.categories | jsonify | replace: '<', '\u003c' }},"subcategories":{{ product.subcategories | jsonify | replace: '<', '\u003c' }},"images":{{ product.images | jsonify | replace: '<', '\u003c' }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+]</script>

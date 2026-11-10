@@ -225,6 +225,11 @@
       }
       renderPills();
       const filtered = selectProducts(products, state, mode);
+      if (filtered.length && window.enkaPersonalization?.allowed()) {
+        if (state.query) filtered.slice(0, 3).forEach(product => window.enkaPersonalization.record('search', String(product.id)));
+        else if (state.sub !== 'all') window.enkaPersonalization.record('category', 'sub:' + state.sub);
+        else if (state.category !== 'all') window.enkaPersonalization.record('category', 'category:' + state.category);
+      }
       hidden('gridToggleBtn', !filtered.length);
       state.page = Math.min(state.page, Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
       const end = Math.min(state.page * PAGE_SIZE, filtered.length);

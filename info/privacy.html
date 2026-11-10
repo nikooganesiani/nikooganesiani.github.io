@@ -7,7 +7,7 @@ eyebrow: "თქვენი მონაცემები"
 intro: "გვინდა იცოდეთ, რა ინფორმაციას ვიყენებთ, რისთვის გვჭირდება ის და როგორ შეგიძლიათ მართოთ თქვენი არჩევანი."
 ---
 {% assign company = site.data.info.company %}
-<p class="[&_a]:text-brand-dark [&_a]:underline [&_a]:underline-offset-[3px] text-muted text-[length:12px] leading-[1.85] -mt-3.5 mr-0 mb-5.5 ml-0 [.info-preferences_&]:text-[length:12px] max-[640px]:-mt-2">განახლებულია: <time datetime="2026-11-04">4 ნოემბერი, 2026</time></p>
+<p class="[&_a]:text-brand-dark [&_a]:underline [&_a]:underline-offset-[3px] text-muted text-[length:12px] leading-[1.85] -mt-3.5 mr-0 mb-5.5 ml-0 [.info-preferences_&]:text-[length:12px] max-[640px]:-mt-2">განახლებულია: <time datetime="2026-11-10">10 ნოემბერი, 2026</time></p>
 <nav class="flex flex-wrap gap-y-2 gap-x-3 pb-5.5 border-b border-solid border-b-[#e2e7ef] [&_a]:inline-flex [&_a]:items-center [&_a]:min-h-11 [&_a]:py-2 [&_a]:px-3.5 [&_a]:border [&_a]:border-solid [&_a]:border-[#e2e7ef] [&_a]:rounded-[9px] [&_a]:bg-white [&_a]:text-[#475569] [&_a]:text-[length:12px] [&_a]:font-semibold [&_a]:no-underline [&_a:hover]:border-[#9bb9ff] [&_a:hover]:text-brand max-[640px]:gap-2 max-[640px]:[&_a]:text-[length:11px] max-[640px]:[&_a]:py-2 max-[640px]:[&_a]:px-2.5 print:hidden!" aria-label="ამ გვერდზე"><a href="#data">მონაცემები</a><a href="#cookies">ქუქიები და არჩევანი</a><a href="#sharing">გაზიარება</a><a href="#rights">თქვენი უფლებები</a></nav>
 <section class="info-panel mt-9 p-7.5 border border-solid border-[#e2e7ef] rounded-[20px] bg-white max-[640px]:mt-7 max-[640px]:p-5.5 max-[640px]:rounded-2xl print:break-inside-avoid print:shadow-none" id="data" aria-labelledby="privacy-data">
   <h2 id="privacy-data">01. ვინ და რა მონაცემებს ამუშავებს</h2>
@@ -36,6 +36,12 @@ intro: "გვინდა იცოდეთ, რა ინფორმაც�
     <div><dt>სარეკლამო იდენტიფიკატორები</dt><dd>მხოლოდ თანხმობის შემდეგ: <code>_fbp</code> და, არსებობისას, <code>_fbc</code> — 90 დღემდე; <code>_capi_uid</code> — 365 დღემდე. განახლებული თანხმობისას ქუქიების ვადა შეიძლება თავიდან აითვალოს. ბრაუზერის ადგილობრივი ასლები ინახება გასუფთავებამდე ან თანხმობის გაუქმებამდე.</dd></div>
     <div><dt>თქვენი არჩევანი</dt><dd>ინახება ამ ბრაუზერში 180 დღემდე, რის შემდეგაც თანხმობას თავიდან გთხოვთ. ანალიტიკის გამორთვა შლის საიტის სარეკლამო იდენტიფიკატორებსა და ამ მიზნით შენახულ ადგილობრივ მონაცემებს.</dd></div>
   </dl>
+</section>
+<section id="personalization" class="mt-9" aria-labelledby="privacy-personalization">
+  <h2 id="privacy-personalization">პერსონალური რეკომენდაციები</h2>
+  <p>ცალკე ისტორიის შენახვის გარეშე რეკომენდაციები შეიძლება ითვალისწინებდეს ამ საიტის გვერდს, საიდანაც მთავარზე გადმოხვედით. ეს კონტექსტი მოქმედებს მხოლოდ მიმდინარე გვერდზე და პროფილში არ ინახება.</p>
+  <p>მთავარი გვერდის რეკომენდაციები თქვენს არჩეულ თემებსა და, ცალკე თანხმობის შემდეგ, ამ ბრაუზერში აქტივობას ეყრდნობა. არჩევანი არ ცვლის ფასს ან შეკვეთის პირობებს. სარეკლამო ანალიტიკის თანხმობა პერსონალიზაციის თანხმობად არ ითვლება. სხვა მოწყობილობებზე პროფილი არ გადაიტანება.</p>
+  <div>{% include personalization-controls.html %}</div>
 </section>
 <section class="info-panel mt-9 p-7.5 border border-solid border-[#e2e7ef] rounded-[20px] bg-white max-[640px]:mt-7 max-[640px]:p-5.5 max-[640px]:rounded-2xl print:break-inside-avoid print:shadow-none" id="sharing" aria-labelledby="privacy-sharing">
   <h2 id="privacy-sharing">03. ვის გადაეცემა ინფორმაცია</h2>
