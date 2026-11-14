@@ -121,6 +121,7 @@ window.openOrderForm = function(product, trigger) {
             modal.dataset.product = JSON.stringify(product || {});
         }
         window.openAppModal?.('orderFormModal', trigger);
+        try { window.enkaGoogleAnalytics?.beginCheckout(product); } catch { /* Tracking must not affect checkout. */ }
     } catch(e) { console.error(e); }
 };
 
@@ -241,6 +242,7 @@ if (quickForm) {
                 try { window.enkaPersonalization?.record('purchase', String(product.id || slugFromUrl)); } catch { /* Recommendations must not affect an accepted order. */ }
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
+                try { window.enkaGoogleAnalytics?.orderAccepted({ id: productKey, name: product.name, price: numericPrice }, eventId); } catch { /* Tracking must not affect an accepted order. */ }
 
                 // Отправляем в CAPI (capi.js сам заблокирует повтор, если это было просто исправление опечатки в номере!)
                 if (typeof window.sendCapiEvent === 'function') {

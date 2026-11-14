@@ -51,6 +51,21 @@ test('Analytics defaults to off and an old one-button notice does not count as c
   assert.equal(b.store.get('myOrders'), 'keep');
 });
 
+test('Legacy Meta-only consent does not authorize the new Google notice', () => {
+  const b = browser({ initial: { enka_privacy_v1: JSON.stringify({ analytics: true, updatedAt: Date.now() }) } });
+  assert.equal(b.window.enkaPrivacy.getChoice(), null);
+  assert.equal(b.window.enkaPrivacy.allowsAnalytics(), false);
+});
+
+test('Revocation removes Google identifiers while preserving order history', () => {
+  const b = browser({ initial: { myOrders: 'keep' } });
+  b.window.enkaPrivacy.setChoice(true);
+  for (const key of ['_ga', '_ga_TEST123', '_gcl_aw', '_gid']) b.cookies.set(key, 'identifier');
+  b.window.enkaPrivacy.setChoice(false);
+  assert.equal(b.cookies.size, 0);
+  assert.equal(b.store.get('myOrders'), 'keep');
+});
+
 test('Explicit consent allows events; revocation purges identifiers and blocks further events', () => {
   const b = browser();
   assert.equal(b.window.enkaPrivacy.setChoice(true), true);

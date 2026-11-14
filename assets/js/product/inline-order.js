@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const error = document.getElementById('inlineOrderError');
   const fields = document.getElementById('inlineOrderFields');
   let submitting = false;
+  form.addEventListener('focusin', () => {
+    try { window.enkaGoogleAnalytics?.beginCheckout(window.currentProduct); } catch { /* Tracking is optional. */ }
+  });
 
   function inputError(input, message = '') {
     const el = document.getElementById(input.id + 'Error');
@@ -65,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.clone().json().catch(() => null);
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
       recordSuccessfulOrder(guard.exactSignature);
+      try { window.enkaGoogleAnalytics?.orderAccepted(product, eventId); } catch { /* Tracking must not affect an accepted order. */ }
       try {
         Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
       } catch { /* Analytics must not change an accepted order. */ }

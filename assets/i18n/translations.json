@@ -2718,5 +2718,17 @@
   "ყველას დაშვება": {
     "ru": "Разрешить всё",
     "en": "Allow all"
+  },
+  "ნახვები პროდუქტების შესარჩევად მხოლოდ თქვენს ბრაუზერში ინახება. Meta და Google Analytics გამოიყენება ანალიტიკისა და რეკლამის შედეგების გასაზომად. თანხმობით ადასტურებთ, რომ ხართ 16 წლის ან უფროსი.": {
+    "ru": "Просмотры для подбора товаров сохраняются только в вашем браузере. Meta и Google Analytics используются для аналитики и измерения результатов рекламы. Давая согласие, вы подтверждаете, что вам не менее 16 лет.",
+    "en": "Views used to select products are stored only in your browser. Meta and Google Analytics measure analytics and advertising performance. By consenting, you confirm that you are at least 16."
+  },
+  "Google Analytics 4 და Google Ads თანხმობის შემდეგ ზომავს გვერდებისა და პროდუქტების ნახვებს, შეკვეთის დაწყებასა და მიღებულ შეკვეთებს. Google-ს არ ვუგზავნით შეკვეთის სახელსა და ტელეფონს. გამოიყენება გვერდის მისამართი, კამპანიის პარამეტრები, პროდუქტი, ფასი და ბრაუზერის იდენტიფიკატორები.": {
+    "ru": "После согласия Google Analytics 4 и Google Ads измеряют просмотры страниц и товаров, начало оформления и принятые заказы. Имя и телефон из заказа в Google не передаются. Используются адрес страницы, параметры кампании, товар, цена и идентификаторы браузера.",
+    "en": "After consent, Google Analytics 4 and Google Ads measure page and product views, checkout starts and accepted orders. Order names and phone numbers are not sent to Google. Page URLs, campaign parameters, products, prices and browser identifiers are used."
+  },
+  "Google-ის ქუქიები: _ga და _ga_* — 180 დღემდე; _gcl_* — Google-ის სარეკლამო ატრიბუციისთვის. თანხმობის გაუქმებისას საიტი შლის ამ ქუქიებს.": {
+    "ru": "Файлы cookie Google: _ga и _ga_* — до 180 дней; _gcl_* — для рекламной атрибуции Google. При отзыве согласия сайт удаляет эти файлы cookie.",
+    "en": "Google cookies: _ga and _ga_* for up to 180 days; _gcl_* for Google advertising attribution. The site deletes these cookies when consent is withdrawn."
   }
 }

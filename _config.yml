@@ -5,6 +5,8 @@ url: "https://enkaelectronics.com.ge"
 baseurl: ""
 encoding: utf-8
 facebook_pixel_id: "1499689204986172"
+# GA4 web stream Measurement ID (G-...). Empty means Google tracking is disabled.
+google_analytics_id: "G-KHQG9C6JQF"
 
 # Полная сборка исключает устаревшие страницы и данные каталога
 incremental: false
