@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const index = current(el);
     positions.set(el, index);
     document.querySelectorAll(selector).forEach((thumb, i) => {
-      thumb.classList.toggle('active', i === index);
-      thumb.setAttribute('aria-pressed', String(i === index));
+      const thumbIndex = Number(thumb.dataset.galleryIndex ?? thumb.dataset.zoomIndex ?? i);
+      thumb.classList.toggle('active', thumbIndex === index);
+      thumb.setAttribute('aria-pressed', String(thumbIndex === index));
     });
     const counter = document.getElementById(counterId);
     if (counter) counter.textContent = (index + 1) + ' / ' + slides.length;
@@ -112,29 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
     target?.setAttribute('tabindex', target.matches('input') ? '0' : '-1');
     target?.focus({ preventScroll: true });
   };
-  const bar = document.getElementById('mobileBottomBar');
-  const buy = document.getElementById('submitInlineOrderBtn');
-  let barUpdatePending = false;
-  const updateBuyBar = () => {
-    if (barUpdatePending) return;
-    barUpdatePending = true;
-    requestAnimationFrame(() => {
-      const rect = buy.getBoundingClientRect();
-      const navigation = document.getElementById('enka-mobile-nav');
-      const bottomInset = navigation?.getBoundingClientRect().height || 0;
-      const viewportHeight = Math.min(window.innerHeight, window.visualViewport?.height || window.innerHeight);
-      const headerBottom = Math.max(0, document.getElementById('site-header')?.getBoundingClientRect().bottom || 0);
-      bar.dataset.formVisible = String(rect.width > 0 && rect.top >= headerBottom && rect.bottom <= viewportHeight - bottomInset);
-      barUpdatePending = false;
-    });
-  };
-  window.addEventListener('scroll', updateBuyBar, { passive: true });
-  window.addEventListener('resize', updateBuyBar, { passive: true });
-  window.visualViewport?.addEventListener('resize', updateBuyBar, { passive: true });
-  if (typeof IntersectionObserver !== 'undefined') new IntersectionObserver(updateBuyBar).observe(buy);
-  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(updateBuyBar).observe(document.getElementById('inlineOrderForm'));
-  updateBuyBar();
-
   document.querySelectorAll('.product-video-play').forEach(link => link.addEventListener('click', event => {
     const container = link.closest('[data-video-id]');
     const id = container.dataset.videoId;

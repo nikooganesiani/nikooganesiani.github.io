@@ -304,7 +304,7 @@
     updateFavModalCount(favs.length);
 
     if (!favs.length) {
-      list.innerHTML = '<div class="modal-empty flex flex-col items-center pt-6 pr-2 pb-4 pl-2 text-center [&_h3]:mt-0 [&_h3]:mr-0 [&_h3]:mb-2 [&_h3]:ml-0 [&_h3]:text-[#374151] [&_h3]:text-[length:16px] [&_h3]:leading-[1.6] [&_h3]:font-semibold [&_p]:max-w-75 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-6 [&_p]:ml-0 [&_p]:text-[#637082] [&_p]:text-[length:13px] [&_p]:leading-[1.8]"><span class="flex items-center justify-center w-16 h-16 mb-5 rounded-[20px] bg-[#f3f5f8] text-[#7c8795]" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 21s-9.5-5.6-9.5-12A5.5 5.5 0 0 1 12 5.2 5.5 5.5 0 0 1 21.5 9C21.5 15.4 12 21 12 21"/></svg></span><h3>რჩეულებში ჯერ არაფერია</h3><p>პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ.</p><button type="button" class="[.listing-filter-actions_&]:min-w-0 [.listing-filter-actions_&]:px-3 [.listing-filter-actions_&]:text-[length:14px] inline-flex items-center justify-center gap-2.5 w-full min-h-12.5 py-3 px-4.5 border border-solid rounded-xl text-[length:15px] font-semibold leading-[1.6] cursor-pointer text-center no-underline [transition:background-color_150ms] disabled:bg-[#416fcb] disabled:cursor-wait bg-[#f1f4f8] text-[#334155] border-[#e4e9ef] active:bg-[#e4e9ef] [.modal-empty_&]:w-auto [.modal-empty_&]:min-w-45 [@media(hover:_hover)]:hover:bg-[#e9edf3]" data-close-modal>პროდუქტების ნახვა</button></div>';
+      list.innerHTML = '<div class="modal-empty flex flex-col items-center pt-6 pr-2 pb-4 pl-2 text-center [&_h3]:mt-0 [&_h3]:mr-0 [&_h3]:mb-2 [&_h3]:ml-0 [&_h3]:text-[color:light-dark(#374151,var(--color-night-copy))] [&_h3]:text-[length:16px] [&_h3]:leading-[1.6] [&_h3]:font-semibold [&_p]:max-w-75 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-6 [&_p]:ml-0 [&_p]:text-[color:light-dark(#637082,var(--color-night-copy))] [&_p]:text-[length:13px] [&_p]:leading-[1.8]"><span class="flex items-center justify-center w-16 h-16 mb-5 rounded-[20px] bg-[color:light-dark(#f3f5f8,var(--color-night-surface))] text-[color:light-dark(#7c8795,var(--color-night-muted))]" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 21s-9.5-5.6-9.5-12A5.5 5.5 0 0 1 12 5.2 5.5 5.5 0 0 1 21.5 9C21.5 15.4 12 21 12 21"/></svg></span><h3>რჩეულებში ჯერ არაფერია</h3><p>პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ.</p><button type="button" class="[.listing-filter-actions_&]:min-w-0 [.listing-filter-actions_&]:px-3 [.listing-filter-actions_&]:text-[length:14px] inline-flex items-center justify-center gap-2.5 w-full min-h-12.5 py-3 px-4.5 border border-solid rounded-xl text-[length:15px] font-semibold leading-[1.6] cursor-pointer text-center no-underline [transition:background-color_150ms] disabled:bg-[#416fcb] disabled:cursor-wait bg-[color:light-dark(#f1f4f8,var(--color-night-blue))] text-[color:light-dark(#334155,var(--color-night-copy))] border-[color:light-dark(#e4e9ef,var(--color-night-line))] active:bg-[color:light-dark(#e4e9ef,var(--color-night-blue))] [.modal-empty_&]:w-auto [.modal-empty_&]:min-w-45 [@media(hover:_hover)]:hover:bg-[color:light-dark(#e9edf3,var(--color-night-blue))]" data-close-modal>პროდუქტების ნახვა</button></div>';
       return;
     }
 
@@ -317,12 +317,12 @@
         var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
 
         return (
-          '<div class="flex items-center gap-3 py-3 border-b border-slate-100 last:border-b-0" data-fav-index="' +
+          '<div class="flex items-center gap-3 py-3 border-b border-[color:light-dark(var(--color-slate-100),var(--color-night-line))] last:border-b-0" data-fav-index="' +
           index +
           '">' +
           '<a href="' +
           escapeHtml(href) +
-          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-xl bg-slate-50 overflow-hidden flex items-center justify-center">' +
+          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-xl bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] overflow-hidden flex items-center justify-center">' +
           (img
             ? '<img src="' + escapeHtml(img) + '" alt="" width="64" height="64" loading="lazy" class="w-full h-full object-contain">'
             : '') +
@@ -330,19 +330,19 @@
           '<a href="' +
           escapeHtml(href) +
           '" class="min-w-0 flex-1 no-underline">' +
-          '<div class="text-[14px] font-semibold text-slate-900 leading-snug line-clamp-2">' +
+          '<div class="text-[14px] font-semibold text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))] leading-snug line-clamp-2">' +
           name +
           '</div>' +
           '<div class="mt-1 flex items-baseline gap-2">' +
-          '<span class="text-[15px] font-bold text-slate-900">' +
+          '<span class="text-[15px] font-bold text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">' +
           price +
           '</span>' +
           (oldPrice
-            ? '<span class="text-[12px] text-slate-500 line-through">' + oldPrice + '</span>'
+            ? '<span class="text-[12px] text-[color:light-dark(var(--color-slate-500),var(--color-night-muted))] line-through">' + oldPrice + '</span>'
             : '') +
           '</div>' +
           '</a>' +
-          '<button type="button" class="inline-flex items-center justify-center [flex:0_0_44px] w-11 h-11 p-0 border-0 rounded-[50%] text-[#5b6573] bg-[#f3f5f7] cursor-pointer [transition:background-color_150ms,_color_150ms] active:bg-[#e3e8ee] [@media(hover:_hover)]:hover:text-[#202a37] [@media(hover:_hover)]:hover:bg-[#e9edf2]" data-fav-remove="' +
+          '<button type="button" class="inline-flex items-center justify-center [flex:0_0_44px] w-11 h-11 p-0 border-0 rounded-[50%] text-[color:light-dark(#5b6573,var(--color-night-copy))] bg-[color:light-dark(#f3f5f7,var(--color-night-surface))] cursor-pointer [transition:background-color_150ms,_color_150ms] active:bg-[color:light-dark(#e3e8ee,var(--color-night-blue))] [@media(hover:_hover)]:hover:text-[color:light-dark(#202a37,var(--color-night-ink))] [@media(hover:_hover)]:hover:bg-[color:light-dark(#e9edf2,var(--color-night-blue))]" data-fav-remove="' +
           index +
           '" aria-label="წაშლა რჩეულებიდან: ' + name + '"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M5.3 5.3a1 1 0 0 1 1.4 0l5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4L13.4 12l5.3 5.3a1 1 0 0 1-1.4 1.4L12 13.4l-5.3 5.3a1 1 0 0 1-1.4-1.4l5.3-5.3-5.3-5.3a1 1 0 0 1 0-1.4"/></svg></button>' +
           '</div>'

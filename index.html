@@ -5,11 +5,11 @@ description: "ტექნიკა სახლისთვის, სამზ
 is_home: true
 ---
 
-<div class="max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-4 pb-12 selection:bg-blue-200">
+<div class="max-w-[1280px] w-full mx-auto px-4 sm:px-6 py-4 pb-12 selection:bg-[color:light-dark(var(--color-blue-200),var(--color-night-blue))]">
   <h1 class="sr-only">ENKA Electronics — ტექნიკა თქვენი ყოველდღიურობისთვის</h1>
   <div data-studio-heroes>{% include homepage/promo-block.html %}</div>
   {% include homepage/mini-categories.html %}
-  <div data-studio-campaigns>{% include homepage/campaigns.html %}</div>
+  <div data-studio-campaigns class="dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">{% include homepage/campaigns.html %}</div>
   {% include homepage/recommendations.html %}
-  <noscript><p class="mt-6 rounded-xl bg-blue-50 p-4 text-sm text-slate-700">შეკვეთისთვის დაგვიკავშირდით: <a class="text-blue-700 underline" href="tel:+995551178990">+995 551 17 89 90</a>. ძიებისა და ონლაინ შეკვეთისთვის ჩართეთ JavaScript.</p></noscript>
+  <noscript><p class="mt-6 rounded-xl bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] p-4 text-sm text-[color:light-dark(var(--color-slate-700),var(--color-night-copy))]">შეკვეთისთვის დაგვიკავშირდით: <a class="text-[color:light-dark(var(--color-blue-700),var(--color-accent))] underline" href="tel:+995551178990">+995 551 17 89 90</a>. ძიებისა და ონლაინ შეკვეთისთვის ჩართეთ JavaScript.</p></noscript>
 </div>

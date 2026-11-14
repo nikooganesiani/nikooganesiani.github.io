@@ -11,10 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const status = panel.querySelector('[data-personalization-status]');
     for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE || {})) {
       const group = document.createElement('div');
-      group.className = 'rounded-xl bg-slate-50 p-3';
+      group.className = 'rounded-xl bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] p-3';
       function option(key, label, parent = group) {
         const row = document.createElement('label');
-        row.className = 'flex min-h-11 items-center gap-3 text-slate-800';
+        row.className = 'flex min-h-11 items-center gap-3 text-[color:light-dark(var(--color-slate-800),var(--color-night-ink))]';
         const input = document.createElement('input');
         input.type = 'checkbox'; input.value = key; input.className = 'size-5 shrink-0 accent-brand';
         row.append(input, document.createTextNode(t(label))); parent.append(row);
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (category.subs?.length) {
         const details = document.createElement('details');
         const summary = document.createElement('summary');
-        summary.className = 'min-h-11 cursor-pointer py-3 text-xs font-semibold text-brand';
+        summary.className = 'min-h-11 cursor-pointer py-3 text-xs font-semibold text-accent';
         summary.textContent = t('ქვეკატეგორიების არჩევა'); details.append(summary);
         category.subs.forEach(sub => option('sub:' + sub.id, sub.name, details));
         group.append(details);

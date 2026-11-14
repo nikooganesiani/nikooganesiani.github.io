@@ -16,9 +16,17 @@ function verifyHeader(value, label) {
   assert.equal((value.match(/id="site-header"/g) || []).length, 1, label + ': one shared header');
   const header = value.match(/<header\b(?=[^>]*\bid="site-header")[^>]*>[\s\S]*?<\/header>/)?.[0];
   assert.ok(header, label + ': shared header markup');
+  assert.equal((value.match(/data-theme-toggle\b/g) || []).length, 1, label + ': a single theme switch');
+  assert.match(footerOf(value), /data-theme-toggle/, label + ': theme switch is only in footer');
+  assert.match(footerOf(value), /type="checkbox" role="switch"/, label + ': accessible native theme switch');
+  const themeScript = value.match(/<script\b[^>]*src="\/assets\/js\/global\/theme.js"[^>]*>/g) || [];
+  assert.equal(themeScript.length, 1, label + ': one theme controller');
+  assert.ok(!/\b(?:defer|async)\b/.test(themeScript[0]), label + ': theme applies before first paint');
+  assert.ok(value.indexOf(themeScript[0]) < value.indexOf('rel="stylesheet"'), label + ': theme initializes before CSS');
   assert.match(header, /<form[^>]+role="search"[^>]+action="\/search\/"[^>]+method="get"/, label + ': native search navigation');
   assert.match(header, /<input[^>]+name="result"[^>]+id="searchInput"/, label + ': named search field');
-  assert.match(header, /href="tel:\+995551178990"/, label + ': direct contact');
+  assert.ok(!header.includes('header-utility'), label + ': compact header without utility strip');
+  assert.match(footerOf(value), /href="tel:\+995551178990"/, label + ': direct contact in footer');
   assert.equal((value.match(/src="\/assets\/js\/global\/header.js"/g) || []).length, 1, label + ': one header controller');
   assert.equal((value.match(/src="\/assets\/js\/main\/photo-search.js"/g) || []).length, 1, label + ': one photo search controller');
   assert.equal((value.match(/id="photoSearchModal"/g) || []).length, 1, label + ': one shared photo search dialog');

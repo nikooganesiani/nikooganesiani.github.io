@@ -9,14 +9,39 @@
 @source "../../capi.js";
 @source "../js";
 
+@custom-variant dark {
+  @media screen {
+    &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
+  }
+}
+
 @theme {
   --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #155dfc;
   --color-brand-dark: #1048cb;
-  --color-ink: #202733;
-  --color-muted: #68717e;
-  --color-surface: #f6f7f9;
-  --color-line: #e8ebef;
+  --color-ink: light-dark(#202733, #e7edf6);
+  --color-muted: light-dark(#68717e, #a4afbf);
+  --color-surface: light-dark(#f6f7f9, #202936);
+  --color-page: light-dark(#fafbfd, #101720);
+  --color-line: light-dark(#e8ebef, #303b4b);
+  --color-canvas: light-dark(#fff, #18212d);
+  --color-accent: light-dark(#155dfc, #8cb4ff);
+  --color-accent-strong: light-dark(#1048cb, #a7c6ff);
+  --color-night-ink: #e7edf6;
+  --color-night-copy: #c1ccdb;
+  --color-night-muted: #a4afbf;
+  --color-night-surface: #202936;
+  --color-night-raised: #293547;
+  --color-night-line: #303b4b;
+  --color-night-line-strong: #4b5b70;
+  --color-night-blue: #1c3050;
+  --color-night-blue-line: #375986;
+  --color-night-danger: #ff9ca8;
+  --color-night-danger-surface: #39252d;
+  --color-night-success: #95d4b0;
+  --color-night-success-surface: #20382f;
+  --color-night-warning: #eac184;
+  --color-night-warning-surface: #392f1e;
 }
 
 @font-face {
@@ -71,11 +96,6 @@
     opacity: 1;
     pointer-events: auto;
   }
-}
-
-@media (max-width: 768px) {
-  /* Let the scroll viewport reach the screen edge past the page gutter. */
-  .product-carousel { margin-right: calc(50% - 50vw); }
 }
 
 /* Compact price figures with a locally hosted Georgian currency glyph. */

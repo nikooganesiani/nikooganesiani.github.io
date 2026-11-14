@@ -87,7 +87,7 @@ function showSpamError(form, message) {
     let errEl = form.querySelector('.enka-rate-limit-msg');
     if (!errEl) {
         errEl = document.createElement('div');
-        errEl.className = 'enka-rate-limit-msg text-[#ef4444] text-[13px] text-center mt-2 font-medium';
+        errEl.className = 'enka-rate-limit-msg text-[color:light-dark(#ef4444,var(--color-night-danger))] text-[13px] text-center mt-2 font-medium';
         form.appendChild(errEl);
     }
     errEl.textContent = message;
@@ -220,7 +220,7 @@ if (quickForm) {
         const originalContent = submitBtn ? submitBtn.innerHTML : '';
 
         if (submitBtn) {
-            submitBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-white motion-reduce:border-dotted" aria-hidden="true"></span>იგზავნება…</span>';
+            submitBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-canvas motion-reduce:border-dotted" aria-hidden="true"></span>იგზავნება…</span>';
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-label', 'შეკვეთა იგზავნება');
         }

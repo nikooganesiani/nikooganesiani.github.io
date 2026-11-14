@@ -4,16 +4,13 @@
   if (!header) return;
   const root = document.documentElement;
   const inner = header.querySelector('.header-inner');
-  const utility = header.querySelector('.header-utility');
   // Text zoom, font loading and safe areas can change the actual header height.
   function measure() {
     root.style.setProperty('--site-header-height', inner.getBoundingClientRect().height + 'px');
-    root.style.setProperty('--header-utility-height', utility.getBoundingClientRect().height + 'px');
   }
   if ('ResizeObserver' in window) {
     const observer = new ResizeObserver(measure);
     observer.observe(inner);
-    observer.observe(utility);
   } else window.addEventListener('resize', measure, { passive: true });
   measure();
   for (const trigger of header.querySelectorAll('[data-header-panel]')) {

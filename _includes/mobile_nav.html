@@ -3,16 +3,14 @@
   {%- assign mobile_nav_current = 'home' -%}
 {%- elsif page.url == '/category/' or page.layout == 'product' -%}
   {%- assign mobile_nav_current = 'catalog' -%}
-{%- elsif page.url == '/search/' -%}
-  {%- assign mobile_nav_current = 'search' -%}
 {%- endif -%}
-{%- assign mobile_nav_item = 'group flex min-h-16 min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1 text-slate-500 no-underline touch-manipulation cursor-pointer hover:text-blue-600 data-[active=true]:text-blue-600 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600' -%}
-{%- assign mobile_nav_icon = 'relative flex h-8 w-11 shrink-0 items-center justify-center rounded-xl group-hover:bg-slate-100 group-data-[active=true]:bg-blue-50 motion-safe:transition motion-safe:group-active:scale-90 forced-colors:group-data-[active=true]:outline' -%}
+{%- assign mobile_nav_item = 'group flex min-h-16 min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1 text-[color:light-dark(var(--color-slate-500),var(--color-night-muted))] no-underline touch-manipulation cursor-pointer hover:text-[color:light-dark(var(--color-blue-600),var(--color-accent))] data-[active=true]:text-[color:light-dark(var(--color-blue-600),var(--color-accent))] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-blue-600' -%}
+{%- assign mobile_nav_icon = 'relative flex h-8 w-11 shrink-0 items-center justify-center rounded-xl group-hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] group-data-[active=true]:bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] motion-safe:transition motion-safe:group-active:scale-90 forced-colors:group-data-[active=true]:outline' -%}
 {%- assign mobile_nav_label = 'max-w-full text-center text-[clamp(10px,2.7vw,11px)] leading-4 font-semibold break-words' -%}
-{%- assign mobile_nav_badge = 'pointer-events-none absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] items-center justify-center rounded-full border-2 border-white bg-red-500 px-1 text-[9px] leading-none font-bold tabular-nums text-white' -%}
+{%- assign mobile_nav_badge = 'pointer-events-none absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] items-center justify-center rounded-full border-2 border-canvas bg-brand px-1 text-[9px] leading-none font-bold tabular-nums text-white' -%}
 
 <nav id="enka-mobile-nav" aria-label="მთავარი ნავიგაცია"
-     class="fixed inset-x-0 bottom-0 z-[100] border-t border-slate-200 bg-white/95 pb-[env(safe-area-inset-bottom,0px)] pl-[max(4px,env(safe-area-inset-left,0px))] pr-[max(4px,env(safe-area-inset-right,0px))] shadow-[0_-4px_20px_rgb(15_23_42/0.04)] backdrop-blur-xl sm:hidden print:hidden print:hidden!">
+     class="fixed inset-x-0 bottom-0 z-[100] border-t border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas/95 pb-[env(safe-area-inset-bottom,0px)] pl-[max(4px,env(safe-area-inset-left,0px))] pr-[max(4px,env(safe-area-inset-right,0px))] shadow-[0_-4px_20px_rgb(15_23_42/0.04)] backdrop-blur-xl sm:hidden print:hidden print:hidden!">
   <ul class="mx-auto grid max-w-lg grid-cols-5 list-none p-0 [&>li]:grid [&>li]:min-w-0">
     <li>
       <a href="{{ '/' | relative_url }}" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'home' %}true{% else %}false{% endif %}"{% if mobile_nav_current == 'home' %} aria-current="page"{% endif %}>
@@ -31,11 +29,11 @@
       </button>
     </li>
     <li>
-      <button type="button" class="{{ mobile_nav_item }}" data-active="{% if mobile_nav_current == 'search' %}true{% else %}false{% endif %}" aria-controls="searchModalMobile" aria-haspopup="dialog" aria-expanded="false">
+      <button type="button" class="{{ mobile_nav_item }}" data-active="false" aria-label="შეკვეთის სტატუსი" aria-controls="trackingModal" aria-haspopup="dialog" aria-expanded="false">
         <span class="{{ mobile_nav_icon }}">
-          <svg class="h-6 w-6" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="currentColor"><path fill-rule="evenodd" d="M10.5 2a8.5 8.5 0 1 0 5.3 15.1l4.5 4.6a1 1 0 0 0 1.4-1.4l-4.6-4.5A8.5 8.5 0 0 0 10.5 2m-6 8.5a6 6 0 1 1 12 0 6 6 0 0 1-12 0" clip-rule="evenodd"/></svg>
+          {% include icons.html name='truck' size=24 %}
         </span>
-        <span class="{{ mobile_nav_label }}">ძიება</span>
+        <span class="{{ mobile_nav_label }}">სტატუსი</span>
       </button>
     </li>
     <li>

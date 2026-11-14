@@ -19,18 +19,18 @@
       {% endcapture %}
       {% if recommendation_count > 0 %}
       <section aria-labelledby="recommendationFallback-{{ recommendation_category_id }}">
-        <h2 id="recommendationFallback-{{ recommendation_category_id }}" class="mb-5 text-[length:22px] font-semibold tracking-tight text-slate-900">{{ recommendation_category[1].title }}</h2>
+        <h2 id="recommendationFallback-{{ recommendation_category_id }}" class="mb-5 text-[length:22px] font-semibold tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">{{ recommendation_category[1].title }}</h2>
         <div class="product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pb-2.5 [&::-webkit-scrollbar]:hidden max-[768px]:gap-4" tabindex="0" role="group" aria-label="{{ recommendation_category[1].title | escape }}">{{ recommendation_cards }}</div>
       </section>
       {% endif %}
     {% endfor %}
   </div>
-  <p id="recommendationsStatus" class="mt-6 text-sm leading-relaxed text-slate-600 empty:hidden" role="status" aria-live="polite"></p>
+  <p id="recommendationsStatus" class="mt-6 text-sm leading-relaxed text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] empty:hidden" role="status" aria-live="polite"></p>
   <div class="mt-5 flex flex-wrap items-center gap-3">
     <button id="recommendationsMore" type="button" class="sr-only focus:not-sr-only focus:min-h-11 focus:rounded-xl focus:bg-brand focus:px-6 focus:py-3 focus:text-white" hidden>მეტი პროდუქტის ნახვა</button>
-    <button id="recommendationsRetry" type="button" class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-brand hover:bg-blue-50" hidden>ხელახლა ცდა</button>
+    <button id="recommendationsRetry" type="button" class="min-h-11 rounded-xl border border-[color:light-dark(var(--color-slate-300),var(--color-night-line-strong))] bg-canvas px-4 py-2 text-sm font-semibold text-accent hover:bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))]" hidden>ხელახლა ცდა</button>
   </div>
-  <noscript><p class="mt-5 text-sm text-slate-600">პერსონალური რეკომენდაციებისთვის ჩართეთ JavaScript. ყველა პროდუქტი ხელმისაწვდომია <a class="text-brand underline" href="/category/">კატალოგში</a>.</p></noscript>
+  <noscript><p class="mt-5 text-sm text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))]">პერსონალური რეკომენდაციებისთვის ჩართეთ JavaScript. ყველა პროდუქტი ხელმისაწვდომია <a class="text-accent underline" href="/category/">კატალოგში</a>.</p></noscript>
 </section>
 <script type="application/json" id="recommendationCatalog">[
 {%- for product in site.products -%}

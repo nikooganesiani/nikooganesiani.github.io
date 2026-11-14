@@ -3,4 +3,4 @@
 {% if first_sub and sub_name %}{% include product/recommendations.html prefix='subcat' heading=sub_name products=sub_products %}{% endif %}
 {% if first_cat and cat_name %}{% include product/recommendations.html prefix='cat' heading=cat_name products=cat_products exclude=sub_products %}{% endif %}
 {% include product/recommendations.html prefix='recent' heading='ბოლოს ნანახი' %}
-<p id="recommendationsStatus" role="status" class="text-sm text-slate-600 mt-4 empty:hidden"></p>
+<p id="recommendationsStatus" role="status" class="text-sm text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] mt-4 empty:hidden"></p>

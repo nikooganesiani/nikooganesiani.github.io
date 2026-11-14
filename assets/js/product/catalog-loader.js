@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const specs = document.querySelector('#specsBlock dl');
       if (specs) specs.replaceChildren(...Object.entries(product.specs).map(([label, value]) => {
-        const row = document.createElement('div'); row.className = 'grid grid-cols-[minmax(0,_1.15fr)_minmax(0,_1fr)] gap-4.5 py-[13px] px-0 border-b border-solid border-b-[#edf0f3] text-[length:13px] leading-[1.6] [overflow-wrap:anywhere] [&:first-child]:pt-0 [&_dt]:text-muted [&_dd]:text-[#3e4855] [&_dd]:text-right [&_dd]:font-medium max-[768px]:text-[length:13px] max-[768px]:py-3.5 max-[768px]:px-0 max-[768px]:gap-4.5 max-[768px]:[&_dt]:text-[#7b8491]';
+        const row = document.createElement('div'); row.className = 'grid grid-cols-[minmax(0,_1.15fr)_minmax(0,_1fr)] gap-4.5 py-[13px] px-0 border-b border-solid border-b-[color:light-dark(#edf0f3,var(--color-night-line))] text-[length:13px] leading-[1.6] [overflow-wrap:anywhere] [&:first-child]:pt-0 [&_dt]:text-muted [&_dd]:text-[color:light-dark(#3e4855,var(--color-night-copy))] [&_dd]:text-right [&_dd]:font-medium max-[768px]:text-[length:13px] max-[768px]:py-3.5 max-[768px]:px-0 max-[768px]:gap-4.5 max-[768px]:[&_dt]:text-[color:light-dark(#7b8491,var(--color-night-muted))]';
         const term = document.createElement('dt'); term.textContent = label;
         const detail = document.createElement('dd'); detail.textContent = String(value);
         row.append(term, detail); return row;

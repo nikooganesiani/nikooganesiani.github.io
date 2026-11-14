@@ -171,7 +171,7 @@
       const fragment = document.createDocumentFragment();
       for (const [key, label] of entries) {
         const link = document.createElement('a');
-        link.className = 'inline-flex items-center gap-2.5 flex-none min-h-10 py-2 px-3 border border-solid border-[#e1e5eb] rounded-lg bg-white text-[#505b6b] text-[length:13px] font-medium leading-[22px] no-underline hover:border-[#b5c9f1] hover:text-brand [&[aria-current=true]]:border-brand [&[aria-current=true]]:bg-brand [&[aria-current=true]]:text-white [&_small]:min-w-5 [&_small]:pl-2.5 [&_small]:border-l [&_small]:border-solid [&_small]:border-l-[#e1e5eb] [&_small]:text-muted [&_small]:text-[length:12px] [&_small]:leading-[16px] [&_small]:tabular-nums [&_small]:text-center [&[aria-current=true]_small]:border-[#ffffff50] [&[aria-current=true]_small]:text-white focus-visible:[outline-offset:-4px]! [&[aria-current=true]:focus-visible]:[outline-color:#fff]!';
+        link.className = 'inline-flex items-center gap-2.5 flex-none min-h-10 py-2 px-3 border border-solid border-[color:light-dark(#e1e5eb,var(--color-night-line))] rounded-lg bg-canvas text-[color:light-dark(#505b6b,var(--color-night-copy))] text-[length:13px] font-medium leading-[22px] no-underline hover:border-[color:light-dark(#b5c9f1,var(--color-night-blue-line))] hover:text-accent [&[aria-current=true]]:border-brand [&[aria-current=true]]:bg-brand [&[aria-current=true]]:text-white [&_small]:min-w-5 [&_small]:pl-2.5 [&_small]:border-l [&_small]:border-solid [&_small]:border-l-[color:light-dark(#e1e5eb,var(--color-night-line))] [&_small]:text-muted [&_small]:text-[length:12px] [&_small]:leading-[16px] [&_small]:tabular-nums [&_small]:text-center [&[aria-current=true]_small]:border-[#ffffff50] [&[aria-current=true]_small]:text-white focus-visible:[outline-offset:-4px]! [&[aria-current=true]:focus-visible]:[outline-color:#fff]!';
         link.dataset.listingValue = key;
         link.dataset.listingField = useSubs ? 'sub' : 'category';
         const next = { ...state, [link.dataset.listingField]: key, page: 1 };
@@ -201,7 +201,7 @@
     }
     function emptyState(title, message, action, label, href) {
       const box = document.createElement('section');
-      box.className = 'col-span-full py-12 px-6 border border-solid border-[#e1e5eb] rounded-xl bg-white text-center [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-3 [&_h2]:ml-0 [&_h2]:text-[#344050] [&_h2]:text-[length:20px] [&_h2]:font-semibold [&_h2]:leading-[1.5] [&_p]:max-w-110 [&_p]:mt-0 [&_p]:mr-auto [&_p]:mb-6 [&_p]:ml-auto [&_p]:text-muted [&_p]:text-[length:14px] [&_p]:leading-[1.8] max-[640px]:py-9 max-[640px]:px-5';
+      box.className = 'col-span-full py-12 px-6 border border-solid border-[color:light-dark(#e1e5eb,var(--color-night-line))] rounded-xl bg-canvas text-center [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-3 [&_h2]:ml-0 [&_h2]:text-[color:light-dark(#344050,var(--color-night-copy))] [&_h2]:text-[length:20px] [&_h2]:font-semibold [&_h2]:leading-[1.5] [&_p]:max-w-110 [&_p]:mt-0 [&_p]:mr-auto [&_p]:mb-6 [&_p]:ml-auto [&_p]:text-muted [&_p]:text-[length:14px] [&_p]:leading-[1.8] max-[640px]:py-9 max-[640px]:px-5';
       const heading = document.createElement('h2'); heading.textContent = title;
       const copy = document.createElement('p'); copy.textContent = message;
       const button = document.createElement(href ? 'a' : 'button');
