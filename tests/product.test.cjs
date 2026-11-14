@@ -47,7 +47,7 @@ function harness(submitEnkaOrder, overrides = {}) {
     });
     return elements.get(id);
   }
-  const confirmations = [], analytics = [], recorded = [], directFetches = [];
+  const confirmations = [], analytics = [], googleLeads = [], recorded = [], directFetches = [];
   const context = vm.createContext({
     window: {
       submitEnkaOrder,
@@ -55,6 +55,7 @@ function harness(submitEnkaOrder, overrides = {}) {
       formatPhoneInput() {},
       showOrderConfirm: data => confirmations.push(data),
       sendCapiEvent: (...args) => analytics.push(args),
+      enkaGoogleAnalytics: { orderAccepted: (...args) => googleLeads.push(args) },
       ...overrides
     },
     document: { getElementById: element, addEventListener(type, fn) { if (type === 'DOMContentLoaded') fn(); } },
@@ -67,7 +68,7 @@ function harness(submitEnkaOrder, overrides = {}) {
   element('inlinePhone').value = '+995 555 12 34 56';
   vm.runInContext(read('assets/js/product/inline-order.js'), context);
   const submit = () => element('inlineOrderForm').events.submit({ preventDefault() {} });
-  return { context, element, submit, confirmations, analytics, recorded, directFetches };
+  return { context, element, submit, confirmations, analytics, googleLeads, recorded, directFetches };
 }
 
 test('Inline order waits for acceptance, blocks repeated submit, and preserves canonical identity and the analytics price', async () => {
@@ -77,6 +78,7 @@ test('Inline order waits for acceptance, blocks repeated submit, and preserves c
   await h.submit();
   assert.equal(calls, 1);
   assert.equal(h.confirmations.length, 0);
+  assert.equal(h.googleLeads.length, 0, 'GA4 must wait for the server acceptance');
   assert.equal(h.element('submitInlineOrderBtn').disabled, true);
   assert.equal(h.element('inlineOrderForm').attrs['aria-busy'], 'true');
   assert.equal(body.product_id, 'canonical-slug');
@@ -86,6 +88,10 @@ test('Inline order waits for acceptance, blocks repeated submit, and preserves c
   assert.equal(h.confirmations.length, 1);
   assert.equal(h.analytics.length, 1);
   assert.equal(h.analytics[0][1].value, 19.95);
+  assert.equal(h.googleLeads.length, 1);
+  assert.equal(h.googleLeads[0][0].id, 'canonical-slug');
+  assert.equal(h.googleLeads[0][0].price, '19.95');
+  assert.match(h.googleLeads[0][1], /^purchase_/);
   assert.deepEqual(h.recorded, ['signature']);
   assert.equal(h.context.window.enkaOrderPending, false);
   assert.equal(h.element('submitInlineOrderBtn').disabled, false);
@@ -109,12 +115,14 @@ test('HTTP, application, network and timeout failures never confirm or track a p
     assert.equal(h.confirmations.length, 0);
     assert.equal(h.analytics.length, 0);
     assert.equal(h.recorded.length, 0);
+    assert.equal(h.googleLeads.length, 0, 'a rejected request must not generate a GA4 lead');
     assert.equal(h.element('inlineOrderError').hidden, false);
     assert.equal(h.element('inlineName').value, 'Test Name');
     assert.equal(h.element('submitInlineOrderBtn').disabled, false);
     await h.submit();
     assert.equal(calls, 2);
     assert.equal(h.confirmations.length, 1);
+    assert.equal(h.googleLeads.length, 1, 'only the accepted retry generates a lead');
   }
 });
 
@@ -159,6 +167,7 @@ test('A previously accepted duplicate reopens confirmation without resending or 
   assert.equal(h.confirmations.length, 1);
   assert.equal(h.confirmations[0].save, false);
   assert.equal(h.analytics.length, 0);
+  assert.equal(h.googleLeads.length, 0, 'reopening an accepted duplicate must not send another lead');
 });
 
 test('The shared duplicate guard retains accepted orders when browser storage is blocked', () => {
