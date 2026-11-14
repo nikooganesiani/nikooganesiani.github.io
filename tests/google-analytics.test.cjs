@@ -32,6 +32,10 @@ test('Google loads only after consent, sends one page/product view, and strips p
   assert.equal(b.scripts.length, 1);
   assert.deepEqual(b.commands().filter(c => c[0] === 'event').map(c => c[1]), ['page_view', 'view_item']);
   const config = b.commands().find(c => c[0] === 'config')[2];
+  const defaults = b.commands().findIndex(c => c[0] === 'set');
+  assert.ok(defaults >= 0 && defaults < b.commands().findIndex(c => c[0] === 'js'), 'automatic destinations receive defaults before initialization');
+  assert.equal(b.commands()[defaults][1].send_page_view, false);
+  assert.equal(b.commands()[defaults][1].page_location, config.page_location);
   assert.equal(config.page_location, 'https://enkaelectronics.com.ge/product/kettle/?gclid=click123');
   assert.equal(config.page_referrer, 'https://example.com/');
   b.choose(true);

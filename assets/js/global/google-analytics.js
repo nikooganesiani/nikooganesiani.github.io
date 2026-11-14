@@ -46,15 +46,19 @@
     gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' });
     if (!loaded) {
       loaded = true;
-      gtag('js', new Date());
-      gtag('config', id, {
+      const settings = {
         send_page_view: false,
         page_location: cleanUrl(location.href),
         page_referrer: cleanUrl(document.referrer),
         page_title: location.pathname.startsWith('/search') ? 'ENKA Search' : document.title,
         cookie_expires: 15552000,
         cookie_update: false
-      });
+      };
+      // New Google tag containers initialize before legacy config commands.
+      // Set defaults before loading the container, including the page-view opt-out.
+      gtag('set', settings);
+      gtag('js', new Date());
+      gtag('config', id, settings);
       const script = document.createElement('script');
       script.async = true;
       script.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
