@@ -1,4 +1,8 @@
 {
+  "ანალიტიკაზე თანხმობის შემთხვევაში კამპანიის მონიშვნები ინახება ამ ჩანართში მაქსიმუმ შვიდი დღით. შეკვეთისას შერჩეული კამპანიის მონიშვნები ინახება ENKA-ს შეკვეთასთან რეკლამის შედეგების გასაზომად. თანხმობის გაუქმება შლის ჩანართში შენახულ მონიშვნებს.": {
+    "ru": "При согласии на аналитику метки кампаний хранятся в этой вкладке до семи дней. При оформлении заказа метки выбранной кампании сохраняются вместе с заказом ENKA для измерения результатов рекламы. Отзыв согласия удаляет метки из вкладки.",
+    "en": "If you allow analytics, campaign tags stay in this tab for up to seven days. At checkout, ENKA stores the selected campaign tags with your order to measure advertising results. Withdrawing consent clears the tags stored in this tab."
+  },
   "მუქი თემა": {
     "ru": "Тёмная тема",
     "en": "Dark theme"

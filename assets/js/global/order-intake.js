@@ -1,6 +1,7 @@
 (() => {
   const endpoint = "https://zilumtvyowzgpwswewtj.supabase.co/functions/v1/enka-intake/public";
   const pending = new Map();
+  const pendingAttribution = new Map();
   let widgetScript;
 
   function loadTurnstile() {
@@ -89,18 +90,31 @@
     const identity = await requestIdentity(payload);
     const key = pendingKey(identity);
     const token = await getToken(form);
+    let attribution;
+    if (window.enkaPrivacy?.allowsAnalytics() === true) {
+      if (!pendingAttribution.has(key)) {
+        pendingAttribution.set(key, window.enkaOrderAttribution?.current() ?? null);
+      }
+      attribution = pendingAttribution.get(key);
+    } else {
+      pendingAttribution.clear();
+    }
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": key },
-      body: JSON.stringify({ ...payload, turnstile_token: token }),
+      body: JSON.stringify({ ...payload, ...(attribution ? { attribution } : {}), turnstile_token: token }),
       signal: AbortSignal.timeout(20000),
     });
     if (response.ok) {
       const order = await response.clone().json();
       if (!order?.id || !Number.isSafeInteger(order.order_no)) throw new Error("Order response was incomplete");
       pending.delete(identity);
+      pendingAttribution.delete(key);
       try { sessionStorage.removeItem(identity); } catch { /* In-memory fallback. */ }
     }
     return response;
   };
+  window.addEventListener?.('enka:privacy-change', event => {
+    if (event.detail?.analytics !== true) pendingAttribution.clear();
+  });
 })();
