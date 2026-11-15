@@ -2,7 +2,7 @@
   'use strict';
   const KEY = 'enka_privacy_v1';
   const TTL = 180 * 86400000;
-  const analyticsKeys = ['_fbp', '_fbc', '_capi_uid', '_capi_last_user', '_capi_recent_purchases'];
+  const analyticsKeys = ['_fbp', '_fbc', '_capi_uid', '_capi_last_user', '_capi_recent_purchases', 'enka_measurement_v1'];
   function read() {
     try {
       const value = JSON.parse(localStorage.getItem(KEY));

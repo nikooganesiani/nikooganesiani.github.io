@@ -243,7 +243,7 @@ if (quickForm) {
                 try { window.enkaPersonalization?.record('purchase', String(product.id || slugFromUrl)); } catch { /* Recommendations must not affect an accepted order. */ }
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
-                try { window.enkaGoogleAnalytics?.orderAccepted({ id: productKey, name: product.name, price: numericPrice }, eventId); } catch { /* Tracking must not affect an accepted order. */ }
+                try { window.enkaGoogleAnalytics?.orderAccepted({ id: productKey, name: product.name, price: numericPrice }, eventId, result?.google_delivery); } catch { /* Tracking must not affect an accepted order. */ }
 
                 // Supabase opts into server delivery only after its transactional outbox is connected.
                 if (result?.purchase_delivery !== 'server' && typeof window.sendCapiEvent === 'function') {
