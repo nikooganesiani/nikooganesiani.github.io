@@ -21,18 +21,22 @@
   function legacyCategories(params) {
     return [...params].filter(([key, value]) => !value && key.trim() && !ROUTE_KEYS.has(key) && !/^(utm_|fbclid$|gclid$|msclkid$)/i.test(key)).map(([key]) => key);
   }
+  function resolveState(state, store=window.ENKA_STORE) {
+    const resolved=globalThis.EnkaStoreEngine?.resolveSection(store,state.category,state.sub);
+    return resolved?{...state,category:slug(resolved.category),sub:slug(resolved.sub)}:state;
+  }
   function readState(search, mode) {
     const params = new URLSearchParams(search);
     const query = ['result', 'q', 'search'].map(key => params.get(key)?.trim()).find(Boolean) || '';
     const page = params.get('page') || '1';
-    return {
+    return resolveState({
       category: slug(params.get(mode === 'search' ? 'cat' : 'category') || (mode === 'category' ? legacyCategories(params)[0] : '')) || 'all',
       sub: mode === 'category' ? slug(params.get('sub')) || 'all' : 'all',
       query: query.slice(0, 200),
       ...priceRange(params.get('min'), params.get('max')),
       sort: SORTS.has(params.get('sort')) ? params.get('sort') : 'default',
       page: /^\d+$/.test(page) ? Math.max(1, Math.min(10000, Number(page))) : 1
-    };
+    });
   }
   function routeURL(state, mode, search = window.location.search) {
     const params = new URLSearchParams(search);
@@ -167,7 +171,7 @@
       const fragment = document.createDocumentFragment();
       for (const [key, label] of entries) {
         const link = document.createElement('a');
-        link.className = 'inline-flex items-center gap-2.5 flex-none min-h-10 py-2 px-3 border border-solid border-[#e1e5eb] rounded-lg bg-white text-[#505b6b] text-[length:13px] font-medium leading-[22px] no-underline hover:border-[#b5c9f1] hover:text-brand [&[aria-current=true]]:border-brand [&[aria-current=true]]:bg-brand [&[aria-current=true]]:text-white [&_small]:min-w-5 [&_small]:pl-2.5 [&_small]:border-l [&_small]:border-solid [&_small]:border-l-[#e1e5eb] [&_small]:text-muted [&_small]:text-[length:12px] [&_small]:leading-[16px] [&_small]:tabular-nums [&_small]:text-center [&[aria-current=true]_small]:border-[#ffffff50] [&[aria-current=true]_small]:text-white focus-visible:[outline-offset:-4px]! [&[aria-current=true]:focus-visible]:[outline-color:#fff]!';
+        link.className = 'inline-flex items-center gap-2.5 flex-none min-h-10 py-2 px-3 border border-solid border-[color:light-dark(#e1e5eb,var(--color-night-line))] rounded-lg bg-canvas text-[color:light-dark(#505b6b,var(--color-night-copy))] text-[length:13px] font-medium leading-[22px] no-underline hover:border-[color:light-dark(#b5c9f1,var(--color-night-blue-line))] hover:text-accent [&[aria-current=true]]:border-brand [&[aria-current=true]]:bg-brand [&[aria-current=true]]:text-white [&_small]:min-w-5 [&_small]:pl-2.5 [&_small]:border-l [&_small]:border-solid [&_small]:border-l-[color:light-dark(#e1e5eb,var(--color-night-line))] [&_small]:text-muted [&_small]:text-[length:12px] [&_small]:leading-[16px] [&_small]:tabular-nums [&_small]:text-center [&[aria-current=true]_small]:border-[#ffffff50] [&[aria-current=true]_small]:text-white focus-visible:[outline-offset:-4px]! [&[aria-current=true]:focus-visible]:[outline-color:#fff]!';
         link.dataset.listingValue = key;
         link.dataset.listingField = useSubs ? 'sub' : 'category';
         const next = { ...state, [link.dataset.listingField]: key, page: 1 };
@@ -197,7 +201,7 @@
     }
     function emptyState(title, message, action, label, href) {
       const box = document.createElement('section');
-      box.className = 'col-span-full py-12 px-6 border border-solid border-[#e1e5eb] rounded-xl bg-white text-center [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-3 [&_h2]:ml-0 [&_h2]:text-[#344050] [&_h2]:text-[length:20px] [&_h2]:font-semibold [&_h2]:leading-[1.5] [&_p]:max-w-110 [&_p]:mt-0 [&_p]:mr-auto [&_p]:mb-6 [&_p]:ml-auto [&_p]:text-muted [&_p]:text-[length:14px] [&_p]:leading-[1.8] max-[640px]:py-9 max-[640px]:px-5';
+      box.className = 'col-span-full py-12 px-6 border border-solid border-[color:light-dark(#e1e5eb,var(--color-night-line))] rounded-xl bg-canvas text-center [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-3 [&_h2]:ml-0 [&_h2]:text-[color:light-dark(#344050,var(--color-night-copy))] [&_h2]:text-[length:20px] [&_h2]:font-semibold [&_h2]:leading-[1.5] [&_p]:max-w-110 [&_p]:mt-0 [&_p]:mr-auto [&_p]:mb-6 [&_p]:ml-auto [&_p]:text-muted [&_p]:text-[length:14px] [&_p]:leading-[1.8] max-[640px]:py-9 max-[640px]:px-5';
       const heading = document.createElement('h2'); heading.textContent = title;
       const copy = document.createElement('p'); copy.textContent = message;
       const button = document.createElement(href ? 'a' : 'button');
@@ -225,6 +229,11 @@
       }
       renderPills();
       const filtered = selectProducts(products, state, mode);
+      if (filtered.length && window.enkaPersonalization?.allowed()) {
+        if (state.query) filtered.slice(0, 3).forEach(product => window.enkaPersonalization.record('search', String(product.id)));
+        else if (state.sub !== 'all') window.enkaPersonalization.record('category', 'sub:' + state.sub);
+        else if (state.category !== 'all') window.enkaPersonalization.record('category', 'category:' + state.category);
+      }
       hidden('gridToggleBtn', !filtered.length);
       state.page = Math.min(state.page, Math.max(1, Math.ceil(filtered.length / PAGE_SIZE)));
       const end = Math.min(state.page * PAGE_SIZE, filtered.length);
@@ -251,6 +260,8 @@
       const url = routeURL(state, mode);
       if (url !== window.location.pathname + window.location.search + window.location.hash) window.history[method]({}, '', url);
     }
+    window.addEventListener('enka:prices-change', event => { products=prepareProducts(event.detail.products); if(loaded)render(); });
+    window.addEventListener('enka:store-change',()=>{state=resolveState(state);if(loaded){render();saveURL('replaceState');}});
     function commit(patch, method = 'pushState', append = false) {
       clearTimeout(priceTimer);
       const range = priceRange(byId('minPrice').value, byId('maxPrice').value);
@@ -282,6 +293,7 @@
       if (retry) { retry.setAttribute('disabled', ''); retry.textContent = 'იტვირთება…'; }
       try {
         const data = await window.fetchCatalogCached();
+        state=resolveState(state,data?.store || window.ENKA_STORE);
         products = prepareProducts(Array.isArray(data) ? data : data?.products);
         loaded = true;
         render();

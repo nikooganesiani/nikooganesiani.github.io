@@ -1,4 +1,4 @@
-import { createDocument, validateDocument, clone, catalogDiff } from '../public/model.js';
+import { createDocument, validateDocument, clone, catalogDiff, importDocument } from '../public/model.js';
 
 export class ApiError extends Error {
   constructor(status, message, details) { super(message); this.status = status; this.details = details; }
@@ -7,7 +7,7 @@ export const json = (value, status = 200, headers = {}) => new Response(JSON.str
 export async function requestJson(request) {
   if (!(request.headers.get('content-type') || '').startsWith('application/json')) throw new ApiError(415, 'Ожидается application/json.');
   const text = await request.text();
-  if (new TextEncoder().encode(text).length > 1800000) throw new ApiError(413, 'Файл слишком большой. Максимум 1,8 МБ.');
+  if (new TextEncoder().encode(text).length > 4000000) throw new ApiError(413, 'Файл слишком большой. Максимум 4 МБ.');
   try { return JSON.parse(text); } catch { throw new ApiError(400, 'Не удалось прочитать JSON.'); }
 }
 
@@ -40,7 +40,7 @@ export class CatalogService {
     this.checkRevision(body.expectedRevision);
     const snapshot = this.store.getRevision(Number(body.revision));
     if (!snapshot) throw new ApiError(404, 'Версия не найдена.');
-    return this.save({ expectedRevision: body.expectedRevision, document: snapshot.document, message: `Восстановление версии ${body.revision} в черновик` }, identity);
+    return this.save({ expectedRevision: body.expectedRevision, document: importDocument(snapshot.document), message: `Восстановление версии ${body.revision} в черновик` }, identity);
   }
   review() {
     const state = this.view();
@@ -63,7 +63,7 @@ export class CatalogService {
     const release = { schemaVersion: 1, revision: state.revision, createdAt: state.pending.startedAt, document: state.document };
     const writes = [
       [`catalog:release:${state.pending.id}`, JSON.stringify(release)],
-      ['catalog', JSON.stringify({ ...state.document.catalog, _enkaPublication: { releaseKey: `catalog:release:${state.pending.id}`, revision: state.revision } })]
+      ['catalog', JSON.stringify({ ...state.document.catalog, ...(state.document.store ? { _enkaStore: state.document.store } : {}), _enkaPublication: { releaseKey: `catalog:release:${state.pending.id}`, revision: state.revision } })]
     ];
     try {
       for (let index = state.pending.step; index < writes.length; index++) {

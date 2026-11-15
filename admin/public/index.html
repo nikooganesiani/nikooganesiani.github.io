@@ -8,6 +8,7 @@
   <title>Каталог — ENKA Studio</title>
   <link rel="preload" as="font" href="/assets/GoogleSansVariable.woff2" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/admin.css">
+  <link rel="stylesheet" href="/store-visuals.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -19,6 +20,11 @@
     <nav class="main-nav" aria-label="Основная навигация">
       <a href="#catalog" class="nav-item active" data-view="catalog"><span data-icon="grid"></span>Каталог<span class="nav-count" id="nav-count">—</span></a>
       <a href="#translations" class="nav-item" data-view="translations"><span data-icon="languages"></span>Переводы<span class="nav-dot" id="translations-dot"></span></a>
+      <a href="#categories" class="nav-item" data-view="categories"><span data-icon="grid"></span>Категории</a>
+      <a href="#campaigns" class="nav-item" data-view="campaigns"><span data-icon="box"></span>Акции и скидки</a>
+      <a href="#merchandising" class="nav-item" data-view="merchandising"><span data-icon="image"></span>Главная страница</a>
+      <a href="#site-texts" class="nav-item" data-view="site-texts"><span data-icon="languages"></span>Тексты сайта</a>
+      <a href="#settings" class="nav-item" data-view="settings"><span data-icon="sliders"></span>Контакты магазина</a>
       <a href="#attributes" class="nav-item" data-view="attributes"><span data-icon="sliders"></span>Характеристики</a>
       <a href="#history" class="nav-item" data-view="history"><span data-icon="history"></span>История изменений</a>
     </nav>
@@ -32,7 +38,7 @@
     <header class="topbar">
       <button class="icon-button mobile-menu" id="mobile-menu" aria-label="Открыть навигацию" aria-expanded="false" aria-controls="sidebar"><span data-icon="menu"></span></button>
       <div class="breadcrumb"><span>Магазин</span><span data-icon="chevron-right"></span><strong id="breadcrumb-current">Каталог</strong></div>
-      <div class="topbar-right"><span class="environment" id="environment"><i></i>Локальная копия</span><span class="topbar-divider"></span><span class="sync-status" id="sync-status"><i></i>Загрузка…</span></div>
+      <div class="topbar-right"><label class="studio-language"><span class="sr-only">Язык интерфейса</span><select id="studio-language" aria-label="Язык интерфейса"><option value="ru">Русский</option><option value="en">English</option><option value="ka">ქართული</option></select></label><span class="environment" id="environment"><i></i>Локальная копия</span><span class="topbar-divider"></span><span class="sync-status" id="sync-status"><i></i>Загрузка…</span></div>
     </header>
     <main id="workspace" tabindex="-1">
       <div class="connection-alert" id="connection-alert" role="alert" hidden></div>
@@ -55,7 +61,7 @@
       </section>
       <section id="attributes-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ЕДИНЫЙ СЛОВАРЬ</p><h1>Характеристики</h1><p class="page-description">Название характеристики переводится один раз для всех товаров.</p></div></div><div class="catalog-panel"><label class="attribute-search search-field"><span data-icon="search"></span><input id="attribute-search" type="search" placeholder="Найти характеристику…"></label><div class="attribute-table" id="attribute-rows"></div></div></section>
       <section id="history-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ПРОЗРАЧНЫЕ ИЗМЕНЕНИЯ</p><h1>История каталога</h1><p class="page-description">Восстановление создаёт новый черновик. Публикация остаётся отдельным шагом.</p></div><button class="button secondary" id="history-refresh"><span data-icon="refresh"></span>Обновить</button></div><div class="history-list" id="history-list"></div></section>
-      <section id="settings-view" class="view" hidden></section>
+      <section id="store-view" class="view" hidden></section>
     </main>
     <footer class="savebar"><div class="savebar-info"><span class="savebar-icon" data-icon="check"></span><div><strong id="draft-status">Черновик загружается</strong><span id="draft-description">Изменения сначала сохраняются в панели.</span></div></div><div class="savebar-actions"><button class="button secondary" id="save-draft" disabled><span data-icon="save"></span>Сохранить черновик</button><button class="button primary" id="review-publish"><span data-icon="eye"></span>Просмотр и публикация<span data-icon="arrow-right"></span></button></div></footer>
   </div>

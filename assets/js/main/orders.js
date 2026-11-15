@@ -87,7 +87,7 @@ function showSpamError(form, message) {
     let errEl = form.querySelector('.enka-rate-limit-msg');
     if (!errEl) {
         errEl = document.createElement('div');
-        errEl.className = 'enka-rate-limit-msg text-[#ef4444] text-[13px] text-center mt-2 font-medium';
+        errEl.className = 'enka-rate-limit-msg text-[color:light-dark(#ef4444,var(--color-night-danger))] text-[13px] text-center mt-2 font-medium';
         form.appendChild(errEl);
     }
     errEl.textContent = message;
@@ -99,6 +99,7 @@ function showSpamError(form, message) {
 window.openOrderForm = function(product, trigger) {
     try {
         if (isQuickOrderSubmitting || window.enkaOrderPending) return;
+        if (window.ENKA_STORE && globalThis.EnkaStoreEngine && product) product=globalThis.EnkaStoreEngine.applyProducts([product],window.ENKA_STORE)[0];
         if (!product?.id || !window.isProductAvailable(product)) return;
         product = { ...product, price: String(window.productPrice(product.price)), oldPrice: window.productPrice(product.oldPrice) > window.productPrice(product.price) ? String(window.productPrice(product.oldPrice)) : '' };
         document.getElementById('quickProductName').textContent = product.name || '';
@@ -120,8 +121,18 @@ window.openOrderForm = function(product, trigger) {
             modal.dataset.product = JSON.stringify(product || {});
         }
         window.openAppModal?.('orderFormModal', trigger);
+        try { window.enkaGoogleAnalytics?.beginCheckout(product); } catch { /* Tracking must not affect checkout. */ }
     } catch(e) { console.error(e); }
 };
+
+window.addEventListener?.('enka:prices-change', event => {
+    if(isQuickOrderSubmitting || window.enkaOrderPending)return;
+    const modal=document.getElementById('orderFormModal');
+    if(!modal?.dataset.product)return;
+    let saved;try{saved=JSON.parse(modal.dataset.product);}catch{return;}
+    const product=event.detail.products.find(p=>String(p.id)===String(saved.id));
+    if(product){modal.dataset.product=JSON.stringify(product);document.getElementById('quickProductPrice').textContent=product.price+' ₾';}
+});
 
 if (quickPhone) {
     quickPhone.addEventListener('input', function() {
@@ -210,14 +221,13 @@ if (quickForm) {
         const originalContent = submitBtn ? submitBtn.innerHTML : '';
 
         if (submitBtn) {
-            submitBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-white motion-reduce:border-dotted" aria-hidden="true"></span>იგზავნება…</span>';
+            submitBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-canvas motion-reduce:border-dotted" aria-hidden="true"></span>იგზავნება…</span>';
             submitBtn.disabled = true;
             submitBtn.setAttribute('aria-label', 'შეკვეთა იგზავნება');
         }
         quickForm.setAttribute('aria-busy', 'true');
 
         try {
-            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
 
             const response = await window.submitEnkaOrder(quickForm, {
@@ -229,11 +239,14 @@ if (quickForm) {
 
             const result = await response.clone().json().catch(() => null);
             if (response.ok && result?.ok !== false && result?.success !== false && !result?.error) {
+                const eventId = 'purchase_' + (result?.id || Date.now() + '_' + Math.random().toString(36).substring(2, 9));
+                try { window.enkaPersonalization?.record('purchase', String(product.id || slugFromUrl)); } catch { /* Recommendations must not affect an accepted order. */ }
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
+                try { window.enkaGoogleAnalytics?.orderAccepted({ id: productKey, name: product.name, price: numericPrice }, eventId); } catch { /* Tracking must not affect an accepted order. */ }
 
-                // Отправляем в CAPI (capi.js сам заблокирует повтор, если это было просто исправление опечатки в номере!)
-                if (typeof window.sendCapiEvent === 'function') {
+                // Supabase opts into server delivery only after its transactional outbox is connected.
+                if (result?.purchase_delivery !== 'server' && typeof window.sendCapiEvent === 'function') {
                     try {
                     window.sendCapiEvent(
                         'Purchase',

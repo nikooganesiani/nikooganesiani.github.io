@@ -27,6 +27,7 @@
       try {
         if (panel.id === 'favModal') window.openFavorites(event);
         else if (panel.id === 'ordersModal') window.openOrders(event);
+        else if (panel.id === 'trackingModal') window.openTracking();
         else window.openAppModal(panel.id, button);
       } catch (error) {
         console.error('Error opening navigation panel:', error);
@@ -41,7 +42,7 @@
     const height = nav.getBoundingClientRect().height;
     if (height > 0) root.style.setProperty('--mobile-nav-height', height + 'px');
     const buyHeight = buyBar?.getBoundingClientRect().height || 0;
-    root.style.setProperty('--mobile-buy-bar-height', (buyHeight > 0 ? buyHeight + 10 : 0) + 'px');
+    root.style.setProperty('--mobile-buy-bar-height', buyHeight + 'px');
   }
   const observer = new ResizeObserver(measure);
   observer.observe(nav, { box: 'border-box' });

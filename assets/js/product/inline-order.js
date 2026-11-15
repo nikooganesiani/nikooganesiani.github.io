@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const error = document.getElementById('inlineOrderError');
   const fields = document.getElementById('inlineOrderFields');
   let submitting = false;
+  form.addEventListener('focusin', () => {
+    try { window.enkaGoogleAnalytics?.beginCheckout(window.currentProduct); } catch { /* Tracking is optional. */ }
+  });
 
   function inputError(input, message = '') {
     const el = document.getElementById(input.id + 'Error');
@@ -60,15 +63,17 @@ document.addEventListener('DOMContentLoaded', () => {
     buttonText.textContent = 'იგზავნება…';
     form.setAttribute('aria-busy', 'true');
     try {
-      const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
       const response = await window.submitEnkaOrder(form, { name, phone, product_id: product.id, expected_price: Number(product.price) });
       const result = await response.clone().json().catch(() => null);
       if (response.status === 409 && result?.error === 'catalog_changed') { showError('ფასი შეიცვალა. განაახლეთ გვერდი და ხელახლა დაადასტურეთ შეკვეთა.'); return; }
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
+      const eventId = 'purchase_' + (result?.id || Date.now() + '_' + Math.random().toString(36).slice(2, 9));
       recordSuccessfulOrder(guard.exactSignature);
+      try { window.enkaGoogleAnalytics?.orderAccepted(product, eventId); } catch { /* Tracking must not affect an accepted order. */ }
       try {
-        Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
+        if (result?.purchase_delivery !== 'server') Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
       } catch { /* Analytics must not change an accepted order. */ }
+      try { window.enkaPersonalization?.record('purchase', String(product.id)); } catch { /* Recommendations must not affect an accepted order. */ }
       window.showOrderConfirm?.(confirmation);
     } catch {
       showError('შეკვეთის დადასტურება ვერ მოხერხდა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.');

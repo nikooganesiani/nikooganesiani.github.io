@@ -6,7 +6,7 @@
   function read() {
     try {
       const value = JSON.parse(localStorage.getItem(KEY));
-      if (typeof value?.analytics === 'boolean' && Number.isFinite(value.updatedAt) && value.updatedAt <= Date.now() && Date.now() - value.updatedAt < TTL) return value;
+      if (value?.noticeVersion === 'google-v1' && typeof value.analytics === 'boolean' && Number.isFinite(value.updatedAt) && value.updatedAt <= Date.now() && Date.now() - value.updatedAt < TTL) return value;
     } catch { /* A blocked store must not enable analytics. */ }
     return null;
   }
@@ -21,7 +21,8 @@
       const parent = host.endsWith('.com.ge') ? parts.slice(-3) : parts.slice(-2);
       if (parent.length >= 2) domains.add('.' + parent.join('.'));
     }
-    for (const key of analyticsKeys) {
+    const googleKeys = document.cookie.split(';').map(cookie => cookie.trim().split('=')[0]).filter(key => /^(_ga(?:_|$)|_gid$|_gat(?:_|$)|_gcl_)/.test(key));
+    for (const key of [...analyticsKeys, ...googleKeys]) {
       try { localStorage.removeItem(key); } catch { /* Storage is optional. */ }
       for (const domain of domains) {
         try { document.cookie = key + '=; Path=/; Max-Age=0; SameSite=Lax' + (domain ? '; Domain=' + domain : '') + (location.protocol === 'https:' ? '; Secure' : ''); } catch { /* Cookies may be blocked. */ }
@@ -41,7 +42,7 @@
     allowsAnalytics: () => getChoice() === true,
     setChoice(analytics) {
       if (typeof analytics !== 'boolean') return false;
-      record = { analytics, updatedAt: Date.now() };
+      record = { analytics, noticeVersion: 'google-v1', updatedAt: Date.now() };
       let saved = false;
       try { localStorage.setItem(KEY, JSON.stringify(record)); saved = true; } catch { /* Keep the choice in memory on this page. */ }
       if (!analytics) purgeAnalytics();

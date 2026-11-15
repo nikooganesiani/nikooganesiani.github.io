@@ -44,12 +44,12 @@ function getStatusBadge(statusName) {
         clock: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m1 4h-2v7l5 3 1-1.7-4-2.4z" clip-rule="evenodd"/></svg>'
     };
     const badgeMap = {
-        'ჩაბარებულია': { class: 'bg-green-50 text-green-800', icon: icons.check, text: 'ჩაბარებულია' },
-        'ასაღები': { class: 'bg-blue-50 text-blue-800', icon: icons.clock, text: 'მზად არის' },
-        'საწყობშია': { class: 'bg-blue-50 text-blue-800', icon: icons.box, text: 'საწყობშია' },
-        'გატანილია ჩასაბარებლად': { class: 'bg-amber-50 text-amber-800', icon: icons.truck, text: 'გზაშია' }
+        'ჩაბარებულია': { class: 'bg-[color:light-dark(var(--color-green-50),var(--color-night-success-surface))] text-[color:light-dark(var(--color-green-800),var(--color-night-success))]', icon: icons.check, text: 'ჩაბარებულია' },
+        'ასაღები': { class: 'bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] text-[color:light-dark(var(--color-blue-800),var(--color-accent))]', icon: icons.clock, text: 'მზად არის' },
+        'საწყობშია': { class: 'bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] text-[color:light-dark(var(--color-blue-800),var(--color-accent))]', icon: icons.box, text: 'საწყობშია' },
+        'გატანილია ჩასაბარებლად': { class: 'bg-[color:light-dark(var(--color-amber-50),var(--color-night-warning-surface))] text-[color:light-dark(var(--color-amber-800),var(--color-night-warning))]', icon: icons.truck, text: 'გზაშია' }
     };
-    const badge = badgeMap[statusName] || { class: 'bg-slate-100 text-slate-700', icon: icons.box, text: window.escapeHTML(statusName || 'უცნობი') };
+    const badge = badgeMap[statusName] || { class: 'bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] text-[color:light-dark(var(--color-slate-700),var(--color-night-copy))]', icon: icons.box, text: window.escapeHTML(statusName || 'უცნობი') };
     return `<span class="inline-flex items-center px-4 py-2 rounded-full text-[0.85rem] font-bold leading-none ${badge.class}">${iconBox(badge.icon)} ${badge.text}</span>`;
 }
 
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             trackingCheckBtn.disabled = true;
             trackingCheckBtn.setAttribute('aria-busy', 'true');
-            trackingCheckBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-white motion-reduce:border-dotted" aria-hidden="true"></span>მოწმდება…</span>';
+            trackingCheckBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-canvas motion-reduce:border-dotted" aria-hidden="true"></span>მოწმდება…</span>';
             const revision = ++trackingRevision;
             const controller = new AbortController();
             trackingController = controller;
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (trackingResult) trackingResult.hidden = false;
                 if (data.error || !data.data || !Array.isArray(data.data) || data.data.length === 0 || !data.data[0]) {
                     if (trackingResult) {
-                        trackingResult.innerHTML = '<div class="p-3.5 border border-solid border-[#e2e8f0] rounded-xl bg-[#f7f8fa] text-[#475569] text-[length:13px] leading-[1.8]">შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი და სცადეთ ხელახლა.</div>';
+                        trackingResult.innerHTML = '<div class="p-3.5 border border-solid border-[color:light-dark(#e2e8f0,var(--color-night-line))] rounded-xl bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] text-[color:light-dark(#475569,var(--color-night-copy))] text-[length:13px] leading-[1.8]">შეკვეთა ვერ მოიძებნა. შეამოწმეთ ნომერი და სცადეთ ხელახლა.</div>';
                     }
                     return;
                 }
@@ -186,11 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (isPast) stepClass = 'past';
                     else if (isCurrent) stepClass = 'current';
                     let dateStr = hasEvent ? new Date(statusDateMap[status]).toLocaleDateString('ru-RU', {day: '2-digit', month: '2-digit', year: 'numeric'}) : '—';
-                    timelineHtml += `<div class="flex items-stretch min-h-[50px] group/step ${stepClass}"><div class="flex flex-col items-center mr-4 w-[14px]"><div class="w-3 h-3 rounded-full border-2 border-transparent bg-slate-200 z-10 shrink-0 group-[.past]/step:bg-slate-400 group-[.current]/step:bg-blue-600"></div><div class="w-[2px] bg-slate-200 flex-grow my-1 group-last/step:hidden group-[.past]/step:bg-slate-400"></div></div><div class="pb-6 flex flex-col justify-start -mt-[3px]"><div class="text-[0.75rem] font-bold text-slate-500 mb-1 group-[.current]/step:text-blue-600">${dateStr}</div><div class="text-[0.95rem] font-semibold text-slate-800 group-[.current]/step:text-slate-900">${statusMap[status] || status}</div></div></div>`;
+                    timelineHtml += `<div class="flex items-stretch min-h-[50px] group/step ${stepClass}"><div class="flex flex-col items-center mr-4 w-[14px]"><div class="w-3 h-3 rounded-full border-2 border-transparent bg-[color:light-dark(var(--color-slate-200),var(--color-night-surface))] z-10 shrink-0 group-[.past]/step:bg-slate-400 group-[.current]/step:bg-blue-600"></div><div class="w-[2px] bg-[color:light-dark(var(--color-slate-200),var(--color-night-surface))] flex-grow my-1 group-last/step:hidden group-[.past]/step:bg-slate-400"></div></div><div class="pb-6 flex flex-col justify-start -mt-[3px]"><div class="text-[0.75rem] font-bold text-[color:light-dark(var(--color-slate-500),var(--color-night-muted))] mb-1 group-[.current]/step:text-[color:light-dark(var(--color-blue-600),var(--color-accent))]">${dateStr}</div><div class="text-[0.95rem] font-semibold text-[color:light-dark(var(--color-slate-800),var(--color-night-ink))] group-[.current]/step:text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${statusMap[status] || status}</div></div></div>`;
                 });
 
                 if (trackingResult) {
-                    trackingResult.innerHTML = `<div class="bg-slate-50 p-6 rounded-2xl border border-slate-200"><p class="text-[0.85rem] font-bold text-slate-500 mb-4 text-center uppercase tracking-wider">შეკვეთა #<span class="notranslate" translate="no">${window.escapeHTML(order.tracking_code || orderIdInput)}</span></p><div class="text-center mb-8">${getStatusBadge(currentStatus)}</div><div class="flex flex-col w-full mt-6">${timelineHtml}</div></div>`;
+                    trackingResult.innerHTML = `<div class="bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] p-6 rounded-2xl border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))]"><p class="text-[0.85rem] font-bold text-[color:light-dark(var(--color-slate-500),var(--color-night-muted))] mb-4 text-center uppercase tracking-wider">შეკვეთა #<span class="notranslate" translate="no">${window.escapeHTML(order.tracking_code || orderIdInput)}</span></p><div class="text-center mb-8">${getStatusBadge(currentStatus)}</div><div class="flex flex-col w-full mt-6">${timelineHtml}</div></div>`;
                 }
             } catch (error) {
                 if (revision !== trackingRevision) return;

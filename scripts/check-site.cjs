@@ -16,9 +16,17 @@ function verifyHeader(value, label) {
   assert.equal((value.match(/id="site-header"/g) || []).length, 1, label + ': one shared header');
   const header = value.match(/<header\b(?=[^>]*\bid="site-header")[^>]*>[\s\S]*?<\/header>/)?.[0];
   assert.ok(header, label + ': shared header markup');
+  assert.equal((value.match(/data-theme-toggle\b/g) || []).length, 1, label + ': a single theme switch');
+  assert.match(footerOf(value), /data-theme-toggle/, label + ': theme switch is only in footer');
+  assert.match(footerOf(value), /type="checkbox" role="switch"/, label + ': accessible native theme switch');
+  const themeScript = value.match(/<script\b[^>]*src="\/assets\/js\/global\/theme.js"[^>]*>/g) || [];
+  assert.equal(themeScript.length, 1, label + ': one theme controller');
+  assert.ok(!/\b(?:defer|async)\b/.test(themeScript[0]), label + ': theme applies before first paint');
+  assert.ok(value.indexOf(themeScript[0]) < value.indexOf('rel="stylesheet"'), label + ': theme initializes before CSS');
   assert.match(header, /<form[^>]+role="search"[^>]+action="\/search\/"[^>]+method="get"/, label + ': native search navigation');
   assert.match(header, /<input[^>]+name="result"[^>]+id="searchInput"/, label + ': named search field');
-  assert.match(header, /href="tel:\+995551178990"/, label + ': direct contact');
+  assert.ok(!header.includes('header-utility'), label + ': compact header without utility strip');
+  assert.match(footerOf(value), /href="tel:\+995551178990"/, label + ': direct contact in footer');
   assert.equal((value.match(/src="\/assets\/js\/global\/header.js"/g) || []).length, 1, label + ': one header controller');
   assert.equal((value.match(/src="\/assets\/js\/main\/photo-search.js"/g) || []).length, 1, label + ': one photo search controller');
   assert.equal((value.match(/id="photoSearchModal"/g) || []).length, 1, label + ': one shared photo search dialog');
@@ -47,6 +55,11 @@ for (const [, resource] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
   checked++;
 }
 assert.ok((html.match(/class="product-card(?:\s|")/g) || []).length > 0, 'Popular products need a server-rendered fallback');
+assert.match(html, /id="recommendationFeed"/, 'Homepage contains the automatic recommendation feed');
+assert.ok(!/data-personalization-controls|id="recommendationInterests"|data-recommendation-hide/.test(html), 'Homepage recommendations must not require configuring interests');
+const recommendationCatalog = JSON.parse(html.match(/id="recommendationCatalog">([\s\S]*?)<\/script>/)?.[1] || 'null');
+assert.ok(Array.isArray(recommendationCatalog) && recommendationCatalog.length > 0, 'Offline recommendations contain a valid embedded catalog');
+assert.equal(new Set(recommendationCatalog.map(product => String(product.id))).size, recommendationCatalog.length, 'Embedded recommendation IDs are unique');
 assert.ok(!html.includes('Halloween'), 'Outdated promo campaign on homepage');
 for (const forbidden of ['admin', 'node_modules', 'scripts', 'tests', 'vendor', '.local', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml']) {
   assert.ok(!fs.existsSync(path.join(root, forbidden)), 'Development file published: ' + forbidden);

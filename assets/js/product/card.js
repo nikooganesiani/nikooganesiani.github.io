@@ -92,13 +92,13 @@
         const formattedOldPrice = oldVal > newVal ? formatPriceDisplay(p.oldPrice) : '';
 
         return `
-        <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[#2c3644] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)]" data-product-id="${safeId}">
+        <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[color:light-dark(#2c3644,var(--color-night-ink))] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)] max-[768px]:[.product-carousel_>_&:last-child]:mr-[calc((100%_-_32px)_/_5_+_16px)]" data-product-id="${safeId}">
 
             <!-- Блок изображения -->
-            <div class="product-card-media relative w-full aspect-square bg-transparent rounded-xl overflow-hidden">
+            <div class="product-card-media dark:bg-white relative w-full aspect-square bg-transparent rounded-xl overflow-hidden">
                 ${discountBadge}
 
-                <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-[50%] bg-transparent text-[#8893a1] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[#d14b62] [&.active]:text-[#d14b62] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+                <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-[50%] bg-transparent text-[color:light-dark(#8893a1,var(--color-night-muted))] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active]:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 21s-9.5-5.6-9.5-12A5.5 5.5 0 0 1 12 5.2 5.5 5.5 0 0 1 21.5 9C21.5 15.4 12 21 12 21"/></svg>
                 </button>
 
@@ -107,7 +107,7 @@
                     ${imgs.map((img) => `
                         <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full bg-transparent overflow-hidden snap-start">
                             <a href="${productUrl}" class="block w-full h-full" draggable="false" tabindex="-1" aria-hidden="true">
-                                <img class="block w-full h-full object-contain object-center mix-blend-multiply"
+                                <img class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal"
                                      src="${escapeHtml(img)}"
                                      alt="${safeName}"
                                      width="600"
@@ -128,24 +128,24 @@
             <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
 
                 <!-- Название до двух строк -->
-                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[#414b59] mb-2 no-underline hover:text-brand max-[768px]:text-[length:12px]" title="${safeName}">
+                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="${safeName}">
                     ${safeName}
                 </a>
 
                 <!-- Блок цены -->
                 <div class="flex items-baseline flex-wrap gap-1.5 mb-3">
-                    <div class="product-card-price ${oldVal > newVal && newVal > 0 ? 'text-brand' : 'text-black'} whitespace-nowrap text-[length:18px] font-bold leading-6 tracking-[-.02em] tabular-nums max-[768px]:text-[length:16px]">
+                    <div class="product-card-price ${oldVal > newVal && newVal > 0 ? 'text-accent' : 'text-[color:light-dark(#000,var(--color-night-ink))]'} whitespace-nowrap text-[length:18px] font-bold leading-6 tracking-[-.02em] tabular-nums max-[768px]:text-[length:16px]">
                         ${newVal > 0 ? `<span>${formattedPrice}</span><span class="card-price-currency">₾</span>` : 'ფასი ზუსტდება'}
                     </div>
                     ${formattedOldPrice ? `
-                        <span class="text-[#929ba8] text-[length:12px] leading-[1.4] line-through [text-decoration-thickness:1px]">
+                        <span class="text-[color:light-dark(#929ba8,var(--color-night-muted))] text-[length:12px] leading-[1.4] line-through [text-decoration-thickness:1px]">
                             ${formattedOldPrice}₾
                         </span>
                     ` : ''}
                 </div>
 
                 <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
-                <button type="button" ${available ? 'aria-haspopup="dialog" aria-controls="orderFormModal" aria-expanded="false"' : 'disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[#eceff3] disabled:text-[#929ba8] disabled:bg-[#f7f8fa] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
+                <button type="button" ${available ? 'aria-haspopup="dialog" aria-controls="orderFormModal" aria-expanded="false"' : 'disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M7 7V6a5 5 0 0 1 10 0v1h2a2 2 0 0 1 2 1.8l1 11a2 2 0 0 1-2 2.2H4a2 2 0 0 1-2-2.2l1-11A2 2 0 0 1 5 7zm2 0h6V6a3 3 0 0 0-6 0zm0 4a1 1 0 0 0-2 0 5 5 0 0 0 10 0 1 1 0 1 0-2 0 3 3 0 0 1-6 0" clip-rule="evenodd"/></svg>
                     <span>${available ? 'ყიდვა' : 'არ არის მარაგში'}</span>
                 </button>
@@ -250,7 +250,7 @@
 
         const card = container.querySelector('.product-card');
         const gap = parseFloat(window.getComputedStyle(container).columnGap || window.getComputedStyle(container).gap) || 16;
-        const scrollAmount = card ? card.offsetWidth + gap : 300;
+        const scrollAmount = card ? card.getBoundingClientRect().width + gap : 300;
         const maxScroll = container.scrollWidth - container.clientWidth;
 
         container.scrollTo({ left: Math.max(0, Math.min(maxScroll, container.scrollLeft + direction * scrollAmount)), behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -263,6 +263,9 @@
             const max = Math.max(0, track.scrollWidth - track.clientWidth);
             const left = document.getElementById(leftId);
             const right = document.getElementById(rightId);
+            const showArrows = track.querySelectorAll('.product-card').length > 5 && max > 2;
+            if (left) left.hidden = !showArrows;
+            if (right) right.hidden = !showArrows;
             if (left) left.disabled = track.scrollLeft <= 2;
             if (right) right.disabled = track.scrollLeft >= max - 2;
         };
@@ -276,6 +279,7 @@
                 else window.scrollCarousel(id, event.key === 'ArrowRight' ? 1 : -1);
             });
             if (typeof ResizeObserver !== 'undefined') new ResizeObserver(update).observe(track);
+            if (typeof MutationObserver !== 'undefined') new MutationObserver(update).observe(track, { childList: true });
         }
         requestAnimationFrame(update);
     };

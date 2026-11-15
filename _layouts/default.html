@@ -4,8 +4,8 @@
 <!DOCTYPE html>
 <html lang="ka" class="{% include document-classes.html %}">
 {% include head.html %}
-<body class="{% if page.collection == 'products' or page.layout == 'product' %} bg-white text-ink {% else %} bg-slate-50 text-slate-900 {% endif %} min-h-screen flex flex-col max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
-    <a href="#main-content" class="fixed left-4 -top-25 z-[20000] rounded-xl bg-white text-brand py-3 px-5 focus:top-3 print:hidden!">მთავარ შინაარსზე გადასვლა</a>
+<body class="{% if page.collection == 'products' or page.layout == 'product' %} bg-page text-ink {% else %} bg-page text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))] {% endif %} min-h-screen flex flex-col max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
+    <a href="#main-content" class="fixed left-4 -top-25 z-[20000] rounded-xl bg-canvas text-accent py-3 px-5 focus:top-3 print:hidden!">მთავარ შინაარსზე გადასვლა</a>
     {% include header.html %}
 
     <main id="main-content" tabindex="-1" class="flex-1">{{ content }}</main>

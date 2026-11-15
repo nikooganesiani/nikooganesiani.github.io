@@ -1,22 +1,8 @@
 (() => {
   'use strict';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  window.fetchCatalogCached().then(({ products }) => {
-    document.querySelectorAll('[data-promo-slide][data-product-id]').forEach(slide => {
-      const product = products.find(item => String(item.id) === slide.dataset.productId);
-      if (!product) return;
-      slide.dataset.title = product.name;
-      slide.querySelector('[data-product-name]').textContent = product.name;
-      slide.querySelector('[data-promo-image]').alt = product.name;
-      const price = Number(product.price);
-      const oldPrice = Number(product.oldPrice);
-      if (price > 0) slide.querySelector('[data-hero-price]').textContent = product.price + ' ₾';
-      const old = slide.querySelector('[data-hero-old-price]');
-      old.hidden = !(oldPrice > price && price > 0);
-      old.textContent = product.oldPrice + ' ₾';
-    });
-  }).catch(() => { /* Build-time product data remains available. */ });
-  document.querySelectorAll('[data-promo-block]').forEach(root => {
+  window.enkaInitPromoBlock = root => {
+    root.enkaCleanup?.();
     const track = root.querySelector('[data-promo-track]');
     const slides = [...root.querySelectorAll('[data-promo-slide]')];
     const dots = [...root.querySelectorAll('[data-promo-dot]')];
@@ -84,8 +70,12 @@
     track.addEventListener('lostpointercapture', release);
     track.addEventListener('pointerleave', () => { if (pointer && !pointer.dragged) release(); });
     track.addEventListener('click', event => { if (suppressClick) { event.preventDefault(); event.stopPropagation(); } }, true);
-    reduced.addEventListener('change', () => { track.scrollTo({ left: offset(current), behavior: 'instant' }); });
-    new ResizeObserver(() => { track.scrollTo({ left: offset(current), behavior: 'instant' }); sync(current); }).observe(track);
+    const onReducedChange = () => { track.scrollTo({ left: offset(current), behavior: 'instant' }); };
+    reduced.addEventListener('change', onReducedChange);
+    const resizeObserver = new ResizeObserver(() => { track.scrollTo({ left: offset(current), behavior: 'instant' }); sync(current); });
+    resizeObserver.observe(track);
+    root.enkaCleanup = () => { clearTimeout(settleTimer); resizeObserver.disconnect(); reduced.removeEventListener('change',onReducedChange); };
     sync(0);
-  });
+  };
+  document.querySelectorAll('[data-promo-block]').forEach(window.enkaInitPromoBlock);
 })();

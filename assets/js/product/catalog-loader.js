@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       const specs = document.querySelector('#specsBlock dl');
       if (specs) specs.replaceChildren(...Object.entries(product.specs).map(([label, value]) => {
-        const row = document.createElement('div'); row.className = 'grid grid-cols-[minmax(0,_1.15fr)_minmax(0,_1fr)] gap-4.5 py-[13px] px-0 border-b border-solid border-b-[#edf0f3] text-[length:13px] leading-[1.6] [overflow-wrap:anywhere] [&:first-child]:pt-0 [&_dt]:text-muted [&_dd]:text-[#3e4855] [&_dd]:text-right [&_dd]:font-medium max-[768px]:text-[length:13px] max-[768px]:py-3.5 max-[768px]:px-0 max-[768px]:gap-4.5 max-[768px]:[&_dt]:text-[#7b8491]';
+        const row = document.createElement('div'); row.className = 'grid grid-cols-[minmax(0,_1.15fr)_minmax(0,_1fr)] gap-4.5 py-[13px] px-0 border-b border-solid border-b-[color:light-dark(#edf0f3,var(--color-night-line))] text-[length:13px] leading-[1.6] [overflow-wrap:anywhere] [&:first-child]:pt-0 [&_dt]:text-muted [&_dd]:text-[color:light-dark(#3e4855,var(--color-night-copy))] [&_dd]:text-right [&_dd]:font-medium max-[768px]:text-[length:13px] max-[768px]:py-3.5 max-[768px]:px-0 max-[768px]:gap-4.5 max-[768px]:[&_dt]:text-[color:light-dark(#7b8491,var(--color-night-muted))]';
         const term = document.createElement('dt'); term.textContent = label;
         const detail = document.createElement('dd'); detail.textContent = String(value);
         row.append(term, detail); return row;
@@ -121,14 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const product = products.find(p => String(p.id) === String(snapshot.id));
       applyProduct(product || { ...snapshot, stockStatus: 'unavailable' });
       status.textContent = product ? '' : 'ეს პროდუქტი ამჟამად არ არის ხელმისაწვდომი. დაგვიკავშირდით ან აირჩიეთ მსგავსი.';
-      let recent = [];
-      try {
-        const saved = JSON.parse(localStorage.getItem('recentIds') || '[]');
-        if (Array.isArray(saved)) recent = saved.filter(id => typeof id === 'string' || typeof id === 'number').map(String);
-      } catch { /* History is optional. */ }
+      const history = window.enkaPersonalization?.allowed() ? window.enkaPersonalization.snapshot().events : [];
+      let recent = history.filter(event => event.kind === 'view').slice().reverse().map(event => event.ref);
       recent = [...new Set(recent)].filter(id => id !== String(snapshot.id)).slice(0, 19);
       render('recent', recent.map(id => products.find(p => String(p.id) === id)).filter(Boolean).slice(0, 12));
-      try { localStorage.setItem('recentIds', JSON.stringify([String(snapshot.id), ...recent])); } catch { /* Storage is optional. */ }
       const others = products.filter(p => String(p.id) !== String(snapshot.id) && available(p));
       const sub = dataset.subcat ? others.filter(p => Array.isArray(p.subcategories) && p.subcategories.includes(dataset.subcat)).slice(0, 12) : [];
       const used = new Set(sub.map(p => String(p.id)));
@@ -149,7 +145,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   applyProduct(snapshot);
+  window.addEventListener('enka:prices-change', event => {
+    if(window.enkaOrderPending)return;
+    const product=event.detail.products.find(p=>String(p.id)===String(snapshot.id));
+    if(product)applyProduct(product);
+  });
   retry.addEventListener('click', load);
   window.refreshProduct = load;
+  window.addEventListener('enka:personalization-choice', () => {
+    if (!window.enkaPersonalization?.allowed()) render('recent', []);
+    else load();
+  });
   load();
 });

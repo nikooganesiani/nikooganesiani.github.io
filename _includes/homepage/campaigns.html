@@ -1,0 +1,8 @@
+{% for campaign in site.data.studio.campaignRows %}
+{{ campaign.frame.start }}
+        {% for campaign_product_id in campaign.productIds %}
+      {% assign campaign_product = site.products | where: 'product_id', campaign_product_id | first %}
+      {% if campaign_product %}{% include homepage/product-card.html product=campaign_product %}{% endif %}
+    {% endfor %}
+{{ campaign.frame.end }}
+{% endfor %}

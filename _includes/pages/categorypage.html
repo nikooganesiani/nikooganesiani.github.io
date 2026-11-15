@@ -1,5 +1,5 @@
 {% include breadcrumbs.html dynamic=true current_label='ყველა პროდუქტი' %}
-<header class="flex items-center justify-between gap-4 mt-0 mr-0 mb-5 ml-0 [&_h1]:min-w-0 [&_h1]:m-0 [&_h1]:text-[#26303e] [&_h1]:text-[length:28px] [&_h1]:font-semibold [&_h1]:leading-[1.4] [&_h1]:tracking-[-.025em] [&_h1]:[overflow-wrap:anywhere] max-[768px]:[&_h1]:text-[length:24px]">
+<header class="flex items-center justify-between gap-4 mt-0 mr-0 mb-5 ml-0 [&_h1]:min-w-0 [&_h1]:m-0 [&_h1]:text-[color:light-dark(#26303e,var(--color-night-ink))] [&_h1]:text-[length:28px] [&_h1]:font-semibold [&_h1]:leading-[1.4] [&_h1]:tracking-[-.025em] [&_h1]:[overflow-wrap:anywhere] max-[768px]:[&_h1]:text-[length:24px]">
   <div class="flex flex-wrap items-baseline gap-y-2 gap-x-4 min-w-0 max-[640px]:flex-col max-[640px]:items-start max-[640px]:gap-1.5"><h1 id="categoryMainTitle">ყველა პროდუქტი</h1><span id="productCountBadge" class="text-muted text-[length:14px] leading-[20px] whitespace-nowrap empty:hidden max-[640px]:text-[length:13px]"></span></div>
   {% include listing/view-toggle.html %}
 </header>
@@ -7,7 +7,7 @@
 {% include listing/controls.html %}
 {% include listing/results.html grid_id='catalogContainer' %}
 <noscript>
-  <p class="p-5 mb-6 rounded-xl bg-[#eaf1ff] text-[#505b6b] leading-[1.8] [&_a]:text-brand [&_a]:underline">ქვემოთ მოცემულია სრული კატალოგი. კატეგორიის, ფასის ფილტრისა და ძიებისთვის ჩართეთ JavaScript.</p>
+  <p class="p-5 mb-6 rounded-xl bg-[color:light-dark(#eaf1ff,var(--color-night-blue))] text-[color:light-dark(#505b6b,var(--color-night-copy))] leading-[1.8] [&_a]:text-accent [&_a]:underline">ქვემოთ მოცემულია სრული კატალოგი. კატეგორიის, ფასის ფილტრისა და ძიებისთვის ჩართეთ JavaScript.</p>
   <div class="grid grid-cols-[repeat(5,_minmax(0,_1fr))] gap-y-8 gap-x-6 [align-items:start] max-[1024px]:grid-cols-[repeat(3,_minmax(0,_1fr))] max-[1024px]:gap-y-7 max-[1024px]:gap-x-5 max-[768px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[768px]:gap-y-7 max-[768px]:gap-x-4 max-[640px]:gap-x-3 max-[640px]:[&.listing-grid--single]:grid-cols-[minmax(0,_1fr)]">
     {% for product in site.products %}{% unless product.stockStatus == 'out_of_stock' %}{% include homepage/product-card.html product=product %}{% endunless %}{% endfor %}
   </div>
