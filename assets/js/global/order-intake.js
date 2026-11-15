@@ -1,5 +1,5 @@
 (() => {
-  const endpoint = "https://zilumtvyowzgpwswewtj.supabase.co/functions/v1/enka-intake/public";
+  const endpoint = "https://capi.enkaelectronics.com.ge/orders";
   const pending = new Map();
   let widgetScript;
 
@@ -89,10 +89,13 @@
     const identity = await requestIdentity(payload);
     const key = pendingKey(identity);
     const token = await getToken(form);
+    // Measurement is optional; blocked analytics must never prevent placing an order.
+    let measurement;
+    try { measurement = await window.enkaMeasurement?.snapshot(); } catch { /* Server defaults to denied. */ }
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": key },
-      body: JSON.stringify({ ...payload, turnstile_token: token }),
+      body: JSON.stringify({ ...payload, turnstile_token: token, measurement }),
       signal: AbortSignal.timeout(20000),
     });
     if (response.ok) {

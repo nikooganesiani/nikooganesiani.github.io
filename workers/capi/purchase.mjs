@@ -46,11 +46,28 @@ export async function purchaseEvent(order, now = Date.now()) {
   const phone = typeof order.phone === 'string' ? order.phone.replace(/[\s()+-]/g, '') : '';
   if (!/^9955\d{8}$/.test(phone)) throw Error('Invalid phone');
   const ph = hex(await crypto.subtle.digest('SHA-256', encoder.encode(phone)));
+  const userData = { ph: [ph] };
+  const measurement = order.measurement;
+  let sourceUrl = 'https://enkaelectronics.com.ge/';
+  if (measurement?.version === 1) {
+    const ip = measurement.client_ip_address, ua = measurement.client_user_agent;
+    if (typeof ip === 'string' && ip.length <= 45 && /^[0-9a-fA-F:.]+$/.test(ip)) userData.client_ip_address = ip;
+    if (typeof ua === 'string' && ua.length > 0 && ua.length <= 1024 && !/[\r\n]/.test(ua)) userData.client_user_agent = ua;
+    if (measurement.consent?.ad_storage === 'granted') {
+      const { fbp, fbc } = measurement.meta || {};
+      if (typeof fbp === 'string' && fbp.length <= 128 && /^fb\.\d+\.\d+\.\d+$/.test(fbp)) userData.fbp = fbp;
+      if (typeof fbc === 'string' && fbc.length <= 550 && /^fb\.\d+\.\d+\.[A-Za-z0-9_-]{1,500}$/.test(fbc)) userData.fbc = fbc;
+    }
+    try {
+      const url = new URL(measurement.page_url);
+      if (url.origin === 'https://enkaelectronics.com.ge' && url.pathname.length <= 500) sourceUrl = url.origin + url.pathname;
+    } catch { /* Keep canonical source URL. */ }
+  }
   return {
     event_name: 'Purchase', event_id: 'purchase_' + order.order_id,
     event_time: Math.floor(created / 1000), action_source: 'website',
-    event_source_url: 'https://enkaelectronics.com.ge/',
-    user_data: { ph: [ph] },
+    event_source_url: sourceUrl,
+    user_data: userData,
     custom_data: { order_id: order.order_id, currency: 'GEL', value: order.value,
       content_type: 'product', content_ids: contents.map(item => item.id), contents,
       num_items: contents.reduce((sum, item) => sum + item.quantity, 0) }

@@ -2,6 +2,17 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createHmac, createHash } = require('node:crypto');
 const load = () => import('../workers/capi/purchase.mjs');
+test('Purchase uses signed backend context and only consented Meta cookies', async () => {
+  const { purchaseEvent } = await load();
+  const measurement = { version: 1, consent: { ad_storage: 'granted' }, client_ip_address: '203.0.113.1',
+    client_user_agent: 'Browser', meta: { fbp: 'fb.1.123.456', fbc: 'fb.1.123.click' }, page_url: 'https://enkaelectronics.com.ge/item/?private=1' };
+  const event = await purchaseEvent({ ...order(), measurement });
+  assert.equal(event.user_data.fbc, measurement.meta.fbc);
+  assert.equal(event.user_data.client_ip_address, '203.0.113.1');
+  assert.equal(event.event_source_url, 'https://enkaelectronics.com.ge/item/');
+  const denied = await purchaseEvent({ ...order(), measurement: { ...measurement, consent: { ad_storage: 'denied' } } });
+  assert.equal(denied.user_data.fbc, undefined); assert.equal(denied.user_data.fbp, undefined);
+});
 const order = (id = 'order-1') => ({ order_id: id, created_at: new Date().toISOString(), currency: 'GEL', value: 89, phone: '+995 555 12 34 56', items: [{ id: 'sku-1', quantity: 1, item_price: 89 }] });
 function store() {
   const data = new Map();
