@@ -92,6 +92,7 @@
     // Measurement is optional; blocked analytics must never prevent placing an order.
     let measurement;
     try { measurement = await window.enkaMeasurement?.snapshot(); } catch { /* Server defaults to denied. */ }
+    if (measurement) measurement = { ...measurement, google_server_capable: window.enkaGoogleAnalytics?.supportsServerDelivery === true };
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Idempotency-Key": key },

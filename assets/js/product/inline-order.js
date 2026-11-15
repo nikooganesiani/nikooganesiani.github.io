@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
       const eventId = 'purchase_' + (result?.id || Date.now() + '_' + Math.random().toString(36).slice(2, 9));
       recordSuccessfulOrder(guard.exactSignature);
-      try { window.enkaGoogleAnalytics?.orderAccepted(product, eventId); } catch { /* Tracking must not affect an accepted order. */ }
+      try { window.enkaGoogleAnalytics?.orderAccepted(product, eventId, result?.google_delivery); } catch { /* Tracking must not affect an accepted order. */ }
       try {
         if (result?.purchase_delivery !== 'server') Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
       } catch { /* Analytics must not change an accepted order. */ }

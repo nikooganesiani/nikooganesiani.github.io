@@ -1,4 +1,5 @@
 const WEEK = 7 * 86400000;
+import { googleLead } from './google-lead.mjs';
 const RETENTION = 90 * 86400000;
 const encoder = new TextEncoder();
 const json = (data, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'no-store' } });
@@ -86,11 +87,23 @@ export async function acceptOrderRequest(request, env) {
   try { order = JSON.parse(body); } catch { return json({ error: 'Invalid JSON' }, 400); }
   if (!orderIdValid(order?.order_id)) return json({ error: 'Invalid order_id' }, 400);
   const stub = env.PURCHASE_DELIVERY.get(env.PURCHASE_DELIVERY.idFromName(order.order_id));
-  if (path === '/server/order-status') return stub.fetch('https://delivery/status');
+  if (path === '/server/order-status') {
+    const response = await stub.fetch('https://delivery/status');
+    if (!env.GOOGLE_LEAD_DELIVERY || !response.ok) return response;
+    const google = env.GOOGLE_LEAD_DELIVERY.get(env.GOOGLE_LEAD_DELIVERY.idFromName(order.order_id));
+    const status = await google.fetch('https://google/status');
+    return json({ ...await response.json(), google: status.ok ? await status.json() : null });
+  }
   let event;
   try { event = await purchaseEvent(order); } catch (error) { return json({ error: error.message }, 400); }
   // Await durable storage before acknowledging to the backend outbox.
   try {
+    if (order.google_delivery === 'server') {
+      if (!env.GA4_API_SECRET || !env.GOOGLE_LEAD_DELIVERY || !/^G-[A-Z0-9]+$/.test(env.GA4_MEASUREMENT_ID || '')) return json({ error: 'Google delivery is not configured' }, 503);
+      const google = env.GOOGLE_LEAD_DELIVERY.get(env.GOOGLE_LEAD_DELIVERY.idFromName(order.order_id));
+      const stored = await google.fetch('https://google/enqueue', { method: 'POST', body: JSON.stringify(googleLead(order)) });
+      if (!stored.ok) return json({ error: 'Google delivery storage unavailable' }, 503);
+    }
     return await stub.fetch('https://delivery/enqueue', { method: 'POST', body: JSON.stringify(event) });
   } catch { return json({ error: 'Delivery storage unavailable; retry this order_id' }, 503); }
 }

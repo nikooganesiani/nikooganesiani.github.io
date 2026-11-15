@@ -1,6 +1,6 @@
 # Meta Purchase: Cloudflare + Supabase
 
-Google Advanced Consent Mode реализован отдельно в `assets/js/global/google-analytics.js`. Этот каталог отвечает за серверный Meta Purchase. В GA4 принятый заказ с оплатой при получении остаётся `generate_lead`; серверный GA4 Measurement Protocol не используется.
+Google Advanced Consent Mode реализован в `assets/js/global/google-analytics.js`. Этот каталог отвечает за серверный Meta Purchase и подготовленный серверный GA4 `generate_lead` для принятого заказа COD. Google sender по умолчанию выключен до настройки API secret.
 
 Рабочее подключение включено 15 ноября 2026 года. Cloudflare Pages опубликован workflow [1086](https://github.com/nikooganesiani/nikooganesiani.github.io/actions/runs/43710399560), исходный коммит `8655f14`. Финальная версия CAPI Worker — `ab21bf42-0258-4380-b3d7-62240807ef65`, `SERVER_PURCHASE_ONLY: "true"`. Триггер Supabase включён, Cron активен; последние три запуска при проверке завершились `succeeded`. Контактные данные и секреты в репозиторий не включены.
 
@@ -27,6 +27,20 @@ Purchase использует хеш телефона плюс фактичес�
 `supabase-outbox.sql` создаёт таблицу с RLS и функцию enqueue; `supabase-connect.sql` подключает проверенную схему ENKA, триггер и Cron. `supabase-switch.sql` добавляет `purchase_delivery: "server"` в успешный ответ только при наличии outbox. Обе формы сайта используют этот признак, чтобы пропустить браузерный Purchase. Они также используют стабильный ID заказа для GA4 lead. Worker var `SERVER_PURCHASE_ONLY: "true"` после переключения закрывает прежний публичный вход для Purchase; PageView/ViewContent сохраняют прежний режим согласия.
 
 ## Данные и сроки
+
+### Google lead: подготовлен, отправка выключена
+
+Проверенный ресурс GA4 `564345213`, поток `16342950626`, Measurement ID `G-KHQG9C6JQF`. Он связан с Google Ads ENKA `236-431-8833`. Существующая основная конверсия `ENKA — Принятая заявка (GA4)` (`7903353253`) импортирует `generate_lead`, учёт «Одна», окно клика 90 дней, атрибуция на основе данных. Три прежние Website Purchase остаются в аккаунте; они не используются новым кодом.
+
+`supabase-google-lead.sql` применён с `public.enka_measurement_settings.google_lead_enabled=false`. После создания отдельного GA4 Measurement Protocol API secret и сохранения его в Worker как `GA4_API_SECRET` можно включить этот флаг. До включения Google остаётся в браузерном Consent Mode, Meta работает независимо.
+
+При включении обёртка назначает Google серверу только при согласии analytics/ad_user_data, реальных client_id/session_id и подписанном `google_server_capable=true`. Этот признак устанавливается только при наличии нового браузерного API `supportsServerDelivery`; старые открытые вкладки продолжают браузерный lead, чтобы не задвоить его при обновлении. Назначение сохраняется на заказ навсегда и не меняется при повторе запроса. Ответ `google_delivery=server` подавляет браузерный lead в обеих формах.
+
+Worker сначала сохраняет Google payload в отдельный SQLite Durable Object, затем подтверждает общий outbox. Google получает только client_id, session_id, время, каноническую сумму GEL, стабильный event_id и признаки lead; имя/телефон/IP/UA/Meta cookies ему не передаются. При отказе или отсутствии Google IDs сохраняется браузерный cookieless lead.
+
+Measurement Protocol не документирует дедупликацию `generate_lead` по event_id. Поэтому sender фиксирует попытку до сети и не повторяет неопределённый исход: `pending` → `sending` → `http_accepted` / `failed` / `uncertain`. `http_accepted` означает HTTP 2xx, а не обработанную или атрибутированную конверсию. Неопределённые результаты требуют проверки, автоматическое повторение может задвоить lead. Payload удаляется после попытки, tombstone хранится 90 дней; события старше 72 часов не отправляются. Это сознательный предел надёжности MP, а не обещание exactly once. Для будущего расширения enhanced/offline Ads нужен отдельный Data Manager API.
+
+Статус `/server/order-status` содержит поле `google`. Проверки: `tests/google-lead.test.cjs`, browser suppression, PostgreSQL `google-lead-rollback-test.sql`, реальный локальный workerd с двумя SQLite objects и mock внешних сервисов. Официальный `/debug/mp/collect` вернул `validationMessages: []`; debug не создаёт production-конверсии и не проверяет подлинность API secret.
 
 Payload формируется из `enka.orders`, `enka.order_items` и `enka.products.attributes.site_id`. Цена берётся из `unit_price` сохранённого заказа; сумма — из строк без отдельной доставки. Имя, email и IP сервера Supabase не используются. Worker нормализует и хеширует телефон SHA-256; дополнительные сигналы из подписанного контекста описаны выше. Хеш остаётся идентификатором, а не анонимными данными.
 

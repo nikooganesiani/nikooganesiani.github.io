@@ -82,3 +82,11 @@ test('Missing IDs and development hosts do not initialize Google', () => {
     assert.equal(b.commands().length, 0);
   }
 });
+
+test('Server-owned lead is never replayed in the browser after consent changes', () => {
+  const b = browser({ consent: true }), product = { id: 'sku1', name: 'Kettle', price: 89 };
+  b.window.enkaGoogleAnalytics.orderAccepted(product, 'server-order', 'server');
+  b.choose(false);
+  b.window.enkaGoogleAnalytics.orderAccepted(product, 'server-order');
+  assert.equal(b.commands().filter(c => c[0] === 'event' && c[1] === 'generate_lead').length, 0);
+});

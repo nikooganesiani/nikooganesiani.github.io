@@ -2,6 +2,7 @@ import legacy from './legacy.mjs';
 import { acceptOrderRequest } from './purchase.mjs';
 import { proxyOrder } from './order-proxy.mjs';
 export { PurchaseDelivery } from './purchase.mjs';
+export { GoogleLeadDelivery } from './google-lead.mjs';
 
 export default {
   async fetch(request, env, ctx) {

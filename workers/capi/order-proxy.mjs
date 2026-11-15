@@ -8,6 +8,7 @@ export function cleanMeasurement(input, request) {
   const consent = {};
   for (const key of ['analytics_storage', 'ad_storage', 'ad_user_data', 'ad_personalization']) consent[key] = input?.consent?.[key] === 'granted' ? 'granted' : 'denied';
   const context = { version: 1, consent, page_url: ORIGIN + '/' };
+  if (input?.google_server_capable === true) context.google_server_capable = true;
   try { const url = new URL(input?.page_url); if (url.origin === ORIGIN && url.pathname.length <= 500) context.page_url = url.origin + url.pathname; } catch { /* Safe canonical fallback. */ }
   const ua = request.headers.get('User-Agent');
   if (ua && ua.length <= 1024 && !/[\r\n]/.test(ua)) context.client_user_agent = ua;

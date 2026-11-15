@@ -76,14 +76,16 @@
     }
   }
   window.enkaGoogleAnalytics = Object.freeze({
+    supportsServerDelivery: true,
     beginCheckout(product) {
       const data = item(product);
       if (!data || checkouts.has(data.item_id)) return;
       if (send('begin_checkout', { currency: 'GEL', value: data.price, items: [data] })) checkouts.add(data.item_id);
     },
-    orderAccepted(product, eventId) {
+    orderAccepted(product, eventId, delivery) {
       const data = item(product);
       if (!data || !eventId || orders.has(eventId)) return;
+      if (delivery === 'server') { orders.add(eventId); return; }
       // COD order acceptance is a lead, not collected revenue. Never pass contact fields.
       if (send('generate_lead', { currency: 'GEL', value: data.price, event_id: String(eventId), items: [data], lead_source: 'website_order' })) orders.add(eventId);
     }
