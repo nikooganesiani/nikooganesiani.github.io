@@ -1,6 +1,6 @@
 # Meta Purchase: Cloudflare + Supabase
 
-Google Advanced Consent Mode реализован в `assets/js/global/google-analytics.js`. Этот каталог отвечает за серверный Meta Purchase и подготовленный серверный GA4 `generate_lead` для принятого заказа COD. Google sender по умолчанию выключен до настройки API secret.
+Google Advanced Consent Mode реализован в `assets/js/global/google-analytics.js`. Этот каталог отвечает за серверный Meta Purchase и серверный GA4 `generate_lead` для принятого заказа COD. Google sender включён в production 15 ноября 2026 после создания API secret и проверки конфигурации.
 
 Рабочее подключение включено 15 ноября 2026 года. Cloudflare Pages опубликован workflow [1086](https://github.com/nikooganesiani/nikooganesiani.github.io/actions/runs/43710399560), исходный коммит `8655f14`. Финальная версия CAPI Worker — `ab21bf42-0258-4380-b3d7-62240807ef65`, `SERVER_PURCHASE_ONLY: "true"`. Триггер Supabase включён, Cron активен; последние три запуска при проверке завершились `succeeded`. Контактные данные и секреты в репозиторий не включены.
 
@@ -28,11 +28,13 @@ Purchase использует хеш телефона плюс фактичес�
 
 ## Данные и сроки
 
-### Google lead: подготовлен, отправка выключена
+### Google lead: включён 15 ноября 2026
 
 Проверенный ресурс GA4 `564345213`, поток `16342950626`, Measurement ID `G-KHQG9C6JQF`. Он связан с Google Ads ENKA `236-431-8833`. Существующая основная конверсия `ENKA — Принятая заявка (GA4)` (`7903353253`) импортирует `generate_lead`, учёт «Одна», окно клика 90 дней, атрибуция на основе данных. Три прежние Website Purchase остаются в аккаунте; они не используются новым кодом.
 
-`supabase-google-lead.sql` применён с `public.enka_measurement_settings.google_lead_enabled=false`. После создания отдельного GA4 Measurement Protocol API secret и сохранения его в Worker как `GA4_API_SECRET` можно включить этот флаг. До включения Google остаётся в браузерном Consent Mode, Meta работает независимо.
+`supabase-google-lead.sql` первоначально применён с выключенным флагом. После отдельного разрешения пользователя подтверждено условие Google о пользовательских данных, создан ключ `ENKA server leads` и сохранён в Worker как `GA4_API_SECRET`. `public.enka_measurement_settings.google_lead_enabled=true` подтверждён SELECT; при включении pending=0, failed=0. Активная версия Worker после загрузки секрета — `0300669a-4794-48a5-b475-093db8abaf07` (100%). Временный локальный файл ключа удалён. Значение ключа не включено в репозиторий или отчёт.
+
+Фронтенд и защита от дублей опубликованы коммитом `f93f9cf`; Cloudflare Pages workflow `43716417487` завершился успешно. Повторная проверка payload через официальный debug endpoint после настройки ключа вернула HTTP 200 и пустой `validationMessages`. Это проверка схемы, а не подтверждение обработки реальной конверсии. Первый настоящий server lead и его атрибуцию ещё нужно наблюдать по реальному заказу.
 
 При включении обёртка назначает Google серверу только при согласии analytics/ad_user_data, реальных client_id/session_id и подписанном `google_server_capable=true`. Этот признак устанавливается только при наличии нового браузерного API `supportsServerDelivery`; старые открытые вкладки продолжают браузерный lead, чтобы не задвоить его при обновлении. Назначение сохраняется на заказ навсегда и не меняется при повторе запроса. Ответ `google_delivery=server` подавляет браузерный lead в обеих формах.
 
