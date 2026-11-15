@@ -24,15 +24,18 @@ function browser({ id = 'G-TEST123', host = 'enkaelectronics.com.ge', consent = 
     choose(value) { enabled = value; listeners.get('enka:privacy-change')?.(); }
   };
 }
-test('Google loads only after consent, sends one page/product view, and strips private URL parameters', () => {
+test('Advanced mode loads before consent with denied defaults and sends each view once', () => {
   const b = browser();
-  assert.equal(b.scripts.length, 0);
-  assert.equal(b.commands().filter(c => c[0] === 'event').length, 0);
+  assert.equal(b.scripts.length, 1);
+  assert.deepEqual(b.commands()[0].slice(0, 2), ['consent', 'default']);
+  assert.ok(Object.values(b.commands()[0][2]).every(value => value === 'denied'));
+  assert.ok(b.commands().findIndex(c => c[0] === 'config') > 0);
+  assert.equal(b.commands().find(c => c[0] === 'set' && c[1] === 'ads_data_redaction')[2], true);
   b.choose(true);
   assert.equal(b.scripts.length, 1);
   assert.deepEqual(b.commands().filter(c => c[0] === 'event').map(c => c[1]), ['page_view', 'view_item']);
   const config = b.commands().find(c => c[0] === 'config')[2];
-  const defaults = b.commands().findIndex(c => c[0] === 'set');
+  const defaults = b.commands().findIndex(c => c[0] === 'set' && typeof c[1] === 'object');
   assert.ok(defaults >= 0 && defaults < b.commands().findIndex(c => c[0] === 'js'), 'automatic destinations receive defaults before initialization');
   assert.equal(b.commands()[defaults][1].send_page_view, false);
   assert.equal(b.commands()[defaults][1].page_location, config.page_location);
@@ -42,7 +45,7 @@ test('Google loads only after consent, sends one page/product view, and strips p
   assert.equal(b.scripts.length, 1);
   assert.equal(b.commands().filter(c => c[0] === 'event').length, 2);
 });
-test('Accepted COD order is one lead without contact data; revocation blocks further conversions', () => {
+test('Accepted COD order is one lead without contact data; refusal keeps cookieless conversions', () => {
   const b = browser({ consent: true });
   const api = b.window.enkaGoogleAnalytics;
   const product = { id: 'sku1', name: 'Kettle', price: 89, phone: 'private', customer_name: 'private' };
@@ -58,9 +61,19 @@ test('Accepted COD order is one lead without contact data; revocation blocks fur
   assert.equal(lead.value, 89);
   assert.ok(!JSON.stringify(lead).includes('private'));
   b.choose(false);
-  assert.equal(b.window['ga-disable-G-TEST123'], true);
+  assert.equal(b.window['ga-disable-G-TEST123'], undefined);
+  assert.ok(Object.values(b.commands().filter(c => c[0] === 'consent').at(-1)[2]).every(value => value === 'denied'));
   api.orderAccepted(product, 'order2');
-  assert.equal(b.commands().filter(c => c[0] === 'event').length, events.length);
+  assert.equal(b.commands().filter(c => c[0] === 'event').length, events.length + 1);
+});
+test('Checkout and accepted orders are measured before consent without replay on acceptance', () => {
+  const b = browser();
+  const product = { id: 'sku1', name: 'Kettle', price: 89 };
+  b.window.enkaGoogleAnalytics.beginCheckout(product);
+  b.window.enkaGoogleAnalytics.orderAccepted(product, 'order1');
+  b.choose(true);
+  b.window.enkaGoogleAnalytics.orderAccepted(product, 'order1');
+  assert.deepEqual(b.commands().filter(c => c[0] === 'event').map(c => c[1]), ['page_view', 'view_item', 'begin_checkout', 'generate_lead']);
 });
 test('Missing IDs and development hosts do not initialize Google', () => {
   for (const options of [{ id: '' }, { id: 'UA-123' }, { host: 'localhost' }]) {

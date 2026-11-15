@@ -15,6 +15,9 @@ include: [_pages]
 
 # Исключаем служебные файлы и папки из итогового билда
 exclude:
+  - workers
+  - tokensave
+  - tokensave.exe
   - TRANSLATIONS.md
   - admin
   - vendor

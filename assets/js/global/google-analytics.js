@@ -8,11 +8,13 @@
   const gtag = window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
   const denied = { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied' };
   gtag('consent', 'default', denied);
+  gtag('set', 'ads_data_redaction', true);
   let loaded = false;
   let viewSent = false;
   const orders = new Set();
   const checkouts = new Set();
   const allowed = () => window.enkaPrivacy?.allowsAnalytics() === true;
+  let consentState;
   // Only campaign identifiers are allowed in URLs; never send arbitrary search/form text.
   function cleanUrl(raw) {
     try {
@@ -31,19 +33,18 @@
     return { item_id: String(product.id), item_name: String(product.name || '').slice(0, 100), price, quantity: 1 };
   }
   function send(name, params) {
-    if (!allowed()) return false;
     sync();
     gtag('event', name, { send_to: id, ...params });
     return true;
   }
   function sync() {
     const granted = allowed();
-    window['ga-disable-' + id] = !granted;
-    if (!granted) {
-      if (loaded) gtag('consent', 'update', denied);
-      return;
+    // Advanced Consent Mode: denied storage still permits cookieless measurement.
+    // Do not use ga-disable here: it disables those signals as well.
+    if (consentState !== granted) {
+      consentState = granted;
+      gtag('consent', 'update', granted ? { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' } : denied);
     }
-    gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' });
     if (!loaded) {
       loaded = true;
       const settings = {
@@ -77,18 +78,18 @@
   window.enkaGoogleAnalytics = Object.freeze({
     beginCheckout(product) {
       const data = item(product);
-      if (!data || !allowed() || checkouts.has(data.item_id)) return;
+      if (!data || checkouts.has(data.item_id)) return;
       if (send('begin_checkout', { currency: 'GEL', value: data.price, items: [data] })) checkouts.add(data.item_id);
     },
     orderAccepted(product, eventId) {
       const data = item(product);
-      if (!data || !eventId || !allowed() || orders.has(eventId)) return;
+      if (!data || !eventId || orders.has(eventId)) return;
       // COD order acceptance is a lead, not collected revenue. Never pass contact fields.
       if (send('generate_lead', { currency: 'GEL', value: data.price, event_id: String(eventId), items: [data], lead_source: 'website_order' })) orders.add(eventId);
     }
   });
   window.addEventListener('enka:privacy-change', sync);
-  // Stop Google's automatic events too if consent expires in an open tab.
+  // Update storage permissions when consent expires in an open tab.
   window.addEventListener('focus', sync);
   setInterval(sync, 60000);
   document.addEventListener('DOMContentLoaded', sync);

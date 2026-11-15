@@ -107,6 +107,14 @@ test('Missing order adapter shows an error without submitting or tracking an ord
   assert.equal(h.element('submitInlineOrderBtn').disabled, false);
 });
 
+test('Server-owned Purchase skips browser CAPI and uses the canonical order ID for GA', async () => {
+  const h = harness(async () => Response.json({ id: 'order-uuid-123', order_no: 123, purchase_delivery: 'server' }));
+  await h.submit();
+  assert.equal(h.confirmations.length, 1);
+  assert.equal(h.analytics.length, 0);
+  assert.equal(h.googleLeads[0][1], 'purchase_order-uuid-123');
+});
+
 test('HTTP, application, network and timeout failures never confirm or track a purchase and allow retry', async () => {
   for (const failure of [() => new Response('{}', { status: 503 }), () => new Response('{"success":false}'), () => new Response('{"ok":false}'), () => new Response('{"error":"unavailable"}'), () => { throw new Error('offline'); }, () => { throw new DOMException('Timed out', 'TimeoutError'); }]) {
     let calls = 0;

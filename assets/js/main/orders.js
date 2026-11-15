@@ -228,7 +228,6 @@ if (quickForm) {
         quickForm.setAttribute('aria-busy', 'true');
 
         try {
-            const eventId = 'purchase_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const numericPrice = parseFloat(String(product.price || 0).replace(/[^\d.]/g, '')) || 0;
 
             const response = await window.submitEnkaOrder(quickForm, {
@@ -239,13 +238,14 @@ if (quickForm) {
 
             const result = await response.clone().json().catch(() => null);
             if (response.ok && result?.ok !== false && result?.success !== false && !result?.error) {
+                const eventId = 'purchase_' + (result?.id || Date.now() + '_' + Math.random().toString(36).substring(2, 9));
                 try { window.enkaPersonalization?.record('purchase', String(product.id || slugFromUrl)); } catch { /* Recommendations must not affect an accepted order. */ }
                 // Записываем успешную отправку в историю анти-спама
                 recordSuccessfulOrder(guard.exactSignature);
                 try { window.enkaGoogleAnalytics?.orderAccepted({ id: productKey, name: product.name, price: numericPrice }, eventId); } catch { /* Tracking must not affect an accepted order. */ }
 
-                // Отправляем в CAPI (capi.js сам заблокирует повтор, если это было просто исправление опечатки в номере!)
-                if (typeof window.sendCapiEvent === 'function') {
+                // Supabase opts into server delivery only after its transactional outbox is connected.
+                if (result?.purchase_delivery !== 'server' && typeof window.sendCapiEvent === 'function') {
                     try {
                     window.sendCapiEvent(
                         'Purchase',
