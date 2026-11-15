@@ -2,6 +2,10 @@
 
 Google Advanced Consent Mode реализован отдельно в `assets/js/global/google-analytics.js`. Этот каталог отвечает за серверный Meta Purchase. В GA4 принятый заказ с оплатой при получении остаётся `generate_lead`; серверный GA4 Measurement Protocol не используется.
 
+Рабочее подключение включено 15 ноября 2026 года. Cloudflare Pages опубликован workflow [1086](https://github.com/nikooganesiani/nikooganesiani.github.io/actions/runs/43710399560), исходный коммит `8655f14`. Финальная версия CAPI Worker — `ab21bf42-0258-4380-b3d7-62240807ef65`, `SERVER_PURCHASE_ONLY: "true"`. Триггер Supabase включён, Cron активен; последние три запуска при проверке завершились `succeeded`. Контактные данные и секреты в репозиторий не включены.
+
+Проверены: атомарность заказа и outbox, повтор idempotency-key и ответ сервера внутри транзакции с откатом; подпись из Vault до Worker; блокировка публичного Purchase; локальный workerd с SQLite Durable Object, реальным alarm и имитацией ответа Meta (одна доставка и подавление повтора). Искусственные Purchase в рабочую Meta не отправлялись; на момент включения очередь была пуста.
+
 ## Рабочая цепочка
 
 1. `enka-intake/public` сохраняет заказ через существующую SQL-транзакцию `enka.web_intake` → `enka.intake`. Turnstile, idempotency-key и ограничения частоты сохраняются.
