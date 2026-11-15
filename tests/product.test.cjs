@@ -21,6 +21,15 @@ test('Stock is normalized consistently and unknown states cannot be purchased', 
   }
   assert.equal(context.window.isProductAvailable({ price: '0' }), false);
   assert.equal(context.window.isProductAvailable({ price: 'free 123' }), false);
+  assert.equal(context.window.isProductAvailable({ price: '19.95', stockStatus: 'out_of_stock', orderable: true }), true);
+});
+
+test('A published product stays orderable in the generated snapshot while its stock label stays separate', () => {
+  const yaml = productFrontMatter({ id: 'backorder', name: 'Test', price: 19, stockStatus: 'out_of_stock', orderable: true });
+  assert.match(yaml, /^stockStatus: "out_of_stock"$/m);
+  assert.match(yaml, /^orderable: true$/m);
+  const state = read('_includes/product/state.html');
+  assert.match(state, /page\.orderable == true and product_price > 0[\s\S]+assign product_available = true/);
 });
 
 test('Media accepts safe photos and canonical YouTube URLs, deduplicates and drops executable URLs', () => {
@@ -82,6 +91,7 @@ test('Inline order waits for acceptance, blocks repeated submit, and preserves c
   assert.equal(h.element('submitInlineOrderBtn').disabled, true);
   assert.equal(h.element('inlineOrderForm').attrs['aria-busy'], 'true');
   assert.equal(body.product_id, 'canonical-slug');
+  assert.equal(body.expected_price, 19.95);
   assert.equal(body.phone, '+995555123456');
   resolve(new Response('{"success":true}'));
   await pending;

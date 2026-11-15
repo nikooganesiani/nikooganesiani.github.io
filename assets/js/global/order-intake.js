@@ -79,6 +79,16 @@
     return key;
   }
 
+  window.enkaOrderConflictMessage = (status, error) => {
+    if (status !== 409) return '';
+    const message = error === 'catalog_changed'
+      ? 'ფასი შეიცვალა. განაახლეთ გვერდი და ხელახლა დაადასტურეთ შეკვეთა.'
+      : error === 'idempotency_conflict'
+        ? 'შესაძლოა შეკვეთა უკვე მივიღეთ. დასაზუსტებლად დაგვირეკეთ: +995 551 17 89 90.'
+        : '';
+    return message ? window.enkaI18n?.t(message) || message : '';
+  };
+
   window.submitEnkaOrder = async function (form, data) {
     if (!window.ENKA_TURNSTILE_SITE_KEY) throw new Error("Turnstile site key is missing");
     const payload = {
@@ -86,8 +96,11 @@
       phone: data.phone.replace(/\s+/g, ""),
       items: [{ site_id: String(data.product_id), quantity: 1 }],
     };
+    // A refreshed quote is still the same pending order. Reusing its key lets
+    // the server detect an earlier acceptance even when the first reply was lost.
     const identity = await requestIdentity(payload);
     const key = pendingKey(identity);
+    if (data.expected_price != null) payload.items[0].expected_price = data.expected_price;
     const token = await getToken(form);
     // Measurement is optional; blocked analytics must never prevent placing an order.
     let measurement;

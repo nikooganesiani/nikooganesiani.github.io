@@ -92,6 +92,24 @@ test('Failed and malformed catalog responses remain retryable', async () => {
   assert.equal(calls, 3);
 });
 
+test('Supabase catalog uses a publishable key and the RPC locale parameter',async()=>{
+ const calls=[];const context=catalogContext(async(url,options)=>{calls.push({url,options});return {ok:true,json:async()=>({products:[product],_enkaPublication:{source:'supabase',id:1}})};},undefined,'ru');
+ context.window.CATALOG_API_URL='https://example.supabase.co/rest/v1/rpc/enka_catalog';context.window.CATALOG_API_KEY='sb_publishable_fixture';
+ await context.window.fetchCatalogCached();assert.equal(calls[0].url,'https://example.supabase.co/rest/v1/rpc/enka_catalog?p_locale=ru');assert.equal(calls[0].options.headers.apikey,'sb_publishable_fixture');assert.equal(calls[0].options.credentials,'omit');
+});
+
+test('An empty Supabase response cannot replace the storefront catalog or its cache', async () => {
+  let calls = 0;
+  const context = catalogContext(async () => ({
+    ok: true,
+    json: async () => ({ products: ++calls === 1 ? [] : [product], _enkaPublication: { source: 'supabase', id: 1 } }),
+  }));
+  context.window.CATALOG_API_URL = 'https://example.supabase.co/rest/v1/rpc/enka_catalog';
+  await assert.rejects(context.window.fetchCatalogCached(), /Invalid catalog/);
+  assert.equal((await context.window.fetchCatalogCached()).products.length, 1);
+  assert.equal(calls, 2);
+});
+
 test('Catalog and product cards work with blocked storage and escape untrusted content', async () => {
   const context = catalogContext(async () => ({ ok: true, json: async () => [product] }), { getItem() { throw Error('blocked'); }, setItem() { throw Error('blocked'); } });
   await context.window.fetchCatalogCached();

@@ -2,7 +2,7 @@
   'use strict';
   const TTL = 5 * 60 * 1000;
   const locale = window.enkaI18n?.locale || 'ka';
-  const CACHE_KEY = 'catalogCache_v5_' + locale;
+  const CACHE_KEY = 'catalogCache_v5_' + locale + '_' + window.CATALOG_API_URL;
   let cached = null;
   let promise = null;
   function prepare(value) {
@@ -24,11 +24,11 @@
     if (stock === 'soon' || stock.includes('მალე')) return 'soon';
     return ['in_stock', 'მარაგშია'].includes(stock) ? 'in_stock' : 'unavailable';
   };
-  window.isProductAvailable = product => !!product && window.productStock(product.stockStatus) === 'in_stock' && window.productPrice(product.price) > 0;
+  window.isProductAvailable = product => !!product && (product.orderable === true || window.productStock(product.stockStatus) === 'in_stock') && window.productPrice(product.price) > 0;
 
   // Suggestions and the full results page must agree, including Latin model names.
   window.matchesCatalogSearch = (product, query) => {
-    if (!product || window.productStock(product.stockStatus) === 'out_of_stock') return false;
+    if (!product || (product.orderable !== true && window.productStock(product.stockStatus) === 'out_of_stock')) return false;
     const raw = String(query || '').trim();
     if (!raw) return false;
     const lower = value => String(value ?? '').toLocaleLowerCase('ka');
@@ -67,15 +67,18 @@
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);
     const url = new URL(window.CATALOG_API_URL, location.origin);
-    if (['ru', 'en'].includes(locale)) url.searchParams.set('lang', locale);
-    promise = fetch(url.href, { signal: controller.signal, credentials: 'omit' })
+    const supabase = /\/rest\/v1\/rpc\/enka_catalog$/.test(url.pathname);
+    if (supabase) url.searchParams.set('p_locale', locale);
+    else if (['ru', 'en'].includes(locale)) url.searchParams.set('lang', locale);
+    const headers = supabase ? { apikey: window.CATALOG_API_KEY } : {};
+    promise = fetch(url.href, { signal: controller.signal, credentials: 'omit', headers })
       .then(response => {
         if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
         return response.json();
       })
       .then(data => {
         const products = Array.isArray(data) ? data : data?.products;
-        if (!Array.isArray(products)) throw new Error('Invalid catalog');
+        if (!Array.isArray(products) || (supabase && (!products.length || data._enkaPublication?.source !== 'supabase' || !(data._enkaPublication.id > 0)))) throw new Error('Invalid catalog');
         cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
         return prepare(cached);

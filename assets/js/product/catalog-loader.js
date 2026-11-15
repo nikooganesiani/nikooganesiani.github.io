@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const retry = document.getElementById('productCatalogRetry');
   const snapshot = {
     id: dataset.id, sku: dataset.sku, name: dataset.name, price: dataset.price,
-    oldPrice: dataset.oldPrice, stockStatus: dataset.stock, images: [dataset.image]
+    oldPrice: dataset.oldPrice, stockStatus: dataset.stock, orderable: dataset.orderable === 'true', images: [dataset.image]
   };
   const parsePrice = window.productPrice;
   const stockOf = window.productStock;
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const { products } = await window.fetchCatalogCached();
       // A slug is canonical; SKU collisions must never resolve another product.
       const product = products.find(p => String(p.id) === String(snapshot.id));
-      applyProduct(product || { ...snapshot, stockStatus: 'unavailable' });
+      applyProduct(product || { ...snapshot, stockStatus: 'unavailable', orderable: false });
       status.textContent = product ? '' : 'ეს პროდუქტი ამჟამად არ არის ხელმისაწვდომი. დაგვიკავშირდით ან აირჩიეთ მსგავსი.';
       const history = window.enkaPersonalization?.allowed() ? window.enkaPersonalization.snapshot().events : [];
       let recent = history.filter(event => event.kind === 'view').slice().reverse().map(event => event.ref);
