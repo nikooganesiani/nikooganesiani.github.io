@@ -78,7 +78,7 @@
       })
       .then(data => {
         const products = Array.isArray(data) ? data : data?.products;
-        if (!Array.isArray(products)) throw new Error('Invalid catalog');
+        if (!Array.isArray(products) || (supabase && (!products.length || data._enkaPublication?.source !== 'supabase' || !(data._enkaPublication.id > 0)))) throw new Error('Invalid catalog');
         cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
         try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
         return prepare(cached);

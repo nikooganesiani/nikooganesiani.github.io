@@ -12,7 +12,7 @@ export default {async fetch(request,env){
   const response=await fetch(env.SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/rpc/enka_catalog?p_locale='+locale,{headers:{apikey:env.SUPABASE_PUBLISHABLE_KEY},signal:AbortSignal.timeout(10000),redirect:'error'});
   if(!response.ok)throw Error('Catalog unavailable');
   const catalog=await response.json();
-  if(!Array.isArray(catalog.products)||catalog._enkaPublication?.source!=='supabase')throw Error('Invalid publication');
+  if(!Array.isArray(catalog.products)||!catalog.products.length||catalog._enkaPublication?.source!=='supabase'||!(catalog._enkaPublication.id>0))throw Error('Invalid publication');
   const xml=url.pathname==='/v1/feed.xml';
   const body=xml?feed(catalog,(env.STOREFRONT_BASE||'https://enkaelectronics.com.ge').replace(/\/$/,'')):JSON.stringify(catalog);
   return new Response(request.method==='HEAD'?null:body,{headers:{...headers,'Content-Type':xml?'application/xml; charset=utf-8':'application/json; charset=utf-8','ETag':`"catalog-${catalog._enkaPublication.id}-${locale}"`}});

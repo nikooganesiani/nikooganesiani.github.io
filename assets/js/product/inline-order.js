@@ -65,7 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const response = await window.submitEnkaOrder(form, { name, phone, product_id: product.id, expected_price: Number(product.price) });
       const result = await response.clone().json().catch(() => null);
-      if (response.status === 409 && result?.error === 'catalog_changed') { showError('ფასი შეიცვალა. განაახლეთ გვერდი და ხელახლა დაადასტურეთ შეკვეთა.'); return; }
+      const conflict = window.enkaOrderConflictMessage?.(response.status, result?.error);
+      if (conflict) { showError(conflict); return; }
       if (!response.ok || result?.ok === false || result?.success === false || result?.error) throw new Error('Order rejected');
       const eventId = 'purchase_' + (result?.id || Date.now() + '_' + Math.random().toString(36).slice(2, 9));
       recordSuccessfulOrder(guard.exactSignature);

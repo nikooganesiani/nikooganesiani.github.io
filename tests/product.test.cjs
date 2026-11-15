@@ -24,6 +24,14 @@ test('Stock is normalized consistently and unknown states cannot be purchased', 
   assert.equal(context.window.isProductAvailable({ price: '19.95', stockStatus: 'out_of_stock', orderable: true }), true);
 });
 
+test('A published product stays orderable in the generated snapshot while its stock label stays separate', () => {
+  const yaml = productFrontMatter({ id: 'backorder', name: 'Test', price: 19, stockStatus: 'out_of_stock', orderable: true });
+  assert.match(yaml, /^stockStatus: "out_of_stock"$/m);
+  assert.match(yaml, /^orderable: true$/m);
+  const state = read('_includes/product/state.html');
+  assert.match(state, /page\.orderable == true and product_price > 0[\s\S]+assign product_available = true/);
+});
+
 test('Media accepts safe photos and canonical YouTube URLs, deduplicates and drops executable URLs', () => {
   for (const value of ['javascript:alert(1)', 'data:text/html,x', 'https://user:pass@example.com/x', 'https://youtu.be/invalid', '']) assert.equal(normalizeMedia(value), null);
   assert.equal(normalizeMedia('https://youtu.be/abcdefghijk?t=1'), 'https://www.youtube.com/watch?v=abcdefghijk');

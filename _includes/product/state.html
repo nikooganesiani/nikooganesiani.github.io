@@ -15,6 +15,9 @@
 {%- elsif product_stock != 'out_of_stock' and product_stock != 'მარაგი ამოიწურა' -%}
   {%- assign product_stock_label = 'ხელმისაწვდომობა ზუსტდება' -%}
 {%- endif -%}
+{%- if page.orderable == true and product_price > 0 -%}
+  {%- assign product_available = true -%}
+{%- endif -%}
 {%- assign product_photos = '' | split: '' -%}
 {%- assign yt_id = '' -%}
 {%- for img in page.images -%}

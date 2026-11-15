@@ -15,6 +15,21 @@ test('catalog failures return an error instead of falling back to divergent lega
  const original=globalThis.fetch;t.after(()=>globalThis.fetch=original);globalThis.fetch=async()=>new Response('unavailable',{status:503});
  const response=await publicApi.fetch(new Request('https://api.example/catalog'),env);assert.equal(response.status,503);assert.equal(response.headers.get('Cache-Control'),'no-store');
 });
+test('an empty or unidentified Supabase release never replaces the catalog and feed', async t => {
+  const original = globalThis.fetch;
+  t.after(() => globalThis.fetch = original);
+  for (const catalog of [
+    { products: [], _enkaPublication: { source: 'supabase', id: 4 } },
+    { products: [{ id: 'test' }], _enkaPublication: { source: 'supabase' } },
+  ]) {
+    globalThis.fetch = async () => Response.json(catalog);
+    for (const path of ['/catalog', '/v1/feed.xml']) {
+      const response = await publicApi.fetch(new Request('https://api.example' + path), env);
+      assert.equal(response.status, 503);
+      assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    }
+  }
+});
 test('retired Studio redirects users, preserves protected archive reads and rejects every old write endpoint',async()=>{
  assert.equal((await retiredStudio(new Request('https://admin.example/'))).headers.get('Location'),'https://enka-erp.easylim.chatgpt.site/catalog');
  for(const path of ['/api/draft','/api/publish','/api/upload','/api/restore'])assert.equal((await retiredStudio(new Request('https://admin.example'+path,{method:'POST'}))).status,410);
