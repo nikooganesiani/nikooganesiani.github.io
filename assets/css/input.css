@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "../../admin/public/store-visuals.css";
+@import "./photo-search-loader.css";
 
 @source "../../_includes";
 @source "../../_layouts";
@@ -19,6 +20,9 @@
   --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #155dfc;
   --color-brand-dark: #1048cb;
+  --color-scrollbar: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  --color-scrollbar-hover: color-mix(in srgb, var(--color-accent) 52%, transparent);
+  --color-scrollbar-active: color-mix(in srgb, var(--color-accent) 72%, transparent);
   --color-ink: light-dark(#202733, #e7edf6);
   --color-muted: light-dark(#68717e, #a4afbf);
   --color-surface: light-dark(#f6f7f9, #202936);

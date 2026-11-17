@@ -96,13 +96,18 @@
     if (!modal) return;
     const get = suffix => document.getElementById('photoSearch' + suffix);
     const fileInput = get('File'), status = get('Status'), grid = get('Grid');
-    const dropzone = get('Dropzone'), progress = get('Progress'), results = get('Results');
+    const dropzone = get('Dropzone'), loading = get('Loading'), results = get('Results');
     const selected = get('Selected'), preview = get('Preview'), retry = get('Retry');
     let controller, objectURL, lastFile, revision = 0;
+    let statusTimers = [];
     const text = value => window.enkaI18n?.t(value) || value;
     const say = value => { status.textContent = text(value); };
     const releasePreview = () => { if (objectURL) URL.revokeObjectURL(objectURL); objectURL = null; preview.removeAttribute('src'); };
-    function cancel() { ++revision; controller?.abort(); progress.hidden = true; grid.removeAttribute('aria-busy'); }
+    function stopLoading() {
+      statusTimers.forEach(clearTimeout); statusTimers = [];
+      loading.hidden = true; modal.classList.remove('is-searching'); grid.removeAttribute('aria-busy');
+    }
+    function cancel() { ++revision; controller?.abort(); stopLoading(); }
     document.querySelectorAll('[data-photo-search]').forEach(button => button.addEventListener('click', () => {
       window.openAppModal('photoSearchModal', button);
     }));
@@ -133,8 +138,13 @@
       objectURL = URL.createObjectURL(file);
       const url = objectURL;
       preview.src = url; get('Filename').textContent = file.name;
-      selected.hidden = false; dropzone.hidden = true; progress.hidden = false; progress.removeAttribute('value');
-      say('იტვირთება ძიების მოდელი…');
+      selected.hidden = false; dropzone.hidden = true; loading.hidden = false;
+      modal.classList.add('is-searching');
+      say('ვეძებთ');
+      statusTimers = [
+        setTimeout(() => { if (revision === run) say('კიდევ ცოტა'); }, 6000),
+        setTimeout(() => { if (revision === run) say('ვამზადებთ შედეგებს'); }, 14000)
+      ];
       grid.setAttribute('aria-busy', 'true');
       let deadline;
       try {
@@ -147,10 +157,11 @@
             })]), timeout
         ]);
         clearTimeout(deadline); ensureActive();
+        statusTimers.forEach(clearTimeout); statusTimers = [];
+        say('ვამზადებთ შედეგებს');
         const query = await embedding(model, image); ensureActive();
         const products = catalog.products.filter(p => window.productStock(p.stockStatus) !== 'out_of_stock');
         if (index.model !== MODEL || !Array.isArray(index.items)) throw new Error('Invalid index');
-        say('კატალოგში მსგავსი პროდუქტების ძიება…');
         const indexed = new Map(index.items.map(item => [item.id, item]));
         const candidates = products.flatMap(product => {
           const item = indexed.get(String(product.id));
@@ -173,7 +184,7 @@
         retry.hidden = false;
       } finally {
         clearTimeout(deadline);
-        if (revision === run) { progress.hidden = true; grid.removeAttribute('aria-busy'); }
+        if (revision === run) stopLoading();
       }
     }
   });

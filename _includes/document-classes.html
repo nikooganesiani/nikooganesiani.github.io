@@ -15,19 +15,25 @@ motion-reduce:[&::after]:[animation-delay:0ms]! motion-reduce:[&::after]:[transi
 motion-reduce:[&_*::after]:[animation-delay:0ms]! motion-reduce:[&_*::after]:[transition-duration:.01ms]! motion-reduce:[&_*::after]:scroll-auto! scroll-pt-[calc(var(--site-header-height,_80px)_+_16px)]
 [&.modal-open]:overscroll-none [&.modal-open_body]:overflow-hidden [&.modal-open_body]:overscroll-none [:where(&)_:focus-visible]:[outline:2px_solid_#155dfc]!
 [:where(&)_:focus-visible]:[outline-offset:3px] [&_button]:touch-manipulation [&_a]:touch-manipulation [&_input]:touch-manipulation
-[&_button:disabled]:cursor-default [&_[hidden]]:hidden! [&_*::-webkit-scrollbar]:w-3.5 [&_*::-webkit-scrollbar]:h-3.5
-[&::-webkit-scrollbar]:w-3.5 [&::-webkit-scrollbar]:h-3.5 [&_body::-webkit-scrollbar]:w-3.5 [&_body::-webkit-scrollbar]:h-3.5
-[&_*::-webkit-scrollbar-track]:bg-canvas [&::-webkit-scrollbar-track]:bg-canvas [&_body::-webkit-scrollbar-track]:bg-canvas [&::-webkit-scrollbar-thumb]:border-solid
-[&_*::-webkit-scrollbar-thumb]:[background-color:rgba(148,_163,_184,_0.45)] [&_*::-webkit-scrollbar-thumb]:rounded-xl [&_*::-webkit-scrollbar-thumb]:border-[4px] [&_*::-webkit-scrollbar-thumb]:border-solid
-[&_*::-webkit-scrollbar-thumb]:border-canvas [&_*::-webkit-scrollbar-thumb]:[background-clip:padding-box] [&_*::-webkit-scrollbar-thumb]:[transition:background-color_0.4s_ease] [&::-webkit-scrollbar-thumb]:[background-color:rgba(148,_163,_184,_0.45)]
-[&::-webkit-scrollbar-thumb]:rounded-xl [&::-webkit-scrollbar-thumb]:border-[4px] [&::-webkit-scrollbar-thumb]:border-canvas [&::-webkit-scrollbar-thumb]:[background-clip:padding-box]
-[&::-webkit-scrollbar-thumb]:[transition:background-color_0.4s_ease] [&_body::-webkit-scrollbar-thumb]:[background-color:rgba(148,_163,_184,_0.45)] [&_body::-webkit-scrollbar-thumb]:rounded-xl [&_body::-webkit-scrollbar-thumb]:border-[4px]
-[&_body::-webkit-scrollbar-thumb]:border-solid [&_body::-webkit-scrollbar-thumb]:border-canvas [&_body::-webkit-scrollbar-thumb]:[background-clip:padding-box] [&_body::-webkit-scrollbar-thumb]:[transition:background-color_0.4s_ease]
-[@media(hover:_hover)]:[&_*::-webkit-scrollbar-thumb:hover]:[background-color:rgba(148,_163,_184,_0.85)] [@media(hover:_hover)]:[&_*::-webkit-scrollbar-thumb:hover]:[border-width:4px] [@media(hover:_hover)]:[&::-webkit-scrollbar-thumb:hover]:[background-color:rgba(148,_163,_184,_0.85)] [@media(hover:_hover)]:[&::-webkit-scrollbar-thumb:hover]:[border-width:4px]
-[@media(hover:_hover)]:[&_body::-webkit-scrollbar-thumb:hover]:[background-color:rgba(148,_163,_184,_0.85)] [@media(hover:_hover)]:[&_body::-webkit-scrollbar-thumb:hover]:[border-width:4px] [&_*::-webkit-scrollbar-thumb:active]:[background-color:rgba(37,_99,_235,_0.95)] [&_*::-webkit-scrollbar-thumb:active]:[border-width:4px]
-[&::-webkit-scrollbar-thumb:active]:[background-color:rgba(37,_99,_235,_0.95)] [&::-webkit-scrollbar-thumb:active]:[border-width:4px] [&_body::-webkit-scrollbar-thumb:active]:[background-color:rgba(37,_99,_235,_0.95)] [&_body::-webkit-scrollbar-thumb:active]:[border-width:4px]
+[&_button:disabled]:cursor-default [&_[hidden]]:hidden!
+[&[data-overlay-scrollbar]]:[scrollbar-width:none] [&[data-overlay-scrollbar]::-webkit-scrollbar]:hidden [&[data-overlay-scrollbar]]:[scrollbar-gutter:auto]
+[&_[data-custom-scrollbar]]:[scrollbar-width:none]! [&_[data-custom-scrollbar]::-webkit-scrollbar]:hidden!
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar]:w-3
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar]:h-3
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-track]:bg-transparent
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:bg-scrollbar
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:rounded-full
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-[4px]
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-solid
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-transparent
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:[background-clip:padding-box]
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:min-h-10
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:hover]:bg-scrollbar-hover
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:active]:bg-scrollbar-active
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-corner]:bg-transparent
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[&_*]:[scrollbar-color:var(--color-scrollbar)_transparent]
+[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:hover]:border-[2px]
 overflow-y-scroll [scrollbar-gutter:stable] scroll-smooth [&.modal-open]:overflow-hidden!
 [&::view-transition-old(root)]:[animation-duration:0.4s] [&_*::view-transition-old(root)]:[animation-duration:0.4s] [&::view-transition-new(root)]:[animation-duration:0.4s] [&_*::view-transition-new(root)]:[animation-duration:0.4s]
 font-sans [-webkit-tap-highlight-color:transparent] [text-rendering:optimizeLegibility] [&_*]:font-sans
-[&_*]:[-webkit-tap-highlight-color:transparent] [&_*]:[text-rendering:optimizeLegibility] [&_#goog-gt-tt]:hidden! [@supports(-moz-appearance:none)]:[scrollbar-width:thin]
-[@supports(-moz-appearance:none)]:[scrollbar-color:#cbd5e1_#ffffff]
+[&_*]:[-webkit-tap-highlight-color:transparent] [&_*]:[text-rendering:optimizeLegibility] [&_#goog-gt-tt]:hidden!

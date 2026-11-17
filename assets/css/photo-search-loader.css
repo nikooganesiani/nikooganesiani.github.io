@@ -1,0 +1,76 @@
+/* Adapted from andrew-manzyk's AI Loader (MIT).
+ * https://uiverse.io/andrew-manzyk/young-walrus-64
+ * Full notice: assets/vendor/photo-search/loader-LICENSE.txt
+ */
+.photo-search-loading:not([hidden]) {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0 36px;
+}
+#photoSearchModal.is-searching #photoSearchDescription,
+#photoSearchModal.is-searching #photoSearchSelected { display: none; }
+#photoSearchModal.is-searching #photoSearchStatus {
+  margin: 0 0 24px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-accent);
+}
+.photo-search-loader {
+  --color-one: var(--color-accent);
+  --color-two: var(--color-brand-dark);
+  --color-three: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  --color-four: color-mix(in srgb, var(--color-brand-dark) 50%, transparent);
+  --color-five: color-mix(in srgb, var(--color-accent) 25%, transparent);
+  --time-animation: 2s;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  box-shadow: 0 0 25px 0 var(--color-three), 0 20px 50px 0 var(--color-four);
+  animation: photo-search-colorize calc(var(--time-animation) * 3) ease-in-out infinite;
+}
+.photo-search-loader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border-top: solid 1px var(--color-one);
+  border-bottom: solid 1px var(--color-two);
+  background: linear-gradient(180deg, var(--color-five), var(--color-four));
+  box-shadow: inset 0 10px 10px 0 var(--color-three), inset 0 -10px 10px 0 var(--color-four);
+}
+.photo-search-loader-core {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-one) 30%, var(--color-two) 70%);
+  -webkit-mask: url(#photoSearchClipping);
+  mask: url(#photoSearchClipping);
+}
+.photo-search-loader svg { position: absolute; }
+.photo-search-loader mask {
+  filter: contrast(15);
+  animation: photo-search-roundness calc(var(--time-animation) / 2) linear infinite;
+}
+.photo-search-loader polygon { filter: blur(7px); }
+.photo-search-loader polygon:nth-child(1) { transform-origin: 75% 25%; transform: rotate(90deg); }
+.photo-search-loader polygon:nth-child(2) { transform-origin: 50% 50%; animation: photo-search-rotation var(--time-animation) linear infinite reverse; }
+.photo-search-loader polygon:nth-child(3) { transform-origin: 50% 60%; animation: photo-search-rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -3); }
+.photo-search-loader polygon:nth-child(4) { transform-origin: 40% 40%; animation: photo-search-rotation var(--time-animation) linear infinite reverse; }
+.photo-search-loader polygon:nth-child(5) { transform-origin: 40% 40%; animation: photo-search-rotation var(--time-animation) linear infinite reverse; animation-delay: calc(var(--time-animation) / -2); }
+.photo-search-loader polygon:nth-child(6) { transform-origin: 60% 40%; animation: photo-search-rotation var(--time-animation) linear infinite; }
+.photo-search-loader polygon:nth-child(7) { transform-origin: 60% 40%; animation: photo-search-rotation var(--time-animation) linear infinite; animation-delay: calc(var(--time-animation) / -1.5); }
+@keyframes photo-search-rotation { to { transform: rotate(360deg); } }
+@keyframes photo-search-roundness {
+  0%, 60%, 100% { filter: contrast(15); }
+  20%, 40% { filter: contrast(3); }
+}
+@keyframes photo-search-colorize {
+  0%, 100% { filter: hue-rotate(0deg); }
+  25% { filter: hue-rotate(-12deg); }
+  50% { filter: hue-rotate(12deg); }
+  75% { filter: hue-rotate(-6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-search-loader, .photo-search-loader mask, .photo-search-loader polygon { animation: none; }
+}
