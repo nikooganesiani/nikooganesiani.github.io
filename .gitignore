@@ -12,6 +12,7 @@
 /assets/js/global/store-engine.js
 /assets/js/global/store-visuals.js
 /_data/studio.json
+/_data/catalog_navigation.json
 /admin/node_modules/
 /admin/.local/
 /admin/.wrangler/

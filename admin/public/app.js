@@ -295,6 +295,9 @@ document.addEventListener('click', async event => {
   if (button.id === 'delete-product') {
     if (state.document.store.campaigns.some(c=>c.productIds.includes(product.id) || c.excludeIds.includes(product.id))) { toast(t('Товар используется в составе акции. Сначала уберите его оттуда.'),true); return; }
     if (!await confirmMessage(t('Убрать товар из черновика?'), ui`${product.name || product.id}\n\nИз каталога товар исчезнет после публикации, а его статическая страница — после ручной сборки сайта. Фотографии в хранилище сохранятся.`, t('Убрать из черновика'))) return;
+    for (const category of state.document.store.categories) for (const sub of category.subs) {
+      if (sub.imageProductId === product.id) { delete sub.imageProductId; delete sub.imageIndex; }
+    }
     state.document.catalog.products = state.document.catalog.products.filter(item => item !== product);
     for (const locale of LOCALES) delete state.document.translations[locale].products[product.id];
     markDirty(); $('#product-dialog').close(); render(); return;

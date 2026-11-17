@@ -4,7 +4,7 @@
 <section class="relative w-full my-3 select-none" aria-roledescription="კარუსელი" aria-label="სპეციალური შეთავაზებები" data-promo-block>
   <p class="sr-only">ბანერებს შორის გადასასვლელად გამოიყენეთ მარცხენა და მარჯვენა ისრები.</p>
   <div class="sr-only" data-promo-status aria-live="polite" aria-atomic="true"></div>
-  <div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain rounded-3xl data-[dragging=true]:snap-none data-[dragging=true]:cursor-grabbing" data-promo-track>
+  <div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain rounded-3xl max-[640px]:rounded-2xl data-[dragging=true]:snap-none data-[dragging=true]:cursor-grabbing" data-promo-track>
     {% for item in store_heroes %}
       <div class="promo-slide w-full min-w-0 flex-[0_0_100%] snap-start relative" data-promo-slide data-title="{{ item.title | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ store_heroes.size }}">
         {% if item.html %}{{ item.html }}{% else %}

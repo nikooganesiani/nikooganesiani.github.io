@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
   const banner = document.getElementById('cookie-banner');
   if (!banner || !window.enkaPrivacy) return;
+  const settingsButton = document.getElementById('cookie-settings-btn');
+  const settings = document.getElementById('cookie-settings');
+  settingsButton?.addEventListener('click', () => {
+    if (!settings) return;
+    settings.hidden = !settings.hidden;
+    settingsButton.setAttribute('aria-expanded', String(!settings.hidden));
+  });
   function render() {
     const hidden = window.enkaPrivacy.getChoice() !== null && (!window.enkaPersonalization || window.enkaPersonalization.getChoice() !== null);
     if (hidden && banner.contains(document.activeElement)) document.getElementById('main-content')?.focus({ preventScroll: true });

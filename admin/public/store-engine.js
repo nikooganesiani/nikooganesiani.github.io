@@ -27,6 +27,23 @@
   const artworkIds=['smarthome','kitchen','homecare','selfcare','building','gadget'];
   const categoryAppearance = category => ({ backgroundColor:'#e5edff', textColor:'#15356b', backgroundImage: artworkIds.includes(category.artworkId || category.id) ? `/img/categories/patterns/${category.artworkId || category.id}.svg` : '', backgroundFit:'tile', backgroundOpacity:0.65, image:'', useDefaultImage:true, showIllustration:true, imageSize:100, imageX:100, imageY:100, showTitle:true, ...category.appearance });
   const campaignAppearance = rule => ({backgroundColor:rule.template==='featured'?'#eff6ff':'#ffffff',textColor:'#0f172a',backgroundImage:'',backgroundFit:'tile',backgroundOpacity:0.25,patternSize:128,...rule.appearance});
+  const subcategoryProducts = (products, categoryId, subId) => (products || []).filter(p => p.categories?.includes(categoryId) && p.subcategories?.includes(subId));
+  function subcategoryImage(products, categoryId, sub) {
+    if (safeImage(sub.image)) return { image: sub.image };
+    const candidates = subcategoryProducts(products, categoryId, sub.id);
+    const photo = product => {
+      const images = product?.images || [];
+      const index = product?.id === sub.imageProductId && safeImage(images[sub.imageIndex]) ? sub.imageIndex : images.findIndex(safeImage);
+      return index >= 0 ? { productId: product.id, image: images[index], imageIndex: index } : null;
+    };
+    const chosen = photo(candidates.find(p => p.id === sub.imageProductId));
+    if (chosen) return chosen;
+    // Base catalog prices keep automatic artwork stable while promotions start/end.
+    const price = p => Number(String(p._enkaBase?.price ?? p.price ?? '').replace(/₾|\s/g, '').replace(',', '.')) || 0;
+    const sorted = [...candidates].sort((a, b) => price(b) - price(a) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+    for (const product of sorted) { const selection = photo(product); if (selection) return selection; }
+    return null;
+  }
   const sectionKey=value=>String(value ?? '').trim().toLowerCase();
   const sectionItems=(store,kind)=>{const categories=Array.isArray(store?.categories)?store.categories:[];return kind==='category'?categories:categories.flatMap(c=>Array.isArray(c?.subs)?c.subs:[]);};
   function resolveSection(store, category, sub) {
@@ -118,6 +135,10 @@
       for (const sub of list(category.subs, 200, 'Подкатегории')) {
         if (!plain(sub) || !idOK(sub.id) || subs.has(sub.id) || !titleOK(sub.title) || typeof sub.visible !== 'boolean') errors.push('Подкатегории: ID должны быть уникальными, названия заполнены.');
         else subs.add(sub.id);
+        if (!plain(sub)) continue;
+        if (sub.imageProductId !== undefined && sub.imageProductId !== '' && (typeof sub.imageProductId !== 'string' || !subcategoryProducts(products, category.id, sub.id).some(p => p.id === sub.imageProductId))) errors.push('Фото подкатегории: выберите товар из этой же категории и подкатегории.');
+        if (sub.image !== undefined && sub.image !== '' && !safeImage(sub.image)) errors.push('Фото подкатегории: используйте HTTPS-ссылку или путь от корня сайта.');
+        if (sub.imageIndex !== undefined && (!Number.isInteger(sub.imageIndex) || sub.imageIndex < 0 || sub.imageIndex > 49)) errors.push('Фото подкатегории: неверный номер фотографии.');
       }
     }
     // Current and previous IDs share one case-insensitive namespace per section type.
@@ -170,5 +191,5 @@
     }
     return [...new Set(errors)];
   }
-  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, migrateBanners, banners, renameSection, resolveSection };
+  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, renameSection, resolveSection };
 })();

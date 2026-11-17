@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 // Exercise the shared lifecycle without loading the catalog or sending orders.
-function harness({ reducedMotion = false } = {}) {
+function harness({ reducedMotion = false, withHeader = false, withGallery = false } = {}) {
   let context;
   class Element {
     constructor(id, parent = null, classes = []) {
@@ -15,6 +15,13 @@ function harness({ reducedMotion = false } = {}) {
       parent?.children.push(this);
       this.attrs = new Map();
       this.style = {};
+      Object.defineProperty(this.style, 'cssText', {
+        get() { return JSON.stringify(this); },
+        set(value) {
+          for (const key of Object.keys(this)) delete this[key];
+          Object.assign(this, JSON.parse(value || '{}'));
+        }
+      });
       this.inert = false;
       this.tabIndex = -1;
       this.isConnected = true;
@@ -64,7 +71,19 @@ function harness({ reducedMotion = false } = {}) {
     dispatchEvent(event) { this.events[event.type]?.(event); }
   }
   const body = new Element('body');
+  const header = withHeader ? new Element('site-header', body, ['sticky']) : null;
+  if (header) {
+    header.style.translate = '';
+    header.getBoundingClientRect = () => ({
+      top: header.style.position === 'relative' ? -830 + parseFloat(header.style.top) : 0,
+      height: 72
+    });
+  }
   const main = new Element('main', body);
+  const gallery = withGallery ? new Element('gallery', main, ['sticky']) : null;
+  if (gallery) gallery.getBoundingClientRect = () => ({
+    top: gallery.style.position === 'relative' ? -289 + parseFloat(gallery.style.top) : -66
+  });
   const trigger = new Element('trigger', main);
   trigger.tabIndex = 0;
   const first = new Element('first', body, ['modal', 'hidden']);
@@ -83,8 +102,10 @@ function harness({ reducedMotion = false } = {}) {
     body, activeElement: trigger,
     documentElement: new Element('html'),
     addEventListener: (name, handler) => { (events[name] ||= []).push(handler); },
-    getElementById: id => [first, second].find(element => element.id === id),
-    querySelectorAll: selector => selector === '.modal' ? [first, second] : selector.includes('first') ? [trigger] : []
+    getElementById: id => [first, second, header].find(element => element?.id === id),
+    querySelectorAll: selector => selector === '.modal' ? [first, second]
+      : selector === '.sticky' ? [header, gallery].filter(Boolean)
+      : selector.includes('first') ? [trigger] : []
   };
   document.documentElement.style.setProperty = function(name, value) { this[name] = value; };
   document.documentElement.style.removeProperty = function(name) { delete this[name]; };
@@ -100,7 +121,7 @@ function harness({ reducedMotion = false } = {}) {
   context = vm.createContext({
     window, document, HTMLElement: Element, URL,
     CustomEvent: class { constructor(type) { this.type = type; } },
-    getComputedStyle: () => ({ visibility: 'visible' }),
+    getComputedStyle: element => ({ visibility: 'visible', position: element.style.position || (element.classList.contains('sticky') ? 'sticky' : 'static') }),
     setTimeout: (callback, delay) => { timers.set(++timerId, { callback, delay }); return timerId; },
     clearTimeout: id => timers.delete(id), requestAnimationFrame: callback => callback()
   });
@@ -110,8 +131,40 @@ function harness({ reducedMotion = false } = {}) {
     for (const handler of events[name] || []) handler(event);
     return event;
   };
-  return { window, document, first, second, main, trigger, emit, timers, Element };
+  return { window, document, first, second, main, header, gallery, trigger, emit, timers, Element };
 }
+
+test('Scrolled header stays in place until the last modal closes', () => {
+  const h = harness({ withHeader: true });
+  h.window.openAppModal(h.first);
+  assert.equal(h.header.style.position, 'relative');
+  assert.equal(h.header.style.top, '830px');
+  assert.equal(h.header.inert, true);
+  h.window.openAppModal(h.second);
+  h.window.closeAppModal(h.second);
+  assert.equal(h.header.style.position, 'relative');
+  h.window.closeAppModal(h.first);
+  assert.equal(h.header.style.translate, '');
+  assert.equal(h.header.style.position, undefined);
+  assert.equal(h.header.inert, false);
+  assert.equal(h.window.restoredScroll.top, 830);
+});
+
+test('A gallery constrained by its parent keeps its offset across repeated and nested dialogs', () => {
+  const h = harness({ withHeader: true, withGallery: true });
+  h.gallery.style.color = 'red';
+  const original = h.gallery.style.cssText;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    h.window.openAppModal(h.first);
+    assert.equal(h.gallery.style.top, '223px');
+    assert.equal(h.gallery.getBoundingClientRect().top, -66);
+    h.window.openAppModal(h.second);
+    h.window.closeAppModal(h.first);
+    assert.equal(h.gallery.style.top, '223px');
+    h.window.closeAppModal(h.second);
+    assert.equal(h.gallery.style.cssText, original);
+  }
+});
 
 test('Opening and closing locks background, sets semantics, and restores scroll and focus', () => {
   const h = harness();

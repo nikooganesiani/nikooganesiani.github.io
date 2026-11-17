@@ -95,6 +95,7 @@ module.exports = { normalizeCatalog, productFrontMatter, generatePages, parsePri
 if (require.main === module) {
   const flag = process.argv.indexOf('--catalog-file');
   generatePages({ catalogFile: flag >= 0 ? process.argv[flag + 1] : undefined })
+    .then(async products => { await require('./scripts/build-category-photo-masks.cjs').buildCategoryPhotoMasks(products); return products; })
     .then(products => require('./scripts/build-photo-index.cjs').buildPhotoIndex(products, require('sharp')))
     .catch(error => { console.error(error.message); process.exitCode = 1; });
 }

@@ -7,6 +7,11 @@
   const image = value => engine.safeImage(value) ? value : '';
   const style = (value, staticHTML) => ` ${staticHTML?'style':'data-visual-style'}="${esc(value)}"`;
   const url = value => `url('${image(value)}')`;
+  function photoKey(value) {
+    let hash = 2166136261;
+    for (const char of String(value || '')) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
+    return hash.toString(16).padStart(8, '0');
+  }
   function hero(hero, locale='ka', staticHTML=false) {
     if ((hero.type!==undefined && hero.type!=='image') || (hero.type===undefined && Object.hasOwn(hero,'productId')) || !image(hero.image) || !engine.safeLink(hero.link)) return '';
     const title=engine.text(hero.title,locale);
@@ -19,7 +24,14 @@
     const ids=['smarthome','kitchen','homecare','selfcare','building','gadget'];const index=ids.indexOf(category.artworkId || category.id);
     const background=`background-image:${image(a.backgroundImage)?url(a.backgroundImage):'none'};background-size:${a.backgroundFit==='tile'?'128px 128px':a.backgroundFit};background-repeat:${a.backgroundFit==='tile'?'repeat':'no-repeat'};background-position:center;opacity:${number(a.backgroundOpacity,0.65,0,1)}`;
     const art=a.showIllustration===false?'':image(a.image)?`<img class="enka-category-image" src="${esc(a.image)}" alt=""${style(`width:${number(a.imageSize,100,20,150)}px;height:${number(a.imageSize,100,20,150)}px;left:${number(a.imageX,100,0,100)}%;top:${number(a.imageY,100,0,100)}%;transform:translate(-${number(a.imageX,100,0,100)}%,-${number(a.imageY,100,0,100)}%)`,staticHTML)}>`:a.useDefaultImage && index>=0?`<span class="enka-category-sprite"${style(`background-position:${index%3*50}% ${index<3?0:100}%`,staticHTML)}></span>`:`<span class="enka-category-icon" aria-hidden="true">${icon}</span>`;
-    return `<a class="category-item-btn enka-category" href="/category/?${encodeURIComponent(category.id)}" data-cat="${esc(category.id)}" data-name="${esc(title)}" data-subs="${esc(JSON.stringify(category.subs.filter(s=>s.visible!==false).map(s=>({id:s.id,name:engine.text(s.title,locale)}))))}" aria-label="${esc(title)}" aria-haspopup="dialog" aria-controls="categoryModal" aria-expanded="false"${style(`background-color:${color(a.backgroundColor,'#e5edff')};color:${color(a.textColor,'#15356b')}`,staticHTML)}><span class="enka-category-background"${style(background,staticHTML)} aria-hidden="true"></span>${a.showTitle?`<span data-category-title>${esc(title)}</span>`:''}${art}</a>`;
+    return `<a class="category-item-btn enka-category" href="/category/?${encodeURIComponent(category.id)}" data-cat="${esc(category.id)}" data-name="${esc(title)}" data-subs="${esc(JSON.stringify(category.subs.filter(s=>s.visible!==false).map(s=>({id:s.id,name:engine.text(s.title,locale)}))))}" aria-label="${esc(title)}" aria-haspopup="dialog" aria-controls="navModal" aria-expanded="false"${style(`background-color:${color(a.backgroundColor,'#e5edff')};color:${color(a.textColor,'#15356b')}`,staticHTML)}><span class="enka-category-background"${style(background,staticHTML)} aria-hidden="true"></span>${a.showTitle?`<span data-category-title>${esc(title)}</span>`:''}${art}</a>`;
+  }
+  function subcategory(categoryId, sub, selection, staticHTML=false) {
+    const href = '/category/?' + encodeURIComponent(categoryId) + (sub.id ? '&amp;sub=' + encodeURIComponent(sub.id) : '');
+    const hash = parseInt(photoKey(categoryId + '/' + sub.id), 16), variant = hash % 4;
+    const pattern = `--subcategory-pattern:url('/img/categories/patterns/abstract-maze${variant ? '-' + (variant + 1) : ''}.svg');--subcategory-pattern-size:${150 + ((hash >>> 2) % 70)}px;--subcategory-pattern-x:${(hash >>> 8) % 180}px;--subcategory-pattern-y:${(hash >>> 16) % 180}px;--subcategory-pattern-rotation:${((hash >>> 24) % 4) * 90}deg;--subcategory-pattern-mirror:${hash & 1 ? -1 : 1}`;
+    const src = image(selection?.image) || '/img/categories/no-photo.svg';
+    return `<a class="enka-subcategory${sub.id ? '' : ' enka-subcategory-all'}" href="${href}" data-cat="${esc(categoryId)}" data-subcat="${esc(sub.id || '')}" data-name="${esc(sub.name)}"${style(pattern,staticHTML)}><span class="enka-subcategory-title">${esc(sub.name)}</span>${sub.id ? `<span class="enka-subcategory-media" aria-hidden="true"><img class="enka-subcategory-image" src="${esc(src)}" alt="" width="160" height="120" loading="lazy" decoding="async" data-photo-key="${photoKey(src)}" data-subcategory-product="${esc(selection?.productId || '')}"></span>` : '<span class="enka-subcategory-arrow" aria-hidden="true">↗</span>'}</a>`;
   }
   function campaignFrame(rule,locale='ka',staticHTML=false) {
     const a=engine.campaignAppearance(rule);const decorated=rule.template==='featured' || Boolean(rule.appearance);
@@ -31,5 +43,5 @@
     };
   }
   function apply(root, assetBase='') { root.querySelectorAll('[data-visual-style]').forEach(node=>{node.style.cssText=node.dataset.visualStyle.replaceAll("'/img/",`'${assetBase}/img/`);}); if(assetBase)root.querySelectorAll('img[src^="/img/"],source[srcset^="/img/"]').forEach(node=>{const key=node.tagName==='SOURCE'?'srcset':'src';node.setAttribute(key,assetBase+node.getAttribute(key));}); if(assetBase)root.querySelectorAll('.enka-category-sprite').forEach(node=>{node.style.backgroundImage=`url('${assetBase}/img/categories/objects.webp')`;}); }
-  globalThis.EnkaStoreVisuals = {hero,category,campaignFrame,apply};
+  globalThis.EnkaStoreVisuals = {hero,category,subcategory,photoKey,campaignFrame,apply};
 })();

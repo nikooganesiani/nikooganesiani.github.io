@@ -1,5 +1,18 @@
 // Studio interface translations. Storefront and product content have separate dictionaries.
 export default {
+  "Собственная картинка подкатегории": {"en":"Custom subcategory image","ka":"ქვეკატეგორიის საკუთარი სურათი"},
+  "Своя картинка имеет приоритет над фото товара. Уберите её, чтобы вернуться к выбору товара. Для прозрачного фона загрузите PNG или WebP с прозрачностью.": {"en":"A custom image takes priority over the product photo. Remove it to use a product photo again. For a transparent background, upload a PNG or WebP with transparency.","ka":"საკუთარ სურათს უპირატესობა აქვს პროდუქტის ფოტოსთან შედარებით. პროდუქტის ფოტოზე დასაბრუნებლად წაშალეთ ის. გამჭვირვალე ფონისთვის ატვირთეთ გამჭვირვალე PNG ან WebP."},
+  "Фото подкатегории: используйте HTTPS-ссылку или путь от корня сайта.": {"en":"Subcategory photo: use an HTTPS URL or a path from the site root.","ka":"ქვეკატეგორიის ფოტო: გამოიყენეთ HTTPS ბმული ან გზა საიტის ძირიდან."},
+  "Фото в каталоге": {"en":"Catalog photo","ka":"ფოტო კატალოგში"},
+  "Автоматически — самый дорогой товар с фотографией из этой подкатегории. Можно выбрать другой товар и его снимок.": {"en":"Automatic: the most expensive product with a photo in this subcategory. You can choose another product and one of its photos.","ka":"ავტომატურად — ამ ქვეკატეგორიის ყველაზე ძვირადღირებული პროდუქტი ფოტოთი. შეგიძლიათ აირჩიოთ სხვა პროდუქტი და მისი ფოტო."},
+  "Товар для фотографии": {"en":"Product for photo","ka":"პროდუქტი ფოტოსთვის"},
+  "Автоматически · самый дорогой товар": {"en":"Automatic · most expensive product","ka":"ავტომატურად · ყველაზე ძვირადღირებული პროდუქტი"},
+  "Товар больше не входит в подкатегорию — выберите другой": {"en":"Product is no longer in this subcategory — choose another","ka":"პროდუქტი აღარ არის ამ ქვეკატეგორიაში — აირჩიეთ სხვა"},
+  "Фотографии выбранного товара": {"en":"Photos of selected product","ka":"არჩეული პროდუქტის ფოტოები"},
+  "Фотография": {"en":"Photo","ka":"ფოტო"},
+  "В подкатегории пока нет товаров с фотографией.": {"en":"This subcategory has no products with photos yet.","ka":"ამ ქვეკატეგორიაში ჯერ არ არის პროდუქტი ფოტოთი."},
+  "Фото подкатегории: выберите товар из этой же категории и подкатегории.": {"en":"Subcategory photo: choose a product from this category and subcategory.","ka":"ქვეკატეგორიის ფოტო: აირჩიეთ პროდუქტი იმავე კატეგორიიდან და ქვეკატეგორიიდან."},
+  "Фото подкатегории: неверный номер фотографии.": {"en":"Subcategory photo: invalid photo number.","ka":"ქვეკატეგორიის ფოტო: ფოტოს ნომერი არასწორია."},
   "Показывать иллюстрацию": {
     "en": "Show illustration",
     "ka": "ილუსტრაციის ჩვენება"

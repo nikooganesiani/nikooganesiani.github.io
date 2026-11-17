@@ -188,6 +188,8 @@ test('The existing privacy notice keeps personalization and advertising independ
     const clicks = new Map();
     const listeners = new Map();
     const banner = { hidden: true, contains: () => false };
+    const settings = { hidden: true };
+    const settingsAttributes = new Map();
     const window = {
       enkaPrivacy: { getChoice: () => analytics, setChoice(value) { analytics = value; listeners.get('enka:privacy-change')?.(); } },
       enkaPersonalization: { getChoice: () => personalization, setChoice(value, age) { assert.equal(age, value); personalization = value; listeners.get('enka:personalization-choice')?.(); } },
@@ -196,10 +198,25 @@ test('The existing privacy notice keeps personalization and advertising independ
     vm.runInNewContext(fs.readFileSync(require.resolve('../assets/js/global/cookie-banner.js'), 'utf8'), { window,
       document: {
         addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); },
-        getElementById(id) { return id === 'cookie-banner' ? banner : { addEventListener(name, callback) { if (name === 'click') clicks.set(id, callback); } }; }
+        getElementById(id) {
+          if (id === 'cookie-banner') return banner;
+          if (id === 'cookie-settings') return settings;
+          return {
+            addEventListener(name, callback) { if (name === 'click') clicks.set(id, callback); },
+            setAttribute(name, value) { settingsAttributes.set(name, value); }
+          };
+        }
       }
     });
     assert.equal(banner.hidden, false);
+    clicks.get('cookie-settings-btn')();
+    assert.equal(settings.hidden, false);
+    assert.equal(settingsAttributes.get('aria-expanded'), 'true');
+    assert.deepEqual([analytics, personalization], [null, null], 'Opening settings does not grant consent');
+    clicks.get('cookie-settings-btn')();
+    assert.equal(settings.hidden, true);
+    assert.equal(settingsAttributes.get('aria-expanded'), 'false');
+    clicks.get('cookie-settings-btn')();
     clicks.get(button)();
     assert.deepEqual([analytics, personalization], expected);
     assert.equal(banner.hidden, true);

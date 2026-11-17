@@ -16,6 +16,21 @@ async function buildStoreContent(data, root = process.cwd()) {
     const fallback = JSON.parse(fs.readFileSync(path.join(__dirname, '../admin/public/store-icons.json'), 'utf8'));
     const priced=store?engine.applyProducts(data.products,store):[];
     const catalog=store?engine.structure(store,'ka',fallback):{};
+    const navigationCatalog=store?catalog:fallback;
+    const products=Array.isArray(data)?data:data.products;
+    const images={};
+    const panels=Object.entries(navigationCatalog).map(([id,category])=>{
+      const settings=store?.categories.find(c=>c.id===id);
+      images[id]={};
+      const cards=category.subs.map(sub=>{
+        const source=settings?.subs.find(s=>s.id===sub.id) || sub;
+        const selection=engine.subcategoryImage(products,id,source);
+        images[id][sub.id]=selection;
+        return visuals.subcategory(id,sub,selection,true);
+      }).join('');
+      return {id,title:category.title,html:cards};
+    });
+    fs.writeFileSync(path.join(directory,'catalog_navigation.json'),JSON.stringify({images,panels}));
     const content = store ? { store, catalog, heroes: engine.banners(store).map(h=>({id:h.id, title:engine.text(h.title), html:visuals.hero(h,'ka',true)})), company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
       campaignRows:engine.rows(priced,store).map(row=>({id:row.id,title:engine.text(row.title),template:row.template,appearance:row.appearance,frame:visuals.campaignFrame(row,'ka',true),productIds:row.products.map(p=>p.id)})) } : {};
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));

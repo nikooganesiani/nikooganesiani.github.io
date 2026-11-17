@@ -18,37 +18,115 @@ window.closeNavModal = function() {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('dynamicNavAccordion');
-  if (!container || !window.CATALOG_STRUCTURE) return;
-  const escape = window.escapeHTML;
-  const arrow = '<svg class="shrink-0 text-[color:light-dark(#85909e,var(--color-night-muted))] [transition:transform_180ms_ease] [.modal-category-toggle[aria-expanded=true]_&]:transform-[rotate(180deg)] motion-reduce:[transition:none]" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M5.3 8.3a1 1 0 0 1 1.4 0l5.3 5.3 5.3-5.3a1 1 0 0 1 1.4 1.4l-6 6a1 1 0 0 1-1.4 0l-6-6a1 1 0 0 1 0-1.4"/></svg>';
+  const modal = document.getElementById('navModal');
+  const categories = document.getElementById('navCatalogCategories');
+  const content = document.getElementById('navCatalogContent');
+  const pattern = document.getElementById('navCatalogPattern');
+  const engine = globalThis.EnkaStoreEngine;
+  const visuals = globalThis.EnkaStoreVisuals;
+  if (!modal || !categories || !content || !pattern || !engine || !visuals || !window.CATALOG_STRUCTURE) return;
+  const locale = window.enkaI18n?.locale || 'ka';
+  let selected;
+  let products;
+  let savedImages = {};
+  try { savedImages = JSON.parse(document.getElementById('catalogNavigationImages')?.textContent || '{}') || {}; } catch {}
+  const settings = id => window.ENKA_STORE?.categories?.find(c => c.id === id);
+
+  function selectCategory(id, focus = false) {
+    const category = window.CATALOG_STRUCTURE[id];
+    if (!category) return;
+    const animate = selected !== id && modal.classList.contains('active') && !window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    selected = id;
+    for (const link of categories.querySelectorAll('a')) {
+      if (link.dataset.cat === id) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    }
+    const source = settings(id);
+    const appearance = engine.categoryAppearance(source || { id });
+    pattern.style.backgroundImage = engine.safeImage(appearance.backgroundImage) ? 'url("' + appearance.backgroundImage + '")' : 'none';
+    pattern.getAnimations?.().forEach(animation => animation.cancel());
+    if (animate && pattern.animate) pattern.animate([{ opacity: 0 }, { opacity: getComputedStyle(pattern).opacity }], { duration: 280, easing: 'ease-out' });
+    const section = document.createElement('section');
+    section.className = 'catalog-subcategory-panel' + (animate ? ' catalog-subcategory-panel--enter' : '');
+    section.setAttribute('aria-label', category.title || '');
+    section.tabIndex = -1;
+    const grid = document.createElement('div');
+    grid.className = 'grid grid-cols-2 gap-2 min-[641px]:grid-cols-3 min-[641px]:gap-3';
+    grid.innerHTML = (category.subs || []).map(sub => {
+      const config = source?.subs.find(item => item.id === sub.id) || sub;
+      const selection = products ? engine.subcategoryImage(products, id, config) : savedImages[id]?.[sub.id];
+      return visuals.subcategory(id, sub, selection);
+    }).join('');
+    visuals.apply(grid);
+    grid.querySelectorAll('img').forEach(img => img.addEventListener('error', () => {
+      if (img.getAttribute('src') !== '/img/categories/no-photo.svg') img.src = '/img/categories/no-photo.svg';
+      img.dataset.photoKey = visuals.photoKey('/img/categories/no-photo.svg');
+    }));
+    section.append(grid);
+    content.replaceChildren(section);
+    content.scrollTop = 0;
+    if (focus) section.focus({ preventScroll: true });
+  }
+
   function renderNavigation() {
-  const columns = [[], []];
-  let index = 0;
-  for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE)) {
-    if (!category) continue;
-    const encoded = encodeURIComponent(id);
-    const panelId = 'catalog-panel-' + encoded;
-    const subs = Array.isArray(category.subs) ? category.subs : [];
-    const links = subs.map(sub => '<a href="/category/?' + encoded + '&amp;sub=' + encodeURIComponent(sub.id) + '">' + escape(sub.name) + '</a>').join('');
-    const item = '<section class="modal-category border border-solid border-[color:light-dark(#e6eaf0,var(--color-night-line))] rounded-[14px] overflow-hidden [&.active]:border-[color:light-dark(#ccd9ef,var(--color-night-line-strong))]">' +
-      '<button type="button" class="modal-category-toggle flex items-center gap-3 w-full min-h-18 p-3.5 text-[color:light-dark(#344050,var(--color-night-copy))] text-left text-[length:14px] font-semibold leading-[1.6] cursor-pointer [@media(hover:_hover)]:hover:bg-[color:light-dark(#f8fafc,var(--color-night-surface))] max-[640px]:min-h-16.5" aria-expanded="false" aria-controls="' + panelId + '">' +
-      '<span class="flex items-center justify-center [flex:0_0_36px] h-9 rounded-[10px] bg-[color:light-dark(#f1f5fc,var(--color-night-blue))] text-accent [&_svg]:w-5 [&_svg]:h-5" aria-hidden="true">' + (category.icon || '') + '</span>' +
-      '<span class="flex-1 min-w-0 [overflow-wrap:anywhere]">' + escape(category.title || '') + '</span>' +
-      (subs.length ? '<span class="text-[length:12px] font-normal text-[color:light-dark(#637082,var(--color-night-copy))]" aria-hidden="true">' + subs.length + '</span>' : '') + arrow + '</button>' +
-      '<div id="' + panelId + '" class="pt-0 pr-3.5 pb-3 pl-3.5 [&_a]:flex [&_a]:items-center [&_a]:justify-between [&_a]:gap-3 [&_a]:min-h-11.5 [&_a]:p-3 [&_a]:rounded-[9px] [&_a]:text-[length:13px] [&_a]:leading-[1.6] [&_a]:text-[color:light-dark(#475569,var(--color-night-copy))] [&_a]:no-underline [&_a]:[overflow-wrap:anywhere] [&_a:first-child]:text-accent [&_a:first-child]:font-semibold [@media(hover:_hover)]:[&_a:hover]:bg-[color:light-dark(#f0f5ff,var(--color-night-blue))] [@media(hover:_hover)]:[&_a:hover]:text-accent" hidden><a href="/category/?' + encoded + '">ყველა პროდუქტი</a>' + links + '</div></section>';
-    columns[index++ % 2].push(item);
+    const focusedCategory = categories.contains(document.activeElement) ? document.activeElement.dataset.cat : null;
+    const sources = Object.entries(window.CATALOG_STRUCTURE).filter(([, c]) => c);
+    categories.innerHTML = sources.map(([id, category], index) => {
+      const source = settings(id) || { id, title: { [locale]: category.title }, subs: [] };
+      return visuals.category({ ...source, appearance: { ...source.appearance, showTitle: true } }, locale, category.icon || '') + (index < sources.length - 1 ? '<span class="catalog-category-separator" aria-hidden="true"></span>' : '');
+    }).join('');
+    visuals.apply(categories);
+    categories.querySelectorAll('a').forEach(link => {
+      link.classList.remove('category-item-btn');
+      link.removeAttribute('aria-haspopup');
+      link.removeAttribute('aria-controls');
+      link.removeAttribute('aria-expanded');
+    });
+    if (!window.CATALOG_STRUCTURE[selected]) {
+      selected = sources.find(([id, category]) => (category.subs || []).some(sub => savedImages[id]?.[sub.id]?.image))?.[0] || sources[0]?.[0];
+    }
+    if (selected) selectCategory(selected);
+    else content.replaceChildren();
+    if (focusedCategory) [...categories.querySelectorAll('a')].find(link => link.dataset.cat === focusedCategory)?.focus({ preventScroll: true });
   }
-  container.innerHTML = columns.map(items => '<div class="flex flex-col gap-3 min-w-0 max-[640px]:contents">' + items.join('') + '</div>').join('');
-  }
+
   renderNavigation();
+  window.openCatalogCategory = (id, trigger) => {
+    if (!window.CATALOG_STRUCTURE[id] || typeof window.openAppModal !== 'function') return false;
+    selectCategory(id);
+    window.openAppModal(modal, trigger);
+    [...categories.querySelectorAll('a')].find(link => link.dataset.cat === id)?.scrollIntoView({ block: 'nearest' });
+    return true;
+  };
   window.addEventListener('enka:store-change', renderNavigation);
-  container.addEventListener('click', event => {
-    const toggle = event.target.closest('.modal-category-toggle');
-    if (!toggle) return;
-    const expanded = toggle.getAttribute('aria-expanded') !== 'true';
-    toggle.setAttribute('aria-expanded', String(expanded));
-    toggle.closest('.modal-category').classList.toggle('active', expanded);
-    document.getElementById(toggle.getAttribute('aria-controls')).hidden = !expanded;
+  categories.addEventListener('click', event => {
+    const trigger = event.target.closest('a[data-cat]');
+    if (!trigger || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    selectCategory(trigger.dataset.cat);
   });
+  categories.addEventListener('keydown', event => {
+    if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+    const items = [...categories.querySelectorAll('a')];
+    const index = items.indexOf(event.target.closest('a'));
+    if (index < 0) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+    items[next].focus();
+    selectCategory(items[next].dataset.cat);
+  });
+  window.fetchCatalogCached?.().then(data => {
+    products = data.products;
+    // Update photographs without moving focus or resetting the visitor's scroll.
+    const source = settings(selected);
+    content.querySelectorAll('a[data-subcat] img').forEach(img => {
+      const subId = img.closest('a').dataset.subcat;
+      const sub = source?.subs.find(item => item.id === subId) || { id: subId };
+      const selection = engine.subcategoryImage(products, selected, sub);
+      const image = selection?.image || '/img/categories/no-photo.svg';
+      if (img.getAttribute('src') !== image) img.src = image;
+      img.dataset.photoKey = visuals.photoKey(image);
+      img.dataset.subcategoryProduct = selection?.productId || '';
+    });
+  }).catch(() => {});
 });

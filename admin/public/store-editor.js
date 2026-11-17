@@ -46,7 +46,14 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     return ui`<div class="studio-id-editor"><label class="field"><span class="field-label">${t(kind==='category'?'ID категории':'ID подкатегории')}</span><input data-section-id value="${e(item.id)}" maxlength="150" autocomplete="off" autocapitalize="none" spellcheck="false"><span class="field-hint">Латинские буквы, цифры, дефис и подчёркивание. Примените новый ID отдельной кнопкой.</span></label>${button('rename-section',t('Изменить ID'),`data-kind="${kind}" data-index="${index}"${sub===undefined?'':` data-sub="${sub}"`}`)}${item.aliases?.length?`<p class="field-hint">${t('Предыдущие ID:')} ${e(item.aliases.join(', '))}</p>`:''}</div>`;
   }
   function categories() {
-    return ui`<p class="studio-help">Названия доступны на трёх языках. Стрелки меняют порядок на сайте. Скрытый раздел остаётся у товаров, но не показывается в навигации. ID можно менять отдельно: товары и акции обновятся автоматически, а старые ссылки сохранятся.</p>${button('add-category',t('+ Добавить категорию'))}<div class="studio-stack">${store().categories.map((c,i)=>ui`<details class="studio-card" data-category-id="${e(c.id)}"><summary><strong>${e(title(c))}</strong><span>${c.subs.length} подкатегорий · ${c.visible?t('Видна'):t('Скрыта')}</span></summary><div class="studio-card-body"><div class="studio-actions">${moves('categories',i,store().categories.length)}${button('delete-category',t('Удалить'),`data-index="${i}"`)}</div>${sectionIdEditor(c,i)}<div class="studio-grid">${titles(`categories.${i}.title`)}${input(t('Показывать в навигации'),`categories.${i}.visible`,{type:'checkbox'})}${input(t('Иконка в меню'),`categories.${i}.icon`,{options:defaults.categories.map(c=>[c.id,title(c)])})}</div>${categoryDesign(c,i)}<h3>Подкатегории</h3>${c.subs.map((s,j)=>`<div class="studio-sub"><div class="studio-grid">${titles(`categories.${i}.subs.${j}.title`)}${input(t('Показывать'),`categories.${i}.subs.${j}.visible`,{type:'checkbox'})}</div><div class="studio-actions">${moves(`categories.${i}.subs`,j,c.subs.length)}${button('delete-sub',t('Удалить подкатегорию'),`data-index="${i}" data-sub="${j}"`)}</div>${sectionIdEditor(s,i,j)}</div>`).join('')}${button('add-sub',t('+ Подкатегория'),`data-index="${i}"`)}</div></details>`).join('')}</div>`;
+    return ui`<p class="studio-help">Названия доступны на трёх языках. Стрелки меняют порядок на сайте. Скрытый раздел остаётся у товаров, но не показывается в навигации. ID можно менять отдельно: товары и акции обновятся автоматически, а старые ссылки сохранятся.</p>${button('add-category',t('+ Добавить категорию'))}<div class="studio-stack">${store().categories.map((c,i)=>ui`<details class="studio-card" data-category-id="${e(c.id)}"><summary><strong>${e(title(c))}</strong><span>${c.subs.length} подкатегорий · ${c.visible?t('Видна'):t('Скрыта')}</span></summary><div class="studio-card-body"><div class="studio-actions">${moves('categories',i,store().categories.length)}${button('delete-category',t('Удалить'),`data-index="${i}"`)}</div>${sectionIdEditor(c,i)}<div class="studio-grid">${titles(`categories.${i}.title`)}${input(t('Показывать в навигации'),`categories.${i}.visible`,{type:'checkbox'})}${input(t('Иконка в меню'),`categories.${i}.icon`,{options:defaults.categories.map(c=>[c.id,title(c)])})}</div>${categoryDesign(c,i)}<h3>Подкатегории</h3>${c.subs.map((s,j)=>`<div class="studio-sub"><div class="studio-grid">${titles(`categories.${i}.subs.${j}.title`)}${input(t('Показывать'),`categories.${i}.subs.${j}.visible`,{type:'checkbox'})}</div><div class="studio-actions">${moves(`categories.${i}.subs`,j,c.subs.length)}${button('delete-sub',t('Удалить подкатегорию'),`data-index="${i}" data-sub="${j}"`)}</div>${sectionIdEditor(s,i,j)}${subcategoryPhoto(c,s,i,j)}</div>`).join('')}${button('add-sub',t('+ Подкатегория'),`data-index="${i}"`)}</div></details>`).join('')}</div>`;
+  }
+  function subcategoryPhoto(category, sub, i, j) {
+    const products = engine.subcategoryProducts(state.document.catalog.products, category.id, sub.id).filter(p => p.images?.some(engine.safeImage));
+    const chosen = products.find(p => p.id === sub.imageProductId);
+    const selection = engine.subcategoryImage(state.document.catalog.products, category.id, sub);
+    const productName = p => localizedProduct(state.document, p, getLocale()).name;
+    return ui`<div data-subcategory-photo="${i}:${j}"><h4>Фото в каталоге</h4><p class="field-hint">Автоматически — самый дорогой товар с фотографией из этой подкатегории. Можно выбрать другой товар и его снимок.</p><label class="field"><span class="field-label">Товар для фотографии</span><select data-subcategory-product="${i}:${j}" aria-label="${e(t('Товар для фотографии'))}"><option value=""${!sub.imageProductId?' selected':''}>${e(t('Автоматически · самый дорогой товар'))}</option>${sub.imageProductId && !chosen?`<option value="${e(sub.imageProductId)}" selected>${e(t('Товар больше не входит в подкатегорию — выберите другой'))}</option>`:''}${products.map(p=>`<option value="${e(p.id)}"${p.id===sub.imageProductId?' selected':''}>${e(productName(p))} · ${e(p.price)} ₾</option>`).join('')}</select></label>${chosen?`<div class="studio-photo-choices" role="group" aria-label="${e(t('Фотографии выбранного товара'))}">${chosen.images.map((image,index)=>engine.safeImage(image)?`<button type="button" data-store-action="select-subcategory-photo" data-index="${i}" data-sub="${j}" data-photo="${index}" aria-label="${e(t('Фотография'))} ${index+1}" aria-pressed="${selection?.imageIndex===index}"><img src="${e(image)}" alt="" loading="lazy"></button>`:'').join('')}</div>`:''}${mediaField(t('Собственная картинка подкатегории'),`categories.${i}.subs.${j}.image`,sub.image || '')}<p class="field-hint">Своя картинка имеет приоритет над фото товара. Уберите её, чтобы вернуться к выбору товара. Для прозрачного фона загрузите PNG или WebP с прозрачностью.</p><div class="studio-subcategory-preview" data-subcategory-preview="${i}:${j}"></div></div>`;
   }
   function campaignPreview(rule) {
     const now = previewAt ? Date.parse(previewAt) : Date.now();
@@ -106,6 +113,14 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     valueAt(parts.join('.'))[key]=value;
   }
   function refreshVisuals() {
+    root.querySelectorAll('[data-subcategory-preview]').forEach(target => {
+      const [i,j] = target.dataset.subcategoryPreview.split(':').map(Number);
+      const category = store().categories[i]; const sub = category.subs[j];
+      const selection = engine.subcategoryImage(state.document.catalog.products, category.id, sub);
+      const product = state.document.catalog.products.find(p => p.id === selection?.productId);
+      target.innerHTML = visuals.subcategory(category.id, { id: sub.id, name: title(sub) }, selection) + '<small>' + e(product ? localizedProduct(state.document, product, getLocale()).name : selection?.image ? t('Собственная картинка подкатегории') : t('В подкатегории пока нет товаров с фотографией.')) + '</small>';
+      visuals.apply(target, state.session?.storefrontBase?.startsWith('https://') ? state.session.storefrontBase : '');
+    });
     const campaign=root.querySelector('[data-campaign-design-preview]');
     if(campaign){const rule=store().campaigns.find(c=>c.id===selected);if(rule){campaign.dataset.device=previewDevice;campaign.innerHTML=campaignDesignHTML(rule);visuals.apply(campaign,state.session?.storefrontBase?.startsWith('https://')?state.session.storefrontBase:'');}}
 
@@ -159,6 +174,17 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   });
   root.addEventListener('change',async event=>{
     const target=event.target;if(state.busy)return;
+    if(target.dataset.subcategoryProduct !== undefined) {
+      const [i,j] = target.dataset.subcategoryProduct.split(':').map(Number);
+      const category = store().categories[i]; const sub = category.subs[j];
+      if (target.value) sub.imageProductId = target.value; else delete sub.imageProductId;
+      delete sub.imageIndex;
+      markDirty();
+      target.closest('[data-subcategory-photo]').outerHTML = subcategoryPhoto(category, sub, i, j);
+      refreshVisuals();
+      root.querySelector('[data-subcategory-product="' + i + ':' + j + '"]').focus();
+      return;
+    }
     if(target.matches('[data-visual-locale]')){previewLocale=target.value;refreshVisuals();return;}
     if(target.matches('[data-visual-device]')){previewDevice=target.value;refreshVisuals();return;}
     if(target.dataset.storeUpload){const file=target.files[0];target.value='';if(!file)return;const path=target.dataset.storeUpload;
@@ -171,7 +197,7 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   });
   root.addEventListener('keydown',event=>{if(event.key==='Enter' && event.target.matches('[data-section-id]')){event.preventDefault();event.target.closest('.studio-id-editor').querySelector('button').click();}});
   root.addEventListener('click',async event=>{
-    if(event.target.closest('[data-visual-preview] a')){event.preventDefault();return;}
+    if(event.target.closest('[data-visual-preview] a, [data-subcategory-preview] a')){event.preventDefault();return;}
     if(state.busy)return;
     const dateButton=event.target.closest('[data-studio-date]');
     if(dateButton){
@@ -199,6 +225,13 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
         }
         state.document=candidate;markDirty();renderApp();toast(t('ID изменён в черновике. Сохраните и опубликуйте изменения.'));
       } catch(error){toast(t(error.message),true);field.focus();}
+      return;
+    }
+    if(action==='select-subcategory-photo') {
+      const sub = s.categories[i].subs[Number(b.dataset.sub)];
+      sub.imageIndex = Number(b.dataset.photo);
+      markDirty(); refreshVisuals();
+      b.closest('.studio-photo-choices').querySelectorAll('button').forEach(photo => photo.setAttribute('aria-pressed', String(photo === b)));
       return;
     }
     if(action==='reset-campaign-design'){delete s.campaigns[i].appearance;markDirty();render();return;}

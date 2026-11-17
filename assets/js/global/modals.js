@@ -38,7 +38,16 @@
   function syncScroll(locked) {
     if (locked && !scrollLock) {
       const style = document.body.style;
-      scrollLock = { x: window.scrollX, y: window.scrollY, styles: {} };
+      scrollLock = { x: window.scrollX, y: window.scrollY, styles: {}, sticky: [] };
+      // Preserve every sticky element (header, gallery, filters) in the page's
+      // coordinate system before locking the body changes its scroll container.
+      for (const element of document.querySelectorAll('.sticky')) {
+        if (element.closest('.modal') || getComputedStyle(element).position !== 'sticky') continue;
+        const top = element.getBoundingClientRect().top;
+        scrollLock.sticky.push({ element, cssText: element.style.cssText });
+        Object.assign(element.style, { position: 'relative', top: '0px', bottom: 'auto' });
+        element.style.top = (top - element.getBoundingClientRect().top) + 'px';
+      }
       for (const property of ['position', 'top', 'left', 'right', 'width']) scrollLock.styles[property] = style[property];
       Object.assign(style, { position: 'fixed', top: -scrollLock.y + 'px', left: '0', right: '0', width: 'auto' });
       updateViewport();
@@ -46,6 +55,7 @@
       const saved = scrollLock;
       scrollLock = null;
       Object.assign(document.body.style, saved.styles);
+      for (const { element, cssText } of saved.sticky) element.style.cssText = cssText;
       document.documentElement.style.removeProperty('--modal-viewport-height');
       document.documentElement.style.removeProperty('--modal-viewport-top');
       window.scrollTo({ left: saved.x, top: saved.y, behavior: 'instant' });
@@ -72,8 +82,10 @@
         element.inert = true;
       }
     }
+    // Capture sticky positions before overflow:hidden changes their scroll container.
+    if (top) syncScroll(true);
     document.documentElement.classList.toggle('modal-open', !!top);
-    syncScroll(!!top);
+    if (!top) syncScroll(false);
   }
 
   window.openAppModal = function(value, trigger = document.activeElement) {
