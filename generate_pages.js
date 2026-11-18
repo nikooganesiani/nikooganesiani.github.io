@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { buildLocalizations } = require('./scripts/build-localizations.cjs');
 const { buildStoreContent } = require('./scripts/build-store-content.cjs');
+const { buildBlog } = require('./scripts/build-blog.cjs');
 
 function parsePrice(value) {
   const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -71,12 +72,14 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
   let data;
   if (catalogFile) data = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
   else {
-    const response = await fetch('https://api.enkaelectronics.com.ge/catalog', { signal: AbortSignal.timeout(20000) });
+    const response = await fetch('https://api.enkaelectronics.com.ge/catalog?include=blog', { signal: AbortSignal.timeout(20000) });
     if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
     data = await response.json();
   }
   normalizeCatalog(data);
+  if (data._enkaPublication?.blog && !Array.isArray(data._enkaBlog)) throw new Error('Published blog is missing. Use the blog-enabled catalog API or a published Studio export.');
   const products = await buildStoreContent(data, root);
+  await buildBlog(data._enkaBlog, products, root);
   buildLocalizations(root);
   const productsDir = path.join(root, '_products');
   fs.mkdirSync(productsDir, { recursive: true });

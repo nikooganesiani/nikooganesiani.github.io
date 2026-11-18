@@ -1,0 +1,67 @@
+---
+layout: default
+---
+{% assign article = site.data.blog.pages[page.blog_id] %}
+{% assign blog_ui = site.data.blog_ui[page.blog_locale] %}
+{% assign blog_archive_path = '/blog/' %}
+{% unless page.blog_locale == 'ka' %}{% assign blog_archive_path = blog_archive_path | prepend: page.blog_locale | prepend: '/' %}{% endunless %}
+{% assign blog_archive = blog_archive_path | relative_url %}
+<div class="blog-shell blog-article-shell">
+  <div class="blog-page-nav">
+    {% include blog/breadcrumbs.html ui=blog_ui archive=blog_archive %}
+    {% include blog/languages.html label=blog_ui.article_language %}
+  </div>
+  <article lang="{{ page.blog_locale }}" translate="no" class="blog-article">
+    <header class="blog-article-hero{% if article.cover != empty %} blog-article-hero--cover{% endif %}">
+      <div class="blog-article-header">
+        <h1>{{ article.title | escape }}</h1>
+        <p class="blog-article-lead">{{ article.summary | escape }}</p>
+        <p class="blog-article-meta"><span>{{ article.author | default: 'ENKA Electronics' | escape }}</span>
+          <time datetime="{{ article.date }}">{{ article.date | split: '-' | reverse | join: '.' }}</time>
+        </p>
+      </div>
+      {% if article.cover != empty %}<img class="blog-article-cover" src="{{ article.cover | relative_url | escape }}" alt="{{ article.coverAlt | escape }}" fetchpriority="high" decoding="async">{% endif %}
+    </header>
+    <div class="blog-article-reading{% if article.toc.size > 1 %} blog-article-reading--toc{% endif %}">
+      {% if article.toc.size > 1 %}
+        {% capture blog_toc %}<ol>{% for entry in article.toc %}<li><a href="#{{ entry.id }}">{{ entry.text | escape }}</a></li>{% endfor %}</ol>{% endcapture %}
+        <nav class="blog-toc" aria-labelledby="blog-toc-title">
+          <h2 id="blog-toc-title">{{ blog_ui.contents }}</h2>{{ blog_toc }}
+        </nav>
+        <details class="blog-toc-mobile">
+          <summary>{{ blog_ui.contents }} {% include icons.html name='chevron-down' size=17 %}</summary>{{ blog_toc }}
+        </details>
+      {% endif %}
+      <div class="blog-article-body">{{ article.html }}</div>
+    </div>
+  </article>
+  {% if article.products.size > 0 %}
+    <section class="blog-related-products" aria-labelledby="blog-products-title" translate="no">
+      <h2 id="blog-products-title">{{ blog_ui.related }}</h2>
+      <ul>{% for blog_product in article.products %}
+        <li><a href="{{ '/product/' | append: blog_product.id | append: '/' | relative_url }}">
+          {% if blog_product.image %}<img src="{{ blog_product.image | relative_url | escape }}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ '/img/no-image.svg' | relative_url }}'">{% endif %}
+          <span>{{ blog_product.name | escape }}</span>
+        </a></li>
+      {% endfor %}</ul>
+    </section>
+  {% endif %}
+  <div class="blog-article-footer">
+    <a class="blog-text-link blog-back-link" href="{{ blog_archive }}" translate="no">{{ blog_ui.all }}</a>
+  </div>
+</div>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ article.title | jsonify | replace: '<', '\u003c' }},
+  "description": {{ page.description | jsonify | replace: '<', '\u003c' }},
+  "inLanguage": {{ page.blog_locale | jsonify }},
+  "mainEntityOfPage": {{ page.url | absolute_url | jsonify }},
+  "datePublished": {{ article.date | jsonify }},
+  "dateModified": {{ article.updated | default: article.date | jsonify }},
+  {% if article.cover != empty %}"image": {{ article.cover | absolute_url | jsonify | replace: '<', '\u003c' }},{% endif %}
+  "author": { "@type": "{% if article.author != empty %}Person{% else %}Organization{% endif %}", "name": {{ article.author | default: 'ENKA Electronics' | jsonify | replace: '<', '\u003c' }} },
+  "publisher": { "@type": "Organization", "name": "ENKA Electronics", "url": {{ '/' | absolute_url | jsonify }} }
+}
+</script>

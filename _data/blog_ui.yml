@@ -1,0 +1,27 @@
+ka:
+  blog: ბლოგი
+  breadcrumbs: ნავიგაციის ჯაჭვი
+  all: ყველა სტატია
+  article_language: სტატიის ენა
+  archive_language: ბლოგის ენა
+  contents: ამ სტატიაში
+  related: დაკავშირებული პროდუქტები
+  home: მთავარი
+ru:
+  blog: Блог
+  breadcrumbs: Навигационная цепочка
+  all: Все статьи
+  article_language: Язык статьи
+  archive_language: Язык блога
+  contents: В этой статье
+  related: Связанные товары
+  home: Главная
+en:
+  blog: Blog
+  breadcrumbs: Breadcrumb
+  all: All articles
+  article_language: Article language
+  archive_language: Blog language
+  contents: In this article
+  related: Related products
+  home: Home

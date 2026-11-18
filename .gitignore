@@ -4,6 +4,9 @@
 /.jekyll-metadata
 /_site/
 /_products/
+/_pages/generated-categories/
+/_pages/generated-blog/
+/_data/blog.json
 /node_modules/
 /.pnpm-store/
 /vendor/

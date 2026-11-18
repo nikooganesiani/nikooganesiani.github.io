@@ -86,7 +86,7 @@ test('Photo selections survive draft saving, publication, backup import and stat
   assert.equal(output.images.kitchen.kettle.image, kettle.image);
   assert.match(output.panels.find(p => p.id === 'kitchen').html, /https:\/\/images.test\/custom-kettle.webp/);
   assert.match(output.panels.find(p => p.id === 'kitchen').html, /data-subcategory-product="budget"/);
-  assert.match(output.panels.find(p => p.id === 'kitchen').html, /\/category\/\?kitchen&amp;sub=coffee/);
+  assert.match(output.panels.find(p => p.id === 'kitchen').html, /\/category\/kitchen\/coffee\//);
   await buildStoreContent(d.catalog, root);
   const legacy = JSON.parse(fs.readFileSync(path.join(root, '_data/catalog_navigation.json')));
   assert.equal(legacy.images.kitchen.coffee.productId, 'premium', 'legacy catalogs also have static automatic photos');
@@ -96,7 +96,7 @@ test('The shared tile renderer escapes titles and ignores unsafe image sources',
   const html = globalThis.EnkaStoreVisuals.subcategory('kitchen & home', { id: 'coffee & tea', name: '<script>bad</script>' }, { image: 'javascript:alert(1)', productId: '"bad' });
   assert.ok(!html.includes('<script>'));
   assert.ok(!html.includes('javascript:'));
-  assert.match(html, /kitchen%20%26%20home&amp;sub=coffee%20%26%20tea/);
+  assert.match(html, /kitchen%20%26%20home\/coffee%20%26%20tea\//);
   assert.match(html, /src="\/img\/categories\/no-photo.svg"/);
 });
 

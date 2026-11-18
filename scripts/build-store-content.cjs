@@ -18,6 +18,7 @@ async function buildStoreContent(data, root = process.cwd()) {
     const priced=store?engine.applyProducts(data.products,store):[];
     const catalog=store?engine.structure(store,'ka',fallback):{};
     const navigationCatalog=store?catalog:fallback;
+    require('./build-category-pages.cjs').buildCategoryPages(store?.categories || Object.entries(fallback).map(([id, category]) => ({ id, subs: category.subs })), root);
     const products=Array.isArray(data)?data:data.products;
     const images={};
     const panels=Object.entries(navigationCatalog).map(([id,category])=>{

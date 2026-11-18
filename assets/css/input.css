@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @import "../../admin/public/store-visuals.css";
+@import "../../admin/public/blog-content.css";
 @import "../vendor/photo-search/loader.css";
 
 @source "../../_includes";

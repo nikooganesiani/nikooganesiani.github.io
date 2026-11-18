@@ -3,6 +3,7 @@ import { authenticate } from './server/auth.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
 import { CatalogStore } from './server/store.mjs';
 import { readWebP } from './server/media.mjs';
+import { blogLocales } from './public/blog-model.js';
 
 const SECURITY = {
   'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin',
@@ -40,8 +41,16 @@ export class CatalogWriter extends DurableObject {
       }
       if (new URL(request.url).pathname === '/api/publish' && this.env.APP_ENV === 'production' && this.env.ALLOW_PRODUCTION_PUBLISH !== 'true') return json({ error: 'Публикация в рабочий каталог ещё не включена. Завершите проверку перехода.' }, 403);
       if (new URL(request.url).pathname === '/api/publish' && this.env.APP_ENV === 'production') {
-        const products = this.service.view().document.catalog.products;
-        if (products.some(product => product.images.some(image => new URL(image, 'https://local.invalid').pathname.startsWith('/media/')))) return json({ error: 'В каталоге есть тестовые ссылки /media/. Перед рабочей публикацией загрузите эти фотографии в рабочий R2 с публичным адресом.' }, 422);
+        const { catalog, blog } = this.service.view().document;
+        const localImage = image => new URL(image || '/', 'https://local.invalid').pathname.startsWith('/media/');
+        if (catalog.products.some(product => product.images.some(localImage))) return json({ error: 'В каталоге есть тестовые ссылки /media/. Перед рабочей публикацией загрузите эти фотографии в рабочий R2 с публичным адресом.' }, 422);
+        if (blog?.some(article => article.status === 'published' && (localImage(article.cover) ||
+          blogLocales.some(locale => {
+            const edition = article.editions[locale];
+            return (locale === 'ka' || edition?.enabled) && edition.blocks.some(block => block.type === 'image' && localImage(block.url));
+          })))) {
+          return json({ error: 'В блоге есть тестовые ссылки /media/. Загрузите изображения с рабочим публичным адресом.' }, 422);
+        }
       }
       return await handleApi(request, this.service, request.headers.get('X-Enka-Editor') || 'Редактор', { publicImagesBase: this.env.PUBLIC_IMAGES_BASE || '', storefrontBase: this.env.STOREFRONT_BASE || 'https://enkaelectronics.com.ge' });
     } catch { return json({ error: 'Не удалось прочитать хранилище каталога.' }, 503); }

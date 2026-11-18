@@ -81,6 +81,7 @@ test('Current navigation provides useful context without importing outside histo
   const origin = 'https://shop.test';
   assert.deepEqual(engine.navigationContext(origin + '/product/air-a/', origin, structure), ['air-a']);
   assert.deepEqual(engine.navigationContext(origin + '/category/?kitchen&sub=airfryer', origin, structure), ['sub:airfryer', 'category:kitchen']);
+  assert.deepEqual(engine.navigationContext(origin + '/category/kitchen/airfryer/', origin, structure), ['sub:airfryer', 'category:kitchen']);
   assert.deepEqual(engine.navigationContext('https://elsewhere.test/product/air-a/', origin, structure), []);
   assert.deepEqual(engine.navigationContext(origin + '/search/?result=private+text', origin, structure), []);
   assert.deepEqual(engine.navigationContext('bad url', origin, structure), []);

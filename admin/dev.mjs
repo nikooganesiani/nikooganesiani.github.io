@@ -7,6 +7,7 @@ import { CatalogStore } from './server/store.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
 import { readWebP } from './server/media.mjs';
 import { readPublishedCatalog } from './server/published.mjs';
+import { publishedArticles } from './public/blog-model.js';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const defaultDirectory = path.resolve(root, '../.local/admin');
@@ -30,7 +31,11 @@ const publisher = { async put(key, value) {
   publication[key] = value;
   fs.writeFileSync(publicationFile + '.tmp', JSON.stringify(publication));
   fs.renameSync(publicationFile + '.tmp', publicationFile);
-  if (key === 'catalog') fs.writeFileSync(path.join(directory, 'published.catalog.json'), value);
+  if (key === 'catalog') {
+    const catalog = JSON.parse(value);
+    const release = JSON.parse(publication[catalog._enkaPublication.releaseKey]);
+    fs.writeFileSync(path.join(directory, 'published.catalog.json'), JSON.stringify({ ...catalog, _enkaBlog: publishedArticles(release.document.blog) }));
+  }
 } };
 const service = new CatalogService(store, publisher, { environment: 'local' });
 await service.initialize(JSON.parse(fs.readFileSync(seed, 'utf8').replace(/^\uFEFF/, '')));
@@ -51,7 +56,7 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, origin);
     if (!['GET', 'HEAD'].includes(req.method) && req.headers.origin !== origin) { res.writeHead(403).end('Только запросы из локальной панели.'); return; }
     if (url.pathname === '/published/catalog') {
-      const catalog = await readPublishedCatalog(async key => publication[key] ? JSON.parse(publication[key]) : null, url.searchParams.get('lang'), store.getRevision(1).document.catalog);
+      const catalog = await readPublishedCatalog(async key => publication[key] ? JSON.parse(publication[key]) : null, url.searchParams.get('lang'), store.getRevision(1).document.catalog, url.searchParams.get('include') === 'blog');
       res.setHeader('Content-Type', types['.json']); res.end(JSON.stringify(catalog)); return;
     }
     if (url.pathname.startsWith('/api/')) {
@@ -68,10 +73,10 @@ const server = http.createServer(async (req, res) => {
       res.end(Buffer.from(await response.arrayBuffer())); return;
     }
     let target;
-    if (/^\/img\/(categories|banners)\//.test(url.pathname)) {
-      const categoryRoot=path.resolve(root,'../img',url.pathname.split('/')[2]);
-      target=path.resolve(categoryRoot,decodeURIComponent(url.pathname.split('/').slice(3).join('/')));
-      if(!target.startsWith(categoryRoot+path.sep)){res.writeHead(403).end();return;}
+    if (/^\/img\/(categories|banners|blog)\//.test(url.pathname)) {
+      const imageRoot=path.resolve(root,'../img',url.pathname.split('/')[2]);
+      target=path.resolve(imageRoot,decodeURIComponent(url.pathname.split('/').slice(3).join('/')));
+      if(!target.startsWith(imageRoot+path.sep)){res.writeHead(403).end();return;}
     } else if (url.pathname.startsWith('/media/')) {
       const name = url.pathname.slice(7);
       if (!/^[a-f0-9-]+\.webp$/.test(name)) { res.writeHead(404).end(); return; }

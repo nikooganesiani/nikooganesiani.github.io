@@ -218,6 +218,8 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
       try {
         if(!engine.renameSection(candidate.store,candidate.catalog.products,b.dataset.kind,item.id,field.value))return;
         const renamed=b.dataset.kind==='category'?candidate.store.categories[i]:candidate.store.categories[i].subs[Number(b.dataset.sub)];
+        const blogKey = b.dataset.kind === 'category' ? 'categoryIds' : 'subcategoryIds';
+        for (const article of candidate.blog || []) article.placements[blogKey] = article.placements[blogKey].map(id => id === item.id ? renamed.id : id);
         if(!await confirmMessage(t('Изменить ID раздела?'),item.id+' → '+renamed.id+'\n\n'+t('Назначения товаров и настройки акций обновятся автоматически. Старые ссылки продолжат работать после публикации.'),t('Изменить ID')))return;
         if(b.dataset.kind==='category'){
           b.closest('[data-category-id]').dataset.categoryId=renamed.id;
@@ -250,6 +252,11 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
       if(state.document.catalog.products.some(p=>[...p.categories,...p.subcategories].some(id=>ids.includes(id))) || s.campaigns.some(c=>[...c.categoryIds,...c.subcategoryIds].some(id=>ids.includes(id)))) {toast(t('Раздел используется товарами или акциями. Перенесите их в другой раздел либо скройте этот раздел.'),true);return;}
       if(!await confirmMessage(t('Удалить раздел?'),title(sub || c)+t(' будет удалён из черновика.'),t('Удалить')))return;
       if(sub)c.subs.splice(Number(b.dataset.sub),1);else s.categories.splice(i,1);
+      for (const article of state.document.blog || []) {
+        if (!sub) article.placements.categoryIds = article.placements.categoryIds.filter(id => id !== c.id);
+        const removed = sub ? [sub.id] : c.subs.map(item => item.id);
+        article.placements.subcategoryIds = article.placements.subcategoryIds.filter(id => !removed.includes(id));
+      }
     }
     if(action==='add-campaign'){const rule={id:id('sale'),title:{ka:'ახალი შეთავაზება',ru:'Новая акция',en:'New offer'},enabled:false,percent:10,startsAt:'',endsAt:'',categoryIds:s.categories.length?[s.categories[0].id]:[],subcategoryIds:[],productIds:[],excludeIds:[],showRow:true,template:'cards',limit:8};s.campaigns.push(rule);selected=rule.id;}
     if(action==='copy-campaign'||action==='template-campaign'){const copy=clone(s.campaigns[i]);copy.id=id('sale');copy.enabled=false;copy.isTemplate=action==='template-campaign'?!copy.isTemplate:false;copy.title.ru+=(copy.isTemplate?' · шаблон':' · копия');s.campaigns.push(copy);selected=copy.id;}

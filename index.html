@@ -10,6 +10,7 @@ is_home: true
   <div data-studio-heroes>{% include homepage/promo-block.html %}</div>
   {% include homepage/mini-categories.html %}
   <div data-studio-campaigns class="dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">{% include homepage/campaigns.html %}</div>
+  {% include blog/section.html slugs=site.data.blog.homepage title="ბლოგი" variant="home" %}
   {% include homepage/recommendations.html %}
   <noscript><p class="mt-6 rounded-xl bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] p-4 text-sm text-[color:light-dark(var(--color-slate-700),var(--color-night-copy))]">შეკვეთისთვის დაგვიკავშირდით: <a class="text-[color:light-dark(var(--color-blue-700),var(--color-accent))] underline" href="tel:+995551178990">+995 551 17 89 90</a>. ძიებისა და ონლაინ შეკვეთისთვის ჩართეთ JavaScript.</p></noscript>
 </div>

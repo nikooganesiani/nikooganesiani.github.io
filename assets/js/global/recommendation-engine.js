@@ -127,11 +127,12 @@
       if (url.origin !== origin) return [];
       const product = url.pathname.match(/^\/product\/([^/]+)\/?$/);
       if (product) return [decodeURIComponent(product[1])];
-      if (!/^\/category\/?$/.test(url.pathname)) return [];
-      const id = url.searchParams.get('category') || Object.keys(structure).find(key => url.searchParams.has(key));
+      const section = url.pathname.match(/^\/category(?:\/([^/]+)(?:\/([^/]+))?)?\/?$/);
+      if (!section) return [];
+      const id = (section[1] && decodeURIComponent(section[1])) || url.searchParams.get('category') || Object.keys(structure).find(key => url.searchParams.has(key));
       const category = structure[id];
       if (!category) return [];
-      const sub = url.searchParams.get('sub');
+      const sub = (section[2] && decodeURIComponent(section[2])) || url.searchParams.get('sub');
       if (category.subs?.some(item => item.id === sub)) return ['sub:' + sub, 'category:' + id];
       return ['category:' + id];
     } catch { return []; }

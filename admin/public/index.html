@@ -9,6 +9,8 @@
   <link rel="preload" as="font" href="/assets/GoogleSansVariable.woff2" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/admin.css">
   <link rel="stylesheet" href="/store-visuals.css">
+  <link rel="stylesheet" href="/blog-content.css">
+  <link rel="stylesheet" href="/blog-editor.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -23,6 +25,7 @@
       <a href="#categories" class="nav-item" data-view="categories"><span data-icon="grid"></span>Категории</a>
       <a href="#campaigns" class="nav-item" data-view="campaigns"><span data-icon="box"></span>Акции и скидки</a>
       <a href="#merchandising" class="nav-item" data-view="merchandising"><span data-icon="image"></span>Главная страница</a>
+      <a href="#blog" class="nav-item" data-view="blog"><span data-icon="edit"></span>Блог</a>
       <a href="#site-texts" class="nav-item" data-view="site-texts"><span data-icon="languages"></span>Тексты сайта</a>
       <a href="#settings" class="nav-item" data-view="settings"><span data-icon="sliders"></span>Контакты магазина</a>
       <a href="#attributes" class="nav-item" data-view="attributes"><span data-icon="sliders"></span>Характеристики</a>
@@ -62,6 +65,7 @@
       <section id="attributes-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ЕДИНЫЙ СЛОВАРЬ</p><h1>Характеристики</h1><p class="page-description">Название характеристики переводится один раз для всех товаров.</p></div></div><div class="catalog-panel"><label class="attribute-search search-field"><span data-icon="search"></span><input id="attribute-search" type="search" placeholder="Найти характеристику…"></label><div class="attribute-table" id="attribute-rows"></div></div></section>
       <section id="history-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ПРОЗРАЧНЫЕ ИЗМЕНЕНИЯ</p><h1>История каталога</h1><p class="page-description">Восстановление создаёт новый черновик. Публикация остаётся отдельным шагом.</p></div><button class="button secondary" id="history-refresh"><span data-icon="refresh"></span>Обновить</button></div><div class="history-list" id="history-list"></div></section>
       <section id="store-view" class="view" hidden></section>
+      <section id="blog-view" class="view" hidden></section>
     </main>
     <footer class="savebar"><div class="savebar-info"><span class="savebar-icon" data-icon="check"></span><div><strong id="draft-status">Черновик загружается</strong><span id="draft-description">Изменения сначала сохраняются в панели.</span></div></div><div class="savebar-actions"><button class="button secondary" id="save-draft" disabled><span data-icon="save"></span>Сохранить черновик</button><button class="button primary" id="review-publish"><span data-icon="eye"></span>Просмотр и публикация<span data-icon="arrow-right"></span></button></div></footer>
   </div>

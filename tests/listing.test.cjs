@@ -13,6 +13,15 @@ function context(extra = {}) {
 }
 const plain = value => JSON.parse(JSON.stringify(value));
 
+test('Category paths open the selected section and retain filter parameters', () => {
+  const api = context().window.CatalogListing;
+  const state = api.readState('?max=200&utm_source=ad', 'category', '/category/homecare/vacuum/');
+  assert.equal(state.category, 'homecare');
+  assert.equal(state.sub, 'vacuum');
+  assert.equal(api.routeURL(state, 'category', '?max=200&utm_source=ad'), '/category/homecare/vacuum/?utm_source=ad&max=200');
+  assert.equal(api.readState('', 'category', '/category/homecare').sub, 'all');
+});
+
 test('Listing routes use whole lari, accept old links and aliases, and reject invalid state', () => {
   const api = context().window.CatalogListing;
   const state = api.readState('?kitchen&sub=COFFEE&min=149&max=49&sort=price-asc&page=2', 'category');
@@ -38,7 +47,7 @@ test('Listing URL round trips retain campaign parameters, hash, query and comple
     const state = api.readState(search, mode);
     const url = api.routeURL(state, mode, search);
     assert.ok(url.endsWith('#main-content')); assert.ok(url.includes('utm_source=ad'));
-    assert.deepEqual(plain(api.readState(new URL(url, 'https://shop.test').search, mode)), plain(state));
+    assert.deepEqual(plain(api.readState(new URL(url, 'https://shop.test').search, mode, new URL(url, 'https://shop.test').pathname)), plain(state));
     if (mode === 'search') assert.ok(url.includes('result=watch+%26+more'));
   }
 });
@@ -123,7 +132,7 @@ function harness({ mode = 'category', search = '', blockedStorage = false } = {}
   document = { activeElement: null, addEventListener() {}, getElementById: id => nodes[id] || null, querySelector: () => null, querySelectorAll: () => presets, createElement: tag => new Element(tag), createDocumentFragment: () => new Element('fragment') };
   const pending = [], handlers = {}, history = [], timers = new Map(); let timerId = 0;
   const location = { search, hash: '', pathname: '/' + mode + '/' };
-  const updateURL = (method, url) => { const parsed = new URL(url, 'https://shop.test'); location.search = parsed.search; history.push({ method, url }); };
+  const updateURL = (method, url) => { const parsed = new URL(url, 'https://shop.test'); location.search = parsed.search; location.pathname = parsed.pathname; history.push({ method, url }); };
   const window = { location, CATALOG_STRUCTURE: structure, addEventListener: (type, fn) => { handlers[type] = fn; }, matchMedia: () => ({ matches: false, addEventListener() {} }),
     history: { pushState: (_state, _title, url) => updateURL('push', url), replaceState: (_state, _title, url) => updateURL('replace', url) },
     createProductCardHTML: product => 'CARD[' + product.id + ']',
@@ -134,7 +143,7 @@ function harness({ mode = 'category', search = '', blockedStorage = false } = {}
   const flush = async () => { for (let i = 0; i < 5; i++) await Promise.resolve(); };
   return { nodes, presets, pending, history, location, document, grid: nodes[mode === 'search' ? 'searchResultsGrid' : 'catalogContainer'],
     async resolve(products,store) { pending.at(-1).resolve({ products,store }); await flush(); }, async reject() { pending.at(-1).reject(Error('offline')); await flush(); },
-    backTo(search) { location.search = search; handlers.popstate(); }, runTimers() { const tasks = [...timers.values()]; timers.clear(); tasks.forEach(fn => fn()); } };
+    backTo(search) { location.search = search; location.pathname = '/' + mode + '/'; handlers.popstate(); }, runTimers() { const tasks = [...timers.values()]; timers.clear(); tasks.forEach(fn => fn()); } };
 }
 
 test('Both listings recover from failed loading, clear busy state and preserve route filters on retry', async () => {
@@ -192,7 +201,7 @@ test('Renamed category links resolve canonical IDs while retaining filters and c
   const scope=context();scope.window.ENKA_STORE=renamedStore;const api=scope.window.CatalogListing;
   for(const search of ['?kitchen&sub=coffee&max=99&utm_source=ad','?category=kitchen&sub=coffee&max=99&utm_source=ad']){
     const state=api.readState(search,'category');assert.equal(state.category,'appliances');assert.equal(state.sub,'espresso');assert.equal(state.max,'99');
-    const url=new URL(api.routeURL(state,'category',search),'https://shop.test');assert.equal(url.searchParams.get('category'),'appliances');assert.equal(url.searchParams.get('sub'),'espresso');assert.equal(url.searchParams.get('utm_source'),'ad');
+    const url=new URL(api.routeURL(state,'category',search),'https://shop.test');assert.equal(url.pathname,'/category/appliances/espresso/');assert.equal(url.searchParams.get('utm_source'),'ad');
   }
   assert.equal(api.readState('?result=coffee&cat=kitchen','search').category,'appliances');
 });
@@ -200,5 +209,5 @@ test('A category alias fetched after mount replaces the old URL and selects rena
   const h=harness({search:'?kitchen&sub=coffee&max=99&utm_source=ad'});
   await h.resolve([{id:'coffee-new',name:'Coffee',price:'49',categories:['appliances'],subcategories:['espresso']}],renamedStore);
   assert.equal(h.grid.children.length,1);assert.equal(h.grid.children[0].dataset.productId,'coffee-new');
-  const params=new URLSearchParams(h.location.search);assert.equal(params.get('category'),'appliances');assert.equal(params.get('sub'),'espresso');assert.equal(params.get('max'),'99');assert.equal(params.get('utm_source'),'ad');
+  const params=new URLSearchParams(h.location.search);assert.equal(h.location.pathname,'/category/appliances/espresso/');assert.equal(params.get('max'),'99');assert.equal(params.get('utm_source'),'ad');
 });

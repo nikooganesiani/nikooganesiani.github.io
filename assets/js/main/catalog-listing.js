@@ -25,13 +25,14 @@
     const resolved=globalThis.EnkaStoreEngine?.resolveSection(store,state.category,state.sub);
     return resolved?{...state,category:slug(resolved.category),sub:slug(resolved.sub)}:state;
   }
-  function readState(search, mode) {
+  function readState(search, mode, pathname = window.location.pathname || '') {
     const params = new URLSearchParams(search);
+    const section = mode === 'category' ? pathname.match(/^\/category\/([^/]+)(?:\/([^/]+))?\/?$/) : null;
     const query = ['result', 'q', 'search'].map(key => params.get(key)?.trim()).find(Boolean) || '';
     const page = params.get('page') || '1';
     return resolveState({
-      category: slug(params.get(mode === 'search' ? 'cat' : 'category') || (mode === 'category' ? legacyCategories(params)[0] : '')) || 'all',
-      sub: mode === 'category' ? slug(params.get('sub')) || 'all' : 'all',
+      category: slug((section && decodeURIComponent(section[1])) || params.get(mode === 'search' ? 'cat' : 'category') || (mode === 'category' ? legacyCategories(params)[0] : '')) || 'all',
+      sub: mode === 'category' ? slug((section?.[2] && decodeURIComponent(section[2])) || params.get('sub')) || 'all' : 'all',
       query: query.slice(0, 200),
       ...priceRange(params.get('min'), params.get('max')),
       sort: SORTS.has(params.get('sort')) ? params.get('sort') : 'default',
@@ -42,14 +43,14 @@
     const params = new URLSearchParams(search);
     if (mode === 'category') legacyCategories(params).forEach(key => params.delete(key));
     ROUTE_KEYS.forEach(key => params.delete(key));
-    if (state.category !== 'all') params.set(mode === 'search' ? 'cat' : 'category', state.category);
-    if (mode === 'category' && state.sub !== 'all') params.set('sub', state.sub);
+    if (mode === 'search' && state.category !== 'all') params.set('cat', state.category);
     if (state.query) params.set(mode === 'search' ? 'result' : 'search', state.query);
     if (state.min !== '') params.set('min', state.min);
     if (state.max !== '') params.set('max', state.max);
     if (state.sort !== 'default') params.set('sort', state.sort);
     if (state.page > 1) params.set('page', String(state.page));
-    return '/' + mode + '/' + (params.size ? '?' + params.toString() : '') + window.location.hash;
+    const section = mode === 'category' && state.category !== 'all' ? encodeURIComponent(state.category) + '/' + (state.sub !== 'all' ? encodeURIComponent(state.sub) + '/' : '') : '';
+    return '/' + mode + '/' + section + (params.size ? '?' + params.toString() : '') + window.location.hash;
   }
   function prepareProducts(raw) {
     if (!Array.isArray(raw)) throw new Error('Invalid catalog');
@@ -148,10 +149,10 @@
       if (mode === 'category') {
         text('categoryMainTitle', heading);
         const nav = document.querySelector('[data-breadcrumbs]');
-        const crumbs = [{ label: 'კატალოგი', href: '/category/' }];
+        const crumbs = [];
         if (state.category !== 'all' && state.sub !== 'all') crumbs.push({ label: categoryTitle, href: routeURL({ ...state, sub: 'all', page: 1 }, mode), iconKey: state.category, subSwitch: 'all' });
         crumbs.push({ label: heading, current: true, iconKey: state.category });
-        window.renderBreadcrumbs?.(nav, state.category === 'all' && !state.query ? [crumbs[crumbs.length - 1]] : crumbs);
+        window.renderBreadcrumbs?.(nav, crumbs);
       }
       document.title = (mode === 'search' ? state.query ? `ძიება: ${state.query}` : 'ძიება' : heading) + ' – ENKA Electronics';
     }

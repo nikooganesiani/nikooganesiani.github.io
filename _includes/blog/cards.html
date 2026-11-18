@@ -1,0 +1,28 @@
+{% assign blog_locale = include.locale | default: 'ka' %}
+{% assign blog_variant = include.variant | default: 'archive' %}
+<div class="blog-grid blog-grid--{{ blog_variant }} blog-grid--count-{{ include.slugs.size }}">
+  {% for blog_slug in include.slugs %}
+    {% assign blog_card = site.data.blog.cards[blog_slug] %}
+    {% assign blog_edition = blog_card.editions[blog_locale] | default: blog_card.editions.ka %}
+    {% assign blog_card_locale = blog_locale %}
+    {% unless blog_card.editions[blog_locale] %}{% assign blog_card_locale = 'ka' %}{% endunless %}
+    <article class="blog-card{% if blog_card.cover == empty %} blog-card--text{% endif %}" lang="{{ blog_card_locale }}" translate="no"{% if include.adapt %} data-blog-card{% endif %}>
+      <a href="{{ blog_edition.url | relative_url }}" aria-labelledby="blog-{{ blog_variant }}-{{ blog_slug }}"{% if include.adapt %}
+        {% for blog_translation in blog_card.editions %}{% unless blog_translation[0] == 'ka' %} data-blog-url-{{ blog_translation[0] }}="{{ blog_translation[1].url | relative_url }}"
+        data-blog-title-{{ blog_translation[0] }}="{{ blog_translation[1].title | escape }}"
+        data-blog-summary-{{ blog_translation[0] }}="{{ blog_translation[1].summary | escape }}"{% endunless %}{% endfor %}
+        {% endif %}>
+        {% if blog_card.cover != empty %}
+          <div class="blog-card-media">
+            <img class="blog-card-cover" src="{{ blog_card.cover | relative_url | escape }}" alt="" loading="lazy" decoding="async">
+          </div>
+        {% endif %}
+        <div class="blog-card-copy">
+          {% if blog_variant == 'archive' %}<time datetime="{{ blog_card.date }}">{{ blog_card.date | split: '-' | reverse | join: '.' }}</time>{% endif %}
+          {% if include.archive %}<h2 id="blog-{{ blog_variant }}-{{ blog_slug }}" data-blog-title>{{ blog_edition.title | escape }}</h2>{% else %}<h3 id="blog-{{ blog_variant }}-{{ blog_slug }}" data-blog-title>{{ blog_edition.title | escape }}</h3>{% endif %}
+          <p data-blog-summary>{{ blog_edition.summary | escape }}</p>
+        </div>
+      </a>
+    </article>
+  {% endfor %}
+</div>

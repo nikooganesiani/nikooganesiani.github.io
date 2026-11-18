@@ -3,7 +3,7 @@
   let locale = '';
   try { locale = localStorage.getItem('enka_language') || ''; } catch {}
   if (!locale) {
-    try { locale = document.cookie.split('; ').find(v => v.startsWith('enka_language='))?.split('=')[1] || 'ka'; } catch {}
+    try { locale = document.cookie.split('; ').find(v => v.startsWith('enka_language='))?.split('=')[1] || document.documentElement.dataset?.blogLocale || 'ka'; } catch {}
   }
   if (!['ru', 'en'].includes(locale)) locale = 'ka';
   let dictionary; let matcher;

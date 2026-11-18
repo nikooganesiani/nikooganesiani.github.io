@@ -1,4 +1,5 @@
 import './store-engine.js';
+import { validateBlog } from './blog-model.js';
 export const storeEngine = globalThis.EnkaStoreEngine;
 export const LOCALES = ['ru', 'en'];
 export const TEXT_FIELDS = ['name', 'description', 'longDescription', 'warranty'];
@@ -17,7 +18,7 @@ export function safeMedia(value) {
   if (/^\/media\/[a-f0-9-]+\.webp$/.test(value)) return true;
   try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; }
 }
-export function validateDocument(document) {
+export function validateDocument(document, publishing = false) {
   const errors = [];
   if (!plain(document) || !plain(document.catalog) || !Array.isArray(document.catalog.products)) return ['Ожидается каталог с массивом products.'];
   const products = document.catalog.products;
@@ -74,6 +75,7 @@ export function validateDocument(document) {
     }
   }
   if (document.store !== undefined && !errors.length) errors.push(...storeEngine.validate(document.store, products));
+  errors.push(...validateBlog(document.blog, publishing));
   if (new TextEncoder().encode(JSON.stringify(document)).length > 3500000) errors.push('Каталог с переводами превышает 3,5 МБ. Разделите импорт.');
   return [...new Set(errors)].slice(0, 100);
 }
@@ -97,13 +99,16 @@ export function createDocument(catalog) {
   // This pointer belongs to publication, never to editable source content.
   if (plain(source)) delete source._enkaPublication;
   const store = source?._enkaStore;
+  const blog = source?._enkaBlog;
   if (plain(source)) delete source._enkaStore;
+  if (plain(source)) delete source._enkaBlog;
   // An API export may contain calculated prices; restore the editable base values.
   for (const product of source?.products || []) if (product._enkaBase) {
     Object.assign(product, product._enkaBase); delete product._enkaBase; delete product._enkaCampaign;
   }
   const document = { schemaVersion: 1, catalog: source, translations: { ru: { products: {} }, en: { products: {} } }, attributes: {} };
   if (store) { document.store = store; storeEngine.migrateBanners(store); }
+  if (blog !== undefined) document.blog = blog;
   if (!plain(source) || !Array.isArray(source.products)) throw new Error('В файле нет массива products.');
   registerAttributes(document);
   const errors = validateDocument(document);
@@ -117,6 +122,7 @@ export function importDocument(value, existing) {
     document.attributes = clone(existing.attributes);
     for (const locale of LOCALES) document.translations[locale] = clone(existing.translations[locale]);
     if (existing.store) document.store = clone(existing.store);
+    if (existing.blog) document.blog = clone(existing.blog);
     registerAttributes(document);
   }
   storeEngine.migrateBanners(document.store);
@@ -225,5 +231,14 @@ export function catalogDiff(before, after) {
   const changed = [...next.keys()].filter(id => previous.has(id) && JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id)));
   const translationsChanged = JSON.stringify(before?.translations || {}) !== JSON.stringify(after.translations) || JSON.stringify(before?.attributes || {}) !== JSON.stringify(after.attributes);
   const storeChanges = ['categories', 'campaigns', 'heroes', 'strings', 'company'].filter(key => JSON.stringify(before?.store?.[key]) !== JSON.stringify(after.store?.[key]));
-  return { added, removed, changed, translationsChanged, storeChanges };
+  const previousArticles = new Map((before?.blog || []).map(article => [article.id, article]));
+  const nextArticles = new Map((after.blog || []).map(article => [article.id, article]));
+  const blogChanges = [...new Set([...previousArticles.keys(), ...nextArticles.keys()])].filter(id =>
+    JSON.stringify(previousArticles.get(id)) !== JSON.stringify(nextArticles.get(id))).map(id => {
+    const prior = previousArticles.get(id);
+    const next = nextArticles.get(id);
+    const article = next || prior;
+    return { title: article.editions.ka.title || article.slug, before: prior?.status, after: next?.status };
+  });
+  return { added, removed, changed, translationsChanged, storeChanges, blogChanges };
 }

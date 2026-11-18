@@ -21,7 +21,9 @@ layout: default
     {% include product/gallery.html %}
     {% include product/buy_box.html %}
   </div>
-  {% include product/details.html %}
+  {% assign product_blog_slugs = site.data.blog.products[page.product_id] %}
+  {% include product/details.html blog_slugs=product_blog_slugs %}
+  {% include blog/section.html slugs=product_blog_slugs title="სასარგებლო სტატიები" variant="product" %}
   {% include product/similar.html %}
   <div class="mt-13 max-[768px]:mt-9.5">{% include homepage/popular-products.html %}</div>
 </div>

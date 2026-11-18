@@ -2,6 +2,7 @@
   <a href="#productDescription">პროდუქტის შესახებ</a>
   {% if page.specs.size > 0 %}<a href="#productSpecifications">მახასიათებლები</a>{% endif %}
   {% if yt_id != '' %}<a href="#productVideo" data-product-video-trigger>ვიდეო განხილვა</a>{% endif %}
+  {% if include.blog_slugs.size > 0 %}<a href="#blog-section">სასარგებლო სტატიები</a>{% endif %}
 </nav>
 <div class="grid grid-cols-[minmax(0,_1fr)_minmax(0,_1fr)] gap-x-[clamp(44px,_7vw,_104px)] pt-[39px] [&_>_section]:min-w-0 [&_>_section]:scroll-mt-6 [&_h2]:text-[color:light-dark(#26303e,var(--color-night-ink))] [&_h2]:text-[length:22px] [&_h2]:font-semibold [&_h2]:tracking-[-.025em] [&_h2]:leading-[1.4] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-5.5 [&_h2]:ml-0 min-[768px]:max-[901px]:gap-x-9 max-[768px]:grid-cols-[minmax(0,_1fr)] max-[768px]:gap-9 max-[768px]:pt-7.5 max-[768px]:[&_h2]:text-[length:21px]" id="productInformation">
   <section id="productDescription" aria-labelledby="productDescriptionTitle">

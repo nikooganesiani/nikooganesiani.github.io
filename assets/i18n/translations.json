@@ -1,4 +1,14 @@
 {
+  "ENKA Electronics - ხარისხიანი ტექნიკა საქართველოში უფასო მიტანით და ადგილზე გადახდით.": {
+    "ru": "ENKA Electronics — техника в Грузии с бесплатной доставкой и оплатой при получении.",
+    "en": "ENKA Electronics — electronics in Georgia with free delivery and payment on arrival."
+  },
+  "ბლოგი": {"ru":"Блог","en":"Blog"},
+  "სასარგებლო სტატიები": {"ru":"Полезные статьи","en":"Helpful articles"},
+  "სხვა დაკავშირებული სტატიები": {"ru":"Другие связанные статьи","en":"More related articles"},
+  "ყველა სტატია": {"ru":"Все статьи","en":"All articles"},
+  "სტატიის ენა": {"ru":"Язык статьи","en":"Article language"},
+  "დაკავშირებული პროდუქტები": {"ru":"Связанные товары","en":"Related products"},
   "ბრენდი:": {
     "ru": "Бренд:",
     "en": "Brand:"

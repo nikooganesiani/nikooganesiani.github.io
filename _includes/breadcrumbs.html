@@ -2,11 +2,11 @@
   <ol{% if include.dynamic %} id="categoryBreadcrumbsList"{% endif %} itemscope itemtype="https://schema.org/BreadcrumbList">
     {% include breadcrumb-item.html kind='home' href='/' label='მთავარი' position=1 %}
     {% if include.category_id and include.category_name %}
-      {% capture category_href %}/category/?{{ include.category_id | url_encode }}{% endcapture %}
+      {% capture category_href %}/category/{{ include.category_id | url_encode }}/{% endcapture %}
       {% include breadcrumb-separator.html %}
       {% include breadcrumb-item.html kind='category' href=category_href label=include.category_name position=2 %}
       {% if include.subcategory_id and include.subcategory_name %}
-        {% capture subcategory_href %}/category/?{{ include.category_id | url_encode }}&sub={{ include.subcategory_id | url_encode }}{% endcapture %}
+        {% capture subcategory_href %}/category/{{ include.category_id | url_encode }}/{{ include.subcategory_id | url_encode }}/{% endcapture %}
         {% include breadcrumb-separator.html %}
         {% include breadcrumb-item.html href=subcategory_href label=include.subcategory_name current=true position=3 %}
       {% endif %}

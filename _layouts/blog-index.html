@@ -1,0 +1,15 @@
+---
+layout: default
+---
+{% assign blog_ui = site.data.blog_ui[page.blog_locale] %}
+<div class="blog-shell blog-index">
+  <div class="blog-page-nav">
+    {% include blog/breadcrumbs.html ui=blog_ui %}
+    {% include blog/languages.html label=blog_ui.archive_language %}
+  </div>
+  <header class="blog-index-header" lang="{{ page.blog_locale }}" translate="no">
+    <h1>{{ page.title | escape }}</h1>
+    <p>{{ page.description | escape }}</p>
+  </header>
+  {% include blog/cards.html slugs=site.data.blog.archive locale=page.blog_locale archive=true variant="archive" %}
+</div>

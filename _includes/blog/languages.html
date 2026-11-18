@@ -1,0 +1,8 @@
+{% if page.blog_alternates.size > 1 %}
+<nav class="blog-language-links" aria-label="{{ include.label | escape }}" translate="no">
+  {% for blog_language in page.blog_alternates %}
+    {% assign language = blog_language[0] %}
+    <a href="{{ blog_language[1] | relative_url }}" hreflang="{{ language }}" lang="{{ language }}" translate="no"{% if page.blog_locale == language %} aria-current="page"{% endif %}>{% case language %}{% when 'ka' %}ქართული{% when 'ru' %}Русский{% when 'en' %}English{% endcase %}</a>
+  {% endfor %}
+</nav>
+{% endif %}

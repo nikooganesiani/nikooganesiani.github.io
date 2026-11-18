@@ -11,6 +11,20 @@ export async function requestJson(request) {
   try { return JSON.parse(text); } catch { throw new ApiError(400, 'Не удалось прочитать JSON.'); }
 }
 
+function publicationErrors(state) {
+  const errors = validateDocument(state.document, true);
+  const locked = new Map(Object.entries(state.blogSlugs || {}));
+  const owners = new Map([...locked].map(([id, slug]) => [slug, id]));
+  for (const article of state.document.blog || []) {
+    if (article.status !== 'published') continue;
+    if (locked.has(article.id) && locked.get(article.id) !== article.slug)
+      errors.push(`Блог · ${article.slug}: опубликованный адрес должен остаться прежним (${locked.get(article.id)}).`);
+    if (owners.has(article.slug) && owners.get(article.slug) !== article.id)
+      errors.push(`Блог · ${article.slug}: этот адрес уже принадлежит другой опубликованной статье.`);
+  }
+  return errors;
+}
+
 export class CatalogService {
   constructor(store, publisher, { environment = 'staging' } = {}) { this.store = store; this.publisher = publisher; this.environment = environment; }
   async initialize(catalog) {
@@ -37,21 +51,23 @@ export class CatalogService {
     return this.view();
   }
   restore(body, identity) {
-    this.checkRevision(body.expectedRevision);
+    const state = this.checkRevision(body.expectedRevision);
     const snapshot = this.store.getRevision(Number(body.revision));
     if (!snapshot) throw new ApiError(404, 'Версия не найдена.');
-    return this.save({ expectedRevision: body.expectedRevision, document: importDocument(snapshot.document), message: `Восстановление версии ${body.revision} в черновик` }, identity);
+    const document = importDocument(snapshot.document);
+    for (const article of document.blog || []) article.slug = state.blogSlugs?.[article.id] || article.slug;
+    return this.save({ expectedRevision: body.expectedRevision, document, message: `Восстановление версии ${body.revision} в черновик` }, identity);
   }
   review() {
     const state = this.view();
     const published = state.publishedRevision ? this.store.getRevision(state.publishedRevision) : this.store.getRevision(1);
-    return { ...catalogDiff(published?.document, state.document), revision: state.revision, publishedRevision: state.publishedRevision, errors: validateDocument(state.document), productCount: state.document.catalog.products.length };
+    return { ...catalogDiff(published?.document, state.document), revision: state.revision, publishedRevision: state.publishedRevision, errors: publicationErrors(state), productCount: state.document.catalog.products.length };
   }
   async publish(body, identity) {
     let state = this.view();
     if (body.expectedRevision !== state.revision) throw new ApiError(409, 'Черновик изменился. Сначала обновите просмотр изменений.');
     if (state.publishedRevision === state.revision && !state.pending) return state;
-    const errors = validateDocument(state.document);
+    const errors = publicationErrors(state);
     if (errors.length) throw new ApiError(422, 'Каталог не прошёл проверку.', errors);
     if (!state.pending) {
       state.pending = { id: crypto.randomUUID(), revision: state.revision, startedAt: new Date().toISOString(), by: identity, step: 0 };
@@ -61,9 +77,13 @@ export class CatalogService {
     // Old readers ignore the optional metadata. New readers use it to load the
     // matching immutable translation release. No second public pointer to race.
     const release = { schemaVersion: 1, revision: state.revision, createdAt: state.pending.startedAt, document: state.document };
+    const publicCatalog = { ...state.document.catalog };
+    delete publicCatalog._enkaBlog;
     const writes = [
       [`catalog:release:${state.pending.id}`, JSON.stringify(release)],
-      ['catalog', JSON.stringify({ ...state.document.catalog, ...(state.document.store ? { _enkaStore: state.document.store } : {}), _enkaPublication: { releaseKey: `catalog:release:${state.pending.id}`, revision: state.revision } })]
+      ['catalog', JSON.stringify({ ...publicCatalog, ...(state.document.store ? { _enkaStore: state.document.store } : {}), _enkaPublication: {
+        releaseKey: `catalog:release:${state.pending.id}`, revision: state.revision, ...(state.document.blog ? { blog: true } : {})
+      } })]
     ];
     try {
       for (let index = state.pending.step; index < writes.length; index++) {
@@ -73,6 +93,9 @@ export class CatalogService {
       }
       state.publishedRevision = state.revision;
       state.publishedAt = new Date().toISOString();
+      for (const article of state.document.blog || []) {
+        if (article.status === 'published') (state.blogSlugs ||= {})[article.id] = article.slug;
+      }
       state.pending = null;
       this.store.update(state);
     } catch {

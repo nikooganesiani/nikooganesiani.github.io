@@ -1,0 +1,12 @@
+<nav class="site-breadcrumbs blog-breadcrumbs" aria-label="{{ include.ui.breadcrumbs | escape }}" translate="no">
+  <ol itemscope itemtype="https://schema.org/BreadcrumbList">
+    {% assign blog_home = '/' | relative_url %}
+    {% include breadcrumb-item.html kind='home' href=blog_home label=include.ui.home position=1 %}
+    {% include breadcrumb-separator.html %}
+    {% if include.archive %}
+      {% include breadcrumb-item.html href=include.archive label=include.ui.blog position=2 %}
+    {% else %}
+      {% include breadcrumb-item.html label=include.ui.blog current=true position=2 %}
+    {% endif %}
+  </ol>
+</nav>

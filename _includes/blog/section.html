@@ -1,0 +1,21 @@
+{% if include.slugs and include.slugs.size > 0 %}
+{% assign blog_section_size = include.slugs.size %}
+{% assign blog_primary_slugs = include.slugs %}
+{% if include.variant == 'product' %}{% assign blog_primary_slugs = include.slugs | slice: 0, 3 %}{% endif %}
+<section class="blog-section blog-section--{{ include.variant }}" id="blog-section" aria-labelledby="blog-section-title">
+  <div class="blog-section-header">
+    <h2 id="blog-section-title">{{ include.title }}</h2>
+    {% if include.variant == 'home' %}
+      <a class="blog-text-link" href="{{ '/blog/' | relative_url }}" data-blog-archive-link>ყველა სტატია</a>
+    {% endif %}
+  </div>
+  {% include blog/cards.html slugs=blog_primary_slugs variant=include.variant adapt=true %}
+  {% if include.variant == 'product' and blog_section_size > 3 %}
+    {% assign blog_more_slugs = include.slugs | slice: 3, blog_section_size %}
+    <details class="blog-more">
+      <summary>სხვა დაკავშირებული სტატიები {% include icons.html name='chevron-down' size=17 %}</summary>
+      {% include blog/cards.html slugs=blog_more_slugs variant=include.variant adapt=true %}
+    </details>
+  {% endif %}
+</section>
+{% endif %}

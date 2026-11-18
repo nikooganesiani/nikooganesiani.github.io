@@ -2,6 +2,7 @@
 <script src="/assets/js/global/animated-icons.js" defer></script>
 <script src="/assets/js/main/config.js" defer></script>
 <script src="{{ '/assets/js/global/i18n.js' | relative_url }}" defer></script>
+{% if site.data.blog.archive.size > 0 %}<script src="{{ '/assets/js/global/blog.js' | relative_url }}" defer></script>{% endif %}
 <script src="/assets/js/global/store-engine.js" defer></script>
 <script src="/assets/js/global/store-visuals.js" defer></script>
 <script src="/assets/js/global/storefront-content.js" defer></script>

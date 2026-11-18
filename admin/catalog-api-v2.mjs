@@ -25,7 +25,8 @@ export default {
     if (!['/catalog', '/v1/feed.xml'].includes(url.pathname)) return Response.json({ error: 'Not Found' }, { status: 404, headers });
     try {
       const locale = ['ru', 'en'].includes(url.searchParams.get('lang')) ? url.searchParams.get('lang') : 'ka';
-      const catalog = await readPublishedCatalog(key => env.CATALOG_KV.get(key, { type: 'json' }), locale);
+      const includeBlog = url.pathname === '/catalog' && url.searchParams.get('include') === 'blog';
+      const catalog = await readPublishedCatalog(key => env.CATALOG_KV.get(key, { type: 'json' }), locale, undefined, includeBlog);
       if (!Array.isArray(catalog.products)) throw Error('Invalid catalog');
       if (url.pathname === '/catalog') return new Response(request.method === 'HEAD' ? null : JSON.stringify(catalog), { headers: { ...headers, 'Content-Type': 'application/json; charset=utf-8' } });
       return new Response(request.method === 'HEAD' ? null : feed(catalog, (env.STOREFRONT_BASE || 'https://enkaelectronics.com.ge').replace(/\/$/, '')), { headers: { ...headers, 'Content-Type': 'application/xml; charset=utf-8' } });
