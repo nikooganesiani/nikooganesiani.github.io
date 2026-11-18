@@ -38,10 +38,10 @@ function parseGeorgianDate(dateStr) {
 function getStatusBadge(statusName) {
     const iconBox = (svg) => `<span class="inline-flex mr-2">${svg}</span>`;
     const icons = {
-        box: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="m12 2-3.5 1.9 8.7 5L21 7zm-5.5 3L3 7l9 5 3.2-1.8zM2 8.7v9a1 1 0 0 0 .5.9l8.5 4.7V13.7zm11 5v9.6l8.5-4.7a1 1 0 0 0 .5-.9v-9z"/></svg>',
-        truck: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h.2a3 3 0 0 0 5.6 0h6.4a3 3 0 0 0 5.6 0H22a1 1 0 0 0 1-1v-4a1 1 0 0 0-.3-.7l-4-4A1 1 0 0 0 18 7h-3V5a1 1 0 0 0-1-1zm12 5v4h6l-4-4zm-9 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2m12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2" clip-rule="evenodd"/></svg>',
-        check: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.7 5.3a1 1 0 0 1 0 1.4l-11 11a1 1 0 0 1-1.4 0l-5-5a1 1 0 0 1 1.4-1.4l4.3 4.3L19.3 5.3a1 1 0 0 1 1.4 0"/></svg>',
-        clock: '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m1 4h-2v7l5 3 1-1.7-4-2.4z" clip-rule="evenodd"/></svg>'
+        box: window.EnkaIcons?.render('package', 18, 'auto', '') || '',
+        truck: window.EnkaIcons?.render('truck', 18, 'loop', '') || '',
+        check: window.EnkaIcons?.render('check', 18, 'auto', '') || '',
+        clock: window.EnkaIcons?.render('clock', 18, 'auto', '') || ''
     };
     const badgeMap = {
         'ჩაბარებულია': { class: 'bg-[color:light-dark(var(--color-green-50),var(--color-night-success-surface))] text-[color:light-dark(var(--color-green-800),var(--color-night-success))]', icon: icons.check, text: 'ჩაბარებულია' },
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             trackingCheckBtn.disabled = true;
             trackingCheckBtn.setAttribute('aria-busy', 'true');
-            trackingCheckBtn.innerHTML = '<span class="inline-flex items-center gap-2.5"><span class="w-4.5 h-4.5 border-[2px] border-solid border-[rgb(255_255_255_/_.4)] [border-top-color:#fff] rounded-[50%] animate-spin [animation-duration:.8s] motion-reduce:animate-none motion-reduce:border-canvas motion-reduce:border-dotted" aria-hidden="true"></span>მოწმდება…</span>';
+            trackingCheckBtn.innerHTML = '<span class="inline-flex items-center gap-2.5">' + (window.EnkaIcons?.render('loader', 18, 'loop') || '') + 'მოწმდება…</span>';
             const revision = ++trackingRevision;
             const controller = new AbortController();
             trackingController = controller;

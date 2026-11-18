@@ -1,12 +1,10 @@
-{% assign store_catalog = site.data.catalog %}
-{% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 <nav class="site-breadcrumbs {% if include.product %}max-[640px]:border-b max-[640px]:border-line max-[640px]:pb-2 max-[640px]:mb-4{% endif %} flex items-center justify-between gap-6 mb-8 min-w-0 text-muted [&_ol]:flex [&_ol]:items-center [&_ol]:gap-3 [&_ol]:min-w-0 [&_ol]:p-0 [&_ol]:m-0 [&_ol]:list-none [&_li]:flex [&_li]:items-center [&_li]:min-w-0 [&_li]:shrink-0 min-[1440px]:mb-10 max-[768px]:gap-4 max-[768px]:mb-6 max-[768px]:[&_ol]:gap-[9px] max-[768px]:[&_ol]:overflow-hidden" data-breadcrumbs aria-label="ნავიგაციის ჯაჭვი">
   <ol{% if include.dynamic %} id="categoryBreadcrumbsList"{% endif %} itemscope itemtype="https://schema.org/BreadcrumbList">
     {% include breadcrumb-item.html kind='home' href='/' label='მთავარი' position=1 %}
     {% if include.category_id and include.category_name %}
       {% capture category_href %}/category/?{{ include.category_id | url_encode }}{% endcapture %}
       {% include breadcrumb-separator.html %}
-      {% include breadcrumb-item.html kind='category' href=category_href label=include.category_name icon=include.category_icon position=2 %}
+      {% include breadcrumb-item.html kind='category' href=category_href label=include.category_name position=2 %}
       {% if include.subcategory_id and include.subcategory_name %}
         {% capture subcategory_href %}/category/?{{ include.category_id | url_encode }}&sub={{ include.subcategory_id | url_encode }}{% endcapture %}
         {% include breadcrumb-separator.html %}
@@ -21,6 +19,5 @@
   {% if include.dynamic %}
     <template data-breadcrumb-item>{% include breadcrumb-item.html href='#' label='' position=2 %}</template>
     <template data-breadcrumb-separator>{% include breadcrumb-separator.html %}</template>
-    {% for category in store_catalog %}<template data-breadcrumb-icon="{{ category[0] | escape }}">{{ category[1].icon }}</template>{% endfor %}
   {% endif %}
 </nav>

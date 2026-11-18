@@ -1,8 +1,6 @@
 (() => {
     'use strict';
 
-    // Хранилище объектов товаров в памяти (безопасная замена инлайн-JSON в onclick)
-    const productStore = new Map();
     const FALLBACK_IMAGE = '/img/no-image.svg';
     const SLIDE_GAP = 8; // 8px (gap-2) — буфер против субпиксельного наложения соседних фото
 
@@ -28,18 +26,6 @@
         return escapeHtml(String(val).replace(/₾/g, '').trim());
     };
 
-    // Вызов формы заказа по ключу из памяти
-    window.triggerCardOrder = function (storeKey, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        const product = productStore.get(String(storeKey));
-        if (window.isProductAvailable(product) && typeof window.openOrderForm === 'function') {
-            window.openOrderForm(product, event?.currentTarget);
-        }
-    };
-
     /**
      * Генерация HTML карточки товара
      */
@@ -52,8 +38,6 @@
         const uniqueId = `${String(prefix).replace(/[^a-z0-9_-]/gi, '')}-${Array.from(rawId).map(char => char.codePointAt(0).toString(16)).join('-')}`;
         const productUrl = `/product/${encodeURIComponent(rawId)}/`;
         const safeName = escapeHtml(p.name || '');
-
-        productStore.set(uniqueId, p);
 
         // Фильтрация валидных изображений
         const rawImages = Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []);
@@ -99,7 +83,7 @@
                 ${discountBadge}
 
                 <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-[50%] bg-transparent text-[color:light-dark(#8893a1,var(--color-night-muted))] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active]:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M12 21s-9.5-5.6-9.5-12A5.5 5.5 0 0 1 12 5.2 5.5 5.5 0 0 1 21.5 9C21.5 15.4 12 21 12 21"/></svg>
+                    ${window.EnkaIcons?.render('heart', 18, 'auto', '') || ''}
                 </button>
 
                 <!-- overflow-x-hidden не перехватывает свайп пальцем/тачпадом у родительской карусели, а gap-2 исключает попадание края соседнего фото -->
@@ -145,10 +129,10 @@
                 </div>
 
                 <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
-                <button type="button" ${available ? 'aria-haspopup="dialog" aria-controls="orderFormModal" aria-expanded="false"' : 'disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}" onclick="window.triggerCardOrder('${uniqueId}', event)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M7 7V6a5 5 0 0 1 10 0v1h2a2 2 0 0 1 2 1.8l1 11a2 2 0 0 1-2 2.2H4a2 2 0 0 1-2-2.2l1-11A2 2 0 0 1 5 7zm2 0h6V6a3 3 0 0 0-6 0zm0 4a1 1 0 0 0-2 0 5 5 0 0 0 10 0 1 1 0 1 0-2 0 3 3 0 0 1-6 0" clip-rule="evenodd"/></svg>
+                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}">
+                    ${window.EnkaIcons?.render('bag', 17, 'auto', '') || ''}
                     <span>${available ? 'ყიდვა' : 'არ არის მარაგში'}</span>
-                </button>
+                </${available ? 'a' : 'button'}>
             </div>
         </div>`;
     };

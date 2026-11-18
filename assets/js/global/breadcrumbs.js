@@ -16,8 +16,6 @@
       label.textContent = String(item.label || '');
       crumb.querySelector('[itemprop="position"]').content = String(index + 2);
       if (item.iconKey) {
-        const iconTemplate = [...nav.querySelectorAll('template[data-breadcrumb-icon]')].find(template => template.dataset.breadcrumbIcon === item.iconKey);
-        if (iconTemplate) crumb.querySelector('.breadcrumb-icon').append(iconTemplate.content.cloneNode(true));
         crumb.classList.add('breadcrumb-category');
       }
       if (item.current) {

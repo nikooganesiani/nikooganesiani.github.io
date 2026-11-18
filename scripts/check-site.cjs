@@ -31,7 +31,21 @@ function verifyHeader(value, label) {
   assert.equal((value.match(/src="\/assets\/js\/main\/photo-search.js"/g) || []).length, 1, label + ': one photo search controller');
   assert.equal((value.match(/id="photoSearchModal"/g) || []).length, 1, label + ': one shared photo search dialog');
   assert.match(header, /data-photo-search/, label + ': photo search in the shared header');
-  assert.ok(!/<svg\b[^>]*\bstroke="currentColor"/.test(value), label + ': filled interface icons');
+  const interfaceIcons = [...value.matchAll(/<svg\b[^>]*\bdata-animated-icon="([^"]+)"[^>]*>[\s\S]*?<\/svg>/g)];
+  assert.ok(interfaceIcons.length > 0, label + ': animated interface icons');
+  for (const [icon, name] of interfaceIcons) {
+    assert.match(icon, /fill="none" stroke="currentColor"/, label + ': outlined icon ' + name);
+    assert.match(icon, /<g data-icon-body>\s*<(?:path|circle|rect|line|polygon|polyline)\b/, label + ': icon artwork ' + name);
+  }
+  for (const file of ['icon-markup', 'animated-icons']) assert.equal((value.match(new RegExp('src="/assets/js/global/' + file + '\\.js"', 'g')) || []).length, 1, label + ': one ' + file + ' script');
+  const breadcrumbs = value.match(/<nav\b[^>]*\bdata-breadcrumbs\b[^>]*>[\s\S]*?<\/nav>/)?.[0];
+  if (breadcrumbs) {
+    for (const [crumb] of breadcrumbs.matchAll(/<li\b[^>]*\bitemprop="itemListElement"[^>]*>[\s\S]*?<\/li>/g)) {
+      if (crumb.includes('data-breadcrumb-home')) assert.match(crumb, /data-animated-icon="home"/, label + ': home breadcrumb icon');
+      else assert.ok(!/<svg\b/.test(crumb), label + ': text-only category and page breadcrumbs');
+    }
+    assert.ok(!breadcrumbs.includes('data-breadcrumb-icon'), label + ': no category icon templates');
+  }
   assert.ok(!/<script\b[^>]*src="[^"]*\/(?:tf|mobilenet)\.min\.js"/.test(value), label + ': recognition libraries load only after choosing a photo');
   assert.equal((value.match(/data-language-picker\b/g) || []).length, 2, label + ': language selection in header and footer');
   assert.equal((value.match(/src="\/assets\/js\/global\/languages.js"/g) || []).length, 1, label + ': one shared translation controller');

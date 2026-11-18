@@ -67,12 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const title = t(labels.get(row.key) || 'კიდევ მეტი თქვენთვის');
       section.setAttribute('aria-labelledby', prefix + '-title');
       const arrowClass = 'hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] disabled:opacity-30';
-      const arrow = (direction, path, label) => `<button type="button" id="${prefix}-${direction}" class="${arrowClass}" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="${path}"/></svg></button>`;
+      const arrow = (direction, label) => `<button type="button" id="${prefix}-${direction}" class="${arrowClass}" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled>${window.EnkaIcons.render(direction === 'left' ? 'chevron-left' : 'chevron-right', 18)}</button>`;
       section.innerHTML = `<div class="mb-5 flex items-center justify-between gap-4">
         <h2 id="${prefix}-title" class="text-[length:22px] font-semibold leading-snug tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${esc(title)}</h2>
         <div class="flex shrink-0 gap-2">
-          ${arrow('left', 'M15.7 4.3a1 1 0 0 1 0 1.4L9.4 12l6.3 6.3a1 1 0 0 1-1.4 1.4l-7-7a1 1 0 0 1 0-1.4l7-7a1 1 0 0 1 1.4 0', 'წინა პროდუქტები')}
-          ${arrow('right', 'M8.3 4.3a1 1 0 0 1 1.4 0l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 1 1-1.4-1.4L14.6 12 8.3 5.7a1 1 0 0 1 0-1.4', 'შემდეგი პროდუქტები')}
+          ${arrow('left', 'წინა პროდუქტები')}
+          ${arrow('right', 'შემდეგი პროდუქტები')}
         </div>
       </div>
       <div id="${prefix}-track" class="product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pt-0.5 pb-2.5 [&::-webkit-scrollbar]:hidden max-[768px]:gap-4" tabindex="0" role="group" aria-label="${esc(title)}">
@@ -134,5 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally { loading = false; root.removeAttribute('aria-busy'); }
   }
   retry.addEventListener('click', load);
-  load();
+  const ready = load();
+  window.EnkaPageTransition?.hold(ready);
 });

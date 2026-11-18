@@ -142,7 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function searchPage() {
       const query = input.value.trim();
-      if (query) { dismiss(); window.location.assign('/search/?result=' + encodeURIComponent(query)); }
+      if (query) {
+        dismiss();
+        const url = '/search/?result=' + encodeURIComponent(query);
+        if (window.EnkaPageTransition) window.EnkaPageTransition.navigate(url);
+        else window.location.assign(url);
+      }
       else input.focus();
     }
     function schedule() {

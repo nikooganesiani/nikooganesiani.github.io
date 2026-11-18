@@ -156,5 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.enkaPersonalization?.allowed()) render('recent', []);
     else load();
   });
-  load();
+  const ready = load();
+  window.EnkaPageTransition?.hold(ready);
 });

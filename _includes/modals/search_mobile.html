@@ -5,7 +5,7 @@
         <input type="search" id="mobileSearchInput" aria-label="პროდუქტის ძიება" aria-describedby="mobileSearchHint" data-modal-initial-focus autocomplete="off" enterkeyhint="search" placeholder="პროდუქტი, ბრენდი ან მოდელი">
         <button type="button" class="hidden [flex:0_0_44px] items-center justify-center h-11 text-[color:light-dark(#637082,var(--color-night-copy))] rounded-lg cursor-pointer [&.show]:inline-flex [@media(hover:_hover)]:hover:text-[color:light-dark(#202a37,var(--color-night-ink))] [@media(hover:_hover)]:hover:bg-[color:light-dark(#f1f4f8,var(--color-night-blue))]" id="mobileSearchClear" aria-label="ძიების გასუფთავება">{% include icons.html name='close' size=18 %}</button>
         {% include photo-search-trigger.html %}
-        <button type="button" class="flex items-center justify-center [flex:0_0_44px] h-11 rounded-xl bg-brand text-white cursor-pointer [&_svg]:text-inherit" id="mobileSearchBtn" aria-label="ძიება"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path fill-rule="evenodd" d="M10.5 2a8.5 8.5 0 1 0 5.3 15.1l4.5 4.6a1 1 0 0 0 1.4-1.4l-4.6-4.5A8.5 8.5 0 0 0 10.5 2m-6 8.5a6 6 0 1 1 12 0 6 6 0 0 1-12 0" clip-rule="evenodd"/></svg></button>
+        <button type="button" class="flex items-center justify-center [flex:0_0_44px] h-11 rounded-xl bg-brand text-white cursor-pointer [&_svg]:text-inherit" id="mobileSearchBtn" aria-label="ძიება">{% include icons.html name='search' size=20 %}</button>
       </div>
       <p id="mobileSearchHint" class="mt-2 mr-0 mb-5 ml-0 text-[length:12px] leading-[1.7] text-[color:light-dark(#637082,var(--color-night-copy))] [.modal-search-controls_&]:mb-4">მოძებნეთ დასახელებით, ბრენდით ან მოდელით.</p>
     </div>

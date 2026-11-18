@@ -113,7 +113,7 @@
   }
   function structure(store, locale = 'ka', fallback = {}) {
     return Object.fromEntries((store?.categories || []).filter(c => c.visible !== false).map(category => [category.id, {
-      title: text(category.title, locale), icon: fallback[category.icon]?.icon || fallback[category.id]?.icon || '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3V6a3 3 0 0 0-3-3H6zm0 3h12v12H6V6z"/></svg>',
+      title: text(category.title, locale), icon: fallback[category.icon]?.icon || fallback[category.id]?.icon || '<svg data-animated-icon="grid" data-icon-trigger="auto" class="inline-block align-middle shrink-0 " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><g data-icon-body><rect height="7" rx="1" width="7" x="3" y="3"/><rect height="7" rx="1" width="7" x="14" y="3"/><rect height="7" rx="1" width="7" x="14" y="14"/><rect height="7" rx="1" width="7" x="3" y="14"/></g></svg>',
       subs: category.subs.filter(s => s.visible !== false).map(sub => ({ id: sub.id, name: text(sub.title, locale) }))
     }]));
   }

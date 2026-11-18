@@ -370,7 +370,10 @@
     });
     updateHeading(); syncControls();
     if (mode === 'search' && !state.query) { loaded = true; render(); }
-    else load();
+    else {
+      const ready = load();
+      window.EnkaPageTransition?.hold(ready);
+    }
   }
   window.CatalogListing = { readState, routeURL, priceRange, prepareProducts, selectProducts, mount };
 })();

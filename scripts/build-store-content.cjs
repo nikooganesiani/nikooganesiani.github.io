@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 async function buildStoreContent(data, root = process.cwd()) {
+  if (fs.existsSync(path.join(root, '_data/icons.json'))) require('./build-icons.cjs').buildIcons(root);
   await import('../admin/public/store-engine.js');
   await import('../admin/public/store-visuals.js');
   const visuals=globalThis.EnkaStoreVisuals;
