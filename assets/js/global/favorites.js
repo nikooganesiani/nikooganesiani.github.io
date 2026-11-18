@@ -72,10 +72,10 @@
     var name = '';
     if (card) {
       var nameEl = card.querySelector('.product-name, .product-title, .card-title');
-      if (nameEl) name = nameEl.innerText.trim();
+      if (nameEl) name = nameEl.textContent.trim();
     } else {
       var titleEl = document.querySelector('.title-desktop, .title-mobile, h1.product-title-h1, h1');
-      if (titleEl) name = titleEl.innerText.trim();
+      if (titleEl) name = titleEl.textContent.trim();
     }
 
     return {
@@ -502,11 +502,15 @@
     updateFavModalCount();
 
     if (document.body) {
+      var syncFrame = 0;
       var favObserver = new MutationObserver(function (mutations) {
-        var hasAddedNodes = mutations.some(function (m) {
-          return m.addedNodes.length > 0;
+        var changed = mutations.some(function (mutation) {
+          if (mutation.target.parentElement?.closest('.product-name, [data-product-name]') || mutation.target.closest?.('.product-name, [data-product-name]')) return true;
+          return Array.from(mutation.addedNodes).some(function (node) {
+            return node.nodeType === 1 && (node.matches?.('.btn-fav, .btn-fav-card') || node.querySelector?.('.btn-fav, .btn-fav-card'));
+          });
         });
-        if (hasAddedNodes) syncFavButtons();
+        if (changed && !syncFrame) syncFrame = requestAnimationFrame(function () { syncFrame = 0; syncFavButtons(); });
       });
       favObserver.observe(document.body, { childList: true, subtree: true });
     }

@@ -83,6 +83,23 @@ test('Catalog requests and cached responses stay separate for each native langua
   assert.equal(cache.size, 3);
 });
 
+test('Each shared catalog response applies store settings once, including restoration from session storage', async () => {
+  const cache = new Map();
+  const storage = { getItem: key => cache.get(key), setItem: (key, value) => cache.set(key, value) };
+  let requests = 0;
+  const fetch = async () => { requests++; return {ok:true,json:async()=>({products:[product],_enkaStore:{categories:[]}})}; };
+  for (let navigation = 0; navigation < 2; navigation++) {
+    const context = catalogContext(fetch, storage);
+    let prices = 0; let renders = 0;
+    context.EnkaStoreEngine = {applyProducts(products) {prices++;return products;}};
+    context.window.enkaStorefront = {apply() {renders++;}};
+    const first = await context.window.fetchCatalogCached();
+    for (let consumer = 0; consumer < 6; consumer++) assert.equal(await context.window.fetchCatalogCached(), first);
+    assert.equal(prices,1); assert.equal(renders,1);
+  }
+  assert.equal(requests,1);
+});
+
 test('Failed and malformed catalog responses remain retryable', async () => {
   let calls = 0;
   const context = catalogContext(async () => { calls++; return calls === 1 ? { ok: false, status: 503 } : calls === 2 ? { ok: true, json: async () => ({ nope: [] }) } : { ok: true, json: async () => [product] }; });

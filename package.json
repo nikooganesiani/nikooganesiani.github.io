@@ -7,7 +7,8 @@
     "check": "node --test tests/*.test.cjs admin/tests/*.test.mjs",
     "check:site": "node scripts/check-site.cjs",
     "generate": "node generate_pages.js",
-    "build": "pnpm run generate && pnpm run build:css && bundle exec jekyll build",
+    "build": "pnpm run generate && pnpm run build:css && bundle exec jekyll build && pnpm run build:assets",
+    "build:assets": "node scripts/optimize-site.cjs",
     "preview": "node scripts/preview.cjs",
     "admin:dev": "node admin/dev.mjs",
     "admin:check": "node --test admin/tests/*.test.mjs",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.4",
+    "esbuild": "0.28.2",
     "sharp": "0.35.5",
     "tailwindcss": "4.3.4"
   }

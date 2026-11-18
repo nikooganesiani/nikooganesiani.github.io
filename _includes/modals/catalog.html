@@ -18,7 +18,8 @@
         </div>
       </nav>
       <div id="navCatalogContent" class="modal-body min-h-0 min-w-0 overflow-y-auto overscroll-contain p-3 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[scrollbar-width:thin] min-[641px]:p-6" aria-live="polite">
-        {% for panel in site.data.catalog_navigation.panels %}
+        {% comment %}The selected panel is built on demand; keep one HTML fallback.{% endcomment %}
+        {% for panel in site.data.catalog_navigation.panels limit:1 %}
         <section data-catalog-panel="{{ panel.id | escape }}" aria-label="{{ panel.title | escape }}"{% unless forloop.first %} hidden{% endunless %}>
           <div class="grid grid-cols-2 gap-2 min-[641px]:grid-cols-3 min-[641px]:gap-3">{{ panel.html }}</div>
         </section>

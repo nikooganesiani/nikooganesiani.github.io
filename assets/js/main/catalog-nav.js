@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!modal || !categories || !content || !pattern || !engine || !visuals || !window.CATALOG_STRUCTURE) return;
   const locale = window.enkaI18n?.locale || 'ka';
   let selected;
+  let initialized = false;
   let products;
   let savedImages = {};
   try { savedImages = JSON.parse(document.getElementById('catalogNavigationImages')?.textContent || '{}') || {}; } catch {}
@@ -90,15 +91,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (focusedCategory) [...categories.querySelectorAll('a')].find(link => link.dataset.cat === focusedCategory)?.focus({ preventScroll: true });
   }
 
-  renderNavigation();
+  function initialize() {
+    if (initialized) return;
+    initialized = true;
+    renderNavigation();
+  }
+  modal.addEventListener('modal:open', initialize);
   window.openCatalogCategory = (id, trigger) => {
     if (!window.CATALOG_STRUCTURE[id] || typeof window.openAppModal !== 'function') return false;
+    initialize();
     selectCategory(id);
     window.openAppModal(modal, trigger);
     [...categories.querySelectorAll('a')].find(link => link.dataset.cat === id)?.scrollIntoView({ block: 'nearest' });
     return true;
   };
-  window.addEventListener('enka:store-change', renderNavigation);
+  window.addEventListener('enka:store-change', () => { if (initialized) renderNavigation(); });
   categories.addEventListener('click', event => {
     const trigger = event.target.closest('a[data-cat]');
     if (!trigger || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

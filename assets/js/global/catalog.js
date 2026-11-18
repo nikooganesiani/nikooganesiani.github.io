@@ -59,10 +59,12 @@
     if (!cached) {
       try {
         const saved = JSON.parse(sessionStorage.getItem(CACHE_KEY));
-        if (saved && Array.isArray(saved.products) && Date.now() - saved.ts < TTL) cached = saved;
+        if (saved && Array.isArray(saved.products) && Date.now() - saved.ts >= 0 && Date.now() - saved.ts < TTL) cached = prepare(saved);
       } catch { /* Storage is optional. */ }
     }
-    if (cached && Date.now() - cached.ts < TTL) return Promise.resolve(prepare(cached));
+    // A shared response is prepared once. Consumers must not reprice the entire
+    // catalog or rebuild storefront DOM every time they read it.
+    if (cached && Date.now() - cached.ts < TTL) return Promise.resolve(cached);
     if (promise) return promise;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 12000);

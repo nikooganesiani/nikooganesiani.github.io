@@ -125,9 +125,10 @@
 }
 
 /* lesimpleliott's purple-dragon-56 (MIT); assets/licenses/uiverse-page-loader.txt. */
-@view-transition { navigation: auto; }
-/* The browser retains the covered frame while the next document is parsed.
-   The cover itself performs the reveal, so a second root crossfade is unwanted. */
+/* A cross-document root snapshot freezes the loader while the new document
+   initializes. The live cover already provides the navigation transition. */
+@view-transition { navigation: none; }
+/* Keep the cover's reveal independent of a transition started by browser code. */
 html[data-page-transition]::view-transition-group(root),
 html[data-page-transition]::view-transition-old(root),
 html[data-page-transition]::view-transition-new(root) { animation: none !important; mix-blend-mode: normal; }
@@ -150,8 +151,9 @@ html:is([data-page-transition="leaving"], [data-page-transition="arriving"]) #pa
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  transition: opacity 180ms cubic-bezier(.4, 0, .2, 1);
+  transition: opacity 100ms cubic-bezier(.4, 0, .2, 1);
 }
+html[data-page-transition] #page-transition { will-change: opacity; }
 html[data-page-transition="arriving"] #page-transition { transition: none; }
 .page-loader { display: flex; gap: 15px; width: 150px; height: 100px; }
 .page-loader__group { position: relative; display: flex; justify-content: center; align-items: flex-end; width: 40px; height: 100px; }

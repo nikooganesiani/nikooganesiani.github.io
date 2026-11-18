@@ -11,7 +11,7 @@ google_analytics_id: "G-KHQG9C6JQF"
 # Полная сборка исключает устаревшие страницы и данные каталога
 incremental: false
 
-include: [_pages]
+include: [_pages, _headers]
 
 # Исключаем служебные файлы и папки из итогового билда
 exclude:

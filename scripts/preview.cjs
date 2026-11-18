@@ -1,7 +1,10 @@
 const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
-const root = path.resolve(__dirname, '../_site');
+const zlib = require('node:zlib');
+const rootFlag = process.argv.indexOf('--root');
+const root = rootFlag >= 0 ? path.resolve(process.argv[rootFlag + 1]) : path.resolve(__dirname, '../_site');
+const compress = process.argv.includes('--compress');
 const port = Number(process.env.PORT || 4173);
 const mock = process.argv.includes('--mock-services');
 const catalogError = process.argv.includes('--catalog-error');
@@ -41,5 +44,9 @@ http.createServer((req, res) => {
     res.end("window.submitEnkaOrder = (_form, order) => fetch('/__preview/order', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(order) });");
   } else if (mock && pathname === '/capi.js') {
     res.end('// Analytics disabled in isolated local QA.');
+  } else if (compress && /\b(?:gzip)\b/.test(req.headers['accept-encoding'] || '') && /\.(?:html|css|js|json|svg|xml|txt)$/.test(target)) {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Vary', 'Accept-Encoding');
+    fs.createReadStream(target).pipe(zlib.createGzip()).pipe(res);
   } else fs.createReadStream(target).pipe(res);
 }).listen(port, '127.0.0.1', () => console.log('Local: http://127.0.0.1:' + port + (mock ? ' (isolated service mocks)' : '')));

@@ -38,11 +38,19 @@
 
   const root = document.documentElement;
   const buyBar = document.getElementById('mobileBottomBar');
-  function measure() {
-    const height = nav.getBoundingClientRect().height;
-    if (height > 0) root.style.setProperty('--mobile-nav-height', height + 'px');
-    const buyHeight = buyBar?.getBoundingClientRect().height || 0;
-    root.style.setProperty('--mobile-buy-bar-height', buyHeight + 'px');
+  let navHeight = 65;
+  let buyBarHeight = 0;
+  function measure(entries) {
+    for (const entry of entries) {
+      const height = entry.borderBoxSize?.[0]?.blockSize ?? entry.target.getBoundingClientRect().height;
+      if (entry.target === nav && height > 0 && height !== navHeight) {
+        navHeight = height;
+        root.style.setProperty('--mobile-nav-height', height + 'px');
+      } else if (entry.target === buyBar && height !== buyBarHeight) {
+        buyBarHeight = height;
+        root.style.setProperty('--mobile-buy-bar-height', height + 'px');
+      }
+    }
   }
   const observer = new ResizeObserver(measure);
   observer.observe(nav, { box: 'border-box' });
@@ -50,8 +58,6 @@
   window.addEventListener('pageshow', () => {
     window.updateBadges?.();
     syncState();
-    measure();
   });
   syncState();
-  measure();
 })();

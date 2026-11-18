@@ -9,6 +9,9 @@
 /vendor/
 /assets/css/style.css
 /assets/i18n/data.js
+/assets/i18n/ru.*.json
+/assets/i18n/en.*.json
+/_data/i18n.json
 /assets/js/global/store-engine.js
 /assets/js/global/store-visuals.js
 /_data/studio.json

@@ -7,9 +7,11 @@
   }
   if (!['ru', 'en'].includes(locale)) locale = 'ka';
   let dictionary; let matcher;
+  let store = window.ENKA_STORE;
+  let active = true;
   const textSources = new WeakMap(); const attributeSources = new WeakMap();
   function configure(store) {
-    const values = Object.fromEntries(Object.entries(window.ENKA_TRANSLATIONS || {}).map(([source,entries])=>[source,{...entries}]));
+    const values = locale === 'ka' ? {} : Object.fromEntries(Object.entries(window.ENKA_TRANSLATIONS || {}).map(([source,entries])=>[source,{...entries}]));
     for(const [source,entries] of Object.entries(store?.strings || {})) {
       const merged={...(Object.hasOwn(values,source)?values[source]:{})};
       for(const [locale,value] of Object.entries(entries))if(value.trim())merged[locale]=value;
@@ -33,12 +35,19 @@
     if(dictionary.has(text.trim()))return text.replace(text.trim(),dictionary.get(text.trim()));
     return !exact && matcher ? text.replace(matcher,source=>dictionary.get(source)) : text;
   };
-  window.enkaI18n = {locale,t,setStore(store){ configure(store); translate(document.head); translate(document.body); }};
+  window.enkaI18n = {locale,t,setStore(value){
+    store = value;
+    const previous = active;
+    configure(store);
+    active = previous || dictionary.size > 0 || locale !== 'ka';
+    translate(document.head); translate(document.body);
+    active = dictionary.size > 0 || locale !== 'ka';
+  }};
   if(locale !== 'ka')document.documentElement.lang=locale;
   // Catalog content is localized exclusively by the published admin API.
   const excluded = 'script,style,textarea,[translate="no"],.notranslate,[contenteditable="true"],.product-specs,.product-highlights,[data-product-name],.product-description,.product-name,.search-result-name,.modal-product-name,.modal-order-name,#confirmProduct,[data-product-warranty],[data-catalog-content]';
   function translate(root) {
-    if (!root) return;
+    if (!root || !active) return;
     if (root.nodeType === 3) {
       if (root.parentElement?.closest(excluded)) return;
       const previous = textSources.get(root);
@@ -65,8 +74,24 @@
     }
     for (const child of root.childNodes) translate(child);
   }
-  translate(document.head);
-  translate(document.body);
+  active = dictionary.size > 0 || locale !== 'ka';
+  function applyTranslations() { configure(store); translate(document.head); translate(document.body); }
+  if (locale !== 'ka' && !window.ENKA_TRANSLATIONS && window.ENKA_I18N_URLS?.[locale]) {
+    // The selected language was preloaded in head. Georgian never downloads or
+    // parses an editorial translation dictionary.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12000);
+    const ready = fetch(window.ENKA_I18N_URLS[locale], { signal: controller.signal }).then(response => {
+      if (!response.ok) throw Error('Translation HTTP ' + response.status);
+      return response.json();
+    }).then(data => { window.ENKA_TRANSLATIONS = data; applyTranslations(); }).catch(() => {}).finally(() => clearTimeout(timer));
+    window.enkaI18n.ready = ready;
+    window.EnkaPageTransition?.hold(ready);
+  } else {
+    translate(document.head);
+    translate(document.body);
+    window.enkaI18n.ready = Promise.resolve();
+  }
   const download = document.querySelector?.('[download][href$="withdrawal-form.txt"]');
   if (download && locale !== 'ka') download.href = download.href.replace('withdrawal-form.txt', 'withdrawal-form.' + locale + '.txt');
   new MutationObserver(records => {

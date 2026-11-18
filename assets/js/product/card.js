@@ -88,11 +88,11 @@
 
                 <!-- overflow-x-hidden не перехватывает свайп пальцем/тачпадом у родительской карусели, а gap-2 исключает попадание края соседнего фото -->
                 <div class="product-images-track flex w-full h-full gap-2 overflow-x-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="track-${uniqueId}">
-                    ${imgs.map((img) => `
+                    ${imgs.map((img, index) => `
                         <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full bg-transparent overflow-hidden snap-start">
                             <a href="${productUrl}" class="block w-full h-full" draggable="false" tabindex="-1" aria-hidden="true">
                                 <img class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal"
-                                     src="${escapeHtml(img)}"
+                                     ${index === 0 ? 'src' : 'data-card-src'}="${escapeHtml(img)}"
                                      alt="${safeName}"
                                      width="600"
                                      height="600"
@@ -138,6 +138,13 @@
     };
 
     // Restore the cover when the pointer leaves the image, including late-loaded cards.
+    function loadCardSlide(slide) {
+        const image = slide?.querySelector('img[data-card-src]');
+        if (!image) return;
+        image.src = image.dataset.cardSrc;
+        image.removeAttribute('data-card-src');
+    }
+
     document.addEventListener('pointerout', event => {
         const media = event.target.closest?.('.product-card-media');
         if (!media || (event.relatedTarget && media.contains(event.relatedTarget))) return;
@@ -163,6 +170,7 @@
         if (track._previewIndex === index && track._previewWidth === bounds.width) return;
         track._previewIndex = index;
         track._previewWidth = bounds.width;
+        loadCardSlide(track.children[index]);
         track.scrollTo({ left: track.children[index].offsetLeft - track.children[0].offsetLeft, behavior: 'instant' });
         const indicators = media.querySelector('.card-image-indicators');
         if (indicators) Array.from(indicators.children).forEach((indicator, i) => indicator.classList.toggle('active', i === index));
@@ -216,6 +224,7 @@
 
         const targetSlide = slides[nextIndex];
         if (targetSlide) {
+            loadCardSlide(targetSlide);
             track.scrollTo({ left: targetSlide.offsetLeft - slides[0].offsetLeft, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }
 

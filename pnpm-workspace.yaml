@@ -2,6 +2,7 @@ packages:
   - .
 allowBuilds:
   '@parcel/watcher': false
+  esbuild: false
 minimumReleaseAgeExclude:
   - '@tailwindcss/cli@4.3.4'
   - '@tailwindcss/node@4.3.4'

@@ -71,7 +71,7 @@ test('Navigation waits for the opaque cover, retains URL/hash and ignores duplic
   assert.equal(page.root.dataset.pageTransition, 'leaving');
   assert.equal(JSON.parse(page.store.get('enka:page-transition')).href, url);
   page.click(origin + '/other/');
-  await page.tick(211); assert.equal(page.calls.length, 0);
+  await page.tick(131); assert.equal(page.calls.length, 0);
   await page.tick(1); assert.deepEqual(page.calls, [url]);
 });
 
@@ -97,7 +97,7 @@ test('Unavailable storage falls back immediately; reduced motion skips the fade 
   assert.deepEqual(page.calls, ['reload']);
 });
 
-test('Reveal waits for page initialization, minimum display and two paint frames without resetting phase', async () => {
+test('Reveal waits for page initialization and two paint frames without an artificial minimum display', async () => {
   const page = setup({ saved: { href, started: 99800, phase: 200 } });
   page.events.DOMContentLoaded();
   let finish;
@@ -114,7 +114,7 @@ test('Reveal waits for page initialization, minimum display and two paint frames
 test('Stalled content is bounded; cancelled navigation and history restoration release the cover', async () => {
   const page = setup({ saved: { href, started: 99800 } });
   page.api.hold(new Promise(() => {})); page.events.DOMContentLoaded();
-  await page.tick(1799); assert.equal(page.root.dataset.pageTransition, 'arriving');
+  await page.tick(449); assert.equal(page.root.dataset.pageTransition, 'arriving');
   for (let i = 0; i < 8; i++) await page.tick(16);
   await page.tick(260);
   assert.equal(page.root.dataset.pageTransition, undefined);

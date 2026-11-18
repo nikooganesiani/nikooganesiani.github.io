@@ -6,7 +6,33 @@ const cssDirectory = path.resolve(__dirname, '../assets/css');
 const cssInput = fs.readFileSync(path.join(cssDirectory, 'input.css'), 'utf8');
 assert.deepEqual(fs.readdirSync(cssDirectory).sort(), ['input.css', 'style.css'], 'Storefront CSS must contain only the Tailwind input and generated bundle');
 assert.ok(!/@apply\b|@layer\s+components\b/.test(cssInput), 'Component styling belongs in Tailwind classes on markup');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const manifestPath = path.join(root, 'assets/build-manifest.json');
+const assetManifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : null;
+if (assetManifest) {
+  const { digest } = require('./optimize-site.cjs');
+  for (const url of [...Object.keys(assetManifest.bundles), ...Object.values(assetManifest.styles), ...assetManifest.data]) {
+    const content = fs.readFileSync(path.join(root, url));
+    assert.equal(path.basename(url).split('.')[0], digest(content), 'Compiled asset content matches its cache key: ' + url);
+  }
+}
+function readPage(file) {
+  let value = fs.readFileSync(file, 'utf8');
+  if (!assetManifest) return value;
+  // Verify actual emitted files, then inspect the original ordered controllers
+  // using the build manifest so existing behavioral contracts cover both builds.
+  value = value.replace(/<script data-enka-source="([^"]+)">([\s\S]*?)<\/script>/g, (_, source, code) => {
+    assert.equal(require('./optimize-site.cjs').digest(code), assetManifest.inline[source], 'Inline critical controller integrity');
+    return `<script src="${source}"></script>`;
+  });
+  value = value.replace(/<script src="(\/assets\/compiled\/[^"?]+\.js)" defer><\/script>/g, (_, url) => {
+    if (assetManifest.data.includes(url)) return `<script src="${url}" defer></script>`;
+    assert.ok(assetManifest.bundles[url]?.length, 'Known compiled script: ' + url);
+    return assetManifest.bundles[url].map(source => `<script src="${source}" defer></script>`).join('\n');
+  });
+  for (const [source, url] of Object.entries(assetManifest.styles)) value = value.replaceAll(`href="${url}"`, `href="${source}"`);
+  return value;
+}
+const html = readPage(path.join(root, 'index.html'));
 const footerOf = value => value.match(/<footer\b(?=[^>]*\bdata-site-footer\b)[^>]*>[\s\S]*?<\/footer>/)?.[0];
 const sharedFooter = footerOf(html);
 function verifyHeader(value, label) {
@@ -85,7 +111,7 @@ let productCount = 0;
 for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   if (!entry.isDirectory()) continue;
   const file = path.join(productsDir, entry.name, 'index.html');
-  const productHtml = fs.readFileSync(file, 'utf8');
+  const productHtml = readPage(file);
   const label = 'Product ' + entry.name + ': ';
   verifyHeader(productHtml, label);
   assert.equal(footerOf(productHtml), sharedFooter, label + 'footer must match the shared homepage footer');
@@ -125,7 +151,7 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
 assert.ok(productCount > 0, 'No product pages built');
 console.log('Verified ' + productCount + ' product pages: metadata, schema, availability, forms, unique scripts/IDs and local links.');
 for (const page of ['category', 'search']) {
-  const pageHtml = fs.readFileSync(path.join(root, page, 'index.html'), 'utf8');
+  const pageHtml = readPage(path.join(root, page, 'index.html'));
   verifyHeader(pageHtml, page);
   assert.equal(footerOf(pageHtml), sharedFooter, page + ': footer must match the shared homepage footer');
   assert.match(pageHtml, /<nav\b[^>]*\sdata-breadcrumbs\b/, page + ': shared breadcrumbs');
@@ -160,7 +186,7 @@ assert.ok(!html.includes('/assets/js/main/catalog-listing.js'), 'Homepage must n
 console.log('Shared footer and breadcrumbs verified on product, category and search pages.');
 const infoDescriptions = new Set();
 for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
-  const value = fs.readFileSync(path.join(root, 'info', page + '.html'), 'utf8');
+  const value = readPage(path.join(root, 'info', page + '.html'));
   const label = 'Info ' + page;
   verifyHeader(value, label);
   assert.ok(!/{%|{{/.test(value), label + ': rendered Liquid');

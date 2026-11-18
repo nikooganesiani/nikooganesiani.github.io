@@ -67,7 +67,7 @@
       const cover = document.getElementById('page-transition');
       const fades = cover?.getAnimations?.().filter(animation => animation.transitionProperty === 'opacity') || [];
       if (fades.length) Promise.allSettled(fades.map(animation => animation.finished)).then(() => { if (leaving) leave(); });
-      else departure = setTimeout(leave, reduced.matches ? 0 : 180);
+      else departure = setTimeout(leave, reduced.matches ? 0 : 100);
     }));
     // Cancelled navigation/downloads must never leave the page locked.
     watchdog = setTimeout(reset, 10000);
@@ -119,16 +119,14 @@
     // A task boundary lets every DCL listener register its catalog/homepage work.
     await new Promise(resolve => setTimeout(resolve, 0));
     const content = Promise.all(holds).then(async () => {
-      const images = Array.from(document.images).filter(image => {
-        const rect = image.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight && rect.bottom > 0;
-      });
-      await Promise.all([document.fonts?.ready, ...images.map(image => image.decode?.().catch(() => {}))]);
+      // Native lazy loading can fetch whole horizontal galleries. Only the
+      // primary image may hold the cover; fonts and card photos stream in normally.
+      const primary = document.querySelector('img[fetchpriority="high"]');
+      if (primary) await primary.decode?.().catch(() => {});
     });
     let deadline;
-    await Promise.race([Promise.all([content, incomingTransition]), new Promise(resolve => { deadline = setTimeout(resolve, 1800); })]);
+    await Promise.race([Promise.all([content, incomingTransition]), new Promise(resolve => { deadline = setTimeout(resolve, 450); })]);
     clearTimeout(deadline);
-    await new Promise(resolve => setTimeout(resolve, reduced.matches ? 0 : Math.max(0, 460 - (Date.now() - started))));
     requestAnimationFrame(() => requestAnimationFrame(() => {
       if (generation !== current || leaving) return;
       root.dataset.pageTransition = 'revealing';

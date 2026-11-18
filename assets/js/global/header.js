@@ -5,14 +5,20 @@
   const root = document.documentElement;
   const inner = header.querySelector('.header-inner');
   // Text zoom, font loading and safe areas can change the actual header height.
-  function measure() {
-    root.style.setProperty('--site-header-height', inner.getBoundingClientRect().height + 'px');
+  let height = window.matchMedia('(max-width: 640px)').matches ? 56 : window.matchMedia('(max-width: 1024px)').matches ? 128 : 72;
+  function measure(entries) {
+    const value = entries?.[0]?.borderBoxSize?.[0]?.blockSize ?? inner.getBoundingClientRect().height;
+    if (height === value) return;
+    height = value;
+    root.style.setProperty('--site-header-height', value + 'px');
   }
   if ('ResizeObserver' in window) {
     const observer = new ResizeObserver(measure);
-    observer.observe(inner);
-  } else window.addEventListener('resize', measure, { passive: true });
-  measure();
+    observer.observe(inner, { box: 'border-box' });
+  } else {
+    window.addEventListener('resize', measure, { passive: true });
+    requestAnimationFrame(measure);
+  }
   for (const trigger of header.querySelectorAll('[data-header-panel]')) {
     const id = trigger.dataset.headerPanel;
     const panel = document.getElementById(id);
