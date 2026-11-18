@@ -1,4 +1,26 @@
 (() => {
+  const track = document.getElementById('blog-home-track');
+  const previous = track?.parentElement.querySelector('[data-blog-direction="-1"]');
+  const next = track?.parentElement.querySelector('[data-blog-direction="1"]');
+  if (previous && next) {
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      previous.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max - 2;
+    };
+    const move = direction => {
+      const [first, second] = track.children;
+      const step = second.getBoundingClientRect().left - first.getBoundingClientRect().left;
+      const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      track.scrollBy({ left: direction * step, behavior });
+    };
+    previous.hidden = next.hidden = false;
+    previous.addEventListener('click', () => move(-1));
+    next.addEventListener('click', () => move(1));
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
   const locale = window.enkaI18n?.locale;
   if (locale !== 'ru' && locale !== 'en') return;
   for (const card of document.querySelectorAll('[data-blog-card]')) {

@@ -63,7 +63,7 @@ async function buildBlog(articles, products, root) {
   const data = {
     cards, pages, products: byProduct,
     archive: published.map(article => article.slug),
-    homepage: published.filter(article => article.homepage).slice(0, 3).map(article => article.slug)
+    homepage: published.filter(article => article.homepage).map(article => article.slug)
   };
   const dataDirectory = path.join(root, '_data');
   if (fs.existsSync(dataDirectory)) fs.writeFileSync(path.join(dataDirectory, 'blog.json'), JSON.stringify(data));

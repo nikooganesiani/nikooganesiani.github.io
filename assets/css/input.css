@@ -71,6 +71,21 @@
   100% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0); }
 }
 
+/* Let cards travel to the viewport edges while keeping their snap alignment. */
+@media (width < 768px) {
+  #main-content .product-carousel {
+    --carousel-page-padding: 1.5rem;
+    --carousel-inset: calc(var(--carousel-page-padding) + var(--campaign-padding, 0px));
+    margin-inline: calc(-1 * var(--carousel-inset));
+    padding-inline: var(--carousel-inset);
+    scroll-padding-inline: var(--carousel-inset);
+  }
+
+  @media (width < 640px) {
+    #main-content .product-carousel { --carousel-page-padding: 1rem; }
+  }
+}
+
 /* Photo selection follows the pointer across the whole image. */
 .card-image-indicators {
   position: absolute;

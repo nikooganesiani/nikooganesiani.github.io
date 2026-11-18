@@ -13,7 +13,8 @@
     const list = document.querySelector('[data-category-tiles] ul');
     if (!list) return;
     const source=store.categories.filter(c=>c.visible!==false);
-    list.innerHTML=source.map(c=>'<li class="min-w-0">'+globalThis.EnkaStoreVisuals.category(c,locale(),next[c.id].icon)+'</li>').join('');
+    list.querySelectorAll('[data-catalog-tile]').forEach(tile => tile.remove());
+    list.insertAdjacentHTML('beforeend', source.map(c=>'<li class="min-w-0" data-catalog-tile>'+globalThis.EnkaStoreVisuals.category(c,locale(),next[c.id].icon)+'</li>').join(''));
     globalThis.EnkaStoreVisuals.apply(list);
   }
   function contacts(store) {

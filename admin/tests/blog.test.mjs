@@ -104,9 +104,10 @@ test('Static generation makes localized article routes, sorts cards and removes 
   const priority = liveArticle('priority-guide');
   priority.rank = 10;
   priority.homepage = false;
-  const data = await buildBlog([article, priority, newArticle()], products, root);
-  assert.deepEqual(data.archive, ['priority-guide', 'coffee-guide']);
-  assert.deepEqual(data.homepage, ['coffee-guide']);
+  const additionalSlugs = ['kettle-guide', 'mixer-guide', 'toaster-guide'];
+  const data = await buildBlog([article, priority, ...additionalSlugs.map(liveArticle), newArticle()], products, root);
+  assert.deepEqual(data.archive, ['priority-guide', 'coffee-guide', ...additionalSlugs]);
+  assert.deepEqual(data.homepage, ['coffee-guide', ...additionalSlugs]);
   assert.deepEqual(data.products.a, ['coffee-guide']);
   assert.equal(data.products.b, undefined);
   assert.equal(data.cards['coffee-guide'].editions.en.url, '/en/blog/coffee-guide/');
