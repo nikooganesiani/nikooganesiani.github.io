@@ -17,7 +17,7 @@
       {% include breadcrumb-item.html label=include.current_label current=true position=2 %}
     {% endif %}
   </ol>
-  {% if include.sku %}<span class="notranslate shrink-0 text-[length:12px] text-muted whitespace-nowrap tracking-[.025em] min-[640px]:max-[768px]:hidden max-[640px]:text-[length:11px]" data-product-sku translate="no" aria-label="SKU {{ include.sku | escape }}"><span class="max-[640px]:hidden">SKU </span><span class="hidden max-[640px]:inline" aria-hidden="true">#</span><span class="text-[color:light-dark(#586271,var(--color-night-copy))] ml-[5px] max-[640px]:ml-0 tabular-nums select-all">{{ include.sku | escape }}</span></span>{% endif %}
+  {% if include.sku %}<span class="notranslate hidden max-[640px]:inline-flex shrink-0 text-[length:12px] text-muted whitespace-nowrap tracking-[.025em] min-[640px]:max-[768px]:hidden max-[640px]:text-[length:11px]" data-product-sku translate="no" aria-label="ID {{ include.sku | escape }}"><span>ID</span><span class="text-[color:light-dark(#586271,var(--color-night-copy))] ml-[5px] tabular-nums select-all">{{ include.sku | escape }}</span></span>{% endif %}
   {% if include.dynamic %}
     <template data-breadcrumb-item>{% include breadcrumb-item.html href='#' label='' position=2 %}</template>
     <template data-breadcrumb-separator>{% include breadcrumb-separator.html %}</template>

@@ -17,6 +17,7 @@
 }
 
 @theme {
+  --container-store: 100rem;
   --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #155dfc;
   --color-brand-dark: #1048cb;

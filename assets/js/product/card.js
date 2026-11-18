@@ -92,7 +92,7 @@
         const formattedOldPrice = oldVal > newVal ? formatPriceDisplay(p.oldPrice) : '';
 
         return `
-        <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[color:light-dark(#2c3644,var(--color-night-ink))] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)] max-[768px]:[.product-carousel_>_&:last-child]:mr-[calc((100%_-_32px)_/_5_+_16px)]" data-product-id="${safeId}">
+        <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[color:light-dark(#2c3644,var(--color-night-ink))] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_72px)_/_4)] min-[1280px]:[.product-carousel_>_&]:basis-[calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start min-[1440px]:[.product-carousel_>_&]:basis-[calc((100%_-_120px)_/_6)] max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)] max-[768px]:[.product-carousel_>_&:last-child]:mr-[calc((100%_-_32px)_/_5_+_16px)]" data-product-id="${safeId}">
 
             <!-- Блок изображения -->
             <div class="product-card-media dark:bg-white relative w-full aspect-square bg-transparent rounded-xl overflow-hidden">

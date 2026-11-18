@@ -75,18 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     go(modalTrack, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(modalTrack) + (event.key === 'ArrowRight' ? 1 : -1));
   });
 
-  const sectionLinks = [...document.querySelectorAll('.product-section-nav a')];
-  const syncSectionLinks = () => {
-    const selected = sectionLinks.find(link => link.hash === window.location.hash) || sectionLinks[0];
-    sectionLinks.forEach(link => {
-      link.classList.toggle('is-active', link === selected);
-      if (link === selected) link.setAttribute('aria-current', 'location');
-      else link.removeAttribute('aria-current');
-    });
-  };
-  window.addEventListener('hashchange', syncSectionLinks);
-  syncSectionLinks();
-
   const specs = document.getElementById('specsBlock');
   const expand = document.getElementById('btnExpandSpecs');
   if (specs && expand) {
@@ -95,12 +83,24 @@ document.addEventListener('DOMContentLoaded', () => {
       expand.hidden = !overflowing;
       specs.classList.toggle('is-collapsible', overflowing);
     };
-    expand.addEventListener('click', () => {
-      const expanded = expand.getAttribute('aria-expanded') !== 'true';
+    const setExpanded = expanded => {
       expand.setAttribute('aria-expanded', String(expanded));
       specs.classList.toggle('expanded', expanded);
-      document.getElementById('specsExpandLabel').textContent = expanded ? 'ნაკლების ნახვა' : 'ყველა მახასიათებელი';
+      const label = expanded ? 'ნაკლების ნახვა' : 'მეტის ნახვა';
+      document.getElementById('specsExpandLabel').textContent = window.enkaI18n?.t(label) || label;
+    };
+    expand.addEventListener('click', () => {
+      setExpanded(expand.getAttribute('aria-expanded') !== 'true');
     });
+    // Reveal the full list before the browser follows the section anchor.
+    document.querySelectorAll('a[href="#productSpecifications"]').forEach(link => {
+      link.addEventListener('click', () => setExpanded(true));
+    });
+    const revealLinkedSpecs = () => {
+      if (window.location.hash === '#productSpecifications') setExpanded(true);
+    };
+    window.addEventListener('hashchange', revealLinkedSpecs);
+    revealLinkedSpecs();
     measure();
     if (typeof ResizeObserver !== 'undefined') new ResizeObserver(measure).observe(specs.querySelector('dl'));
     document.fonts?.ready.then(measure);
@@ -113,17 +113,23 @@ document.addEventListener('DOMContentLoaded', () => {
     target?.setAttribute('tabindex', target.matches('input') ? '0' : '-1');
     target?.focus({ preventScroll: true });
   };
-  document.querySelectorAll('.product-video-play').forEach(link => link.addEventListener('click', event => {
-    const container = link.closest('[data-video-id]');
-    const id = container.dataset.videoId;
+  document.querySelectorAll('.product-video-play, [data-product-video-trigger]').forEach(link => link.addEventListener('click', event => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const container = document.querySelector('#productVideo [data-video-id]');
+    const id = container?.dataset.videoId;
     if (!/^[\w-]{11}$/.test(id)) return;
-    event.preventDefault();
+    if (link.classList.contains('product-video-play')) event.preventDefault();
+    const existing = container.querySelector('iframe');
+    if (existing) {
+      existing.focus({ preventScroll: true });
+      return;
+    }
     const iframe = document.createElement('iframe');
     iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
-    iframe.title = 'პროდუქტის ვიდეო განხილვა';
+    iframe.title = window.enkaI18n?.t('პროდუქტის ვიდეო განხილვა') || 'პროდუქტის ვიდეო განხილვა';
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     iframe.allowFullscreen = true;
     container.replaceChildren(iframe);
-    iframe.focus();
+    iframe.focus({ preventScroll: true });
   }));
 });

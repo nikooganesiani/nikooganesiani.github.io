@@ -1,21 +1,24 @@
-<div class="product-intro [grid-area:intro] min-w-0 [&_h1]:m-0 [&_h1]:text-[var(--p-ink)] [&_h1]:text-[length:clamp(24px,_2.2vw,_30px)] [&_h1]:font-[650] [&_h1]:leading-[1.3] [&_h1]:tracking-[-.035em] [&_h1]:[overflow-wrap:anywhere] max-[1101px]:[&_h1]:text-[length:26px] min-[768px]:max-[901px]:[&_h1]:text-[length:24px] max-[768px]:[&_h1]:text-[length:26px] max-[640px]:[&_h1]:text-[length:21px] max-[640px]:[&_h1]:font-semibold max-[640px]:[&_h1]:tracking-[-.02em] max-[768px]:[&_h1]:leading-[1.3] max-[768px]:[&_h1]:max-w-145 max-[360px]:[&_h1]:text-[length:20px]">
-  <div class="max-[640px]:hidden flex items-baseline flex-wrap gap-y-2 gap-x-4 min-h-5.5 mt-0 mr-0 mb-3 ml-0 max-[768px]:mb-[9px] max-[768px]:flex-wrap max-[768px]:gap-y-2 max-[768px]:gap-x-3.5 max-[640px]:items-center max-[640px]:justify-between max-[640px]:gap-x-3 max-[640px]:mb-2">
-    <div class="flex items-center gap-3 min-w-0 max-[640px]:flex-wrap max-[640px]:gap-x-2 max-[640px]:gap-y-0.5">{% if page.brand %}<span class="notranslate text-muted uppercase tracking-[.13em] text-[length:12px] font-semibold leading-[1.5] max-[640px]:text-[length:11px] max-[640px]:tracking-[.06em] max-[640px]:text-[color:light-dark(#596372,var(--color-night-copy))]" translate="no">{{ page.brand | escape }}</span>{% endif %}{% if page.sku %}<span class="notranslate hidden max-[768px]:inline max-[768px]:text-muted max-[768px]:text-[length:11px] max-[768px]:pl-3 max-[768px]:border-l max-[768px]:border-solid max-[768px]:border-l-[color:light-dark(#e1e5eb,var(--color-night-line))] max-[640px]:border-0 max-[640px]:pl-0 max-[640px]:text-[length:10px] max-[640px]:text-[color:light-dark(#89919d,var(--color-night-muted))] max-[640px]:before:content-['·'] max-[640px]:before:mr-2" translate="no">SKU {{ page.sku | escape }}</span>{% endif %}</div>
-    <span class="inline-flex items-center gap-1.5 text-[color:light-dark(#26734e,var(--color-night-success))] text-[length:12px] font-medium leading-[1.5] before:[content:''] before:w-[5px] before:h-[5px] before:rounded-[50%] before:bg-current before:shrink-0 max-[640px]:shrink-0 max-[640px]:text-[length:11px] max-[640px]:gap-1 [&[data-stock=out\_of\_stock]]:text-[color:light-dark(#7d8490,var(--color-night-copy))] [&[data-stock=unavailable]]:text-[color:light-dark(#7d8490,var(--color-night-copy))] [&[data-stock=soon]]:text-[color:light-dark(#9a6829,var(--color-night-warning))]" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
-  </div>
+<div class="product-intro [grid-area:intro] min-w-0 [&_h1]:m-0 [&_h1]:text-ink [&_h1]:text-[length:clamp(24px,_2vw,_28px)] [&_h1]:font-[650] [&_h1]:leading-[1.3] [&_h1]:tracking-[-.025em] [&_h1]:[overflow-wrap:anywhere] max-[768px]:[&_h1]:text-[length:26px] max-[640px]:[&_h1]:text-[length:21px] max-[640px]:[&_h1]:font-semibold max-[640px]:[&_h1]:tracking-[-.02em] max-[360px]:[&_h1]:text-[length:20px]">
+  <p class="notranslate text-muted text-[length:12px] leading-5 mb-2.5 tabular-nums max-[640px]:hidden" translate="no" data-product-sku>ID <span class="select-all">{{ page.sku | default: page.product_id | escape }}</span></p>
   <h1 data-product-name>{{ page.name | escape }}</h1>
+  {% if page.brand and page.brand != '' %}
+  <p class="flex flex-wrap items-baseline gap-x-1.5 text-[length:13px] leading-6 mt-3 max-[640px]:hidden"><span class="text-muted">ბრენდი:</span><a class="notranslate font-medium text-accent no-underline hover:underline underline-offset-4 focus-visible:outline-brand" translate="no" href="/search/?q={{ page.brand | url_encode }}">{{ page.brand | escape }}</a></p>
+  {% endif %}
+  <span class="sr-only" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
   {% assign highlight_count = 0 %}
   {% capture product_highlights %}
     {% for spec in page.specs %}
       {% unless spec[0] == 'ბრენდი' or spec[0] == 'მოდელი' or spec[0] == 'ძაბვა' or spec[0] == 'სიხშირე' or spec[0] == 'კვების წყარო' %}
         <div data-product-highlight-index="{{ forloop.index0 }}"><dt>{{ spec[0] | escape }}</dt><dd>{{ spec[1] | escape }}</dd></div>
         {% assign highlight_count = highlight_count | plus: 1 %}
-        {% if highlight_count == 3 %}{% break %}{% endif %}
+        {% if highlight_count == 5 %}{% break %}{% endif %}
       {% endunless %}
     {% endfor %}
   {% endcapture %}
   {% if highlight_count > 0 %}
-  <dl class="product-highlights grid gap-[7px] mt-5 [&_>_div]:flex [&_>_div]:items-baseline [&_>_div]:gap-3.5 [&_>_div]:text-[length:13px] [&_>_div]:leading-[1.65] [&_dt]:text-muted [&_dt]:[flex:0_1_auto] [&_dd]:font-medium [&_dd]:text-[color:light-dark(#3b4451,var(--color-night-copy))] [&_dd]:[overflow-wrap:anywhere] max-[1101px]:gap-1 max-[1101px]:mt-4 max-[768px]:hidden">{{ product_highlights }}</dl>
-  <a class="inline-flex items-center gap-[5px] w-fit min-h-9 p-0 text-[length:12px] font-[550] text-[color:light-dark(#185ad4,var(--color-accent))] no-underline cursor-pointer bg-transparent border-0 hover:text-[color:light-dark(#0b40a2,var(--color-accent))] hover:underline hover:underline-offset-[3px] [.product-intro_>_&]:mt-[5px] max-[768px]:[.product-intro_>_&]:hidden" href="#productSpecifications">ყველა მახასიათებელი{% include icons.html name='chevron-right' size=13 %}</a>
+  <div class="mt-7 max-[768px]:hidden">
+    <dl class="product-highlights [&_>_div]:grid [&_>_div]:grid-cols-[minmax(0,_1fr)_minmax(0,_1fr)] [&_>_div]:gap-3 [&_>_div]:py-2.5 [&_>_div]:border-b [&_>_div]:border-line [&_>_div]:text-[length:13px] [&_>_div]:leading-[1.65] [&_dt]:text-muted [&_dd]:font-medium [&_dd]:text-ink [&_dd]:text-right [&_dt]:[overflow-wrap:anywhere] [&_dd]:[overflow-wrap:anywhere]">{{ product_highlights }}</dl>
+    <a class="inline-flex items-center gap-1 w-fit min-h-10 mt-2 text-[length:12px] font-medium text-accent no-underline hover:underline underline-offset-4" href="#productSpecifications">ყველა მახასიათებელი{% include icons.html name='chevron-right' size=13 %}</a>
+  </div>
   {% endif %}
 </div>
