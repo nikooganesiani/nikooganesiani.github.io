@@ -33,7 +33,7 @@
       trigger.focus({ preventScroll: true });
       if (id === 'favModal') window.openFavorites(event);
       else if (id === 'ordersModal') window.openOrders(event);
-      else if (id === 'trackingModal') window.openTracking();
+      else if (id === 'trackingModal') window.openTracking('', true, trigger);
       else window.openAppModal(id, trigger);
     });
     if (trigger.tagName === 'A') trigger.addEventListener('keydown', event => {

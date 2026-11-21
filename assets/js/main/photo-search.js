@@ -99,6 +99,8 @@
     const dropzone = get('Dropzone'), loading = get('Loading'), results = get('Results');
     const selected = get('Selected'), preview = get('Preview'), retry = get('Retry');
     let controller, objectURL, lastFile, revision = 0;
+    const resultProducts = new Map();
+    window.EnkaSearchHistory?.trackResults(grid, card => resultProducts.get(card.dataset.productId));
     let statusTimers = [];
     const text = value => window.enkaI18n?.t(value) || value;
     const say = value => { status.textContent = text(value); };
@@ -107,7 +109,12 @@
       statusTimers.forEach(clearTimeout); statusTimers = [];
       loading.hidden = true; modal.classList.remove('is-searching'); grid.removeAttribute('aria-busy');
     }
-    function cancel() { ++revision; controller?.abort(); stopLoading(); }
+    function cancel() {
+      ++revision;
+      controller?.abort();
+      controller = null;
+      stopLoading();
+    }
     document.querySelectorAll('[data-photo-search]').forEach(button => button.addEventListener('click', () => {
       window.openAppModal('photoSearchModal', button);
     }));
@@ -122,23 +129,29 @@
     }));
     modal.addEventListener('modal:close', () => {
       cancel(); releasePreview(); lastFile = null; selected.hidden = true; dropzone.hidden = false;
-      retry.hidden = results.hidden = true; grid.replaceChildren(); say('');
+      retry.hidden = results.hidden = true; grid.replaceChildren(); resultProducts.clear(); say('');
     });
     async function search(file) {
+      if (!modal.classList.contains('active')) return;
+      const moveFocus = [get('Choose'), retry].includes(document.activeElement);
       cancel();
       const run = revision;
-      controller = new AbortController();
-      const signal = controller.signal;
+      try { validateFile(file); } catch (error) { say(error.message); return; }
+      const request = new AbortController();
+      controller = request;
+      const signal = request.signal;
       const ensureActive = () => { if (signal.aborted || revision !== run) throw cancelled(); };
       retry.hidden = results.hidden = true;
       grid.replaceChildren();
-      try { validateFile(file); } catch (error) { say(error.message); return; }
+      resultProducts.clear();
       lastFile = file;
       releasePreview();
       objectURL = URL.createObjectURL(file);
       const url = objectURL;
       preview.src = url; get('Filename').textContent = file.name;
-      selected.hidden = false; dropzone.hidden = true; loading.hidden = false;
+      selected.hidden = false;
+      if (moveFocus) get('Replace').focus({ preventScroll: true });
+      dropzone.hidden = true; loading.hidden = false;
       modal.classList.add('is-searching');
       say('ვეძებთ');
       statusTimers = [
@@ -174,6 +187,7 @@
         if (!candidates.length) throw new Error('Catalog images unavailable');
         const matches = rank(query, candidates);
         if (!matches.length) { say('მსგავსი პროდუქტი ვერ მოიძებნა. სცადეთ პროდუქტის უფრო მკაფიო ფოტო.'); return; }
+        for (const { product } of matches) resultProducts.set(String(product.id), product);
         grid.innerHTML = matches.map(item => window.createProductCardHTML(item.product, 'photo')).join('');
         window.syncFavButtons?.();
         results.hidden = false;
@@ -184,7 +198,8 @@
         retry.hidden = false;
       } finally {
         clearTimeout(deadline);
-        if (revision === run) stopLoading();
+        request.abort();
+        if (revision === run) { controller = null; stopLoading(); }
       }
     }
   });

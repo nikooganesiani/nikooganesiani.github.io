@@ -1,5 +1,6 @@
 {% assign store_heroes = site.data.promo_block %}
 {% if site.data.studio.store %}{% assign store_heroes = site.data.studio.heroes %}{% endif %}
+{% if include.source != nil and include.source != '' %}{% assign store_heroes = store_heroes | where: 'id', include.source %}{% endif %}
 {% if store_heroes and store_heroes.size > 0 %}
 <section class="relative w-full my-3 select-none" aria-roledescription="კარუსელი" aria-label="სპეციალური შეთავაზებები" data-promo-block>
   <p class="sr-only">ბანერებს შორის გადასასვლელად გამოიყენეთ მარცხენა და მარჯვენა ისრები.</p>

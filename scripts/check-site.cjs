@@ -35,6 +35,7 @@ function readPage(file) {
 const html = readPage(path.join(root, 'index.html'));
 const footerOf = value => value.match(/<footer\b(?=[^>]*\bdata-site-footer\b)[^>]*>[\s\S]*?<\/footer>/)?.[0];
 const sharedFooter = footerOf(html);
+const footerWithoutLanguageTargets = value => footerOf(value)?.replace(/(<a href=")[^"]+(" class="language-option )/g, '$1$2');
 for (const page of ['terms', 'faq']) {
   assert.ok(sharedFooter.includes('href="/info/' + page + '"'), 'Footer links to ' + page);
 }
@@ -117,7 +118,7 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   const productHtml = readPage(file);
   const label = 'Product ' + entry.name + ': ';
   verifyHeader(productHtml, label);
-  assert.equal(footerOf(productHtml), sharedFooter, label + 'footer must match the shared homepage footer');
+  assert.equal(footerWithoutLanguageTargets(productHtml), footerWithoutLanguageTargets(html), label + 'footer must match the shared homepage footer');
   assert.match(productHtml, /<nav\b[^>]*\sdata-breadcrumbs\b/, label + 'shared breadcrumbs');
   assert.ok(!/{%|{{/.test(productHtml), label + 'unrendered Liquid');
   assert.equal((productHtml.match(/<h1\b/g) || []).length, 1, label + 'needs one h1');
@@ -157,9 +158,7 @@ console.log('Verified ' + productCount + ' product pages: metadata, schema, avai
 for (const page of ['category', 'search']) {
   const pageHtml = readPage(path.join(root, page, 'index.html'));
   verifyHeader(pageHtml, page);
-  assert.equal(footerOf(pageHtml), sharedFooter, page + ': footer must match the shared homepage footer');
-  assert.match(pageHtml, /<nav\b[^>]*\sdata-breadcrumbs\b/, page + ': shared breadcrumbs');
-  assert.equal((pageHtml.match(/src="\/assets\/js\/global\/breadcrumbs.js"/g) || []).length, 1, page + ': one shared breadcrumb renderer');
+  assert.equal(footerWithoutLanguageTargets(pageHtml), footerWithoutLanguageTargets(html), page + ': footer must match the shared homepage footer');
   assert.ok(!/{%|{{/.test(pageHtml), page + ': rendered Liquid');
   assert.equal((pageHtml.match(/<h1\b/g) || []).length, 1, page + ': one h1');
   const listingIds = [...pageHtml.matchAll(/\sid="([^"]+)"/g)].map(match => match[1]);
@@ -170,16 +169,18 @@ for (const page of ['category', 'search']) {
   assert.ok(listingScripts.includes('/assets/js/main/' + page + 'page.js'), page + ': correct page entry');
   assert.ok(!listingScripts.includes('/assets/js/main/' + (page === 'search' ? 'category' : 'search') + 'page.js'), page + ': no unrelated page controller');
   assert.match(pageHtml, /id="listingStatus"[^>]+role="status"/, page + ': announced results');
-  assert.match(pageHtml, /<select\b[^>]*\bid="sortSelect"/, page + ': native sorting');
+  assert.match(pageHtml, /<input type="radio" name="listing-sort"/, page + ': accessible sorting choices');
   assert.match(pageHtml, /<div\b(?=[^>]*\bid="mobileFilterModal")(?=[^>]*\brole="dialog")(?=[^>]*\baria-labelledby="mobileFilterTitle")[^>]*>/, page + ': shared filter dialog');
-  for (const id of ['minPrice', 'maxPrice', 'mobileMinPrice', 'mobileMaxPrice', 'sortSelect']) assert.ok(pageHtml.includes('for="' + id + '"'), page + ': label for ' + id);
-  for (const id of ['minPrice', 'maxPrice', 'mobileMinPrice', 'mobileMaxPrice']) assert.match(pageHtml, new RegExp('<input id="' + id + '"[^>]+inputmode="numeric"[^>]+step="1"'), page + ': whole lari input ' + id);
+  for (const id of ['minPrice', 'maxPrice']) assert.ok(pageHtml.includes('for="' + id + '"'), page + ': label for ' + id);
+  for (const id of ['minPrice', 'maxPrice']) assert.match(pageHtml, new RegExp('<input id="' + id + '"[^>]+inputmode="numeric"[^>]+step="1"'), page + ': whole lari input ' + id);
+  assert.match(pageHtml, /id="listingMobileFacets"/, page + ': shared facets can move into the mobile dialog');
   assert.match(pageHtml, new RegExp('rel="canonical" href="https://enkaelectronics.com.ge/' + page + '/"'), page + ': canonical URL');
   assert.ok(pageHtml.match(/<meta name="description" content="([^"]+)"/)?.[1].length > 60, page + ': useful description');
+  assert.doesNotMatch(pageHtml, /<nav\b[^>]*\sdata-breadcrumbs\b|schema\.org\/BreadcrumbList/, page + ': no breadcrumb navigation');
   if (page === 'search') {
     assert.match(pageHtml, /<meta name="robots" content="noindex, follow">/, page + ': search excluded from indexing');
     assert.ok(!fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8').includes('/search/'), page + ': search excluded from sitemap');
-    assert.match(pageHtml, /id="listingSearchInput" type="search" name="result"/, page + ': local search form');
+    assert.ok(!pageHtml.includes('id="listingSearchForm"'), 'Search uses the shared storefront search');
   } else assert.match(pageHtml, /<noscript>[\s\S]*class="product-card(?:\s|")/, page + ': usable catalog without JavaScript');
   for (const [, resource] of pageHtml.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
     const target = path.join(root, decodeURIComponent(resource.split('?')[0] || '/'));
@@ -187,7 +188,7 @@ for (const page of ['category', 'search']) {
   }
 }
 assert.ok(!html.includes('/assets/js/main/catalog-listing.js'), 'Homepage must not load listing controllers');
-console.log('Shared footer and breadcrumbs verified on product, category and search pages.');
+console.log('Shared footer verified on product, category and search pages. Breadcrumbs verified on product pages.');
 const infoDescriptions = new Set();
 for (const page of ['about', 'contacts', 'delivery', 'warranty', 'terms', 'faq', 'privacy']) {
   const value = readPage(path.join(root, 'info', page + '.html'));
@@ -216,7 +217,7 @@ for (const page of ['about', 'contacts', 'delivery', 'warranty', 'terms', 'faq',
   assert.ok(description?.length > 40, label + ': useful description');
   assert.ok(!infoDescriptions.has(description), label + ': distinct description');
   infoDescriptions.add(description);
-  assert.match(value, new RegExp('rel="canonical" href="https://enkaelectronics.com.ge/info/' + page + '\\.html"'), label + ': preserved canonical URL');
+  assert.match(value, new RegExp('rel="canonical" href="https://enkaelectronics.com.ge/info/' + page + '"'), label + ': canonical URL resolves directly');
   for (const [, href] of value.matchAll(/(?:href|src)="(\/(?!\/)[^"]*)"/g)) {
     const url = new URL(href.replace(/&amp;/g, '&'), 'https://enkaelectronics.com.ge');
     const target = path.join(root, decodeURIComponent(url.pathname));

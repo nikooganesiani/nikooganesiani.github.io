@@ -57,13 +57,12 @@ function harness({ reducedMotion = false, withHeader = false, withGallery = fals
     }
     querySelector(selector) {
       if (selector.includes('data-modal-initial-focus')) return this.initial || null;
-      if (selector === 'form') return this.form || null;
+      if (selector === '[data-modal-draft]') return this.draft || null;
       if (selector === 'h2, h3') return this.heading || null;
       return null;
     }
     querySelectorAll(selector) {
       if (selector === '.modal-body') return [];
-      if (selector.startsWith('input:not')) return this.inputs || [];
       return this.focusables || [];
     }
     focus() { document.activeElement = this; }
@@ -100,6 +99,7 @@ function harness({ reducedMotion = false, withHeader = false, withGallery = fals
   const events = {};
   const document = {
     body, activeElement: trigger,
+    elementFromPoint: () => pointerHit,
     documentElement: new Element('html'),
     addEventListener: (name, handler) => { (events[name] ||= []).push(handler); },
     getElementById: id => [first, second, header].find(element => element?.id === id),
@@ -126,8 +126,10 @@ function harness({ reducedMotion = false, withHeader = false, withGallery = fals
     clearTimeout: id => timers.delete(id), requestAnimationFrame: callback => callback()
   });
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global/modals.js'), 'utf8'), context);
+  let pointerHit;
   const emit = (name, target, details = {}) => {
-    const event = { target, preventDefault() { this.prevented = true; }, stopPropagation() {}, ...details };
+    pointerHit = details.hit || target;
+    const event = { target, isPrimary: true, button: 0, pointerId: 1, preventDefault() { this.prevented = true; }, stopPropagation() {}, ...details };
     for (const handler of events[name] || []) handler(event);
     return event;
   };
@@ -189,6 +191,7 @@ test('Nested dialogs isolate the top layer and keep a return target when the par
   h.window.openAppModal(h.first, h.trigger);
   h.window.openAppModal(h.second, h.first.focusables[1]);
   assert.equal(h.first.inert, true);
+  assert.equal(h.first.getAttribute('aria-hidden'), 'true');
   assert.equal(h.first.getAttribute('aria-modal'), null);
   assert.equal(h.second.getAttribute('aria-modal'), 'true');
   h.window.closeAppModal(h.first);
@@ -254,15 +257,21 @@ test('Backdrop dismissal requires a complete outside gesture and preserves a dra
   const h = harness();
   h.window.openAppModal(h.first);
   h.emit('pointerdown', h.first.focusables[0]);
+  h.emit('pointerup', h.first);
   h.emit('click', h.first);
   assert.equal(h.first.classList.contains('active'), true);
-  h.first.form = new h.Element('form', h.first);
-  h.first.form.inputs = [{ value: 'Draft name' }];
   h.emit('pointerdown', h.first);
+  h.emit('pointerup', h.first, { hit: h.first.focusables[0] });
   h.emit('click', h.first);
   assert.equal(h.first.classList.contains('active'), true);
-  h.first.form.inputs[0].value = '';
+  h.first.draft = { value: 'Tracking number' };
   h.emit('pointerdown', h.first);
+  h.emit('pointerup', h.first);
+  h.emit('click', h.first);
+  assert.equal(h.first.classList.contains('active'), true);
+  h.first.draft.value = '';
+  h.emit('pointerdown', h.first);
+  h.emit('pointerup', h.first);
   h.emit('click', h.first);
   assert.equal(h.first.classList.contains('active'), false);
 });

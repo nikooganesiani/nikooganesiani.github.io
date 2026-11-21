@@ -5,7 +5,7 @@
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || typeof window.openTracking !== 'function') return;
       event.preventDefault();
       link.focus({ preventScroll: true });
-      window.openTracking();
+      window.openTracking('', true, link);
     });
   }
   const preferences = document.querySelector('[data-info-privacy]');

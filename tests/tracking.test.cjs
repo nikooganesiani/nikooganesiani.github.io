@@ -4,12 +4,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function harness(fetch) {
+function harness(fetch, url = 'https://example.test/') {
   const elements = new Map();
   function element(id) {
     if (!elements.has(id)) elements.set(id, {
       value: '', textContent: '', innerHTML: '', disabled: false, style: {}, attrs: {}, events: {},
       addEventListener(name, callback) { this.events[name] = callback; },
+      click() { return this.events.click(); },
+      getAttribute(name) { return this.attrs[name]; },
       setAttribute(name, value) { this.attrs[name] = value; },
       removeAttribute(name) { delete this.attrs[name]; },
       classList: { contains: () => true }, contains: () => true, focus() {}
@@ -19,7 +21,7 @@ function harness(fetch) {
   const timers = new Map();
   let nextTimer = 0;
   const context = vm.createContext({
-    window: { location: new URL('https://example.test/'), openAppModal() {}, addEventListener() {}, WORKER_URL_TRACKING: '/tracking' },
+    window: { location: new URL(url), openAppModal() {}, addEventListener() {}, WORKER_URL_TRACKING: '/tracking' },
     document: { getElementById: element, addEventListener(name, callback) { if (name === 'DOMContentLoaded') callback(); } },
     history: { pushState() {}, replaceState() {} },
     fetch, URL, URLSearchParams, AbortController, console,
@@ -41,7 +43,8 @@ test('Closing and reopening tracking aborts old work and ignores late responses'
   h.element('trackingModal').events['modal:close']();
   assert.equal(requests[0].options.signal.aborted, true);
   assert.equal(h.element('trackingCheckBtn').disabled, false);
-  h.context.window.openTracking('second');
+  h.context.window.openTracking();
+  h.element('trackingOrderId').value = 'second';
   const second = h.check();
   requests[0].resolve(new Response('{"data":[]}'));
   await first;
@@ -52,6 +55,15 @@ test('Closing and reopening tracking aborts old work and ignores late responses'
   assert.match(h.element('trackingResult').innerHTML, /შეკვეთა ვერ მოიძებნა/);
   assert.equal(h.element('trackingCheckBtn').disabled, false);
   assert.equal(h.timers.size, 0);
+});
+
+test('A tracking link starts the lookup immediately and closing it cancels the request', () => {
+  const calls = [];
+  const h = harness((url, options) => new Promise(() => calls.push(options)), 'https://example.test/?orderstatus=123');
+  assert.equal(calls.length, 1);
+  assert.equal(JSON.parse(calls[0].body).order_id, 'TNENKAElectronics123');
+  h.element('trackingModal').events['modal:close']();
+  assert.equal(calls[0].signal.aborted, true);
 });
 
 test('Tracking failures retain the number and allow retry; empty numbers never fetch', async () => {

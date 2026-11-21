@@ -1,47 +1,39 @@
-(() => {
+((createTranslator) => {
   'use strict';
-  let locale = '';
-  try { locale = localStorage.getItem('enka_language') || ''; } catch {}
+  if (typeof module === 'object' && module.exports) {
+    module.exports = createTranslator;
+    return;
+  }
+  const pageLocale = document.documentElement.dataset?.enkaLocale;
+  let locale = pageLocale || '';
+  if (!locale) try { locale = localStorage.getItem('enka_language') || ''; } catch {}
   if (!locale) {
     try { locale = document.cookie.split('; ').find(v => v.startsWith('enka_language='))?.split('=')[1] || document.documentElement.dataset?.blogLocale || 'ka'; } catch {}
   }
   if (!['ru', 'en'].includes(locale)) locale = 'ka';
-  let dictionary; let matcher;
+  let translator;
   let store = window.ENKA_STORE;
   let active = true;
   const textSources = new WeakMap(); const attributeSources = new WeakMap();
-  function configure(store) {
-    const values = locale === 'ka' ? {} : Object.fromEntries(Object.entries(window.ENKA_TRANSLATIONS || {}).map(([source,entries])=>[source,{...entries}]));
-    for(const [source,entries] of Object.entries(store?.strings || {})) {
-      const merged={...(Object.hasOwn(values,source)?values[source]:{})};
-      for(const [locale,value] of Object.entries(entries))if(value.trim())merged[locale]=value;
-      Object.defineProperty(values,source,{value:merged,enumerable:true,configurable:true,writable:true});
-    }
-    const titles=[...(store?.categories || []).flatMap(c=>[c.title,...c.subs.map(s=>s.title)]),...(store?.campaigns || []).map(c=>c.title),...(store?.heroes || []).map(h=>h.title)];
-    for(const title of titles)if(title.ka){
-      const entries={...(Object.hasOwn(values,title.ka)?values[title.ka]:{})};
-      for(const key of ['ru','en'])if(title[key]?.trim())entries[key]=title[key];
-      Object.defineProperty(values,title.ka,{value:entries,enumerable:true,configurable:true,writable:true});
-    }
-    dictionary = new Map(Object.entries(values).map(([source, entries]) => [source, entries[locale]]).filter(([, text]) => typeof text === 'string' && text.trim()));
-    const fragments = [...dictionary.keys()].filter(source => /[\u10a0-\u10ff]/.test(source) && !/[<>]/.test(source)).sort((a,b)=>b.length-a.length);
-    const escaped = fragments.map(source => source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-    matcher = escaped.length ? new RegExp('(?<![\\u10a0-\\u10ff])(?:'+escaped.join('|')+')(?![\\u10a0-\\u10ff])','g') : null;
-  }
+  function configure(store) { translator = createTranslator(locale, window.ENKA_TRANSLATIONS, store); }
   configure(window.ENKA_STORE);
-  const t = (value, exact=false) => {
-    const text=String(value ?? '');
-    if(dictionary.has(text))return dictionary.get(text);
-    if(dictionary.has(text.trim()))return text.replace(text.trim(),dictionary.get(text.trim()));
-    return !exact && matcher ? text.replace(matcher,source=>dictionary.get(source)) : text;
+  const t = (value, exact = false) => translator.t(value, exact);
+  window.enkaRoute = value => {
+    if (locale === 'ka' || typeof value !== 'string' || !/^(?:\/[^/]|\/$|https?:)/.test(value)) return value;
+    let url;
+    try { url = new URL(value, location.origin); } catch { return value; }
+    if (url.origin !== location.origin) return value;
+    const routes = window.ENKA_LOCALIZED_ROUTES || {};
+    const target = Object.hasOwn(routes, url.pathname) ? routes[url.pathname] : routes[url.pathname + '/'];
+    return target ? target + url.search + url.hash : value;
   };
   window.enkaI18n = {locale,t,setStore(value){
     store = value;
     const previous = active;
     configure(store);
-    active = previous || dictionary.size > 0 || locale !== 'ka';
+    active = previous || translator.size > 0 || locale !== 'ka';
     translate(document.head); translate(document.body);
-    active = dictionary.size > 0 || locale !== 'ka';
+    active = translator.size > 0 || locale !== 'ka';
   }};
   if(locale !== 'ka')document.documentElement.lang=locale;
   // Catalog content is localized exclusively by the published admin API.
@@ -60,8 +52,16 @@
       if (rendered !== root.nodeValue) root.nodeValue = rendered;
       return;
     }
-    if (root.nodeType !== 1 || root.closest(excluded)) return;
-    for (const name of ['placeholder', 'aria-label', 'title', 'alt', 'data-count-label', 'content']) {
+    if (root.nodeType !== 1) return;
+    for (const name of ['href', 'action']) {
+      if (root.hasAttribute(name) && !root.hasAttribute('hreflang') && !root.hasAttribute('data-language')) {
+        const value = root.getAttribute(name);
+        const routed = window.enkaRoute(value);
+        if (routed !== value) root.setAttribute(name, routed);
+      }
+    }
+    if (root.closest(excluded)) return;
+    for (const name of ['placeholder', 'aria-label', 'title', 'alt', 'data-count-label', 'aria-roledescription', 'content']) {
       if (root.hasAttribute(name)) {
         const saved = attributeSources.get(root) || {};
         const previous = saved[name];
@@ -74,7 +74,7 @@
     }
     for (const child of root.childNodes) translate(child);
   }
-  active = dictionary.size > 0 || locale !== 'ka';
+  active = translator.size > 0 || locale !== 'ka';
   function applyTranslations() { configure(store); translate(document.head); translate(document.body); }
   if (locale !== 'ka' && !window.ENKA_TRANSLATIONS && window.ENKA_I18N_URLS?.[locale]) {
     // The selected language was preloaded in head. Georgian never downloads or
@@ -99,5 +99,34 @@
       if (record.type === 'childList') record.addedNodes.forEach(translate);
       else translate(record.target);
     }
-  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['placeholder','aria-label','title','alt','data-count-label'] });
-})();
+  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['href','action','placeholder','aria-label','title','alt','data-count-label','aria-roledescription'] });
+})((locale, dictionary, store) => {
+  const values = new Map();
+  const set = (source, entries) => {
+    const value = entries?.[locale];
+    if (source && typeof value === 'string' && value.trim()) values.set(source, value);
+  };
+  if (locale !== 'ka') for (const [source, entries] of Object.entries(dictionary || {})) set(source, entries);
+  for (const [source, entries] of Object.entries(store?.strings || {})) set(source, entries);
+  if (locale !== 'ka') {
+    const titles = [
+      ...(store?.categories || []).flatMap(category => [category.title, ...category.subs.map(sub => sub.title)]),
+      ...(store?.campaigns || []).map(campaign => campaign.title),
+      ...(store?.heroes || []).map(hero => hero.title)
+    ];
+    for (const title of titles) set(title?.ka, title);
+  }
+  const fragments = [...values.keys()].filter(source => /[\u10a0-\u10ff]/.test(source) && !/[<>]/.test(source)).sort((a, b) => b.length - a.length);
+  const escaped = fragments.map(source => source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const matcher = escaped.length ? new RegExp('(?<![\\u10a0-\\u10ff])(?:' + escaped.join('|') + ')(?![\\u10a0-\\u10ff])', 'g') : null;
+  return {
+    size: values.size,
+    t(value, exact = false) {
+      const text = String(value ?? '');
+      if (values.has(text)) return values.get(text);
+      const trimmed = text.trim();
+      if (values.has(trimmed)) return text.replace(trimmed, () => values.get(trimmed));
+      return !exact && matcher && /[\u10a0-\u10ff]/.test(text) ? text.replace(matcher, source => values.get(source)) : text;
+    }
+  };
+});

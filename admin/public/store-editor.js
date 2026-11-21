@@ -4,6 +4,7 @@ import { dateControl, createDatePicker } from './date-picker.js';
 import { clone, localizedProduct, storeEngine as engine } from './model.js';
 import './store-visuals.js';
 import { getLocale } from './studio-i18n.js';
+import { createHomeEditor } from './home-editor.js';
 const visuals=globalThis.EnkaStoreVisuals;
 
 export function ensureStore(document) {
@@ -20,10 +21,11 @@ export function ensureStore(document) {
   return true;
 }
 
-export function createStoreEditor({ state, escape: e, markDirty, toast, confirmMessage, renderApp, uploadImage }) {
+export function createStoreEditor({ state, escape: e, markDirty, toast, confirmMessage, renderApp, uploadImage, icon }) {
   const root = document.querySelector('#store-view');
+  const homeEditor = createHomeEditor({ root, state, escape: e, markDirty, toast, confirmMessage, icon });
   const datePicker=createDatePicker();
-  const names = {categories:'Категории', campaigns:'Акции и скидки', merchandising:'Главная страница', 'site-texts':'Тексты сайта', settings:'Контакты магазина'};
+  const names = {categories:'Категории', campaigns:'Акции и скидки', merchandising:'Главная страница', banners:'Главная страница', 'site-texts':'Тексты сайта', settings:'Контакты магазина'};
   const companyNames = {name:'Название магазина',legal_name:'Юридическое имя',registration:'Регистрационный номер',address:'Адрес',phone:'Телефон для отображения',phone_link:'Телефон для звонка',email:'Электронная почта',whatsapp:'WhatsApp · HTTPS-ссылка',facebook:'Facebook · HTTPS-ссылка',hours:'Часы работы'};
   let query = ''; let textPage = 0; let onlyMissing = false; let selected = ''; let previewAt = ''; let previewLocale='ka'; let previewDevice='desktop';
   const store = () => state.document.store;
@@ -151,9 +153,21 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   function render() {
     const open=new Set([...root.querySelectorAll('details[open][data-category-id]')].map(el=>el.dataset.categoryId));
     root.hidden=!Object.hasOwn(names,state.view); if(root.hidden)return;
-    root.innerHTML=ui`<div class="page-heading"><div><p class="eyebrow">УПРАВЛЕНИЕ МАГАЗИНОМ</p><h1>${t(names[state.view])}</h1><p class="page-description">Изменения входят в общий черновик, историю и публикацию магазина.</p></div></div>${({categories, campaigns,merchandising:heroes,'site-texts':texts,settings:()=>ui`<p class="studio-help">Контакты используются в шапке, подвале и информационных страницах магазина.</p><div class="studio-card studio-card-body studio-grid">${Object.entries(companyNames).map(([key,label])=>input(label,'company.'+key)).join('')}</div>`}[state.view])()}`;
+    if (state.view === 'merchandising' || state.view === 'banners') {
+      const editing = state.view === 'merchandising';
+      root.innerHTML = ui`<div class="page-heading"><div><h1>Главная страница</h1><p class="page-description">Настройте, в каком порядке покупатели увидят содержимое главной.</p></div></div><nav class="home-nav" aria-label="Настройки главной"><a href="#merchandising"${editing ? ' aria-current="page"' : ''}>Компоновка</a><a href="#banners"${editing ? '' : ' aria-current="page"'}>Баннеры</a></nav>${editing ? '<div id="home-editor"></div>' : heroes()}`;
+      if (editing) homeEditor.render();
+    } else {
+      root.innerHTML=ui`<div class="page-heading"><div><h1>${t(names[state.view])}</h1></div></div>${({categories, campaigns,'site-texts':texts,settings:()=>ui`<p class="studio-help">Контакты используются в шапке, подвале и информационных страницах магазина.</p><div class="studio-card studio-card-body studio-grid">${Object.entries(companyNames).map(([key,label])=>input(label,'company.'+key)).join('')}</div>`}[state.view])()}`;
+    }
     root.querySelectorAll('details[data-category-id]').forEach(el=>el.open=open.has(el.dataset.categoryId));
     refreshVisuals();
+  }
+  function clearBlockSource(type, id) {
+    for (const block of store().home || []) if (block.type === type && block.sourceId === id) {
+      block.enabled = false;
+      block.sourceId = '';
+    }
   }
   function refreshPreview() { const rule=store().campaigns.find(c=>c.id===selected); const target=root.querySelector('#campaign-preview'); if(rule&&target){target.innerHTML=campaignPreview(rule);refreshVisuals();} }
   function refreshChoices(index, focused) {
@@ -251,7 +265,7 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
       const c=s.categories[i];const sub=action==='delete-sub'?c.subs[Number(b.dataset.sub)]:null;const ids=sub?[sub.id]:[c.id,...c.subs.map(s=>s.id)];
       if(state.document.catalog.products.some(p=>[...p.categories,...p.subcategories].some(id=>ids.includes(id))) || s.campaigns.some(c=>[...c.categoryIds,...c.subcategoryIds].some(id=>ids.includes(id)))) {toast(t('Раздел используется товарами или акциями. Перенесите их в другой раздел либо скройте этот раздел.'),true);return;}
       if(!await confirmMessage(t('Удалить раздел?'),title(sub || c)+t(' будет удалён из черновика.'),t('Удалить')))return;
-      if(sub)c.subs.splice(Number(b.dataset.sub),1);else s.categories.splice(i,1);
+      if(sub)c.subs.splice(Number(b.dataset.sub),1);else { s.categories.splice(i,1); clearBlockSource('category', c.id); }
       for (const article of state.document.blog || []) {
         if (!sub) article.placements.categoryIds = article.placements.categoryIds.filter(id => id !== c.id);
         const removed = sub ? [sub.id] : c.subs.map(item => item.id);
@@ -261,7 +275,12 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     if(action==='add-campaign'){const rule={id:id('sale'),title:{ka:'ახალი შეთავაზება',ru:'Новая акция',en:'New offer'},enabled:false,percent:10,startsAt:'',endsAt:'',categoryIds:s.categories.length?[s.categories[0].id]:[],subcategoryIds:[],productIds:[],excludeIds:[],showRow:true,template:'cards',limit:8};s.campaigns.push(rule);selected=rule.id;}
     if(action==='copy-campaign'||action==='template-campaign'){const copy=clone(s.campaigns[i]);copy.id=id('sale');copy.enabled=false;copy.isTemplate=action==='template-campaign'?!copy.isTemplate:false;copy.title.ru+=(copy.isTemplate?' · шаблон':' · копия');s.campaigns.push(copy);selected=copy.id;}
     if(action==='add-hero')s.heroes.push({id:id('hero'),type:'image',image:'',link:'',title:{ka:'ახალი შეთავაზება',ru:'Новое предложение',en:'New offer'},enabled:true});
-    if(action==='delete-campaign'||action==='delete-hero'){if(!await confirmMessage(t('Удалить из черновика?'),t('Изменение появится на сайте после публикации.'),t('Удалить')))return;s[action==='delete-campaign'?'campaigns':'heroes'].splice(i,1);}
+    if(action==='delete-campaign'||action==='delete-hero'){
+      if(!await confirmMessage(t('Удалить из черновика?'),t('Изменение появится на сайте после публикации.'),t('Удалить')))return;
+      const campaign = action === 'delete-campaign';
+      const [removed] = s[campaign ? 'campaigns' : 'heroes'].splice(i, 1);
+      clearBlockSource(campaign ? 'campaign' : 'banner', removed.id);
+    }
     markDirty(); renderApp();
     if(action==='add-category'||action==='add-sub'){const details=root.querySelectorAll('details');details[action==='add-category'?details.length-1:i]?.setAttribute('open','');}
   });

@@ -3,6 +3,7 @@ const path = require('node:path');
 const { buildLocalizations } = require('./scripts/build-localizations.cjs');
 const { buildStoreContent } = require('./scripts/build-store-content.cjs');
 const { buildBlog } = require('./scripts/build-blog.cjs');
+const { buildStorefrontLocales, fetchPublishedCatalog } = require('./scripts/build-storefront-locales.cjs');
 
 function parsePrice(value) {
   const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -43,7 +44,7 @@ function normalizeCatalog(data) {
   return products;
 }
 
-function productFrontMatter(product) {
+function productFrontMatter(product, page = {}) {
   // JSON is valid YAML and safely preserves quotes, newlines and Georgian text.
   const metadata = {
     generated: true,
@@ -52,6 +53,7 @@ function productFrontMatter(product) {
     product_id: product.id,
     sku: product.sku || product.id,
     name: product.name,
+    product_name: product.name,
     title: product.name,
     brand: product.brand || 'ENKA Electronics',
     price: String(parsePrice(product.price)),
@@ -63,23 +65,25 @@ function productFrontMatter(product) {
     longDescription: product.longDescription || product.description || '',
     warranty: product.warranty || '',
     categories: Array.isArray(product.categories) ? product.categories.filter(value => typeof value === 'string') : [],
-    subcategories: Array.isArray(product.subcategories) ? product.subcategories.filter(value => typeof value === 'string') : []
+    subcategories: Array.isArray(product.subcategories) ? product.subcategories.filter(value => typeof value === 'string') : [],
+    ...page
   };
   return '---\n' + Object.entries(metadata).map(([key, value]) => key + ': ' + JSON.stringify(value)).join('\n') + '\n---\n';
 }
 
-async function generatePages({ catalogFile, root = process.cwd() } = {}) {
+async function generatePages({ catalogFile, localeFiles = {}, root = process.cwd() } = {}) {
   let data;
-  if (catalogFile) data = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
-  else {
-    const response = await fetch('https://api.enkaelectronics.com.ge/catalog?include=blog', { signal: AbortSignal.timeout(20000) });
-    if (!response.ok) throw new Error('Catalog HTTP ' + response.status);
-    data = await response.json();
-  }
+  let translations;
+  if (catalogFile) {
+    data = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
+    translations = Object.fromEntries(Object.entries(localeFiles).filter(([, file]) => file)
+      .map(([locale, file]) => [locale, JSON.parse(fs.readFileSync(file, 'utf8'))]));
+  } else ({ data, translations } = await fetchPublishedCatalog());
   normalizeCatalog(data);
   if (data._enkaPublication?.blog && !Array.isArray(data._enkaBlog)) throw new Error('Published blog is missing. Use the blog-enabled catalog API or a published Studio export.');
   const products = await buildStoreContent(data, root);
-  await buildBlog(data._enkaBlog, products, root);
+  const localizedProducts = buildStorefrontLocales(root, data, translations, products, productFrontMatter);
+  await buildBlog(data._enkaBlog, products, root, localizedProducts);
   buildLocalizations(root);
   const productsDir = path.join(root, '_products');
   fs.mkdirSync(productsDir, { recursive: true });
@@ -96,8 +100,8 @@ async function generatePages({ catalogFile, root = process.cwd() } = {}) {
 
 module.exports = { normalizeCatalog, productFrontMatter, generatePages, parsePrice, normalizeStock, normalizeMedia };
 if (require.main === module) {
-  const flag = process.argv.indexOf('--catalog-file');
-  generatePages({ catalogFile: flag >= 0 ? process.argv[flag + 1] : undefined })
+  const option = name => process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : undefined;
+  generatePages({ catalogFile: option('--catalog-file'), localeFiles: { ru: option('--catalog-ru'), en: option('--catalog-en') } })
     .then(async products => { await require('./scripts/build-category-photo-masks.cjs').buildCategoryPhotoMasks(products); return products; })
     .then(products => require('./scripts/build-photo-index.cjs').buildPhotoIndex(products, require('sharp')))
     .catch(error => { console.error(error.message); process.exitCode = 1; });

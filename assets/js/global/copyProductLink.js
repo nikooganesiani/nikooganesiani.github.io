@@ -1,6 +1,14 @@
+window.showLinkModal = function(url, trigger) {
+  const field = document.getElementById('copiedLinkText');
+  if (!field) return;
+  field.value = url;
+  window.openAppModal?.('linkModal', trigger);
+  field.select();
+};
+
 window.copyProductLink = async function(button) {
   const url = new URL(window.location.pathname, window.location.origin).href;
-  const copied = () => window.showToast?.('ბმული დაკოპირდა', { type: 'link', url });
+  const copied = () => window.showToast?.('ბმული დაკოპირდა', { type: 'link', url }, button);
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(url);
@@ -24,9 +32,5 @@ window.copyProductLink = async function(button) {
     previous?.focus({ preventScroll: true });
   }
   if (success) copied();
-  else {
-    const text = document.getElementById('copiedLinkText');
-    if (text) text.value = url;
-    window.openAppModal?.('linkModal', button);
-  }
+  else window.showLinkModal(url, button);
 };

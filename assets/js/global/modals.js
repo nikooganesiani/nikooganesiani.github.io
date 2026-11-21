@@ -8,23 +8,22 @@
   const lastFocus = new WeakMap();
   let scrollLock;
   let backdropStart;
+  let backdropEnd;
   let viewportFrame;
   const focusable = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, [tabindex]';
   const topModal = () => openModals[openModals.length - 1];
   const getModal = value => typeof value === 'string' ? document.getElementById(value) : value;
+  const canFocus = element => element?.isConnected && !element.closest('[inert], [hidden], [aria-hidden="true"]') &&
+    !element.matches(':disabled') && element.getClientRects().length && getComputedStyle(element).visibility === 'visible';
 
   function getFocusables(modal) {
-    return [...modal.querySelectorAll(focusable)].filter(element =>
-      element.tabIndex >= 0 && !element.matches(':disabled') &&
-      !element.closest('[inert], [hidden]') && element.getClientRects().length &&
-      getComputedStyle(element).visibility !== 'hidden');
+    return [...modal.querySelectorAll(focusable)].filter(element => element.tabIndex >= 0 && canFocus(element));
   }
 
   function focusModal(modal) {
     const previous = lastFocus.get(modal);
     const initial = modal.querySelector('[data-modal-initial-focus], [autofocus]');
-    const visible = element => element?.isConnected && !element.closest('[inert], [hidden]') && !element.matches(':disabled') && element.getClientRects().length;
-    const target = (visible(previous) && previous) || (visible(initial) && initial) || getFocusables(modal)[0] || modal;
+    const target = (canFocus(previous) && previous) || (canFocus(initial) && initial) || getFocusables(modal)[0] || modal;
     target.focus({ preventScroll: true });
   }
 
@@ -44,18 +43,19 @@
       for (const element of document.querySelectorAll('.sticky')) {
         if (element.closest('.modal') || getComputedStyle(element).position !== 'sticky') continue;
         const top = element.getBoundingClientRect().top;
-        scrollLock.sticky.push({ element, cssText: element.style.cssText });
+        const { position, top: originalTop, bottom } = element.style;
+        scrollLock.sticky.push({ element, styles: { position, top: originalTop, bottom } });
         Object.assign(element.style, { position: 'relative', top: '0px', bottom: 'auto' });
         element.style.top = (top - element.getBoundingClientRect().top) + 'px';
       }
       for (const property of ['position', 'top', 'left', 'right', 'width']) scrollLock.styles[property] = style[property];
-      Object.assign(style, { position: 'fixed', top: -scrollLock.y + 'px', left: '0', right: '0', width: 'auto' });
+      Object.assign(style, { position: 'fixed', top: -scrollLock.y + 'px', left: -scrollLock.x + 'px', right: scrollLock.x + 'px', width: 'auto' });
       updateViewport();
     } else if (!locked && scrollLock) {
       const saved = scrollLock;
       scrollLock = null;
       Object.assign(document.body.style, saved.styles);
-      for (const { element, cssText } of saved.sticky) element.style.cssText = cssText;
+      for (const { element, styles } of saved.sticky) Object.assign(element.style, styles);
       document.documentElement.style.removeProperty('--modal-viewport-height');
       document.documentElement.style.removeProperty('--modal-viewport-top');
       window.scrollTo({ left: saved.x, top: saved.y, behavior: 'instant' });
@@ -72,8 +72,13 @@
       top.inert = false;
       openModals.forEach((modal, index) => {
         modal.style.zIndex = String(10000 + index);
-        if (modal === top) modal.setAttribute('aria-modal', 'true');
-        else modal.removeAttribute('aria-modal');
+        if (modal === top) {
+          modal.setAttribute('aria-modal', 'true');
+          modal.removeAttribute('aria-hidden');
+        } else {
+          modal.removeAttribute('aria-modal');
+          modal.setAttribute('aria-hidden', 'true');
+        }
       });
       for (const element of document.body.children) {
         if (!(element instanceof HTMLElement) || element.contains(top) ||
@@ -92,19 +97,18 @@
     const modal = getModal(value);
     if (!modal || !modal.classList.contains('modal') || openModals.includes(modal)) return;
 
+    resetBackdrop();
     clearTimeout(closeTimers.get(modal));
     const parent = topModal();
     // Disabling an async submit button can move browser focus to <body>.
     // Keep the dialog chain intact so confirmation can return to the card.
     const origin = trigger && trigger !== document.body && trigger !== document.documentElement
-      ? trigger : (parent && (lastFocus.get(parent) || parent)) || document.activeElement;
+      ? trigger : parent && (lastFocus.get(parent) || parent);
     origins.set(modal, origin);
     lastFocus.delete(modal);
     openModals.push(modal);
     modal.inert = false;
     modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.removeAttribute('aria-hidden');
     modal.tabIndex = -1;
     const heading = modal.querySelector('h2, h3');
     if (heading && !modal.hasAttribute('aria-label') && !modal.hasAttribute('aria-labelledby')) {
@@ -126,48 +130,46 @@
 
   window.closeAppModal = function(value) {
     const modal = getModal(value);
-    if (!modal || !modal.classList.contains('active')) return;
-
-    const wasTop = modal === topModal();
     const index = openModals.indexOf(modal);
+    if (index === -1) return;
+
+    resetBackdrop();
+    const wasTop = modal === topModal();
     // Replacement dialogs inherit a usable return target, even when their
     // original button belonged to the dialog that is now closing.
     for (const other of openModals) {
       if (other !== modal && modal.contains(origins.get(other))) origins.set(other, origins.get(modal));
     }
-    if (index !== -1) openModals.splice(index, 1);
+    openModals.splice(index, 1);
     modal.classList.remove('active');
     modal.classList.add('pointer-events-none');
     document.querySelectorAll('[aria-controls="' + modal.id + '"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
     modal.inert = true;
     if (background.has(modal)) background.set(modal, true);
 
-    if (modal.id === 'trackingModal') {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('orderstatus')) {
-        url.searchParams.delete('orderstatus');
-        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
-      }
-    }
-
     syncBackground();
     if (wasTop) {
       const origin = origins.get(modal);
-      if (origin?.isConnected && !origin.closest('[inert], [aria-hidden="true"]') &&
-          !origin.matches(':disabled') && origin.getClientRects().length &&
-          getComputedStyle(origin).visibility !== 'hidden') {
+      const top = topModal();
+      if (canFocus(origin) && (!top || top.contains(origin))) {
         origin.focus({ preventScroll: true });
-      } else if (topModal()) {
-        focusModal(topModal());
-      } else if (modal.contains(document.activeElement)) {
-        document.activeElement.blur();
+      } else if (top) {
+        focusModal(top);
+      } else {
+        const trigger = origin && [...document.querySelectorAll('[aria-controls="' + modal.id + '"]')].find(canFocus);
+        (trigger || document.getElementById('main-content'))?.focus({ preventScroll: true });
       }
     }
     modal.setAttribute('aria-hidden', 'true');
     modal.removeAttribute('aria-modal');
     lastFocus.delete(modal);
+    if (!wasTop) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
     modal.dispatchEvent(new CustomEvent('modal:close'));
 
+    if (!wasTop) return;
     clearTimeout(closeTimers.get(modal));
     closeTimers.set(modal, setTimeout(() => {
       if (!modal.classList.contains('active')) {
@@ -209,21 +211,30 @@
     else if (modal) lastFocus.set(modal, event.target);
   });
 
+  function resetBackdrop() { backdropStart = backdropEnd = null; }
   document.addEventListener('pointerdown', event => {
-    backdropStart = event.target === topModal() ? event.target : null;
+    resetBackdrop();
+    if (event.isPrimary && event.button === 0 && event.target === topModal()) {
+      backdropStart = { modal: event.target, pointerId: event.pointerId };
+    }
   });
-  document.addEventListener('pointercancel', () => { backdropStart = null; });
+  document.addEventListener('pointerup', event => {
+    if (backdropStart && event.pointerId === backdropStart.pointerId && event.target === backdropStart.modal) {
+      // Touch may implicitly capture the pointer on the backdrop during a drag.
+      backdropEnd = document.elementFromPoint(event.clientX, event.clientY);
+    }
+  });
+  document.addEventListener('pointercancel', resetBackdrop);
 
   document.addEventListener('click', event => {
     const button = event.target.closest('[data-close-modal]');
-    if (button) window.closeAppModal(button.closest('[role="dialog"], .modal'));
-    else if (event.target === topModal() && event.target === backdropStart) {
-      const form = event.target.querySelector('form');
-      // A stray tap must not hide a partially completed or submitting order.
-      const hasDraft = form && [...form.querySelectorAll('input:not([type="hidden"]):not([type="email"])')].some(input => input.value.trim());
-      if (!hasDraft && form?.getAttribute('aria-busy') !== 'true') window.closeAppModal(event.target);
+    const modal = topModal();
+    if (button && modal?.contains(button)) window.closeAppModal(modal);
+    else if (event.target === modal && backdropStart?.modal === modal && backdropEnd === modal) {
+      const draft = modal.querySelector('[data-modal-draft]');
+      if (!draft?.value.trim()) window.closeAppModal(modal);
     }
-    backdropStart = null;
+    resetBackdrop();
   });
 
   const scheduleViewport = () => {

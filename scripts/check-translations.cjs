@@ -22,4 +22,4 @@ for(const locale of ['ru','en']){
  const bundle=JSON.parse(fs.readFileSync('admin/translations/ru-en.json','utf8'));
  for(const [id,p]of Object.entries(bundle.translations[locale].products))for(const e of [...Object.values(p.fields),...Object.values(p.specs)]){if(/[\u10a0-\u10ff]/.test(e.text))missing.push({file:id,source:e.source});}
 }
-if(missing.length){console.error(JSON.stringify(missing.slice(0,25),null,2));console.error('Missing translations:',missing.length);process.exitCode=1;}else console.log('RU/EN coverage verified:',pages/2,'rendered pages and all 76 product translation records.');
+if(missing.length){console.error(JSON.stringify(missing.slice(0,25),null,2));console.error('Missing translations:',missing.length);process.exitCode=1;}else console.log('RU/EN dictionary coverage verified:',pages/2,'rendered pages and the archived product translation bundle.');

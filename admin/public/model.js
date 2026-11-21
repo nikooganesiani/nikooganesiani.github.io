@@ -230,7 +230,7 @@ export function catalogDiff(before, after) {
   const removed = [...previous.keys()].filter(id => !next.has(id));
   const changed = [...next.keys()].filter(id => previous.has(id) && JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id)));
   const translationsChanged = JSON.stringify(before?.translations || {}) !== JSON.stringify(after.translations) || JSON.stringify(before?.attributes || {}) !== JSON.stringify(after.attributes);
-  const storeChanges = ['categories', 'campaigns', 'heroes', 'strings', 'company'].filter(key => JSON.stringify(before?.store?.[key]) !== JSON.stringify(after.store?.[key]));
+  const storeChanges = ['categories', 'campaigns', 'heroes', 'home', 'strings', 'company'].filter(key => JSON.stringify(before?.store?.[key]) !== JSON.stringify(after.store?.[key]));
   const previousArticles = new Map((before?.blog || []).map(article => [article.id, article]));
   const nextArticles = new Map((after.blog || []).map(article => [article.id, article]));
   const blogChanges = [...new Set([...previousArticles.keys(), ...nextArticles.keys()])].filter(id =>

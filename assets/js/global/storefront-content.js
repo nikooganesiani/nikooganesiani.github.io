@@ -3,6 +3,7 @@
   const engine = globalThis.EnkaStoreEngine;
   const esc = value => window.escapeHTML(value);
   let current; let products = []; let signature = JSON.stringify(window.ENKA_STORE || ''); let productSignature = ''; let timer;
+  const rowMarkup = new WeakMap();
   const fallbackStructure = structuredClone(window.CATALOG_STRUCTURE || {});
   const locale = () => window.enkaI18n?.locale || 'ka';
   const label = value => engine.text(value, locale());
@@ -42,9 +43,7 @@
     });
     window.ENKA_COMPANY={...after};
   }
-  function heroes(store) {
-    const anchor=document.querySelector('[data-studio-heroes]');if(!anchor)return;
-    const offers=engine.banners(store);
+  function heroes(anchor, offers) {
     anchor.querySelector('[data-promo-block]')?.enkaCleanup?.();
     anchor.replaceChildren();
     if (!offers.length) return;
@@ -71,17 +70,60 @@
     globalThis.EnkaStoreVisuals.apply(root);
     window.enkaInitPromoBlock?.(root);
   }
-  function campaignRows(store) {
-    const root=document.querySelector('[data-studio-campaigns]');if(!root)return;
-    root.innerHTML=engine.rows(products,store).map(row=>{
+  function renderRows(root, rows, prefix) {
+    const html=rows.filter(row => row.products.length).map(row=>{
       const frame=globalThis.EnkaStoreVisuals.campaignFrame(row,locale());
-      return frame.start+row.products.map(p=>window.createProductCardHTML?.(p,'studio-'+row.id) || '').join('')+frame.end;
-    }).join('');globalThis.EnkaStoreVisuals.apply(root);window.syncFavButtons?.();
+      return frame.start+row.products.map(p=>window.createProductCardHTML?.(p,'studio-'+prefix+'-'+row.id) || '').join('')+frame.end;
+    }).join('');
+    if(rowMarkup.get(root)===html)return;
+    rowMarkup.set(root,html);
+    root.innerHTML=html;globalThis.EnkaStoreVisuals.apply(root);window.syncFavButtons?.();
+  }
+  function renderHome(layout, updateHeroes) {
+    const storage = document.querySelector('[data-home-storage]');
+    const slots = [...layout.children, ...storage.children];
+    const blocks = engine.homeLayout(current).filter(block => block.enabled);
+    const rows = engine.rows(products, current, Date.now(), true);
+    const offers = engine.banners(current);
+    const used = new Set();
+    for (const [index, block] of blocks.entries()) {
+      const singleton = engine.homeSingletons.includes(block.type);
+      const existing = slots.find(slot => slot.dataset.homeType === block.type && (singleton || slot.dataset.homeBlock === block.id));
+      const slot = existing || document.createElement('div');
+      slot.dataset.homeBlock = block.id;
+      slot.dataset.homeType = block.type;
+      if (layout.children[index] !== slot) layout.insertBefore(slot, layout.children[index] || null);
+      used.add(slot);
+      if (block.type === 'banner') {
+        slot.dataset.studioHeroes = '';
+        if (updateHeroes || !existing) heroes(slot, block.sourceId ? offers.filter(offer => offer.id === block.sourceId) : offers);
+      }
+      if (block.type === 'campaign') {
+        slot.dataset.studioCampaigns = '';
+        renderRows(slot, rows.filter(row => block.sourceId ? row.id === block.sourceId : row.showRow), block.id);
+      }
+      if (block.type === 'products' || block.type === 'category') {
+        const shelf = engine.homeProducts(block, products, current, locale());
+        renderRows(slot, [{ id: block.id, title: { ka: shelf.title }, template: 'cards', products: shelf.products }], block.id);
+      }
+    }
+    for (const slot of [...layout.children]) if (!used.has(slot)) {
+      if (engine.homeSingletons.includes(slot.dataset.homeType)) storage.append(slot);
+      else {
+        slot.querySelector('[data-promo-block]')?.enkaCleanup?.();
+        slot.remove();
+      }
+    }
   }
   function render(updateHeroes = false) {
     if(!current)return;
-    if(updateHeroes)heroes(current);
-    campaignRows(current);
+    const layout = document.querySelector('[data-home-layout]');
+    if (layout) { renderHome(layout, updateHeroes); return; }
+    // A cached page generated before the block editor still has fixed anchors.
+    const hero = document.querySelector('[data-studio-heroes]');
+    if (updateHeroes && hero) heroes(hero, engine.banners(current));
+    const campaign = document.querySelector('[data-studio-campaigns]');
+    if (campaign) renderRows(campaign, engine.rows(products, current), 'campaign');
   }
   function schedule() {
     clearTimeout(timer);
@@ -94,17 +136,17 @@
       if(!store || !engine)return;
       products=engine.applyProducts(catalogProducts,store);current=store;
       const next=JSON.stringify(store);
-      const nextProducts=JSON.stringify(products);
+      const nextProducts=JSON.stringify(products);const first=!productSignature;
       if(next===signature && nextProducts===productSignature)return;
       productSignature=nextProducts;
       const changed=next!==signature;
       if(changed){signature=next;window.ENKA_STORE=store;window.enkaI18n?.setStore(store);categories(store);contacts(store);window.dispatchEvent(new CustomEvent('enka:store-change'));}
-      render(changed);schedule();
+      render(changed || first && locale()!=='ka');schedule();
     }
   };
   document.addEventListener('DOMContentLoaded',()=>{
     if(window.ENKA_STORE){current=window.ENKA_STORE;if(locale()!=='ka')categories(current);}
     window.fetchCatalogCached?.().then(data=>{if(data.store)window.enkaStorefront.apply(data.store,data.products);}).catch(()=>{});
   });
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&current){products=engine.applyProducts(products,current);render();window.dispatchEvent(new CustomEvent('enka:prices-change',{detail:{products}}));schedule();}});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&current&&productSignature){products=engine.applyProducts(products,current);render();window.dispatchEvent(new CustomEvent('enka:prices-change',{detail:{products}}));schedule();}});
 })();

@@ -1,4 +1,7 @@
 {% assign product = include.product %}
+{% assign card_locale = page.storefront_locale | default: page.blog_locale %}
+{% assign card_translation = site.data.storefront_products[card_locale][product.product_id] %}
+{% assign card_name = card_translation.name | default: product.name %}
 {% assign price = product.price | remove: '₾' | plus: 0 %}
 {% assign old_price = product.oldPrice | remove: '₾' | plus: 0 %}
 {% assign card_image = '/img/no-image.svg' %}
@@ -16,7 +19,7 @@
     {% if card_image_count > 1 %}<div class="card-image-indicators" aria-hidden="true">{% for i in (1..card_image_count) %}<span class="card-image-indicator{% if forloop.first %} active{% endif %}"></span>{% endfor %}</div>{% endif %}
   </div>
   <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
-    <a href="{{ product.url | relative_url }}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="{{ product.name | escape }}">{{ product.name | escape }}</a>
+    <a href="{{ product.url | relative_url }}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="{{ card_name | escape }}"{% if card_locale and card_locale != 'ka' and card_translation == nil %} lang="ka"{% endif %}>{{ card_name | escape }}</a>
     <div class="flex items-baseline flex-wrap gap-1.5 mb-3">
       <span class="product-card-price {% if old_price > price and price > 0 %}text-accent{% else %}text-[color:light-dark(#000,var(--color-night-ink))]{% endif %} whitespace-nowrap text-[length:18px] font-bold leading-6 tracking-[-.02em] tabular-nums max-[768px]:text-[length:16px]"><span>{{ product.price | remove: '₾' | escape }}</span><span class="card-price-currency">₾</span></span>
       {% if old_price > price %}<del class="text-[color:light-dark(#929ba8,var(--color-night-muted))] text-[length:12px] leading-[1.4] line-through [text-decoration-thickness:1px]">{{ product.oldPrice | remove: '₾' | escape }} ₾</del>{% endif %}

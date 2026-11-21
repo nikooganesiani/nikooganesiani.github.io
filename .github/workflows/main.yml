@@ -63,8 +63,10 @@ jobs:
       - name: Verify storefront and product pages
         run: pnpm run check:site
 
-      - name: Verify Russian and English translation coverage
-        run: pnpm run check:translations
+      - name: Verify Russian and English translation coverage and localized SEO
+        run: |
+          pnpm run check:translations
+          node scripts/check-storefront-locales.cjs
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v5

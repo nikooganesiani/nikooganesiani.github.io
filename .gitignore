@@ -6,6 +6,8 @@
 /_products/
 /_pages/generated-categories/
 /_pages/generated-blog/
+/_pages/generated-storefront/
+/_data/storefront_products.json
 /_data/blog.json
 /node_modules/
 /.pnpm-store/

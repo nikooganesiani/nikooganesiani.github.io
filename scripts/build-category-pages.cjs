@@ -5,15 +5,31 @@ function buildCategoryPages(categories, root = process.cwd()) {
   const directory = path.join(root, '_pages/generated-categories');
   fs.mkdirSync(directory, { recursive: true });
   const current = new Set();
-  const valid = value => /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(value);
+  const valid = value => typeof value === 'string' && /^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(value);
   for (const category of categories) {
     for (const id of [category.id, ...(category.aliases || [])].filter(valid)) {
-      const sections = ['', ...(category.subs || []).flatMap(sub => [sub.id, ...(sub.aliases || [])]).filter(valid)];
-      for (const sub of new Set(sections)) {
+      const sections = new Map([['', '']]);
+      for (const section of category.subs || []) {
+        for (const alias of [section.id, ...(section.aliases || [])].filter(valid)) sections.set(alias, section.id);
+      }
+      for (const [sub, canonicalSub] of sections) {
         const route = '/category/' + id + '/' + (sub ? sub + '/' : '');
+        const canonical = '/category/' + category.id + '/' + (canonicalSub ? canonicalSub + '/' : '');
         const file = id + (sub ? '--' + sub : '') + '.html';
         current.add(file);
-        fs.writeFileSync(path.join(directory, file), '---\ngenerated: true\nlayout: default\nlisting_mode: category\ntitle: "კატალოგი"\npermalink: ' + route + '\n---\n\n<div class="pb-20 animate-[fadeIn_0.4s_ease-out] overflow-x-clip selection:bg-blue-600 selection:text-white w-full max-w-store mx-auto pt-3 px-6 min-[1280px]:px-8 max-[640px]:px-4">\n  {% include pages/categorypage.html %}\n</div>\n');
+        fs.writeFileSync(path.join(directory, file), `---
+generated: true
+layout: default
+listing_mode: category
+listing_category: "${category.id}"
+${canonicalSub ? `listing_subcategory: "${canonicalSub}"\n` : ''}${canonical !== route ? `canonical_path: ${canonical}\nsitemap: false\n` : ''}title: "კატალოგი"
+permalink: ${route}
+---
+
+<div class="{% include listing/page-classes.html %}">
+  {% include pages/categorypage.html %}
+</div>
+`);
       }
     }
   }

@@ -78,7 +78,7 @@ function recordSuccessfulOrder(exactSignature) {
     saveOrderHistory(history);
 }
 
-window.showOrderConfirm = function(data = {}) {
+window.showOrderConfirm = function(data = {}, trigger) {
     try {
         const confirmName = document.getElementById('confirmName');
         const confirmPhone = document.getElementById('confirmPhone');
@@ -114,7 +114,7 @@ window.showOrderConfirm = function(data = {}) {
         }
         window.updateBadges?.();
 
-        window.openAppModal?.('orderConfirmModal');
+        window.openAppModal?.('orderConfirmModal', trigger);
     } catch(e) { console.error(e); }
 };
 

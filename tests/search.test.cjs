@@ -5,7 +5,7 @@ const vm = require('node:vm');
 const path = require('node:path');
 
 // Control response order and focus without making requests to the live catalog.
-function harness({ mobile = false, search = '' } = {}) {
+function harness({ mobile = false, search = '', storage = new Map() } = {}) {
   let document;
   class Element {
     constructor(tag = 'div', id = '') {
@@ -39,21 +39,24 @@ function harness({ mobile = false, search = '' } = {}) {
       this.fire('focus');
     }
     querySelectorAll(selector) {
-      const tags = selector.split(',').map(value => value.trim().toUpperCase());
-      return this.children.flatMap(child => [...(tags.includes(child.tagName) ? [child] : []), ...child.querySelectorAll(selector)]);
+      const matches = child => selector.split(',').some(value => {
+        const item = value.trim();
+        return item.startsWith('.') ? child.className?.split(' ').includes(item.slice(1)) : child.tagName === item.toUpperCase();
+      });
+      return this.children.flatMap(child => [...(matches(child) ? [child] : []), ...child.querySelectorAll(selector)]);
     }
     querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
     getBoundingClientRect() { return { top: 100, height: 48 }; }
   }
   const root = new Element(mobile ? 'modal' : 'form');
-  const scope = mobile ? new Element() : root;
+  const scope = mobile ? new Element('form') : root;
   if (mobile) root.append(scope);
   const input = new Element('input', mobile ? 'mobileSearchInput' : 'searchInput');
   const results = new Element('div', mobile ? 'mobileSearchResults' : 'desktopSearchResults');
+  results.hidden = true;
   const clear = new Element('button', mobile ? 'mobileSearchClear' : 'desktopSearchClear');
   const submit = new Element('button', mobile ? 'mobileSearchBtn' : 'desktopSearchBtn');
-  scope.append(input, clear, submit);
-  (mobile ? root : scope).append(results);
+  scope.append(input, clear, submit, results);
   const outside = new Element('button');
   const nodes = [input, results, clear, submit];
   document = new Element('document');
@@ -65,7 +68,9 @@ function harness({ mobile = false, search = '' } = {}) {
   let timerId = 0;
   const pending = [];
   const destinations = [];
-  const window = { location: { search, assign: value => destinations.push(value) }, innerHeight: 800, addEventListener() {}, fetchCatalogCached: () => new Promise((resolve, reject) => pending.push({ resolve, reject })) };
+  const window = { location: { search, assign: value => destinations.push(value) }, innerHeight: 800, addEventListener() {},
+    localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
+    fetchCatalogCached: () => new Promise((resolve, reject) => pending.push({ resolve, reject })) };
   const context = vm.createContext({ document, window, URLSearchParams, setTimeout: fn => { timers.set(++timerId, fn); return timerId; }, clearTimeout: id => timers.delete(id) });
   const fetchCatalog = window.fetchCatalogCached;
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global/catalog.js'), 'utf8'), context);
@@ -181,6 +186,34 @@ test('Query parameters populate both the input and the clear control without a r
     assert.equal(h.clear.classList.contains('show'), true);
     assert.equal(h.pending.length, 0);
   }
+});
+
+test('Search history persists across desktop and mobile, deduplicates queries and keeps products separate', async () => {
+  const storage = new Map();
+  const desktop = harness({ storage });
+  desktop.type('  Sokany  600  ');
+  desktop.scope.fire('submit');
+  await desktop.runTimers();
+  assert.equal(desktop.pending.length, 0);
+  assert.deepEqual(desktop.destinations, ['/search/?result=Sokany%20600']);
+  desktop.type('sokany 600');
+  await desktop.runTimers();
+  await desktop.resolve(0, [{ id: 'sokany-600', name: 'Sokany 600' }]);
+  desktop.results.querySelectorAll('a')[0].fire('click');
+  desktop.results.querySelectorAll('a')[1].fire('click');
+  desktop.type('never submitted');
+
+  const mobile = harness({ storage, mobile: true });
+  mobile.input.focus();
+  assert.deepEqual(mobile.results.querySelectorAll('a').map(link => link.href), ['/search/?result=sokany%20600', '/product/sokany-600/']);
+  const removeQuery = mobile.results.querySelector('.site-search-remove');
+  removeQuery.focus();
+  removeQuery.fire('click');
+  const reopened = harness({ storage });
+  reopened.input.focus();
+  assert.deepEqual(reopened.results.querySelectorAll('a').map(link => link.href), ['/product/sokany-600/']);
+  reopened.results.querySelector('button').fire('click');
+  assert.equal(reopened.results.querySelector('a'), null);
 });
 
 test('Search matches Latin case, Georgian transliteration, brand, SKU and multiple terms consistently', () => {

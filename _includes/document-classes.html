@@ -13,8 +13,8 @@ motion-reduce:[&::before]:[animation-delay:0ms]! motion-reduce:[&::before]:[tran
 motion-reduce:[&_*::before]:[animation-delay:0ms]! motion-reduce:[&_*::before]:[transition-duration:.01ms]! motion-reduce:[&_*::before]:scroll-auto! motion-reduce:[&::after]:[animation-duration:.01ms]!
 motion-reduce:[&::after]:[animation-delay:0ms]! motion-reduce:[&::after]:[transition-duration:.01ms]! motion-reduce:[&::after]:scroll-auto! motion-reduce:[&_*::after]:[animation-duration:.01ms]!
 motion-reduce:[&_*::after]:[animation-delay:0ms]! motion-reduce:[&_*::after]:[transition-duration:.01ms]! motion-reduce:[&_*::after]:scroll-auto! scroll-pt-[calc(var(--site-header-height,_80px)_+_16px)]
-[&.modal-open]:overscroll-none [&.modal-open_body]:overflow-hidden [&.modal-open_body]:overscroll-none [:where(&)_:focus-visible]:[outline:2px_solid_#155dfc]!
-[:where(&)_:focus-visible]:[outline-offset:3px] [&_button]:touch-manipulation [&_a]:touch-manipulation [&_input]:touch-manipulation
+[&.modal-open]:overscroll-none [&.modal-open_body]:overflow-hidden [&.modal-open_body]:overscroll-none
+[&_button]:touch-manipulation [&_a]:touch-manipulation [&_input]:touch-manipulation
 [&_button:disabled]:cursor-default [&_[hidden]]:hidden!
 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar]:w-4
 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar]:h-4

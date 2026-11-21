@@ -23,6 +23,61 @@
     return changed;
   }
   const banners = store => (store?.heroes || []).filter(h=>plain(h) && h.enabled && (h.type==='image' || (h.type===undefined && !Object.hasOwn(h,'productId'))) && safeImage(h.image) && safeLink(h.link));
+  const homeTypes = ['banner', 'categories', 'campaign', 'blog', 'products', 'category', 'recommendations'];
+  const homeSingletons = ['categories', 'blog', 'recommendations'];
+  const homeLimit = 80;
+  const defaultHome = () => [
+    { id: 'home-banners', type: 'banner', enabled: true, sourceId: '' },
+    { id: 'home-categories', type: 'categories', enabled: true },
+    { id: 'home-campaigns', type: 'campaign', enabled: true, sourceId: '' },
+    { id: 'home-blog', type: 'blog', enabled: true },
+    { id: 'home-recommendations', type: 'recommendations', enabled: true }
+  ];
+  const homeLayout = store => store?.home ?? defaultHome();
+  function homeProducts(block, products, store, locale = 'ka') {
+    const category = store?.categories?.find(item => item.id === block.sourceId);
+    let list = [];
+    if (block.type === 'products') {
+      const byId = new Map(products.map(product => [product.id, product]));
+      list = block.productIds.map(id => byId.get(id));
+    } else if (category) list = products.filter(product => product.categories?.includes(category.id));
+    return { title: text(block.title, locale) || text(category?.title, locale), products: list.filter(rowAvailable).slice(0, block.limit) };
+  }
+  function validateHome(store, productIds, cats, campaignIds, heroIds) {
+    if (!Object.hasOwn(store, 'home')) return [];
+    if (!Array.isArray(store.home) || store.home.length > homeLimit) return ['Главная: проверьте список блоков (до 80).'];
+    const errors = [];
+    const ids = new Set();
+    const singletons = new Set();
+    for (const block of store.home) {
+      if (!plain(block) || !idOK(block.id) || ids.has(block.id) || !homeTypes.includes(block.type) || typeof block.enabled !== 'boolean') {
+        errors.push('Главная: проверьте тип, видимость и уникальность ID блока.');
+        continue;
+      }
+      ids.add(block.id);
+      if (homeSingletons.includes(block.type)) {
+        if (singletons.has(block.type)) errors.push('Главная: плитки категорий, блог и персональная лента доступны по одному разу.');
+        singletons.add(block.type);
+      }
+      const sources = { banner: heroIds, campaign: campaignIds, category: cats }[block.type];
+      const defaultSource = block.sourceId === '' && (block.type !== 'category' || !block.enabled);
+      if (sources && !defaultSource && !sources.has(block.sourceId)) {
+        errors.push('Главная: проверьте источник содержимого блока.');
+      }
+      if (block.type === 'products' || block.type === 'category') {
+        const title = block.title;
+        if (!plain(title) || Object.entries(title).some(([key, value]) => !['ka', 'ru', 'en'].includes(key) || typeof value !== 'string' || value.length > 200) ||
+            block.enabled && block.type === 'products' && !title.ka?.trim() ||
+            !Number.isInteger(block.limit) || block.limit < 1 || block.limit > 48) {
+          errors.push('Главная: проверьте заголовок и лимит товаров (1–48).');
+        }
+      }
+      if (block.type === 'products' && (!Array.isArray(block.productIds) || block.productIds.length > 100 || new Set(block.productIds).size !== block.productIds.length || block.productIds.some(id => !productIds.has(id)))) {
+        errors.push('Главная: проверьте товары подборки (до 100 уникальных товаров).');
+      }
+    }
+    return [...new Set(errors)];
+  }
   const colorOK = value => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value);
   const artworkIds=['smarthome','kitchen','homecare','selfcare','building','gadget'];
   const categoryAppearance = category => ({ backgroundColor:'#e5edff', textColor:'#15356b', backgroundImage: artworkIds.includes(category.artworkId || category.id) ? `/img/categories/patterns/${category.artworkId || category.id}.svg` : '', backgroundFit:'tile', backgroundOpacity:0.65, image:'', useDefaultImage:true, showIllustration:true, imageSize:100, imageX:100, imageY:100, showTitle:true, ...category.appearance });
@@ -68,6 +123,9 @@
     const replace=list=>[...new Set(list.map(id=>id===oldId?next:id))];
     for(const product of products){const key=kind==='category'?'categories':'subcategories';product[key]=replace(product[key] || []);}
     for(const campaign of store.campaigns || []){const key=kind==='category'?'categoryIds':'subcategoryIds';campaign[key]=replace(campaign[key] || []);}
+    if (kind === 'category') for (const block of store.home || []) {
+      if (block.type === 'category' && block.sourceId === oldId) block.sourceId = next;
+    }
     return true;
   }
   function appearanceErrors(value, category = false) {
@@ -87,6 +145,7 @@
   const active = (item, now = Date.now()) => item.enabled && !item.isTemplate && (!item.startsAt || Date.parse(item.startsAt) <= now) && (!item.endsAt || now < Date.parse(item.endsAt));
   const matches = (product, rule) => !rule.excludeIds?.includes(product.id) && (rule.productIds?.includes(product.id) || rule.categoryIds?.some(id => product.categories?.includes(id)) || rule.subcategoryIds?.some(id => product.subcategories?.includes(id)));
   const centsOf = value => Math.round(Number(String(value).trim().replace(',','.')) * 100);
+  const rowAvailable = product => product && centsOf(product.price) > 0 && ['in_stock', 'მარაგშია'].includes(String(product.stockStatus || 'in_stock').trim());
   const discountedCents = (cents, percent) => Math.min(cents, Math.max(100, Math.floor(cents * (100 - percent) / 10000) * 100));
   const campaignPrice = (value, percent) => String(discountedCents(centsOf(value),percent) / 100);
   function applyProducts(products, store, now = Date.now()) {
@@ -117,9 +176,9 @@
       subs: category.subs.filter(s => s.visible !== false).map(sub => ({ id: sub.id, name: text(sub.title, locale) }))
     }]));
   }
-  function rows(products, store, now = Date.now()) {
-    return (store?.campaigns || []).filter(rule => active(rule, now) && rule.showRow).map(rule => ({ ...rule,
-      products: [...rule.productIds.map(id=>products.find(p=>p.id===id)), ...products.filter(p=>!rule.productIds.includes(p.id))].filter(p => p && matches(p, rule) && Number(p.price) > 0 && (!p.stockStatus || p.stockStatus === 'in_stock')).slice(0, rule.limit || 8)
+  function rows(products, store, now = Date.now(), includeUnplaced = false) {
+    return (store?.campaigns || []).filter(rule => active(rule, now) && (rule.showRow || includeUnplaced)).map(rule => ({ ...rule,
+      products: [...rule.productIds.map(id=>products.find(p=>p.id===id)), ...products.filter(p=>!rule.productIds.includes(p.id))].filter(p => rowAvailable(p) && matches(p, rule)).slice(0, rule.limit || 8)
     })).filter(row => row.products.length);
   }
   function validate(store, products) {
@@ -180,6 +239,7 @@
       errors.push(...appearanceErrors(hero));
       heroIds.add(hero?.id);
     }
+    errors.push(...validateHome(store, productIds, cats, ids, heroIds));
     if (!plain(store.strings) || Object.keys(store.strings).length > 3000) errors.push('Неверный словарь текстов сайта.');
     else for (const [source, values] of Object.entries(store.strings)) if (!source.trim() || source.length > 30000 || !plain(values) || Object.entries(values).some(([locale, value]) => !['ka', 'ru', 'en'].includes(locale) || typeof value !== 'string' || value.length > 30000)) errors.push('Тексты сайта: проверьте языки и длину текста.');
     if (!plain(store.company)) errors.push('Не найдены контакты магазина.');
@@ -191,5 +251,5 @@
     }
     return [...new Set(errors)];
   }
-  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, renameSection, resolveSection };
+  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, renameSection, resolveSection, homeTypes, homeSingletons, homeLimit, defaultHome, homeLayout, homeProducts };
 })();

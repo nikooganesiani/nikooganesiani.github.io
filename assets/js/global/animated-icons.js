@@ -71,7 +71,7 @@
     } else if (name === 'homecare') animate(parts.at(-1), { transform: ['rotate(0deg)', 'rotate(180deg)', 'rotate(360deg)'] }, 850);
     else if (name === 'upload') {
       parts.slice(1).forEach(part => animate(part, { transform: ['translateY(0)', 'translateY(-2px)', 'translateY(0)'] }));
-    } else if (name === 'close') move(['rotate(0deg)', 'rotate(90deg)'], 300);
+    } else if (name === 'close') move(['scale(1)', 'scale(.86)', 'scale(1)'], 200);
     else if (name === 'expand') move(['scale(1)', 'scale(1.12)', 'scale(1)']);
     else if (name === 'selfcare') parts.forEach((part, i) => animate(part, { opacity: [1, .3, 1] }, 500, { delay: i * 60 }));
     else if (name === 'globe' || name === 'facebook') move(['rotateY(0deg)', 'rotateY(25deg)', 'rotateY(0deg)'], 650);

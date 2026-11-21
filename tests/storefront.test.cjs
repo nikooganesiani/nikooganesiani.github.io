@@ -123,6 +123,50 @@ test('Catalog and product cards work with blocked storage and escape untrusted c
   assert.equal(context.window.safeProductLink('javascript:alert(1)'), '/');
 });
 
+test('Card photo previews ignore a pending image after the pointer leaves', async () => {
+  let finishDecoding;
+  const decoded = new Promise(resolve => { finishDecoding = resolve; });
+  const first = { complete: true, dataset: {} };
+  const second = {
+    complete: false, dataset: { cardSrc: '/second.webp' },
+    decode: () => decoded, removeAttribute() { delete this.dataset.cardSrc; }
+  };
+  const scrolls = [];
+  const track = {
+    scrollLeft: 0, clientWidth: 100, isConnected: true,
+    children: [first, second].map((image, index) => ({ offsetLeft: index * 108, querySelector: () => image })),
+    scrollTo: ({ left, behavior }) => scrolls.push([left, behavior])
+  };
+  let selected;
+  const indicators = {
+    children: [0, 1].map(index => ({ classList: { toggle: (_name, active) => { if (active) selected = index; } } }))
+  };
+  const media = {
+    getBoundingClientRect: () => ({ left: 0, width: 100 }),
+    querySelector: selector => selector === '.product-images-track' ? track : indicators
+  };
+  const listeners = {};
+  const context = vm.createContext({
+    window: { matchMedia: query => ({ matches: !query.includes('prefers-reduced-motion') }) },
+    document: { addEventListener: (type, fn) => { listeners[type] = fn; } }
+  });
+  vm.runInContext(read('assets/js/product/card.js'), context);
+  const pointer = { pointerType: 'mouse', clientX: 90, target: { closest: () => media } };
+  listeners.pointermove(pointer);
+  assert.equal(selected, 1);
+  assert.deepEqual(scrolls, []);
+  assert.equal(second.loading, 'eager');
+  listeners.pointerout(pointer);
+  assert.equal(selected, 0);
+  finishDecoding();
+  await new Promise(setImmediate);
+  assert.deepEqual(scrolls, [[0, 'smooth']]);
+
+  second.complete = true;
+  listeners.pointermove(pointer);
+  assert.deepEqual(scrolls.at(-1), [108, 'smooth']);
+});
+
 function orderGuardContext(fetch) {
   const store = new Map();
   const context = vm.createContext({

@@ -312,7 +312,9 @@
       .map(function (item, index) {
         var href = window.safeProductLink(item.link);
         var img = window.safeProductImage(item.img || (Array.isArray(item.images) && typeof item.images[0] === 'string' ? item.images[0] : ''));
-        var name = escapeHtml(item.name || 'პროდუქტი');
+        var productId = extractSlug(item.link);
+        var catalogName = window.ENKA_CATALOG_LABELS?.[productId]?.name;
+        var name = escapeHtml(catalogName || item.name || 'პროდუქტი');
         var price = escapeHtml(item.price || '');
         var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
 
@@ -386,7 +388,7 @@
     if (typeof window.showToast === 'function') window.showToast('წაშლილია რჩეულებიდან');
   }
 
-  function openFavorites(event) {
+  function openFavorites(event, trigger = event?.currentTarget) {
     bindFavModal();
     renderFavList();
 
@@ -396,7 +398,7 @@
       return;
     }
 
-    window.openAppModal('favModal', event?.currentTarget);
+    window.openAppModal('favModal', trigger);
   }
 
   function closeFavorites() {
@@ -445,7 +447,7 @@
           setButtonsState(hintsFromItem(item), true);
           if (getFavModal() && getFavModal().classList.contains('active')) renderFavList();
           if (typeof window.showToast === 'function') {
-            window.showToast('დამატებულია რჩეულებში', 'fav');
+            window.showToast('დამატებულია რჩეულებში', 'fav', btn);
           }
           return item;
         })

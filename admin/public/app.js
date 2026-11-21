@@ -27,7 +27,9 @@ const paths = {
   close: '<path d="m6 6 12 12M6 18 18 6"/>', menu: '<path d="M4 6h16M4 12h16M4 18h16"/>', copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V3H3v13h5"/>',
   refresh: '<path d="M20 7a8 8 0 0 0-13-2L3 9m0-6v6h6m-5 8a8 8 0 0 0 13 2l4-4m0 6v-6h-6"/>',
   trash: '<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
-  'arrow-up': '<path d="M12 20V4m-6 6 6-6 6 6"/>', 'arrow-down': '<path d="M12 4v16m-6-6 6 6 6-6"/>', image: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/>'
+  'arrow-up': '<path d="M12 20V4m-6 6 6-6 6 6"/>', 'arrow-down': '<path d="M12 4v16m-6-6 6 6 6-6"/>', image: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 6-6 4 4 3-3 5 5"/>',
+  tag: '<path d="M20 13 13 20 4 11V4h7l9 9Z"/><circle cx="8" cy="8" r="1"/>', folder: '<path d="M3 7h7l2 2h9v10H3Z"/>',
+  grip: '<path d="M9 5h.01M15 5h.01M9 12h.01M15 12h.01M9 19h.01M15 19h.01" stroke-width="3"/>', sparkles: '<path d="M11 3l2.4 6.6L20 12l-6.6 2.4L11 21l-2.4-6.6L2 12l6.6-2.4L11 3Zm8 0v6m-3-3h6"/>'
 };
 function icon(name) { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.box}</svg>`; }
 function hydrateIcons() { for (const element of $$('[data-icon]')) { element.innerHTML = icon(element.dataset.icon); element.removeAttribute('data-icon'); } }
@@ -35,7 +37,7 @@ const STATE_NAMES = { missing: 'Нет перевода', stale: 'Оригина
 const money = value => Number.isFinite(priceOf(value)) ? new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 2 }).format(priceOf(value)) + ' ₾' : '—';
 const date = value => value ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short', timeZone:'Asia/Tbilisi' }).format(new Date(value)) : t('Ещё не опубликован');
 const state = { server: null, document: null, session: null, taxonomy: [], dirty: false, busy: false, page: 1, pageSize: 8, view: 'catalog', filter: 'all', query: '', category: '', sort: 'default', product: null, editorTab: 'base', previewLocale: 'ka', originalIds: new Set() };
-const storeEditor = createStoreEditor({ state, escape:e, markDirty, toast, confirmMessage, renderApp:render, uploadImage });
+const storeEditor = createStoreEditor({ state, escape:e, markDirty, toast, confirmMessage, renderApp:render, uploadImage, icon });
 const blogEditor = createBlogEditor({ state, markDirty, toast, confirmMessage, uploadImage, icon });
 let toastTimer;
 function toast(message, error = false) { clearTimeout(toastTimer); $('#toast').textContent = t(message); $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => { $('#toast').hidden = true; }, error ? 8500 : 4300); }
@@ -138,9 +140,15 @@ function render() {
   ensureStore(state.document);
   state.taxonomy = state.document.store.categories.map(c => ({ id:c.id, name:c.title[getLocale()] || c.title.ka, subs:c.subs.map(s=>({id:s.id,name:s.title[getLocale()] || s.title.ka})) }));
   $('#catalog-view').hidden = !['catalog', 'translations'].includes(state.view); $('#attributes-view').hidden = state.view !== 'attributes'; $('#history-view').hidden = state.view !== 'history';
-  $$('.nav-item').forEach(item => item.classList.toggle('active', item.dataset.view === state.view));
+  const navView = state.view === 'banners' ? 'merchandising' : state.view;
+  for (const item of $$('.nav-item')) {
+    const active = item.dataset.view === navView;
+    item.classList.toggle('active', active);
+    if (active) item.setAttribute('aria-current', 'page'); else item.removeAttribute('aria-current');
+  }
   $('#breadcrumb-current').textContent = { catalog: t('Каталог'), translations: t('Переводы товаров'), attributes: t('Характеристики'), history: t('История изменений'), blog: t('Блог'), ...storeEditor.names }[state.view] || t('Каталог');
   $('#breadcrumb-current').textContent=t($('#breadcrumb-current').textContent);
+  document.title = `${$('#breadcrumb-current').textContent} — ENKA Studio`;
   storeEditor.render();
   blogEditor.render();
   renderCatalog(); if (state.view === 'attributes') renderAttributes(); if (state.view === 'history') renderHistory(); updateSavebar();
@@ -153,6 +161,7 @@ function renderSession() {
 }
 function switchView() {
   const hash = location.hash.slice(1);
+  if (hash === 'workspace') return;
   const view = hash.startsWith('blog/') ? 'blog' : hash;
   state.view = ['catalog', 'translations', 'attributes', 'history', 'blog', ...Object.keys(storeEditor.names)].includes(view) ? view : 'catalog';
   if (state.view === 'translations') state.filter = 'translation'; else if (state.view === 'catalog') state.filter = 'all';
@@ -161,6 +170,7 @@ function switchView() {
 const mobileLayout = window.matchMedia('(max-width: 680px)');
 function setMobileMenu(open) {
   $('#sidebar').classList.toggle('open', open);
+  $('#nav-backdrop').hidden = !open;
   $('#sidebar').inert = mobileLayout.matches && !open;
   $('#mobile-menu').setAttribute('aria-expanded', String(open));
   $('#mobile-menu').setAttribute('aria-label', open ? t('Закрыть навигацию') : t('Открыть навигацию'));
@@ -228,7 +238,7 @@ async function reviewPublication() {
     const review = await api('/api/review');
     const isLocal = state.session.environment === 'local'; const isStaging = state.session.environment !== 'production';
     $('#review-title').textContent = state.server.pending ? t('Повторить публикацию') : t('Проверка изменений');
-    $('#review-body').innerHTML = ui`<div class="review-banner">${isLocal ? t('Вы публикуете в локальную тестовую копию. Рабочий магазин не изменится.') : isStaging ? t('Вы публикуете в отдельный тестовый каталог Cloudflare.') : t('Изменения будут опубликованы в рабочий каталог магазина.')}</div><div class="review-stat"><span>Версия черновика</span><strong>v${review.revision}</strong></div><div class="review-stat"><span>Товаров в каталоге</span><strong>${review.productCount}</strong></div><div class="review-stat"><span>Новые товары</span><strong>${review.added.length}</strong></div><div class="review-stat"><span>Изменённые товары</span><strong>${review.changed.length}</strong></div><div class="review-stat"><span>Удаляемые товары</span><strong>${review.removed.length}</strong></div><div class="review-stat"><span>Переводы и словарь</span><strong>${review.translationsChanged ? t('Есть изменения') : t('Без изменений')}</strong></div>${review.removed.length ? ui`<div class="review-items">Будут удалены: ${review.removed.map(e).join(', ')}</div>` : ''}${review.errors.length ? `<div class="review-errors">${review.errors.map(error=>e(t(error))).join('<br>')}</div>` : ''}<p class="review-note">Сохранённые версии доступны в истории. Непроверенные или устаревшие переводы не заменяют грузинский оригинал.</p><div class="review-stat"><span>Настройки магазина</span><strong>${(review.storeChanges || []).map(key=>({categories:t("Категории"),campaigns:t("Акции"),heroes:t("Баннеры"),strings:t("Тексты сайта"),company:t("Контакты")})[key]).join(", ") || t("Без изменений")}</strong></div><p class="review-note">Цены, сроки акций, категории, баннеры и тексты обновляются из публичного API. Для поисковых систем и работы без JavaScript пересоберите сайт. Новые страницы товаров тоже требуют сборки.</p><label class="confirm-checkbox"><input id="publication-confirm" type="checkbox"><span>Я проверил изменения и хочу опубликовать эту версию${isStaging ? t(' в тестовый каталог') : ''}.</span></label>`;
+    $('#review-body').innerHTML = ui`<div class="review-banner">${isLocal ? t('Вы публикуете в локальную тестовую копию. Рабочий магазин не изменится.') : isStaging ? t('Вы публикуете в отдельный тестовый каталог Cloudflare.') : t('Изменения будут опубликованы в рабочий каталог магазина.')}</div><div class="review-stat"><span>Версия черновика</span><strong>v${review.revision}</strong></div><div class="review-stat"><span>Товаров в каталоге</span><strong>${review.productCount}</strong></div><div class="review-stat"><span>Новые товары</span><strong>${review.added.length}</strong></div><div class="review-stat"><span>Изменённые товары</span><strong>${review.changed.length}</strong></div><div class="review-stat"><span>Удаляемые товары</span><strong>${review.removed.length}</strong></div><div class="review-stat"><span>Переводы и словарь</span><strong>${review.translationsChanged ? t('Есть изменения') : t('Без изменений')}</strong></div>${review.removed.length ? ui`<div class="review-items">Будут удалены: ${review.removed.map(e).join(', ')}</div>` : ''}${review.errors.length ? `<div class="review-errors">${review.errors.map(error=>e(t(error))).join('<br>')}</div>` : ''}<p class="review-note">Сохранённые версии доступны в истории. Непроверенные или устаревшие переводы не заменяют грузинский оригинал.</p><div class="review-stat"><span>Настройки магазина</span><strong>${(review.storeChanges || []).map(key=>({categories:t("Категории"),campaigns:t("Акции"),heroes:t("Баннеры"),home:t("Компоновка главной"),strings:t("Тексты сайта"),company:t("Контакты")})[key]).join(", ") || t("Без изменений")}</strong></div><p class="review-note">Цены, акции и компоновка главной обновляются из публичного API. Для поисковых систем и работы без JavaScript пересоберите сайт. Новые страницы товаров тоже требуют сборки.</p><label class="confirm-checkbox"><input id="publication-confirm" type="checkbox"><span>Я проверил изменения и хочу опубликовать эту версию${isStaging ? t(' в тестовый каталог') : ''}.</span></label>`;
     if (review.blogChanges?.length) {
       const statuses = { draft: 'Черновик', published: 'Для сайта', archived: 'В архиве' };
       const status = key => e(t(statuses[key] || 'Нет в списке'));
@@ -263,7 +273,10 @@ document.addEventListener('input', event => {
     const fieldName = target.dataset.productField;
     if (fieldName === 'id' && state.originalIds.has(product.id)) return;
     const old = product.id; product[fieldName] = target.value;
-    if (fieldName === 'id') for (const locale of LOCALES) { const entry = savedTranslation(state.document, old, locale); if (entry) { delete state.document.translations[locale].products[old]; state.document.translations[locale].products[product.id] = entry; } }
+    if (fieldName === 'id') {
+      for (const locale of LOCALES) { const entry = savedTranslation(state.document, old, locale); if (entry) { delete state.document.translations[locale].products[old]; state.document.translations[locale].products[product.id] = entry; } }
+      for (const block of state.document.store.home || []) if (block.type === 'products') block.productIds = block.productIds.map(id => id === old ? product.id : id);
+    }
     markDirty(); return;
   }
   if (target.dataset.translationField) { const entries = translationFor(state.document, product.id, state.editorTab).fields; const source = String(product[target.dataset.translationField] || ''); updateEntry(entries, target.dataset.translationField, target.value, source); const badge = target.closest('.field').querySelector('.translation-state'); const status = entryState(entries[target.dataset.translationField], source); badge.textContent = t(STATE_NAMES[status]); badge.className = 'translation-state ' + status; markDirty(); return; }
@@ -313,6 +326,7 @@ document.addEventListener('click', async event => {
     for (const article of state.document.blog || []) {
       for (const key of ['productIds', 'excludeIds']) article.placements[key] = article.placements[key].filter(id => id !== product.id);
     }
+    for (const block of state.document.store.home || []) if (block.type === 'products') block.productIds = block.productIds.filter(id => id !== product.id);
     state.document.catalog.products = state.document.catalog.products.filter(item => item !== product);
     for (const locale of LOCALES) delete state.document.translations[locale].products[product.id];
     markDirty(); $('#product-dialog').close(); render(); return;
@@ -386,7 +400,15 @@ $('#product-dialog').addEventListener('close', () => { state.product = null; ren
 $('#previous-page').onclick = () => { state.page--; renderCatalog(); }; $('#next-page').onclick = () => { state.page++; renderCatalog(); };
 $('#reset-filters').onclick = () => { state.query = ''; state.category = ''; state.filter = 'all'; state.page = 1; $('#catalog-search').value = ''; renderCatalog(); };
 $('#history-refresh').onclick = renderHistory;
-$('#mobile-menu').onclick = () => setMobileMenu(!$('#sidebar').classList.contains('open'));
+$('#mobile-menu').onclick = () => { setMobileMenu(true); $('#close-mobile-menu').focus(); };
+$('#close-mobile-menu').onclick = () => { setMobileMenu(false); $('#mobile-menu').focus(); };
+$('#sidebar').addEventListener('click', event => {
+  if (mobileLayout.matches && event.target.closest('.nav-item, .brand')) {
+    setMobileMenu(false);
+    $('#workspace').focus({ preventScroll: true });
+  }
+});
+$('.skip').onclick = event => { event.preventDefault(); $('#workspace').focus(); };
 document.addEventListener('click', event => {
   if (mobileLayout.matches && $('#sidebar').classList.contains('open') && !event.target.closest('#sidebar, #mobile-menu')) setMobileMenu(false);
 });
@@ -397,7 +419,7 @@ document.addEventListener('keydown', event => {
     const search = state.view === 'blog' ? $('#blog-view input[type=search]') : $('#catalog-search');
     if (search?.offsetParent) { event.preventDefault(); search.focus(); }
   }
-  if (event.key === 'Escape') setMobileMenu(false);
+  if (event.key === 'Escape' && $('#sidebar').classList.contains('open')) { setMobileMenu(false); $('#mobile-menu').focus(); }
   if (event.target.matches('[data-editor-tab]') && ['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
     event.preventDefault();
     const tabs = $$('[data-editor-tab]'); const index = tabs.indexOf(event.target);
@@ -408,6 +430,7 @@ document.addEventListener('keydown', event => {
 document.addEventListener('error', event => { if (event.target.tagName === 'IMG') { event.target.alt = t('Изображение недоступно'); event.target.classList.add('image-unavailable'); } }, true);
 window.addEventListener('studio:language-change',()=>{render();if(state.product)renderEditor();if($('#review-dialog').open)reviewPublication();});
 hydrateIcons();
+$('#catalog-search-shortcut').textContent = /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘ K' : 'Ctrl K';
 try {
   const [session, catalog, taxonomy, icons] = await Promise.all([api('/api/session'), api('/api/catalog'), fetch('/taxonomy.json').then(response => response.json()), fetch('/store-icons.json').then(response=>response.json())]);
   state.session = session; state.taxonomy = taxonomy; state.storeIcons=icons; acceptServer(catalog);

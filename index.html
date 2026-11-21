@@ -7,10 +7,24 @@ is_home: true
 
 <div class="max-w-store w-full mx-auto px-4 sm:px-6 min-[1280px]:px-8 py-4 pb-12 selection:bg-[color:light-dark(var(--color-blue-200),var(--color-night-blue))]">
   <h1 class="sr-only">ENKA Electronics — ტექნიკა თქვენი ყოველდღიურობისთვის</h1>
-  <div data-studio-heroes class="[--promo-page-gutter:1rem] sm:[--promo-page-gutter:1.5rem]">{% include homepage/promo-block.html %}</div>
-  {% include homepage/mini-categories.html %}
-  <div data-studio-campaigns class="dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">{% include homepage/campaigns.html %}</div>
-  {% include blog/section.html slugs=site.data.blog.homepage title="ბლოგი" variant="home" %}
-  {% include homepage/recommendations.html %}
+  <div data-home-layout class="[--promo-page-gutter:1rem] sm:[--promo-page-gutter:1.5rem] dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">
+    {% if site.data.studio.homeBlocks %}
+      {% for block in site.data.studio.homeBlocks %}{% include homepage/slot.html type=block.type id=block.id block=block %}{% endfor %}
+    {% else %}
+      {% include homepage/slot.html type='banner' id='home-banners' %}
+      {% include homepage/slot.html type='categories' id='home-categories' %}
+      {% include homepage/slot.html type='campaign' id='home-campaigns' %}
+      {% include homepage/slot.html type='blog' id='home-blog' %}
+      {% include homepage/slot.html type='recommendations' id='home-recommendations' %}
+    {% endif %}
+  </div>
+  <div data-home-storage hidden>
+    {% if site.data.studio.homeBlocks %}
+      {% assign active_home_types = site.data.studio.homeBlocks | map: 'type' %}
+      {% unless active_home_types contains 'categories' %}{% include homepage/slot.html type='categories' id='home-categories' %}{% endunless %}
+      {% unless active_home_types contains 'blog' %}{% include homepage/slot.html type='blog' id='home-blog' %}{% endunless %}
+      {% unless active_home_types contains 'recommendations' %}{% include homepage/slot.html type='recommendations' id='home-recommendations' %}{% endunless %}
+    {% endif %}
+  </div>
   <noscript><p class="mt-6 rounded-xl bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))] p-4 text-sm text-[color:light-dark(var(--color-slate-700),var(--color-night-copy))]">შეკვეთისთვის დაგვიკავშირდით: <a class="text-[color:light-dark(var(--color-blue-700),var(--color-accent))] underline" href="tel:+995551178990">+995 551 17 89 90</a>. ძიებისა და ონლაინ შეკვეთისთვის ჩართეთ JavaScript.</p></noscript>
 </div>

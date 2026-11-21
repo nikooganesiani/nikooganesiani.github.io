@@ -33,8 +33,15 @@ async function buildStoreContent(data, root = process.cwd()) {
       return {id,title:category.title,html:cards};
     });
     fs.writeFileSync(path.join(directory,'catalog_navigation.json'),JSON.stringify({images,panels}));
-    const content = store ? { store, catalog, heroes: engine.banners(store).map(h=>({id:h.id, title:engine.text(h.title), html:visuals.hero(h,'ka',true)})), company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
-      campaignRows:engine.rows(priced,store).map(row=>({id:row.id,title:engine.text(row.title),template:row.template,appearance:row.appearance,frame:visuals.campaignFrame(row,'ka',true),productIds:row.products.map(p=>p.id)})) } : {};
+    const rowData = row => ({ id: row.id, showRow: row.showRow, title: engine.text(row.title), template: row.template, appearance: row.appearance, frame: visuals.campaignFrame(row, 'ka', true), productIds: row.products.map(product => product.id) });
+    const homeBlocks = store && engine.homeLayout(store).filter(block => block.enabled).map(block => {
+      if (!['products', 'category'].includes(block.type)) return block;
+      const shelf = engine.homeProducts(block, priced, store);
+      const row = { id: block.id, title: { ka: shelf.title }, template: 'cards', products: shelf.products };
+      return { ...block, row: rowData(row) };
+    });
+    const content = store ? { store, catalog, homeBlocks, heroes: engine.banners(store).map(h=>({id:h.id, title:engine.text(h.title), html:visuals.hero(h,'ka',true)})), company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
+      campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData) } : {};
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));
   }
   const assets = path.join(root, 'assets/js/global');

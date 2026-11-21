@@ -51,6 +51,10 @@ collections:
 # Настройки по умолчанию для коллекции товаров
 defaults:
   - scope:
+      path: "info"
+    values:
+      permalink: /info/:basename
+  - scope:
       path: ""
       type: "products"
     values:

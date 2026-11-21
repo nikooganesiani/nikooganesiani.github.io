@@ -1,0 +1,8 @@
+{% if include.row.productIds.size > 0 %}
+{{ include.row.frame.start }}
+  {% for shelf_product_id in include.row.productIds %}
+    {% assign shelf_product = site.products | where: 'product_id', shelf_product_id | first %}
+    {% if shelf_product %}{% include homepage/product-card.html product=shelf_product %}{% endif %}
+  {% endfor %}
+{{ include.row.frame.end }}
+{% endif %}

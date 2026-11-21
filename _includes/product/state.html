@@ -1,4 +1,5 @@
 {%- assign product_price = page.price | remove: '₾' | plus: 0 -%}
+{%- assign product_name = page.product_name | default: page.name -%}
 {%- assign product_old_price = page.oldPrice | remove: '₾' | plus: 0 -%}
 {%- assign product_stock = page.stockStatus | default: 'in_stock' | downcase | strip -%}
 {%- assign product_available = false -%}

@@ -164,3 +164,57 @@ test('Campaign background settings travel through draft, publication and history
   const live=await readPublishedCatalog(async key=>clone(h.values.get(key)),'ka');assert.deepEqual(live._enkaStore.campaigns[0].appearance,appearance);assert.deepEqual(h.service.view().document.catalog,catalog);
   const restored=h.service.restore({expectedRevision:2,revision:2},'editor');assert.deepEqual(restored.document.store.campaigns[0].appearance,appearance);h.db.close();
 });
+
+test('Homepage order, separate campaign positions and curated product order survive save, publication and build', async t => {
+  const h = harness();
+  t.after(() => h.db.close());
+  const d = document();
+  d.catalog.products.push({ ...product(), id: 'kettle' }, { ...product(), id: 'sold', stockStatus: 'out_of_stock' });
+  d.store.campaigns = [rule({ startsAt: '', endsAt: '', showRow: false })];
+  const defaults = engine.defaultHome();
+  assert.deepEqual(engine.homeLayout(d.store), defaults);
+  const campaign = { id: 'campaign-1', type: 'campaign', enabled: true, sourceId: 'kitchen-week' };
+  const selected = { id: 'selected', type: 'products', enabled: true, title: { ka: 'შერჩეული' }, productIds: ['kettle', 'sold', 'coffee'], limit: 2 };
+  const category = { id: 'category-1', type: 'category', enabled: true, sourceId: 'kitchen', title: {}, limit: 1 };
+  d.store.home = [defaults[0], campaign, defaults[3], selected, { ...campaign, id: 'campaign-2' }, category, { ...defaults[4], enabled: false }];
+  assert.deepEqual(validateDocument(d), []);
+  assert.deepEqual(catalogDiff({ ...d, store: { ...d.store, home: [] } }, d).storeChanges, ['home']);
+  assert.deepEqual(importDocument({ document: d }).store.home, d.store.home);
+  assert.deepEqual(engine.rows(d.catalog.products, d.store), []);
+  await h.service.initialize(d.catalog);
+  h.service.save({ expectedRevision: 1, document: d }, 'editor');
+  assert.equal(h.values.size, 0);
+  await h.service.publish({ expectedRevision: 2 }, 'editor');
+  const live = await readPublishedCatalog(async key => clone(h.values.get(key)), 'ka');
+  assert.deepEqual(live._enkaStore.home, d.store.home);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'enka-home-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, '_data'));
+  await buildStoreContent(live, root);
+  const output = JSON.parse(fs.readFileSync(path.join(root, '_data/studio.json')));
+  assert.deepEqual(output.homeBlocks.map(block => block.id), d.store.home.slice(0, -1).map(block => block.id));
+  assert.deepEqual(output.homeBlocks[3].row.productIds, ['kettle', 'coffee']);
+  assert.deepEqual(output.homeBlocks[5].row.productIds, ['coffee']);
+  assert.equal(output.campaignRows[0].showRow, false);
+  engine.renameSection(d.store, d.catalog.products, 'category', 'kitchen', 'appliances');
+  assert.equal(category.sourceId, 'appliances');
+  assert.deepEqual(validateDocument(d), []);
+});
+
+test('Homepage validation accepts an empty layout and rejects broken references and duplicate singletons', () => {
+  const d = document();
+  d.store.home = [];
+  assert.deepEqual(validateDocument(d), []);
+  assert.deepEqual(engine.homeLayout(d.store), []);
+  for (const home of [
+    null,
+    [{ id: 'one', type: 'blog', enabled: true }, { id: 'two', type: 'blog', enabled: false }],
+    [{ id: 'one', type: 'category', enabled: true, sourceId: 'absent', title: {}, limit: 8 }],
+    [{ id: 'one', type: 'campaign', enabled: false, sourceId: 'absent' }],
+    [{ id: 'one', type: 'banner', enabled: true, sourceId: 'absent' }],
+    [{ id: 'one', type: 'products', enabled: true, title: { ka: 'შერჩეული' }, limit: 8, productIds: ['coffee', 'coffee'] }]
+  ]) {
+    d.store.home = home;
+    assert.ok(validateDocument(d).some(error => error.startsWith('Главная:')));
+  }
+});

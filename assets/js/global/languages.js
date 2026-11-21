@@ -5,6 +5,8 @@
   const buttons = [...document.querySelectorAll('[data-language]')];
   const languages = new Map(buttons.map(button => [button.dataset.language, button]));
   const engine = document.getElementById('site-translation-engine');
+  const pageLocale = document.documentElement.dataset?.enkaLocale;
+  const native = ['ka', 'ru', 'en'];
   const storageKey = 'enka_language';
   let requested = 'ka';
   let applied = 'ka';
@@ -44,7 +46,13 @@
   function sync(code) {
     const language = languages.get(code);
     const flag = language.querySelector('img');
-    for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.language === code));
+    for (const button of buttons) {
+      const selected = button.dataset.language === code;
+      if (button.tagName === 'A') {
+        if (selected) button.setAttribute('aria-current', 'page');
+        else button.removeAttribute('aria-current');
+      } else button.setAttribute('aria-pressed', String(selected));
+    }
     for (const picker of pickers) {
       const summary = picker.querySelector('.language-trigger');
       picker.querySelector('[data-language-flag]').src = flag.getAttribute('src');
@@ -141,6 +149,15 @@
     requested = code;
     const current = ++revision;
     clearTranslationWatch();
+    if (pageLocale && pageLocale !== 'ka' && !native.includes(code)) {
+      clearGoogleChoice();
+      saveChoice(code);
+      const target = new URL(languages.get('ka').href);
+      target.search = location.search;
+      target.hash = location.hash;
+      location.assign(target.href);
+      return;
+    }
     if (!['ka', 'ru', 'en'].includes(code) && window.enkaI18n?.locale !== undefined && window.enkaI18n.locale !== 'ka') {
       clearGoogleChoice();
       saveChoice(code);
@@ -218,7 +235,27 @@
     });
     picker.querySelector('[data-language-retry]').addEventListener('click', () => choose(requested));
   }
-  for (const button of buttons) button.addEventListener('click', () => {
+  for (const button of buttons) button.addEventListener('click', event => {
+    if (pageLocale && button.tagName === 'A') {
+      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      if (pageLocale === 'ka' && button.dataset.language === 'ka' && (!native.includes(applied) || !native.includes(requested))) {
+        event.preventDefault();
+        choose('ka');
+        return;
+      }
+      clearGoogleChoice();
+      saveChoice(button.dataset.language);
+      const target = new URL(button.href);
+      const basePath = pathname => pathname.replace(/^\/(?:ru|en)(?=\/)/, '').replace(/\.html$/, '');
+      const samePage = basePath(target.pathname) === basePath(location.pathname);
+      if (samePage) {
+        target.search = location.search;
+        if (pageLocale !== button.dataset.language && target.searchParams.has('spec')) target.searchParams.delete('spec');
+        target.hash = location.hash;
+        button.href = target.href;
+      }
+      return;
+    }
     choose(button.dataset.language);
     const picker = button.closest('[data-language-picker]');
     picker.open = false;
@@ -233,6 +270,7 @@
   // Native locales use the editorial dictionary and published catalog translations.
   // Other languages start from the Georgian page and load Google on demand.
   const saved = readChoice();
-  if (window.enkaI18n && ['ka', 'ru', 'en'].includes(saved)) { clearGoogleChoice(); sync(saved); }
+  if (pageLocale && (pageLocale !== 'ka' || native.includes(saved))) { clearGoogleChoice(); sync(pageLocale); }
+  else if (window.enkaI18n && native.includes(saved)) { clearGoogleChoice(); sync(saved); }
   else if (saved !== 'ka') choose(saved);
 })();

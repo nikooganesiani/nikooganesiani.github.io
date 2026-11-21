@@ -25,29 +25,36 @@ document.addEventListener('DOMContentLoaded', () => {
     dataset.price = String(price);
     dataset.oldPrice = window.currentProduct.oldPrice;
     dataset.stock = stock;
-    dataset.name = product.name;
     form.dataset.available = String(available(product));
     fields.disabled = !available(product);
     fields.hidden = !available(product);
     document.getElementById('productAlternatives').hidden = available(product);
     button.disabled = !available(product);
-    document.querySelectorAll('[data-product-name]').forEach(el => { el.textContent = product.name; });
-    document.title = product.name + ' — ENKA Electronics';
+    const editorial = window.enkaCatalogEditorial;
+    const keepStatic = ['ru', 'en'].includes(window.enkaI18n?.locale) && editorial?.hasGeorgian(product);
+    const name = keepStatic ? snapshot.name : product.name;
+    dataset.name = name;
+    window.currentProduct.name = name;
+    document.querySelectorAll('[data-product-name]').forEach(el => { el.textContent = name; });
+    document.title = name + ' — ENKA Electronics';
     const titleMeta = document.querySelector('meta[property="og:title"]');
     if (titleMeta) titleMeta.content = document.title;
     const descriptionMeta = document.querySelector('meta[name="description"]');
-    if (descriptionMeta && product.description !== undefined) descriptionMeta.content = product.description;
+    if (descriptionMeta && !keepStatic && product.description !== undefined) descriptionMeta.content = product.description;
     const socialDescription = document.querySelector('meta[property="og:description"]');
-    if (socialDescription && product.description !== undefined) socialDescription.content = product.description;
+    if (socialDescription && !keepStatic && product.description !== undefined) socialDescription.content = product.description;
     document.querySelectorAll('#mainGalleryTrack img, #modalTrack img').forEach((image, index) => {
-      image.alt = product.name + ' — ' + (window.enkaI18n?.t('ფოტო') || 'ფოტო') + ' ' + (index + 1);
+      const translation = window.enkaI18n?.t('ფოტო') || 'ფოტო';
+      if (!document.documentElement?.dataset?.enkaLocale || translation !== 'ფოტო' || document.documentElement.lang === 'ka') {
+        image.alt = name + ' — ' + translation + ' ' + (index + 1);
+      }
     });
-    if (product.warranty !== undefined) document.querySelectorAll('[data-product-warranty]').forEach(el => { el.textContent = product.warranty; });
-    if (product.description !== undefined) {
+    if (!keepStatic && product.warranty !== undefined) document.querySelectorAll('[data-product-warranty]').forEach(el => { el.textContent = product.warranty; });
+    if (!keepStatic && product.description !== undefined) {
       const description = document.querySelector('.product-description');
       if (description) description.textContent = product.longDescription || product.description || '';
     }
-    if (product.specs && typeof product.specs === 'object') {
+    if (!keepStatic && product.specs && typeof product.specs === 'object') {
       const entries = Object.entries(product.specs);
       document.querySelectorAll('[data-product-highlight-index]').forEach(row => {
         const entry = entries[Number(row.dataset.productHighlightIndex)];
@@ -85,8 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (schemaElement) {
       try {
         const schema = JSON.parse(schemaElement.textContent);
-        schema.name = product.name;
-        if (product.description !== undefined) schema.description = product.description;
+        schema.name = name;
+        if (!keepStatic && product.description !== undefined) schema.description = product.description;
         if (price > 0) schema.offers = {
           '@type': 'Offer', url: document.querySelector('link[rel="canonical"]').href,
           priceCurrency: 'GEL', price, availability: 'https://schema.org/' + (available(product) ? 'InStock' : 'OutOfStock'), itemCondition: 'https://schema.org/NewCondition'

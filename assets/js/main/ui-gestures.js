@@ -11,15 +11,6 @@ document.addEventListener('touchstart', function(e) {
 }, {passive: true});
 
 document.addEventListener('touchend', function(e) {
-    setTimeout(function() {
-        if (!document.documentElement.classList.contains('modal-open') && document.activeElement && document.activeElement !== document.body) {
-            const tag = document.activeElement.tagName;
-            if (tag === 'BUTTON' || tag === 'A' || document.activeElement.closest?.('.product-card, .similar-card, .thumb-card')) {
-                document.activeElement.blur();
-            }
-        }
-    }, 50);
-
     if (e.changedTouches?.[0]) {
         let _teX = e.changedTouches[0].screenX;
         let _teY = e.changedTouches[0].screenY;

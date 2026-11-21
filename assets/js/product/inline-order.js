@@ -51,8 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const phone = '+995' + phoneRaw;
     const guard = checkOrderSpamGuard(name, phone, product.id);
     const confirmation = { name, phone, product: product.name, price: product.price, oldPrice: product.oldPrice };
+    const trigger = event.submitter || button;
     if (!guard.allowed) {
-      if (guard.reason === 'duplicate_exact') window.showOrderConfirm?.({ ...confirmation, save: false });
+      if (guard.reason === 'duplicate_exact') window.showOrderConfirm?.({ ...confirmation, save: false }, trigger);
       else showError(guard.reason === 'cooldown' ? 'გთხოვთ, მოითმინოთ რამდენიმე წამი და სცადოთ ხელახლა.' : 'შეკვეთების ლიმიტი ამოწურულია. სცადეთ მოგვიანებით ან დაგვირეკეთ.');
       return;
     }
@@ -73,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (result?.purchase_delivery !== 'server') Promise.resolve(window.sendCapiEvent?.('Purchase', { value: Number(product.price), currency: 'GEL', content_name: product.name, content_ids: [product.id], content_type: 'product', num_items: 1 }, eventId, { name, phone })).catch(() => {});
       } catch { /* Analytics must not change an accepted order. */ }
       try { window.enkaPersonalization?.record('purchase', String(product.id)); } catch { /* Recommendations must not affect an accepted order. */ }
-      window.showOrderConfirm?.(confirmation);
+      window.showOrderConfirm?.(confirmation, trigger);
     } catch {
       showError('შეკვეთის დადასტურება ვერ მოხერხდა. სცადეთ ხელახლა ან დაგვირეკეთ: +995 551 17 89 90.');
     } finally {

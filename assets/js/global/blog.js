@@ -20,9 +20,11 @@
     next.addEventListener('click', () => move(1));
     track.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(update).observe(track);
     update();
   }
   const locale = window.enkaI18n?.locale;
+  if (document.documentElement.dataset?.enkaLocale) return;
   if (locale !== 'ru' && locale !== 'en') return;
   for (const card of document.querySelectorAll('[data-blog-card]')) {
     const link = card.querySelector('a');

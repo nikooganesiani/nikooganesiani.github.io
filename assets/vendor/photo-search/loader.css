@@ -7,8 +7,7 @@
   justify-content: center;
   padding: 48px 0 36px;
 }
-#photoSearchModal.is-searching #photoSearchDescription,
-#photoSearchModal.is-searching #photoSearchSelected { display: none; }
+#photoSearchModal.is-searching #photoSearchDescription { display: none; }
 #photoSearchModal.is-searching #photoSearchStatus {
   margin: 0 0 24px;
   text-align: center;

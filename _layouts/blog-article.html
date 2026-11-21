@@ -39,7 +39,8 @@ layout: default
     <section class="blog-related-products" aria-labelledby="blog-products-title" translate="no">
       <h2 id="blog-products-title">{{ blog_ui.related }}</h2>
       <ul>{% for blog_product in article.products %}
-        <li><a href="{{ '/product/' | append: blog_product.id | append: '/' | relative_url }}">
+        {% assign product_path = '/product/' | append: blog_product.id | append: '/' %}
+        <li><a href="{{ blog_product.url | default: product_path | relative_url }}"{% if page.blog_locale != 'ka' and blog_product.url == nil %} lang="ka"{% endif %}>
           {% if blog_product.image %}<img src="{{ blog_product.image | relative_url | escape }}" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ '/img/no-image.svg' | relative_url }}'">{% endif %}
           <span>{{ blog_product.name | escape }}</span>
         </a></li>

@@ -60,9 +60,218 @@
   font-display: swap;
 }
 
+@layer utilities {
+  :focus-visible:where(:not([data-field-frame], [data-field-frame] :is(input, textarea, select))) {
+    outline: 2px solid var(--color-brand) !important;
+    outline-offset: 3px;
+  }
+}
+
+/* Text fields with a custom focus state use their visible frame as the indicator. */
+:is(input, textarea, select):focus:where([data-field-frame], [data-field-frame] *) {
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  [data-field-frame]:is(:focus, :has(:is(input, textarea, select):focus)) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+.modal.active[aria-hidden="true"] {
+  display: none;
+}
+
+@media print {
+  .modal {
+    display: none !important;
+  }
+}
+
 /* Animation frames cannot be expressed with utility classes. */
 @keyframes listing-pulse {
   to { opacity: .45; }
+}
+
+.listing-grid .product-card-media {
+  /* Keep image blending consistent when the card temporarily has a translate. */
+  isolation: isolate;
+  background-color: light-dark(var(--color-page), #fff);
+}
+
+@media (width >= 1024px) {
+  .listing-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, max-content) minmax(0, 1fr) max-content;
+    grid-template-rows: minmax(2.75rem, auto);
+  }
+
+  .listing-heading { grid-column: 1; max-inline-size: min(42vw, 40rem); }
+  .listing-heading h1 {
+    max-inline-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #activeFilters {
+    grid-column: 2;
+    order: 0;
+    block-size: 2.75rem;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .listing-chips {
+    max-block-size: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 2px;
+    scrollbar-width: thin;
+  }
+
+  .listing-chip {
+    flex: none;
+    min-block-size: 2rem;
+    max-inline-size: min(100%, 17rem);
+    white-space: nowrap;
+  }
+
+  .listing-chip > span:first-child { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; }
+  .listing-chip > span:last-child, #resetFilters { flex: none; }
+  #resetFilters { white-space: nowrap; }
+  #filtersBar { grid-column: 3; }
+}
+
+#listingFacets {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1px;
+  background-color: var(--color-line);
+}
+
+#specFacets { display: contents; }
+.listing-facet { background-color: var(--color-canvas); }
+.listing-facet[open] { padding-block-end: .75rem; }
+
+.listing-facet > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding-block: .875rem;
+  color: var(--color-ink);
+  font-size: .875rem;
+  font-weight: 650;
+  line-height: 1.25rem;
+  list-style: none;
+  cursor: pointer;
+}
+
+.listing-facet > summary::-webkit-details-marker { display: none; }
+.listing-facet > summary:focus-visible { outline-offset: -2px; }
+.listing-facet > summary > span { min-inline-size: 0; overflow-wrap: anywhere; }
+.listing-facet > summary > svg { flex: none; color: var(--color-muted); }
+.listing-facet[open] > summary > svg { rotate: 180deg; }
+
+.listing-options {
+  max-block-size: 13rem;
+  overflow: auto;
+  scrollbar-width: thin;
+  margin-inline: -.2rem;
+  padding: .125rem .2rem;
+}
+
+.listing-modal-body .listing-options { max-block-size: none; overflow: visible; }
+
+.listing-option > input[type="checkbox"] {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  border: 1px solid light-dark(#8492a6, #72829a);
+  border-radius: .3125rem;
+  background-color: var(--color-canvas);
+  cursor: inherit;
+}
+
+.listing-option > input[type="checkbox"]:checked {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+}
+
+.listing-option > input[type="checkbox"]:checked::before {
+  content: "";
+  inline-size: .625rem;
+  block-size: .375rem;
+  border: solid #fff;
+  border-width: 0 0 2px 2px;
+  rotate: -45deg;
+  translate: 0 -1px;
+}
+
+.listing-option > input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.listing-option > input[type="checkbox"]:disabled { opacity: .55; }
+.listing-option:has(> input:checked) {
+  background-color: color-mix(in srgb, var(--color-accent) 9%, var(--color-canvas));
+}
+
+@media (hover: hover) {
+  .listing-option:hover > input[type="checkbox"]:not(:checked, :disabled) { border-color: var(--color-accent); }
+}
+
+@media (forced-colors: active) {
+  .listing-option > input[type="checkbox"] { appearance: auto; }
+  .listing-option > input[type="checkbox"]:checked::before { content: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes listing-result-enter {
+    from { translate: 0 .875rem; }
+    to { translate: 0 0; }
+  }
+
+  @keyframes listing-control-enter {
+    from { translate: 0 -5px; }
+    to { translate: 0 0; }
+  }
+
+  .listing-grid > .listing-result-enter,
+  .listing-discovery {
+    animation: listing-result-enter 340ms cubic-bezier(.25, .5, .35, 1);
+  }
+
+  /* Start the reveal as the navigation cover or mobile filters fade out. */
+  :root:is([data-page-transition="arriving"], :has(.listing-modal.active))
+    :is(.listing-result-enter, .listing-discovery, .listing-control-enter) {
+    animation-play-state: paused;
+  }
+
+  .listing-control-enter,
+  #sortMenu[open] > fieldset,
+  #gridToggleBtn > span:not([hidden]) > svg {
+    animation: listing-control-enter 220ms ease-out;
+  }
+
+  :where(.listing-page, .listing-modal)
+    :where(.listing-button, .listing-chip, .listing-text-button, .listing-section-link, #sortSelect) {
+    transition: color 120ms ease-out, background-color 120ms ease-out,
+      border-color 120ms ease-out, translate 120ms ease-out;
+  }
+
+  #sortSelect svg { transition: rotate 140ms ease-out; }
+
+  :where(.listing-page, .listing-modal)
+    :where(.listing-button, .listing-chip, .listing-text-button, .listing-section-link, #sortSelect):active:not(:disabled, [aria-disabled="true"]) {
+    translate: 0 1px;
+  }
 }
 
 @keyframes statusPulse {

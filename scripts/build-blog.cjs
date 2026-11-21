@@ -7,7 +7,7 @@ const archiveText = {
   en: { title: 'Blog', description: 'Electronics buying guides and practical advice from ENKA Electronics.' }
 };
 
-async function buildBlog(articles, products, root) {
+async function buildBlog(articles, products, root, localizedProducts = {}) {
   const { articleMatches, blogLocales, blogPath, blogSections, publishedArticles, renderBlogBlocks, validateBlog } = await import('../admin/public/blog-model.js');
   const errors = validateBlog(articles, true);
   if (errors.length) throw new Error('Invalid published blog: ' + errors.join('; '));
@@ -37,7 +37,9 @@ async function buildBlog(articles, products, root) {
       const url = alternates[locale];
       cards[slug].editions[locale] = { title: edition.title, summary: edition.summary, url };
       pages[key] = { ...cards[slug].editions[locale], cover, coverAlt: edition.coverAlt, date, updated, author,
-        html: renderBlogBlocks(edition.blocks), toc: blogSections(edition.blocks), products: relatedProducts };
+        html: renderBlogBlocks(edition.blocks), toc: blogSections(edition.blocks), products: relatedProducts.map(product => ({
+          ...product, ...localizedProducts[locale]?.[product.id]
+        })) };
       makePage(key + '.html', {
         layout: 'blog-article', permalink: url, blog_id: key, blog_locale: locale, blog_alternates: alternates,
         blog_title: edition.title, title: edition.seoTitle.trim() || edition.title,

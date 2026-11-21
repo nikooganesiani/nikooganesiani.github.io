@@ -2,6 +2,7 @@
     'use strict';
 
     const FALLBACK_IMAGE = '/img/no-image.svg';
+    const cardPreviews = new WeakMap();
     const SLIDE_GAP = 8; // 8px (gap-2) — буфер против субпиксельного наложения соседних фото
 
     // Экранирование спецсимволов для безопасной вставки в HTML
@@ -36,7 +37,8 @@
         const rawId = String(p.id);
         const safeId = escapeHtml(rawId);
         const uniqueId = `${String(prefix).replace(/[^a-z0-9_-]/gi, '')}-${Array.from(rawId).map(char => char.codePointAt(0).toString(16)).join('-')}`;
-        const productUrl = `/product/${encodeURIComponent(rawId)}/`;
+        const productPath = `/product/${encodeURIComponent(rawId)}/`;
+        const productUrl = window.enkaRoute?.(productPath) || productPath;
         const safeName = escapeHtml(p.name || '');
 
         // Фильтрация валидных изображений
@@ -137,24 +139,60 @@
         </div>`;
     };
 
-    // Restore the cover when the pointer leaves the image, including late-loaded cards.
     function loadCardSlide(slide) {
-        const image = slide?.querySelector('img[data-card-src]');
-        if (!image) return;
-        image.src = image.dataset.cardSrc;
-        image.removeAttribute('data-card-src');
+        const image = slide?.querySelector('img');
+        if (image?.dataset.cardSrc) {
+            image.src = image.dataset.cardSrc;
+            image.removeAttribute('data-card-src');
+        }
+        return image;
+    }
+
+    function scrollToCardSlide(track, index) {
+        const slides = track.children;
+        track.scrollTo({
+            left: slides[index].offsetLeft - slides[0].offsetLeft,
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+        });
+    }
+
+    function selectCardIndicator(container, index) {
+        if (!container) return;
+        Array.from(container.children).forEach((indicator, i) => indicator.classList.toggle('active', i === index));
+    }
+
+    function previewCardSlide(media, track, index, width) {
+        const preview = { index, width };
+        cardPreviews.set(track, preview);
+        selectCardIndicator(media.querySelector('.card-image-indicators'), index);
+
+        const current = Math.round(track.scrollLeft / (track.clientWidth + SLIDE_GAP));
+        const first = Math.min(current, index);
+        const last = Math.max(current, index);
+        const pending = [];
+        if (width) {
+            // Decode the photos that will pass through the viewport and warm the adjacent ones.
+            for (let i = first - 1; i <= last + 1; i++) {
+                const image = loadCardSlide(track.children[i]);
+                if (!image || image.complete) continue;
+                image.loading = 'eager';
+                if (i >= first && i <= last && image.decode) pending.push(image.decode().catch(() => {}));
+            }
+        }
+        const scroll = () => {
+            if (track.isConnected && cardPreviews.get(track) === preview) scrollToCardSlide(track, index);
+        };
+        if (pending.length) Promise.all(pending).then(scroll);
+        else scroll();
     }
 
     document.addEventListener('pointerout', event => {
+        if (event.pointerType === 'touch') return;
         const media = event.target.closest?.('.product-card-media');
         if (!media || (event.relatedTarget && media.contains(event.relatedTarget))) return;
         const track = media.querySelector('.product-images-track');
-        if (!track || track.children.length < 2) return;
-        track._previewIndex = undefined;
-        track._previewWidth = undefined;
-        track.scrollTo({ left: 0, behavior: 'instant' });
-        const indicators = media.querySelector('.card-image-indicators');
-        if (indicators) Array.from(indicators.children).forEach((indicator, i) => indicator.classList.toggle('active', i === 0));
+        if (!cardPreviews.get(track)?.width) return;
+        previewCardSlide(media, track, 0, 0);
     });
 
     // Delegation covers cards rendered after catalog requests and load-more.
@@ -167,13 +205,9 @@
         if (!bounds.width) return;
         const index = Math.max(0, Math.min(track.children.length - 1,
             Math.floor((event.clientX - bounds.left) / bounds.width * track.children.length)));
-        if (track._previewIndex === index && track._previewWidth === bounds.width) return;
-        track._previewIndex = index;
-        track._previewWidth = bounds.width;
-        loadCardSlide(track.children[index]);
-        track.scrollTo({ left: track.children[index].offsetLeft - track.children[0].offsetLeft, behavior: 'instant' });
-        const indicators = media.querySelector('.card-image-indicators');
-        if (indicators) Array.from(indicators.children).forEach((indicator, i) => indicator.classList.toggle('active', i === index));
+        const preview = cardPreviews.get(track);
+        if (preview?.index === index && preview.width === bounds.width) return;
+        previewCardSlide(media, track, index, bounds.width);
     });
 
     /**
@@ -186,15 +220,8 @@
         window.requestAnimationFrame(() => {
             const step = trackEl.clientWidth + SLIDE_GAP;
             if (step > SLIDE_GAP) {
-                const index = Math.round(trackEl.scrollLeft / step);
-                const dotsContainer = document.getElementById(`dots-${uniqueId}`);
-                if (dotsContainer) {
-                    const dots = dotsContainer.children;
-                    for (let i = 0; i < dots.length; i++) {
-                        const isActive = i === index;
-                        dots[i].classList.toggle('active', isActive);
-                    }
-                }
+                const index = cardPreviews.get(trackEl)?.index ?? Math.round(trackEl.scrollLeft / step);
+                selectCardIndicator(document.getElementById(`dots-${uniqueId}`), index);
             }
             trackEl._isUpdating = false;
         });
@@ -221,11 +248,10 @@
 
         const nextIndex = (currentIndex + dir + total) % total;
         track._targetIndex = nextIndex;
-
-        const targetSlide = slides[nextIndex];
-        if (targetSlide) {
-            loadCardSlide(targetSlide);
-            track.scrollTo({ left: targetSlide.offsetLeft - slides[0].offsetLeft, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        if (slides[nextIndex]) {
+            cardPreviews.delete(track);
+            loadCardSlide(slides[nextIndex]);
+            scrollToCardSlide(track, nextIndex);
         }
 
         clearTimeout(track._resetTimer);

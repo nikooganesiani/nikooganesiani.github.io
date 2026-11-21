@@ -2,7 +2,7 @@
   'use strict';
   const TTL = 5 * 60 * 1000;
   const locale = window.enkaI18n?.locale || 'ka';
-  const CACHE_KEY = 'catalogCache_v5_' + locale;
+  const CACHE_KEY = 'catalogCache_v6_' + locale;
   const useSessionCache = window.CATALOG_SESSION_CACHE !== false;
   let cached = null;
   let promise = null;
@@ -52,7 +52,8 @@
   window.safeProductLink = value => {
     try {
       const url = new URL(value, location.origin);
-      return url.origin === location.origin && /^\/product\/[^/]+\/?$/.test(url.pathname) ? url.pathname : '/';
+      const pathname = url.pathname.replace(/^\/(?:ru|en)(?=\/product\/)/, '');
+      return url.origin === location.origin && /^\/product\/[^/]+\/?$/.test(pathname) ? (window.enkaRoute?.(pathname) || pathname) : '/';
     } catch { return '/'; }
   };
 
@@ -79,7 +80,9 @@
       .then(data => {
         const products = Array.isArray(data) ? data : data?.products;
         if (!Array.isArray(products)) throw new Error('Invalid catalog');
-        cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
+        const localized = products.filter(p => p && p.id && typeof p.name === 'string')
+          .map(product => window.enkaCatalogEditorial?.editCatalogProduct(product, window.ENKA_CATALOG_EDITORIAL, locale) || product);
+        cached = { products: localized, ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
         if (useSessionCache) {
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
         }

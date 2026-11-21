@@ -1,9 +1,28 @@
-<p id="listingStatus" class="sr-only [.no-js_&]:hidden!" role="status" aria-live="polite" aria-atomic="true">პროდუქტები იტვირთება…</p>
-<div id="{{ include.grid_id }}" class="grid grid-cols-[repeat(4,_minmax(0,_1fr))] min-[1280px]:grid-cols-[repeat(5,_minmax(0,_1fr))] min-[1440px]:grid-cols-[repeat(6,_minmax(0,_1fr))] gap-y-8 gap-x-6 [align-items:start] max-[1024px]:grid-cols-[repeat(3,_minmax(0,_1fr))] max-[1024px]:gap-y-7 max-[1024px]:gap-x-5 max-[768px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[768px]:gap-y-7 max-[768px]:gap-x-4 max-[640px]:gap-x-3 max-[640px]:[&.listing-grid--single]:grid-cols-[minmax(0,_1fr)] [.no-js_&]:hidden!" aria-busy="true">
-  {% for i in (1..8) %}<div class="min-h-90 animate-[listing-pulse_1.5s_ease-in-out_infinite_alternate] [&_div]:aspect-square [&_div]:bg-[color:light-dark(#e9edf2,var(--color-night-blue))] [&_div]:rounded-lg [&_div]:mb-5 [&_span]:block [&_span]:w-[80%] [&_span]:h-4 [&_span]:mt-3 [&_span]:rounded-sm [&_span]:bg-[color:light-dark(#e9edf2,var(--color-night-blue))] [&_span:last-child]:w-[45%] max-[768px]:min-h-70 motion-reduce:animate-none" aria-hidden="true"><div></div><span></span><span></span></div>{% endfor %}
+<p id="listingStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true">პროდუქტები იტვირთება…</p>
+<div id="{{ include.grid_id }}" class="{% include listing/grid-classes.html %}" aria-busy="true">
+  {% if page.storefront_locale and page.listing_mode == 'category' and listing_products.size > 0 %}
+    {% for product in listing_products limit:16 %}{% include homepage/product-card.html product=product %}{% endfor %}
+  {% else %}
+  {% for i in (1..8) %}<div class="listing-skeleton
+      [animation:listing-pulse_1.5s_ease-in-out_infinite_alternate] pb-[3rem]
+      [&_div]:block [&_div]:bg-surface [&_div]:rounded-xl
+      [&_span]:block [&_span]:bg-surface [&_span]:rounded-xl
+      [&_div]:[aspect-ratio:1] [&_div]:mb-[1rem]
+      [&_span]:w-[74%] [&_span]:h-[.875rem] [&_span]:mb-[.55rem]
+      [&_span:last-child]:w-[42%]
+      motion-reduce:[animation:none]" aria-hidden="true"><div></div><span></span><span></span></div>{% endfor %}
+  {% endif %}
 </div>
-<div id="loadMoreContainer" class="flex items-center flex-col gap-3 mt-10 text-muted text-[length:13px] leading-[20px] [&_progress]:w-48 [&_progress]:h-1 [&_progress]:appearance-none [&_progress]:border-0 [&_progress]:rounded-sm [&_progress]:overflow-hidden [&_progress]:bg-[color:light-dark(#e1e5eb,var(--color-night-blue))] [&_progress]:[accent-color:#155dfc] [&_progress::-webkit-progress-bar]:bg-[color:light-dark(#e1e5eb,var(--color-night-blue))] [&_progress::-webkit-progress-value]:bg-brand [&_progress::-moz-progress-bar]:bg-brand [.no-js_&]:hidden!" hidden>
+<div id="loadMoreContainer" class="listing-more
+      grid justify-items-center gap-[.65rem] mt-[2rem] text-muted text-sm
+      [&_.listing-button]:min-w-[12rem]
+      [&_progress]:w-[11rem] [&_progress]:h-[.3rem] [&_progress]:border-0 [&_progress]:rounded-2xl [&_progress]:overflow-hidden [&_progress]:accent-brand
+      [&_progress::-webkit-progress-bar]:bg-line
+      [&_progress::-webkit-progress-value]:bg-brand
+      [&_progress::-moz-progress-bar]:bg-brand" hidden>
   <p id="paginationCounterText"></p>
   <progress id="paginationProgressBar" value="0" max="1" aria-label="ნაჩვენები პროდუქტები"></progress>
-  <button id="loadMoreBtn" type="button" class="listing-button inline-flex items-center justify-center min-h-12 py-3 px-6 border border-solid border-brand rounded-lg bg-brand text-white text-[length:14px] font-semibold leading-[22px] no-underline cursor-pointer hover:border-[#104dce] hover:bg-[#104dce] disabled:opacity-[.65] disabled:cursor-wait max-[640px]:[.listing-search_&]:px-5" aria-controls="{{ include.grid_id }}">მეტის ნახვა</button>
+  <button id="loadMoreBtn" type="button" class="listing-button listing-button--secondary
+      {% include listing/button-secondary-classes.html %}
+      " aria-controls="{{ include.grid_id }}">მეტის ნახვა</button>
 </div>

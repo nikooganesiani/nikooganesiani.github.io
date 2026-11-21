@@ -40,7 +40,7 @@ layout: default
 {
   "@context": "https://schema.org",
   "@type": "Product",
-  "name": {{ page.name | jsonify | replace: '<', '\u003c' }},
+  "name": {{ product_name | jsonify | replace: '<', '\u003c' }},
   "sku": {{ page.sku | default: page.product_id | jsonify | replace: '<', '\u003c' }},
   "image": [{% for img in product_photos %}{{ img | absolute_url | jsonify | replace: '<', '\u003c' }}{% unless forloop.last %},{% endunless %}{% endfor %}],
   "brand": { "@type": "Brand", "name": {{ page.brand | default: 'ENKA Electronics' | jsonify | replace: '<', '\u003c' }} },

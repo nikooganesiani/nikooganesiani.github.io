@@ -1,43 +1,40 @@
-window.globalToastTimeout = null;
+(() => {
+  const toast = document.getElementById('globalToast');
+  const status = document.getElementById('globalToastStatus');
+  if (!toast || !status) return;
+  let timer;
 
-window.showToast = function(msg, actionData = null) {
-    try {
-        const toast = document.getElementById('globalToast');
-        if (!toast) return;
+  function hide() {
+    clearTimeout(timer);
+    toast.classList.remove('show');
+    toast.inert = true;
+  }
 
-        toast.innerHTML = msg || '';
+  function scheduleHide() {
+    clearTimeout(timer);
+    if (document.activeElement !== toast) timer = setTimeout(hide, 4000);
+  }
 
-        if (actionData) {
-            toast.classList.add('cursor-pointer');
-            toast.classList.remove('cursor-default');
-            toast.innerHTML += ' ' + (window.EnkaIcons?.render('chevron-right', 18, 'auto', 'ml-2 opacity-90 shrink-0') || '') + '';
+  toast.addEventListener('focus', () => clearTimeout(timer));
+  toast.addEventListener('blur', scheduleHide);
 
-            toast.onclick = function() {
-                if (actionData === 'fav') {
-                    window.openFavorites?.();
-                } else if (actionData && actionData.type === 'link') {
-                    const copiedTextEl = document.getElementById('copiedLinkText');
-                    if (copiedTextEl) {
-                        copiedTextEl.innerText = actionData.url || '';
-                    }
-                    window.openAppModal?.('linkModal');
-                }
-                toast.classList.remove('show');
-            };
-        } else {
-            toast.classList.add('cursor-default');
-            toast.classList.remove('cursor-pointer');
-            toast.onclick = function() {
-                toast.classList.remove('show');
-            };
-        }
-
-        toast.classList.add('show');
-        clearTimeout(window.globalToastTimeout);
-        window.globalToastTimeout = setTimeout(() => {
-            toast?.classList.remove('show');
-        }, 4000);
-    } catch (error) {
-        console.error('Error showing toast:', error);
-    }
-};
+  window.showToast = function(message, action, trigger = document.activeElement) {
+    const translate = value => window.enkaI18n?.t(value) || value;
+    const text = translate(message);
+    const favorite = action === 'fav';
+    const link = action?.type === 'link';
+    const actionable = favorite || link;
+    status.textContent = text;
+    toast.textContent = text;
+    toast.inert = !actionable;
+    toast.setAttribute('aria-label', actionable ? translate(favorite ? 'რჩეულები' : 'პროდუქტის ბმული') : text);
+    toast.classList.toggle('cursor-pointer', actionable);
+    toast.classList.add('show');
+    toast.onclick = actionable ? () => {
+      if (favorite) window.openFavorites?.(undefined, trigger);
+      else window.showLinkModal?.(action.url, trigger);
+      hide();
+    } : null;
+    scheduleHide();
+  };
+})();

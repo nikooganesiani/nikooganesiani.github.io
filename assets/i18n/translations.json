@@ -1,14 +1,32 @@
 {
   "ENKA Electronics - ხარისხიანი ტექნიკა საქართველოში უფასო მიტანით და ადგილზე გადახდით.": {
-    "ru": "ENKA Electronics — техника в Грузии с бесплатной доставкой и оплатой при получении.",
-    "en": "ENKA Electronics — electronics in Georgia with free delivery and payment on arrival."
+    "ru": "ENKA Electronics — техника с бесплатной доставкой по Грузии и оплатой при получении.",
+    "en": "ENKA Electronics offers appliances with free delivery across Georgia and payment on delivery."
   },
-  "ბლოგი": {"ru":"Блог","en":"Blog"},
-  "სასარგებლო სტატიები": {"ru":"Полезные статьи","en":"Helpful articles"},
-  "სხვა დაკავშირებული სტატიები": {"ru":"Другие связанные статьи","en":"More related articles"},
-  "ყველა სტატია": {"ru":"Все статьи","en":"All articles"},
-  "სტატიის ენა": {"ru":"Язык статьи","en":"Article language"},
-  "დაკავშირებული პროდუქტები": {"ru":"Связанные товары","en":"Related products"},
+  "ბლოგი": {
+    "ru": "Блог",
+    "en": "Blog"
+  },
+  "სასარგებლო სტატიები": {
+    "ru": "Полезные статьи",
+    "en": "Helpful articles"
+  },
+  "სხვა დაკავშირებული სტატიები": {
+    "ru": "Другие связанные статьи",
+    "en": "More related articles"
+  },
+  "ყველა სტატია": {
+    "ru": "Все статьи",
+    "en": "All articles"
+  },
+  "სტატიის ენა": {
+    "ru": "Язык статьи",
+    "en": "Article language"
+  },
+  "დაკავშირებული პროდუქტები": {
+    "ru": "Связанные товары",
+    "en": "Related products"
+  },
   "ბრენდი:": {
     "ru": "Бренд:",
     "en": "Brand:"
@@ -181,9 +199,9 @@
     "ru": "Ссылка на товар",
     "en": "Product link"
   },
-  "ავტომატური კოპირება ვერ მოხერხდა. მონიშნეთ და დააკოპირეთ ბმული.": {
-    "ru": "Не удалось скопировать автоматически. Выделите и скопируйте ссылку.",
-    "en": "Automatic copying failed. Select and copy the link."
+  "მონიშნეთ და დააკოპირეთ ბმული.": {
+    "ru": "Выделите и скопируйте ссылку.",
+    "en": "Select and copy the link."
   },
   "ბმული": {
     "ru": "Ссылка",
@@ -389,6 +407,10 @@
     "ru": "Товар, бренд или модель",
     "en": "Product, brand or model"
   },
+  "მოძებნეთ პროდუქტი": {
+    "ru": "Найти товар",
+    "en": "Search products"
+  },
   "ძიების გასუფთავება": {
     "ru": "Очистить поиск",
     "en": "Clear search"
@@ -574,7 +596,7 @@
     "en": "Skip to content"
   },
   "დამატებითი ინფორმაციისთვის დაგვიკავშირდით.": {
-    "ru": "Свяжитесь с нами для получения дополнительной информации.",
+    "ru": "Свяжитесь с нами, чтобы узнать подробности.",
     "en": "Contact us for more information."
   },
   "მიწოდება უფასოა საქართველოს მასშტაბით. მისამართსა და მიწოდების დეტალებს ოპერატორი შეგითანხმებთ. თანხას გადაიხდით ნივთის მიღებისას.": {
@@ -682,16 +704,16 @@
     "en": "Product categories"
   },
   "მაგ. TNENKAElectronics…": {
-    "ru": "например ТНENKAЭлектроника…",
+    "ru": "Например, TNENKAElectronics…",
     "en": "e.g. TNENKAElectronics…"
   },
   "ტექნიკის ონლაინ მაღაზია – ENKA Electronics": {
-    "ru": "Интернет-магазин оборудования – ENKA Electronics",
-    "en": "Hardware online store – ENKA Electronics"
+    "ru": "Интернет-магазин бытовой техники — ENKA Electronics",
+    "en": "Online appliance store – ENKA Electronics"
   },
   "ENKA Electronics — ტექნიკა თქვენი ყოველდღიურობისთვის": {
-    "ru": "«ENKA Electronics» — технологии для вашей повседневной жизни",
-    "en": "ENKA Electronics — technology for your everyday life"
+    "ru": "ENKA Electronics — техника для дома и повседневной жизни",
+    "en": "ENKA Electronics — appliances for everyday life"
   },
   "იყავი კავშირზე. შენი სტილით.": {
     "ru": "Оставайтесь на связи. в твоем стиле",
@@ -711,11 +733,11 @@
   },
   "ტექნიკის ონლაინ მაღაზია — ENKA Electronics": {
     "ru": "Интернет-магазин бытовой техники — ENKA Electronics",
-    "en": "Hardware online store — ENKA Electronics"
+    "en": "Online appliance store — ENKA Electronics"
   },
   "ტექნიკა სახლისთვის, სამზარეულოსთვის და ყოველდღიურობისთვის. ENKA Electronics — უფასო მიწოდება საქართველოში და გადახდა მიღებისას.": {
-    "ru": "Техника для дома, кухни и быта. ENKA Electronics — бесплатная доставка по Грузии и наложенным платежом.",
-    "en": "Appliances for home, kitchen and everyday life. ENKA Electronics — free shipping in Georgia and cash on delivery."
+    "ru": "Техника для дома и кухни в ENKA Electronics. Бесплатная доставка по всей Грузии и оплата при получении.",
+    "en": "Shop home and kitchen appliances at ENKA Electronics. Free delivery across Georgia and payment on delivery."
   },
   "სპეციალური შეთავაზებები": {
     "ru": "Специальные предложения",
@@ -758,8 +780,8 @@
     "en": "Smart home"
   },
   "სამზარეულო": {
-    "ru": "Кухня",
-    "en": "Kitchen"
+    "ru": "Кухонная техника",
+    "en": "Kitchen appliances"
   },
   "სახლის მოვლა": {
     "ru": "Уход за домом",
@@ -858,8 +880,8 @@
     "en": "Write to us on WhatsApp"
   },
   "მოგვწერეთ თქვენი შეკითხვის შესახებ": {
-    "ru": "Напишите нам о своем вопросе",
-    "en": "Write to us about your question"
+    "ru": "Напишите нам, если у вас есть вопросы",
+    "en": "Message us with your question"
   },
   "— გაიხსნება ახალ ჩანართში": {
     "ru": "— откроется в новой вкладке",
@@ -882,12 +904,12 @@
     "en": "transparent information"
   },
   "კომპანიის რეკვიზიტები": {
-    "ru": "Подробности о компании",
+    "ru": "Реквизиты компании",
     "en": "Company details"
   },
   "ტექნიკა თქვენი ყოველდღიურობისთვის. მარტივი არჩევანი, გასაგები პირობები და დახმარება შეკვეთიდან მიღებამდე.": {
-    "ru": "Технологии для вашей повседневной жизни. Легкий выбор, понятные условия и помощь от заказа до доставки.",
-    "en": "Technology for your everyday life. Easy selection, clear terms and help from order to delivery."
+    "ru": "Техника на каждый день. Поможем с выбором и ответим на вопросы об оплате и доставке.",
+    "en": "Appliances for everyday life, with clear terms and help from ordering through to delivery."
   },
   "თქვენი ონლაინ მაღაზია": {
     "ru": "Ваш интернет-магазин",
@@ -898,32 +920,32 @@
     "en": "ENKA Electronics is an online appliance store. Here you will find products for your home, kitchen, personal care and everyday needs."
   },
   "ჩვენი მიზანია, ტექნიკის შეძენა იყოს მარტივი: შეარჩიეთ პროდუქტი, დატოვეთ საკონტაქტო ინფორმაცია და დანარჩენ დეტალებს ოპერატორთან შეათანხმებთ.": {
-    "ru": "Наша цель — сделать покупку оборудования легкой: выберите товар, оставьте контактную информацию, а остальные детали вы согласуете с оператором.",
-    "en": "Our goal is to make the purchase of equipment easy: choose a product, leave contact information, and you will agree on the rest of the details with the operator."
+    "ru": "Выберите товар и оставьте контакты. Мы свяжемся с вами, чтобы уточнить детали заказа.",
+    "en": "Choose a product and leave your contact details. Our team will get in touch to confirm the rest of your order."
   },
   "დაათვალიერეთ კატალოგი": {
-    "ru": "Просмотрите каталог",
-    "en": "Browse the catalog"
+    "ru": "Открыть каталог",
+    "en": "Browse the catalogue"
   },
   "შეარჩიეთ ონლაინ.": {
-    "ru": "Выбирайте онлайн.",
-    "en": "Choose online."
+    "ru": "Выберите товар онлайн.",
+    "en": "Choose your product online."
   },
   "მიიღეთ თქვენს მისამართზე.": {
-    "ru": "Получите по вашему адресу.",
-    "en": "Receive at your address."
+    "ru": "Получите заказ по своему адресу.",
+    "en": "We'll deliver your order to your address."
   },
   "მთელ საქართველოში": {
     "ru": "по всей Грузии",
     "en": "throughout Georgia"
   },
   "ყიდვა მარტივად": {
-    "ru": "Легко купить",
-    "en": "Easy to buy"
+    "ru": "Как купить",
+    "en": "How to order"
   },
   "რა დაგხვდებათ ENKA-ში": {
-    "ru": "Что вы найдете в «ENKA»?",
-    "en": "What will you find in ENKA?"
+    "ru": "Что можно купить в ENKA",
+    "en": "What you can find at ENKA"
   },
   "შეკვეთას მოგიტანთ კურიერი. მიწოდება უფასოა მთელ საქართველოში.": {
     "ru": "Курьер привезет вам заказ. Доставка бесплатная по всей Грузии.",
@@ -950,16 +972,16 @@
     "en": "Do you have a question?"
   },
   "მოგვწერეთ ან დაგვირეკეთ — დაგეხმარებით.": {
-    "ru": "Напишите нам или позвоните - мы Вам поможем.",
-    "en": "Write us or call us - we will help you."
+    "ru": "Напишите или позвоните нам. Поможем разобраться.",
+    "en": "Message or call us. We're happy to help."
   },
   "ჩვენ შესახებ — ENKA Electronics": {
     "ru": "О нас — ENKA Electronics",
     "en": "About us — ENKA Electronics"
   },
   "გაიცანით ENKA Electronics — ტექნიკის ონლაინ მაღაზია საქართველოში. უფასო მიწოდება, ადგილზე გადახდა და დახმარება არჩევანის გაკეთებაში.": {
-    "ru": "Познакомьтесь с ENKA Electronics — интернет-магазином бытовой техники в Грузии. Бесплатная доставка, оплата на месте и помощь в выборе.",
-    "en": "Get to know ENKA Electronics — an online hardware store in Georgia. Free delivery, on-site payment and help to choose."
+    "ru": "ENKA Electronics — интернет-магазин техники в Грузии. Поможем с выбором. Доставка бесплатная, оплата при получении.",
+    "en": "ENKA Electronics is an online appliance store in Georgia. We offer free delivery, payment on delivery and help choosing a product."
   },
   "საინფორმაციო გვერდები": {
     "ru": "Информационные страницы",
@@ -1062,8 +1084,8 @@
     "en": "Payment and delivery – ENKA Electronics"
   },
   "ENKA / შეკვეთა და მიღება": {
-    "ru": "ENKA / заказ и прием",
-    "en": "ENKA / order and reception"
+    "ru": "ENKA / Заказ и получение",
+    "en": "ENKA / Ordering and delivery"
   },
   "შეარჩიეთ პროდუქტი ონლაინ. ჩვენ დაგიკავშირდებით, შევათანხმებთ დეტალებს და შეკვეთას თქვენს მისამართზე მოგიტანთ.": {
     "ru": "Выберите товар онлайн. Мы свяжемся с вами, согласуем детали и доставим заказ по вашему адресу.",
@@ -1247,11 +1269,11 @@
   },
   "გადახდა და მიწოდება — ENKA Electronics": {
     "ru": "Оплата и доставка — ENKA Electronics",
-    "en": "Payment and Shipping — ENKA Electronics"
+    "en": "Payment and delivery — ENKA Electronics"
   },
   "ENKA Electronics-ის უფასო მიწოდება მთელ საქართველოში. თბილისში 1–2, რეგიონებში 1–3 სამუშაო დღე. ადგილზე გადახდა ნაღდი ფულით ან ბარათით და შეკვეთის სტატუსის შემოწმება.": {
-    "ru": "Бесплатная доставка ENKA Electronics по всей Грузии. 1-2 рабочих дня в Тбилиси, 1-3 рабочих дня в регионах. Оплата на месте наличными или картой и проверка статуса заказа.",
-    "en": "Free delivery of ENKA Electronics throughout Georgia. 1-2 working days in Tbilisi, 1-3 working days in the regions. On-site payment by cash or card and order status check."
+    "ru": "Бесплатная доставка по всей Грузии: 1–2 рабочих дня в Тбилиси, 1–3 в регионах. Оплата при получении наличными или картой. Статус заказа можно проверить на сайте.",
+    "en": "Free delivery across Georgia: 1–2 working days in Tbilisi and 1–3 elsewhere. Pay by cash or card on delivery and track your order online."
   },
   "კონფიდენციალურობის პოლიტიკა – ENKA Electronics": {
     "ru": "Политика конфиденциальности — ENKA Electronics",
@@ -1373,9 +1395,17 @@
     "ru": "Информация, хранящаяся на устройстве",
     "en": "Information stored on the device"
   },
-  "რჩეულები, ბოლო ნახვები, შეკვეთების ისტორია (მათ შორის სახელი და ტელეფონი), დუბლირებული შეკვეთებისგან დაცვა და ქუქიების არჩევანი.": {
-    "ru": "Избранное, недавние просмотры, история заказов (включая имя и телефон), защита от дублирования заказов и выбор файлов cookie.",
-    "en": "Favorites, recent views, order history (including name and phone), duplicate order protection and cookie choices."
+  "რჩეულები, ბოლო ნახვები, ძიების ისტორია, შეკვეთების ისტორია (მათ შორის სახელი და ტელეფონი), დუბლირებული შეკვეთებისგან დაცვა და ქუქიების არჩევანი.": {
+    "ru": "Избранное, недавние просмотры, история поиска и заказов (включая имя и телефон для заказов), защита от дублирования заказов и настройки файлов cookie.",
+    "en": "Favorites, recent views, search history, order history (including name and phone), duplicate order protection and cookie choices."
+  },
+  "ძიების ისტორია": {
+    "ru": "История поиска",
+    "en": "Search history"
+  },
+  "ბოლო საძიებო ფრაზები და ძიებიდან გახსნილი პროდუქტები ამ ბრაუზერში ინახება. ისტორიის გასუფთავება შეგიძლიათ ძიების ველიდან.": {
+    "ru": "Недавние запросы и товары, открытые из результатов поиска, хранятся в этом браузере. Историю можно очистить в панели поиска.",
+    "en": "Recent queries and products opened from search results are stored in this browser. You can clear the history in the search panel."
   },
   "შეკვეთის მონაცემები გვჭირდება თქვენი მოთხოვნის შესასრულებლად და მომსახურებისთვის; უსაფრთხოების მონაცემები — ბოროტად გამოყენების თავიდან ასაცილებლად. კანონით მოთხოვნილ ინფორმაციას ვამუშავებთ შესაბამისი ვალდებულების შესასრულებლად. სარეკლამო ანალიტიკა დამოკიდებულია თქვენს თანხმობაზე.": {
     "ru": "Нам нужны данные заказа, чтобы выполнить ваш запрос и предоставить услуги; Данные безопасности — для предотвращения неправомерного использования. Мы обрабатываем информацию, необходимую по закону для выполнения соответствующего обязательства. Рекламная аналитика зависит от вашего согласия.",
@@ -1802,8 +1832,8 @@
     "en": "Next photo"
   },
   "მადუღარა და ჩაიდანი": {
-    "ru": "Электрочайники",
-    "en": "Electric kettles"
+    "ru": "Электрочайники и кофеварки",
+    "en": "Electric kettles and coffee pots"
   },
   "ფოტო 4": {
     "ru": "Фото 4",
@@ -1834,8 +1864,8 @@
     "en": "Enlarged photo 5"
   },
   "ყავის აპარატი": {
-    "ru": "Кофеварки",
-    "en": "Coffee makers"
+    "ru": "Кофемашины и кофеварки",
+    "en": "Coffee machines and coffee makers"
   },
   "ვიდეოს ნახვა": {
     "ru": "Посмотреть видео",
@@ -1846,8 +1876,8 @@
     "en": "View video on YouTube (new window)"
   },
   "ბლინის საცხობი": {
-    "ru": "Блинная выпечка",
-    "en": "Pancake bakery"
+    "ru": "Блинницы",
+    "en": "Crêpe makers"
   },
   "ფოტო 6": {
     "ru": "Фото 6",
@@ -1862,48 +1892,48 @@
     "en": "Enlarged photo 6"
   },
   "ბამბის ნაყინის აპარატი": {
-    "ru": "Машина для сладкой ваты",
-    "en": "Cotton candy machine"
+    "ru": "Аппараты для сахарной ваты",
+    "en": "Candy floss machines"
   },
   "ფრის აპარატი": {
     "ru": "Фритюрницы",
     "en": "Deep fryers"
   },
   "თმის სახვევი": {
-    "ru": "Лента для волос",
-    "en": "Hair band"
+    "ru": "Плойки и фен-щётки",
+    "en": "Curlers and hot air brushes"
   },
   "უთო": {
     "ru": "Утюги",
     "en": "Irons"
   },
   "ტაფა": {
-    "ru": "кастрюля",
-    "en": "pan"
+    "ru": "Сковороды",
+    "en": "Frying pans"
   },
   "ჩირის აპარატი": {
-    "ru": "Машина для производства сухофруктов",
-    "en": "Dried fruit machine"
+    "ru": "Сушилки для овощей и фруктов",
+    "en": "Food dehydrators"
   },
   "გაზქურა": {
-    "ru": "газовая плита",
-    "en": "gas stove"
+    "ru": "Газовые плиты",
+    "en": "Gas cookers"
   },
   "გრილი და ტოსტერი": {
-    "ru": "Гриль и тостер",
-    "en": "Grill and toaster"
+    "ru": "Грили и тостеры",
+    "en": "Grills and toasters"
   },
   "საპარსი და ტრიმერი": {
-    "ru": "Бритва и триммер",
-    "en": "Shaver and trimmer"
+    "ru": "Бритвы и триммеры",
+    "en": "Shavers and trimmers"
   },
   "თმის ფენი": {
-    "ru": "Фен",
-    "en": "Hair dryer"
+    "ru": "Фены",
+    "en": "Hair dryers"
   },
   "თმის უთო": {
-    "ru": "Утюжок для волос",
-    "en": "Hair iron"
+    "ru": "Выпрямители для волос",
+    "en": "Hair straighteners"
   },
   "მიქსერი": {
     "ru": "Миксеры",
@@ -1914,20 +1944,20 @@
     "en": "Juicers"
   },
   "ბეწვის საცლელი": {
-    "ru": "Шуба",
-    "en": "Fur coat"
+    "ru": "Машинки для удаления катышков",
+    "en": "Fabric shavers"
   },
   "ხორცსაკეპი": {
     "ru": "Мясорубки",
     "en": "Meat grinders"
   },
   "პოპკორნის აპარატი": {
-    "ru": "Машина для попкорна",
-    "en": "Popcorn machine"
+    "ru": "Аппараты для попкорна",
+    "en": "Popcorn makers"
   },
   "სასწორი": {
-    "ru": "весы",
-    "en": "scales"
+    "ru": "Весы",
+    "en": "Scales"
   },
   "ძიება – ENKA Electronics": {
     "ru": "Поиск – ENKA Electronics",
@@ -1938,8 +1968,8 @@
     "en": "Search — ENKA Electronics"
   },
   "მოძებნეთ ტექნიკა დასახელებით, ბრენდით ან მოდელით ENKA Electronics-ში. შეადარეთ ფასები და შეარჩიეთ სასურველი პროდუქტი.": {
-    "ru": "Найдите технику по названию, марке или модели в компании «ENKA Electronics». Сравните цены и выберите нужный товар.",
-    "en": "Search for appliances by name, brand or model at ENKA Electronics. Compare prices and choose the desired product."
+    "ru": "Найдите технику по названию, бренду или модели. Сравните цены на товары в ENKA Electronics.",
+    "en": "Find appliances by name, brand or model and compare prices at ENKA Electronics."
   },
   "შედეგებში ძიება": {
     "ru": "Результаты поиска",
@@ -2214,16 +2244,16 @@
     "en": "A connection to the server could not be established. Try again or call us: +995 551 17 89 90."
   },
   "შედეგებზე გადასასვლელად გამოიყენეთ ქვედა ისარი. დასახურად — Escape.": {
-    "ru": "Используйте стрелку вниз для прокрутки результатов. Закрыть — Побег.",
-    "en": "Use the down arrow to scroll through the results. To close — Escape."
+    "ru": "Нажмите стрелку вниз, чтобы перейти к результатам. Чтобы закрыть панель, нажмите Escape.",
+    "en": "Press Down Arrow to move to results. Press Escape to close the panel."
   },
   "ძიება…": {
-    "ru": "искать…",
-    "en": "search for…"
+    "ru": "Ищем товары…",
+    "en": "Searching…"
   },
   "ვერაფერი მოიძებნა. სცადეთ სხვა სიტყვა.": {
-    "ru": "Ничего не было найдено. Попробуйте другое слово.",
-    "en": "Nothing was found. Try another word."
+    "ru": "Ничего не нашли. Попробуйте другой запрос.",
+    "en": "No matches found. Try another search."
   },
   "ძველი ფასი:": {
     "ru": "старая цена:",
@@ -2232,6 +2262,34 @@
   "ყველა შედეგი (": {
     "ru": "все результаты(",
     "en": "all results ("
+  },
+  "ყველა შედეგის ნახვა": {
+    "ru": "Все результаты",
+    "en": "View all results"
+  },
+  "ბოლო ძიებები": {
+    "ru": "Недавние запросы",
+    "en": "Recent searches"
+  },
+  "ძიებული პროდუქტები": {
+    "ru": "Товары из поиска",
+    "en": "Products opened from search"
+  },
+  "ბოლო ძიებების გასუფთავება": {
+    "ru": "Очистить историю запросов",
+    "en": "Clear recent searches"
+  },
+  "პროდუქტების ისტორიის გასუფთავება": {
+    "ru": "Очистить историю товаров из поиска",
+    "en": "Clear products opened from search"
+  },
+  "ძიების წაშლა ისტორიიდან": {
+    "ru": "Удалить запрос из истории",
+    "en": "Remove query from history"
+  },
+  "პროდუქტის წაშლა ისტორიიდან": {
+    "ru": "Удалить товар из истории",
+    "en": "Remove product from history"
   },
   "ჩ": {
     "ru": "Ч",
@@ -2282,8 +2340,8 @@
     "en": "Please enter your order number."
   },
   "შეკვეთა #": {
-    "ru": "номер заказа",
-    "en": "order #"
+    "ru": "Номер заказа",
+    "en": "Order number"
   },
   "სტატუსის შემოწმება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.": {
     "ru": "Не удалось проверить статус. Пожалуйста, попробуйте еще раз.",
@@ -2342,16 +2400,16 @@
     "en": "Arrived at warehouse"
   },
   "გატანილია ჩასაბარებლად": {
-    "ru": "Засчитано за подачу",
-    "en": "Scored for submission"
+    "ru": "Передан курьеру",
+    "en": "Out for delivery"
   },
   "კურიერი გზაშია": {
     "ru": "Курьер в пути",
     "en": "Courier is on the way"
   },
   "ჩაბარებულია": {
-    "ru": "был принят",
-    "en": "has been passed"
+    "ru": "Доставлен",
+    "en": "Delivered"
   },
   "მზად არის": {
     "ru": "готов",
@@ -3008,5 +3066,157 @@
   "გარანტიის პირობები": {
     "ru": "Условия гарантии",
     "en": "Warranty terms"
+  },
+  "პროდუქტების ძიება": {
+    "ru": "Поиск товаров",
+    "en": "Search products"
+  },
+  "დაათვალიერეთ კატეგორიები": {
+    "ru": "Посмотрите категории",
+    "en": "Browse categories"
+  },
+  "კატეგორიის, ფასის ფილტრისა და ძიებისთვის ჩართეთ JavaScript.": {
+    "ru": "Включите JavaScript, чтобы выбирать категории, фильтровать по цене и искать товары.",
+    "en": "Enable JavaScript to browse categories, filter by price and search for products."
+  },
+  "პროდუქტების ფილტრები": {
+    "ru": "Фильтры товаров",
+    "en": "Product filters"
+  },
+  "ფილტრები": {
+    "ru": "Фильтры",
+    "en": "Filters"
+  },
+  "ფასის გამოყენება": {
+    "ru": "Применить цену",
+    "en": "Apply price range"
+  },
+  "ბრენდები": {
+    "ru": "Бренды",
+    "en": "Brands"
+  },
+  "ბრენდის ძიება": {
+    "ru": "Поиск бренда",
+    "en": "Find a brand"
+  },
+  "ბრენდი ვერ მოიძებნა": {
+    "ru": "Бренд не найден",
+    "en": "No brands found"
+  },
+  "ხელმისაწვდომობა": {
+    "ru": "Наличие",
+    "en": "Availability"
+  },
+  "შეთავაზებები": {
+    "ru": "Предложения",
+    "en": "Offers"
+  },
+  "უდიდესი ფასდაკლება": {
+    "ru": "Сначала с большой скидкой",
+    "en": "Biggest discount"
+  },
+  "არჩეული ფილტრები": {
+    "ru": "Выбранные фильтры",
+    "en": "Selected filters"
+  },
+  "ყველას გასუფთავება": {
+    "ru": "Сбросить все",
+    "en": "Clear all"
+  },
+  "მალე გაყიდვაში": {
+    "ru": "Скоро в продаже",
+    "en": "Coming soon"
+  },
+  "ფასდაკლებით": {
+    "ru": "Со скидкой",
+    "en": "On sale"
+  },
+  "ფილტრის მოხსნა": {
+    "ru": "Снять фильтр",
+    "en": "Remove filter"
+  },
+  "ნაპოვნია": {
+    "ru": "Найдено",
+    "en": "Found"
+  },
+  "ნაჩვენებია": {
+    "ru": "Показано",
+    "en": "Showing"
+  },
+  "სცადეთ სხვა ფასი ან გაასუფთავეთ არჩეული ფილტრები.": {
+    "ru": "Попробуйте другой диапазон цен или сбросьте выбранные фильтры.",
+    "en": "Try a different price range or clear the selected filters."
+  },
+  "ფილტრების გასუფთავება": {
+    "ru": "Сбросить фильтры",
+    "en": "Clear filters"
+  },
+  "შეამოწმეთ მართლწერა ან სცადეთ ბრენდის, მოდელის ან პროდუქტის ტიპის მოძებნა.": {
+    "ru": "Проверьте написание или попробуйте поискать по бренду, модели или типу товара.",
+    "en": "Check the spelling or try searching by brand, model or product type."
+  },
+  "ძიების შეცვლა": {
+    "ru": "Изменить запрос",
+    "en": "Edit search"
+  },
+  "ამ კატეგორიაში პროდუქტები ჯერ არ არის": {
+    "ru": "В этой категории пока нет товаров",
+    "en": "This category has no products yet"
+  },
+  "სხვა პროდუქტები სრულ კატალოგში შეგიძლიათ ნახოთ.": {
+    "ru": "Другие товары можно посмотреть в полном каталоге.",
+    "en": "Browse the full catalog for more products."
+  },
+  "პროდუქტები": {
+    "ru": "Товары",
+    "en": "Products"
+  },
+  "ფასდაკლება": {
+    "ru": "Скидка",
+    "en": "Discount"
+  },
+  "50 ლარამდე": {
+    "ru": "До 50 ₾",
+    "en": "Up to ₾50"
+  },
+  "150 ლარიდან": {
+    "ru": "От 150 ₾",
+    "en": "From ₾150"
+  },
+  "მინ.": {
+    "ru": "Мин.",
+    "en": "Min."
+  },
+  "მაქს.": {
+    "ru": "Макс.",
+    "en": "Max."
+  },
+  "მინ. ფასი": {
+    "ru": "Цена от",
+    "en": "Min. price"
+  },
+  "მაქს. ფასი": {
+    "ru": "Цена до",
+    "en": "Max. price"
+  },
+  "ძიებისთვის": {
+    "ru": "По запросу",
+    "en": "Results for"
+  },
+  "შეამოწმეთ ფასის დიაპაზონი": {
+    "ru": "Минимум должен быть меньше или равен максимуму",
+    "en": "The minimum must be at most the maximum"
+  },
+  "ტექნიკის ონლაინ მაღაზია. უფასო მიწოდება საქართველოში და გადახდა მიღებისას.": {
+    "ru": "Интернет-магазин техники. Бесплатная доставка по Грузии, оплата при получении.",
+    "en": "Shop online with free delivery across Georgia and payment on delivery."
+  },
+  "Enable JavaScript for automatic translation.": {
+    "ru": "Для автоматического перевода на другие языки включите JavaScript.",
+    "en": "Enable JavaScript to use automatic translation for other languages."
+  },
+  "Google Privacy Policy": {
+    "ru": "Политика конфиденциальности Google",
+    "en": "Google Privacy Policy"
   }
 }

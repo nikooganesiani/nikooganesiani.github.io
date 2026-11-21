@@ -1,6 +1,6 @@
 <div class="product-intro [grid-area:intro] min-w-0 [&_h1]:m-0 [&_h1]:text-ink [&_h1]:text-[length:clamp(24px,_2vw,_28px)] [&_h1]:font-[650] [&_h1]:leading-[1.3] [&_h1]:tracking-[-.025em] [&_h1]:[overflow-wrap:anywhere] max-[768px]:[&_h1]:text-[length:26px] max-[640px]:[&_h1]:text-[length:21px] max-[640px]:[&_h1]:font-semibold max-[640px]:[&_h1]:tracking-[-.02em] max-[360px]:[&_h1]:text-[length:20px]">
   <p class="notranslate text-muted text-[length:12px] leading-5 mb-2.5 tabular-nums max-[640px]:hidden" translate="no" data-product-sku>ID <span class="select-all">{{ page.sku | default: page.product_id | escape }}</span></p>
-  <h1 data-product-name>{{ page.name | escape }}</h1>
+  <h1 data-product-name>{{ product_name | escape }}</h1>
   {% if page.brand and page.brand != '' %}
   <p class="flex flex-wrap items-baseline gap-x-1.5 text-[length:13px] leading-6 mt-3 max-[640px]:hidden"><span class="text-muted">ბრენდი:</span><a class="notranslate font-semibold text-accent no-underline hover:underline underline-offset-4 focus-visible:outline-brand" translate="no" href="/search/?q={{ page.brand | url_encode }}">{{ page.brand | escape }}</a></p>
   {% endif %}

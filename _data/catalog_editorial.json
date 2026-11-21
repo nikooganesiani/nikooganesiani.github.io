@@ -1,0 +1,324 @@
+{
+  "labels": {
+    "ru": {
+      "власть": "Мощность",
+      "напряжение": "Напряжение",
+      "ყავის ტიპი": "Тип кофе",
+      "წნევა": "Давление",
+      "Емкость резервуара для воды": "Объём резервуара для воды",
+      "Объем": "Объём",
+      "материал": "Материал",
+      "время подготовки": "Время приготовления",
+      "Время варить кофе": "Время приготовления кофе",
+      "ყავის აპარატის სასმელის ტიპი": "Тип напитка",
+      "температура сушки": "Температура сушки",
+      "функция": "Функция",
+      "источник пищи": "Источник питания",
+      "Источник пищи 1": "Первый источник питания",
+      "Источник пищи 2": "Второй источник питания",
+      "материал двигателя": "Материал двигателя",
+      "материал контейнера": "Материал контейнера",
+      "Рекомендуемое время непрерывной работы": "Допустимое время непрерывной работы",
+      "вес": "Вес",
+      "тип": "Тип",
+      "напряжение питания": "Напряжение питания",
+      "Объем блендера": "Объём чаши блендера",
+      "Производительность кофемолки": "Вместимость кофемолки",
+      "Функция автоматического отключения": "Автоматическое отключение",
+      "цвет": "Цвет",
+      "материал чашки": "Материал чаши",
+      "длина кабеля": "Длина кабеля",
+      "экран": "Экран",
+      "цвет браслета": "Цвет ремешка",
+      "Размер тела": "Размер корпуса",
+      "тип экрана": "Тип экрана",
+      "Емкость аккумулятора": "Ёмкость аккумулятора",
+      "соединение": "Подключение",
+      "совместимость": "Совместимость",
+      "тип зарядки": "Тип зарядки",
+      "Сборник": "Комплектация",
+      "материал крышки": "Материал крышки",
+      "энергоэффективный": "Энергоэффективность",
+      "Возможность вращения на 360°.": "Поворот на 360°",
+      "Ручки не нагреваются": "Ненагревающиеся ручки",
+      "размер упаковки": "Габариты упаковки",
+      "поверхность": "Поверхность",
+      "ноги": "Ножки",
+      "тип газа": "Тип газа",
+      "количество секций": "Количество конфорок",
+      "материал для битья": "Материал венчика",
+      "объем элемента": "Объём чаши",
+      "частота вращения двигателя": "Скорость вращения двигателя",
+      "время зарядки": "Время зарядки",
+      "рабочее время": "Время работы",
+      "максимальная температура": "Максимальная температура",
+      "2 нагревательные катушки": "Два нагревательных элемента",
+      "контроль температуры": "Регулировка температуры",
+      "таймер": "Таймер",
+      "тип еды": "Тип питания",
+      "материал пластин": "Материал пластин",
+      "Регулирование температуры": "Регулировка температуры",
+      "температурные режимы": "Температурные режимы",
+      "длина": "Длина",
+      "скоростные режимы": "Режимы скорости",
+      "набор": "Комплект",
+      "автоматическое отключение": "Автоотключение",
+      "Стенд": "Подставка",
+      "диаметр": "Диаметр",
+      "индикатор": "Индикатор",
+      "количество штук": "Количество",
+      "напряжение питания (вольты)": "Напряжение питания (В)",
+      "Готовая вафельная форма": "Форма вафель",
+      "кормление": "Питание",
+      "готовятся одновременно": "Количество порций за цикл",
+      "контроль": "Управление"
+    },
+    "en": {
+      "power": "Power",
+      "voltage": "Voltage",
+      "Management": "Controls",
+      "ყავის ტიპი": "Coffee type",
+      "წნევა": "Pressure",
+      "Volume": "Capacity",
+      "material": "Material",
+      "preparation time": "Brewing time",
+      "Time to make coffee": "Coffee brewing time",
+      "ყავის აპარატის სასმელის ტიპი": "Drink type",
+      "drying temperature": "Drying temperature",
+      "function": "Function",
+      "food source": "Power source",
+      "Food source 1": "Power source 1",
+      "Food source 2": "Power source 2",
+      "engine material": "Motor material",
+      "container material": "Container material",
+      "Recommended continuous operation time": "Recommended continuous operating time",
+      "weight": "Weight",
+      "type": "Type",
+      "supply voltage": "Supply voltage",
+      "Blender volume": "Blender jug capacity",
+      "Management type": "Control type",
+      "Automatic shutdown function": "Auto shut-off",
+      "color": "Colour",
+      "cup material": "Cup material",
+      "cable length": "Cable length",
+      "screen": "Display",
+      "bracelet color": "Strap colour",
+      "Body size": "Case size",
+      "screen type": "Display type",
+      "connection": "Connectivity",
+      "compatibility": "Compatibility",
+      "charging type": "Charging type",
+      "Compilation": "In the box",
+      "cap material": "Lid material",
+      "energy efficient": "Energy efficiency",
+      "Ability to rotate 360°": "360° rotation",
+      "The handles do not get hot": "Cool-touch handles",
+      "package size": "Package dimensions",
+      "surface": "Surface",
+      "legs": "Feet",
+      "type of gas": "Gas type",
+      "number of sections": "Number of burners",
+      "whipping material": "Whisk material",
+      "element volume": "Bowl capacity",
+      "engine speed": "Motor speed",
+      "charging time": "Charging time",
+      "working time": "Operating time",
+      "maximum temperature": "Maximum temperature",
+      "2 heating coils": "Two heating elements",
+      "temperature control": "Temperature control",
+      "Method of preparation": "Cooking method",
+      "timer": "Timer",
+      "type of food": "Power supply type",
+      "material of plates": "Plate material",
+      "Temperature regulation": "Temperature adjustment",
+      "temperature modes": "Temperature settings",
+      "length": "Length",
+      "speed modes": "Speed settings",
+      "set": "Set",
+      "automatic shutdown": "Automatic shut-off",
+      "Stand": "Base",
+      "diameter": "Diameter",
+      "indicator": "Indicator",
+      "number of pieces": "Quantity",
+      "supply voltage (volts)": "Supply voltage (V)",
+      "Prepared waffle form": "Waffle shape",
+      "feeding": "Power supply",
+      "are prepared at the same time": "Portions per batch",
+      "control": "Controls"
+    }
+  },
+  "values": {
+    "ru": {
+      "ელექტრონული (სენსორული და ღილაკებით)": "Электронное, с сенсорной панелью и кнопками",
+      "დაფქული": "Молотый",
+      "20 ბარი": "20 бар",
+      "1.8 ლ": "1,8 л",
+      "500 მლ": "500 мл",
+      "დახურული": "Закрытый",
+      "PP+მეტალი": "Полипропилен и металл",
+      "მაქსიმუმ 5 წთ": "До 5 мин",
+      "300 მლ": "300 мл",
+      "300 მლ (4 ჭიქა)": "300 мл (4 чашки)",
+      "250 მლ": "250 мл",
+      "24 x 14 x 16 სმ": "24 × 14 × 16 см",
+      "თურქული ყავა": "Кофе по-турецки",
+      "Противовоспалительное": "Антипригарная",
+      "Противоскользящий": "Нескользящие",
+      "головка концентратора": "Насадка-концентратор",
+      "Кофейный блендер": "Миксер для кофе",
+      "Вафельная пекарня": "Вафельница",
+      "закрыто": "Закрытый",
+      "стол": "Настольный",
+      "сеть": "Электросеть"
+    },
+    "en": {
+      "ელექტრონული (სენსორული და ღილაკებით)": "Electronic, with touch and button controls",
+      "დაფქული": "Ground",
+      "20 ბარი": "20 bar",
+      "1.8 ლ": "1.8 L",
+      "500 მლ": "500 mL",
+      "დახურული": "Concealed",
+      "PP+მეტალი": "Polypropylene and metal",
+      "მაქსიმუმ 5 წთ": "Up to 5 min",
+      "300 მლ": "300 mL",
+      "300 მლ (4 ჭიქა)": "300 mL (4 cups)",
+      "250 მლ": "250 mL",
+      "24 x 14 x 16 სმ": "24 × 14 × 16 cm",
+      "თურქული ყავა": "Turkish coffee",
+      "Anti-inflammatory": "Non-stick",
+      "Anti-slip": "Non-slip",
+      "concentrator head": "Concentrator nozzle",
+      "Coffee blender": "Coffee mixer",
+      "Waffle bakery": "Waffle maker",
+      "closed": "Concealed",
+      "desk": "Tabletop",
+      "network": "Mains power"
+    }
+  },
+  "products": {
+    "coffee-machine-tiffany-tf-1622": {
+      "name": {
+        "ka": "ესპრესოს აპარატი Tiffany TF-1622",
+        "ru": "Эспрессо-кофемашина Tiffany TF-1622",
+        "en": "Tiffany TF-1622 espresso machine"
+      },
+      "description": {
+        "ka": "Tiffany TF-1622 მრავალფუნქციური ყავის აპარატი საშუალებას გაძლევთ მარტივად მოამზადოთ პროფესიონალური ხარისხის ყავა სახლის პირობებში. 1350 W სიმძლავრე, 20 ბარიანი წნევა და სწრაფი გაცხელების სისტემა უზრუნველყოფს ყავის ეფექტურ მომზადებას, ხოლო ესპრესოს, კაპუჩინოსა და ამერიკანოს რეჟიმები საშუალებას გაძლევთ შეარჩიოთ სასურველი სასმელი. ჩაშენებული კაპუჩინატორი რძის კონტეინერით იდეალურია რძიანი ყავის მოსამზადებლად. LED ეკრანი, სენსორული და ღილაკებით მართვა მოწყობილობის გამოყენებას მარტივსა და კომფორტულს ხდის. 1.8 ლიტრიანი მოხსნადი წყლის ავზი საკმარისია 25 ჭიქამდე ყავის მოსამზადებლად, ხოლო მოსახსნელი ლანგარი და უჟანგავი ფოლადის კორპუსი უზრუნველყოფს მარტივ მოვლას, გამძლეობასა და თანამედროვე დიზაინს.",
+        "ru": "Tiffany TF-1622 готовит эспрессо, капучино и американо. Мощность 1350 Вт, давление 20 бар и система быстрого нагрева помогают сократить время приготовления. Для напитков с молоком предусмотрен встроенный капучинатор с контейнером. У кофемашины есть LED-дисплей, сенсорное управление и кнопки. Съёмного резервуара на 1,8 л хватает на приготовление до 25 чашек. Съёмный поддон упрощает очистку, а корпус выполнен из нержавеющей стали.",
+        "en": "The Tiffany TF-1622 makes espresso, cappuccino and Americano. It combines 1350 W of power, 20 bar of pressure and a fast-heating system. A built-in milk frother and container let you prepare milk-based drinks. The machine has an LED display, touch controls and buttons. The removable 1.8 L water tank makes up to 25 cups. A removable drip tray makes cleaning easier, and the housing is made of stainless steel."
+      }
+    },
+    "kettle-tiffany-tf-996": {
+      "name": {
+        "ka": "ყავის მადუღარა Tiffany TF-996",
+        "ru": "Электрическая кофеварка Tiffany TF-996",
+        "en": "Tiffany TF-996 electric coffee pot"
+      },
+      "description": {
+        "ka": "Tiffany TF-995 ელექტრო მოწყობილობა პრაქტიკული და მოსახერხებელი არჩევანია ყოველდღიური გამოყენებისთვის. 600 W სიმძლავრე და დახურული გამაცხელებელი ელემენტი უზრუნველყოფს ეფექტურ და თანაბარ გაცხელებას, ხოლო 500 მლ მოცულობა იდეალურია მცირე რაოდენობის სითხის მოსამზადებლად. PP პლასტმასისა და მეტალის კომბინაციით დამზადებული კორპუსი აერთიანებს პრაქტიკულობასა და გამძლეობას. გადახურებისგან დაცვის ფუნქცია დამატებით უსაფრთხოებას უზრუნველყოფს, ხოლო მარტივად რეცხვადი კონსტრუქცია მოწყობილობის მოვლასა და ყოველდღიურ გამოყენებას კიდევ უფრო კომფორტულს ხდის.",
+        "ru": "Электрическая кофеварка Tiffany TF-996 мощностью 600 Вт оснащена закрытым нагревательным элементом для равномерного нагрева. Объём 500 мл подходит для небольших порций. Корпус выполнен из полипропилена и металла. Кофеварку легко мыть, а защита от перегрева повышает безопасность при повседневном использовании.",
+        "en": "The 600 W Tiffany TF-996 electric coffee pot uses a concealed heating element for even heating. Its 500 mL capacity is suitable for small batches. The body combines polypropylene and metal. The pot is easy to clean and has overheat protection."
+      }
+    },
+    "coffee-maker-tiffany-tf-1615": {
+      "name": {
+        "ka": "თურქული ყავის აპარატი Tiffany TF-1615",
+        "ru": "Кофеварка для кофе по-турецки Tiffany TF-1615",
+        "en": "Tiffany TF-1615 Turkish coffee maker"
+      },
+      "description": {
+        "ka": "Tiffany TF-1615 ყავის აპარატი თანამედროვე და ფუნქციური მოწყობილობაა არომატული ყავის სწრაფად და კომფორტულად მოსამზადებლად. 1200 W სიმძლავრე საშუალებას გაძლევთ ყავა მაქსიმუმ 5 წუთში მოამზადოთ, ხოლო 300 მლ მოცულობა იდეალურია ყოველდღიური გამოყენებისთვის. LED ეკრანი მოწყობილობის მართვას უფრო მოსახერხებელს ხდის, ხოლო დაღვრის საწინააღმდეგო ფუნქცია ყავის მომზადების პროცესში სისუფთავის შენარჩუნებას უწყობს ხელს. გადახურებისა და წყლის გაჟონვისგან დაცვის სისტემა დამატებით უსაფრთხოებას უზრუნველყოფს. კომპლექტში შედის ორი 300 მლ მოცულობის ჭიქა სითბოგამძლე სახელურებით. კომპაქტური დიზაინი, მსუბუქი ABS კორპუსი და ელეგანტური შავი ფერი აპარატს ნებისმიერი სამზარეულოსთვის პრაქტიკულ და თანამედროვე არჩევანად აქცევს.",
+        "ru": "Tiffany TF-1615 мощностью 1200 Вт готовит кофе по-турецки не дольше 5 минут. Объём ёмкости составляет 300 мл. У кофеварки есть LED-дисплей, защита от переливания, перегрева и протечек. В комплект входят две чашки по 300 мл с термостойкими ручками. Компактный корпус из ABS-пластика выполнен в чёрном цвете.",
+        "en": "The 1200 W Tiffany TF-1615 brews Turkish coffee in up to 5 minutes and has a 300 mL capacity. It features an LED display, overflow protection, overheat protection and leak protection. Two 300 mL cups with heat-resistant handles are included. The compact black housing is made of ABS plastic."
+      }
+    },
+    "coffee-maker-tiffany-tf-1613": {
+      "name": {
+        "ka": "თურქული ყავის აპარატი Tiffany TF-1613",
+        "ru": "Кофеварка для кофе по-турецки Tiffany TF-1613",
+        "en": "Tiffany TF-1613 Turkish coffee maker"
+      },
+      "description": {
+        "ka": "Tiffany TF-1613 ყავის აპარატი პრაქტიკული და კომპაქტური მოწყობილობაა არომატული ყავის სწრაფად და მარტივად მოსამზადებლად. 600 W სიმძლავრე საშუალებას გაძლევთ ყავა მაქსიმუმ 5 წუთში მოამზადოთ, ხოლო 300 მლ მოცულობა საკმარისია 4 ჭიქამდე ყავისთვის. რეცხვადი, მუდმივი ფილტრი გამორიცხავს ერთჯერადი ფილტრების მუდმივად შეძენის საჭიროებას, ხოლო ავტომატური გათიშვის ფუნქცია დამატებით უსაფრთხოებას უზრუნველყოფს. ჩართვა-გამორთვის ღილაკი მოწყობილობის მართვას ამარტივებს, მოცურების საწინააღმდეგო ფეხები კი სტაბილურობას უზრუნველყოფს. მსუბუქი ABS კორპუსი, მარტივად საწმენდი ზედაპირი და კომპაქტური დიზაინი აპარატს ყოველდღიური გამოყენებისთვის მოსახერხებელ არჩევანად აქცევს.",
+        "ru": "Компактная кофеварка Tiffany TF-1613 мощностью 600 Вт готовит кофе не дольше 5 минут. В ёмкости объёмом 300 мл можно приготовить до четырёх небольших чашек. Фильтр многоразовый, его можно мыть. Для удобства предусмотрены кнопка питания и автоматическое отключение, а нескользящие ножки удерживают прибор на столешнице. Лёгкий корпус из ABS-пластика легко очищается.",
+        "en": "The compact 600 W Tiffany TF-1613 brews coffee in up to 5 minutes. Its 300 mL capacity serves up to four small cups. It uses a washable, reusable filter and has a power button, automatic shut-off and non-slip feet. The lightweight ABS housing is easy to clean."
+      }
+    },
+    "coffee-maker-tiffany-tf-1608": {
+      "name": {
+        "ka": "თურქული ყავის აპარატი Tiffany TF-1608",
+        "ru": "Кофеварка для кофе по-турецки Tiffany TF-1608",
+        "en": "Tiffany TF-1608 Turkish coffee maker"
+      },
+      "description": {
+        "ka": "Tiffany TF-1608 ყავის აპარატი პრაქტიკული და მოსახერხებელი მოწყობილობაა არომატული ყავის სწრაფად და მარტივად მოსამზადებლად. 600 W სიმძლავრე საშუალებას გაძლევთ ყავა მაქსიმუმ 5 წუთში მოამზადოთ, ხოლო 250 მლ მოცულობა იდეალურია ყოველდღიური გამოყენებისთვის. ავტომატური გათიშვის ფუნქცია უზრუნველყოფს დამატებით უსაფრთხოებას, ხოლო ჩართვა-გამორთვის ღილაკი მოწყობილობის მართვას ამარტივებს. მოცურების საწინააღმდეგო ძირი ხელს უწყობს სტაბილურ მუშაობას, ხოლო ABS პლასტმასისა და უჟანგავი ფოლადის ელემენტებით დამზადებული კონსტრუქცია აერთიანებს პრაქტიკულობასა და გამძლეობას. კომპაქტური ზომა, მარტივად საწმენდი ზედაპირი და ელეგანტური შავი დიზაინი აპარატს ნებისმიერი სამზარეულოსთვის შესანიშნავ არჩევანად აქცევს.",
+        "ru": "Tiffany TF-1608 мощностью 600 Вт вмещает 250 мл и готовит кофе не дольше 5 минут. Прибор оснащён кнопкой питания, автоматическим отключением и нескользящим основанием. В конструкции используются ABS-пластик и нержавеющая сталь. У кофеварки компактный чёрный корпус, который легко очищается.",
+        "en": "The 600 W Tiffany TF-1608 has a 250 mL capacity and brews coffee in up to 5 minutes. It has a power button, automatic shut-off and a non-slip base. The compact black unit is made with ABS plastic and stainless-steel components and is easy to clean."
+      }
+    },
+    "coffee-maker-tiffany-tf-1612": {
+      "name": {
+        "ka": "ყავის მადუღარა Tiffany TF-1612",
+        "ru": "Кофеварка для кофе по-турецки Tiffany TF-1612",
+        "en": "Tiffany TF-1612 Turkish coffee maker"
+      },
+      "description": {
+        "ka": "TIFFANY TF-1612 თურქული ყავის აპარატი პრაქტიკული და მოსახერხებელი მოწყობილობაა არომატული ყავის სწრაფად და მარტივად მოსამზადებლად. 600 W სიმძლავრე უზრუნველყოფს ყავის ეფექტურ მომზადებას, ხოლო 300 მლ მოცულობა იდეალურია ყოველდღიური გამოყენებისთვის. კომპაქტური ზომა და მსუბუქი ABS კორპუსი მოწყობილობის გამოყენებასა და შენახვას ამარტივებს. ელეგანტური შავი დიზაინი ნებისმიერ სამზარეულოს უხდება, ხოლო 1-წლიანი გარანტია დამატებით სიმშვიდესა და თავდაჯერებულობას გთავაზობთ.",
+        "ru": "Tiffany TF-1612 — компактная кофеварка для кофе по-турецки мощностью 600 Вт и объёмом 300 мл. Лёгкий чёрный корпус выполнен из ABS-пластика. Благодаря компактным размерам прибор удобно хранить. Гарантия — 1 год.",
+        "en": "The Tiffany TF-1612 is a compact Turkish coffee maker with 600 W of power and a 300 mL capacity. Its lightweight black ABS housing is easy to store. It comes with a one-year warranty."
+      }
+    },
+    "lint-remover-nova-nlr-208": {
+      "name": {
+        "ruSource": "электронная почта Триммер для меха Nova NLR-208",
+        "enSource": "e-mail Fur trimmer Nova NLR-208",
+        "ru": "Машинка для удаления катышков Nova NLR-208",
+        "en": "Nova NLR-208 fabric shaver"
+      },
+      "description": {
+        "ruSource": "Электрическая сушилка для меха Nova NLR-208 поможет вам легко обновить внешний вид одежды и тканей. Устройство эффективно удаляет скопившиеся ворс и частицы меха, что придает одежде более аккуратный и свежий вид. Компактный дизайн и простота использования позволяют быстро обрабатывать самые разные ткани, в том числе свитера, куртки, пледы и другие текстильные изделия.",
+        "enSource": "Nova NLR-208 electric fur dryer will help you easily update the look of clothes and fabrics. The device effectively removes accumulated lint and fur particles, which gives clothes a neater and fresher look. The compact design and ease of use allow you to quickly process a variety of fabrics, including sweaters, jackets, plaids and other textile items.",
+        "ru": "Электрическая машинка Nova NLR-208 удаляет катышки и ворс со свитеров, курток, пледов и других текстильных изделий. Компактный прибор прост в использовании и помогает вернуть ткани аккуратный вид.",
+        "en": "The Nova NLR-208 electric fabric shaver removes bobbles and lint from jumpers, jackets, blankets and other textiles. The compact design is easy to use and helps keep fabrics looking neat."
+      }
+    },
+    "gas-stove-sokany-sk-6004": {
+      "name": {
+        "ruSource": "Плита Sokany SK-6004",
+        "enSource": "Stove Sokany SK-6004",
+        "ru": "Настольная газовая плита Sokany SK-6004, 4 конфорки",
+        "en": "Sokany SK-6004 four-burner tabletop gas hob"
+      }
+    },
+    "gas-stove-sokany-sk-6003": {
+      "name": {
+        "ruSource": "Плита Sokany SK-6003",
+        "enSource": "Stove Sokany SK-6003",
+        "ru": "Настольная газовая плита Sokany SK-6003, 3 конфорки",
+        "en": "Sokany SK-6003 three-burner tabletop gas hob"
+      },
+      "description": {
+        "ruSource": "Тройная плита Sokany SK-07005 – отличный выбор для тех, кто хочет готовить несколько блюд одновременно. Три независимых конфорки упрощают и ускоряют процесс приготовления, а компактная настольная конструкция делает устройство практичным для использования дома, на даче и на природе. Прочная конструкция и работа на пропан-бутане обеспечивают надежную и комфортную работу каждый день.",
+        "enSource": "Sokany SK-07005 triple cooker is an excellent choice for those who want to cook several dishes at the same time. Three independent burners simplify and speed up the cooking process, and the compact tabletop design makes the device practical for home, country and outdoor use. Durable construction and propane-butane operation ensure reliable and comfortable operation every day.",
+        "ru": "У настольной газовой плиты Sokany SK-6003 три независимые конфорки. Компактная плита с корпусом из нержавеющей стали работает на пропан-бутане.",
+        "en": "The Sokany SK-6003 tabletop gas hob has three independent burners, a stainless-steel body and runs on propane-butane."
+      }
+    },
+    "z55ultra": {
+      "name": {
+        "ruSource": "Умные часы Ultra 49 мм",
+        "enSource": "Smart Watch Ultra 49mm",
+        "ru": "Умные часы Z55 Ultra, 49 мм",
+        "en": "Z55 Ultra smartwatch, 49 mm"
+      }
+    },
+    "lint-remover-vitek-vt-2089": {
+      "description": {
+        "ruSource": "Электрическая сушилка для меха Vitek VT-2089 поможет вам легко обновить внешний вид одежды и тканей. Устройство эффективно удаляет ворс и скопившуюся шерсть, придавая любимой одежде более аккуратный и свежий вид. Компактные размеры и простота использования позволяют быстро обрабатывать различные ткани – свитера, куртки, пледы и другие текстильные изделия.",
+        "enSource": "Vitek VT-2089 electric fur dryer will help you easily renew the appearance of clothes and fabrics. The device effectively removes lint and accumulated fur, giving your favorite clothes a neater and fresher look. Compact size and ease of use allow you to quickly process various fabrics - sweaters, jackets, plaids and other textile items.",
+        "ru": "Компактная электрическая машинка Vitek VT-2089 удаляет катышки, ворс и скопившуюся шерсть с одежды и других текстильных изделий. Ею удобно обработать свитеры, куртки и пледы, чтобы вернуть ткани аккуратный вид.",
+        "en": "The compact Vitek VT-2089 electric fabric shaver removes bobbles, lint and trapped hair from clothes and other textiles. It is easy to use on jumpers, jackets and blankets to keep fabrics looking neat."
+      }
+    }
+  }
+}

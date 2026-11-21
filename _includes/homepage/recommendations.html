@@ -34,6 +34,7 @@
 </section>
 <script type="application/json" id="recommendationCatalog">[
 {%- for product in site.products -%}
-  {"id":{{ product.product_id | jsonify | replace: '<', '\u003c' }},"sku":{{ product.sku | jsonify | replace: '<', '\u003c' }},"name":{{ product.name | jsonify | replace: '<', '\u003c' }},"brand":{{ product.brand | jsonify | replace: '<', '\u003c' }},"price":{{ product.price | jsonify | replace: '<', '\u003c' }},"oldPrice":{{ product.oldPrice | jsonify | replace: '<', '\u003c' }},"stockStatus":{{ product.stockStatus | jsonify | replace: '<', '\u003c' }},"categories":{{ product.categories | jsonify | replace: '<', '\u003c' }},"subcategories":{{ product.subcategories | jsonify | replace: '<', '\u003c' }},"images":{{ product.images | jsonify | replace: '<', '\u003c' }}}{% unless forloop.last %},{% endunless %}
+  {%- assign recommendation_translation = site.data.storefront_products[page.storefront_locale][product.product_id] -%}
+  {"id":{{ product.product_id | jsonify | replace: '<', '\u003c' }},"sku":{{ product.sku | jsonify | replace: '<', '\u003c' }},"name":{{ recommendation_translation.name | default: product.name | jsonify | replace: '<', '\u003c' }},"brand":{{ product.brand | jsonify | replace: '<', '\u003c' }},"price":{{ product.price | jsonify | replace: '<', '\u003c' }},"oldPrice":{{ product.oldPrice | jsonify | replace: '<', '\u003c' }},"stockStatus":{{ product.stockStatus | jsonify | replace: '<', '\u003c' }},"categories":{{ product.categories | jsonify | replace: '<', '\u003c' }},"subcategories":{{ product.subcategories | jsonify | replace: '<', '\u003c' }},"images":{{ product.images | jsonify | replace: '<', '\u003c' }}}{% unless forloop.last %},{% endunless %}
 {%- endfor -%}
 ]</script>

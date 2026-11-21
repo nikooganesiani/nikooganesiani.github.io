@@ -11,30 +11,33 @@
   <link rel="stylesheet" href="/store-visuals.css">
   <link rel="stylesheet" href="/blog-content.css">
   <link rel="stylesheet" href="/blog-editor.css">
+  <link rel="stylesheet" href="/workspace.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <a class="skip" href="#workspace">Перейти к каталогу</a>
+  <a class="skip" href="#workspace">Перейти к содержимому</a>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
   <aside class="sidebar" id="sidebar">
     <a class="brand" href="#catalog"><span class="brand-mark">e<span>↗</span></span><span>ENKA<span class="brand-sub">STUDIO</span></span></a>
-    <div class="workspace-name"><span class="workspace-dot"></span> Управление магазином</div>
-    <p class="nav-label">РАБОЧЕЕ ПРОСТРАНСТВО</p>
+    <button type="button" class="icon-button" id="close-mobile-menu" aria-label="Закрыть навигацию"><span data-icon="close"></span></button>
     <nav class="main-nav" aria-label="Основная навигация">
-      <a href="#catalog" class="nav-item active" data-view="catalog"><span data-icon="grid"></span>Каталог<span class="nav-count" id="nav-count">—</span></a>
+      <p class="nav-label">Ассортимент</p>
+      <a href="#catalog" class="nav-item active" data-view="catalog" aria-current="page"><span data-icon="box"></span>Каталог<span class="nav-count" id="nav-count">—</span></a>
+      <a href="#categories" class="nav-item" data-view="categories"><span data-icon="folder"></span>Категории</a>
       <a href="#translations" class="nav-item" data-view="translations"><span data-icon="languages"></span>Переводы<span class="nav-dot" id="translations-dot"></span></a>
-      <a href="#categories" class="nav-item" data-view="categories"><span data-icon="grid"></span>Категории</a>
-      <a href="#campaigns" class="nav-item" data-view="campaigns"><span data-icon="box"></span>Акции и скидки</a>
+      <a href="#attributes" class="nav-item" data-view="attributes"><span data-icon="sliders"></span>Характеристики</a>
+      <p class="nav-label">Витрина</p>
       <a href="#merchandising" class="nav-item" data-view="merchandising"><span data-icon="image"></span>Главная страница</a>
+      <a href="#campaigns" class="nav-item" data-view="campaigns"><span data-icon="tag"></span>Акции и скидки</a>
       <a href="#blog" class="nav-item" data-view="blog"><span data-icon="edit"></span>Блог</a>
       <a href="#site-texts" class="nav-item" data-view="site-texts"><span data-icon="languages"></span>Тексты сайта</a>
+      <p class="nav-label">Магазин</p>
       <a href="#settings" class="nav-item" data-view="settings"><span data-icon="sliders"></span>Контакты магазина</a>
-      <a href="#attributes" class="nav-item" data-view="attributes"><span data-icon="sliders"></span>Характеристики</a>
       <a href="#history" class="nav-item" data-view="history"><span data-icon="history"></span>История изменений</a>
     </nav>
     <div class="sidebar-bottom">
-      <div class="sidebar-note"><span data-icon="shield"></span><div><strong>Сначала — черновик</strong><p>На сайт попадают только опубликованные изменения.</p></div></div>
       <a class="store-link" id="store-link" href="https://enkaelectronics.com.ge" target="_blank" rel="noopener noreferrer">Открыть магазин<span data-icon="arrow-up-right"></span></a>
-      <div class="profile"><span class="avatar">N</span><div><strong id="profile-name">Редактор</strong><span>Управление каталогом</span></div><span data-icon="chevron-down"></span></div>
+      <div class="profile"><span class="avatar" data-icon="shield"></span><div><strong id="profile-name">Редактор</strong></div></div>
     </div>
   </aside>
   <div class="app-main">
@@ -55,12 +58,12 @@
         </div>
         <div class="catalog-panel">
           <div class="panel-tabs"><button class="panel-tab active" data-tab="all">Все товары<span id="tab-all-count">—</span></button><button class="panel-tab" data-tab="in_stock">В наличии</button><button class="panel-tab" data-tab="translation">Нужен перевод<span class="small-dot"></span></button><div class="panel-tabs-spacer"></div><button class="text-button" id="import-button"><span data-icon="upload"></span>Импорт</button></div>
-          <div class="catalog-toolbar"><label class="search-field"><span data-icon="search"></span><input id="catalog-search" type="search" placeholder="Название, артикул или ID товара…" autocomplete="off"><kbd>⌘ K</kbd></label><label class="select-field"><span class="sr-only">Категория</span><select id="category-filter"><option value="">Все категории</option></select><span data-icon="chevron-down"></span></label><label class="select-field select-sort"><span class="sr-only">Сортировка</span><select id="sort-filter"><option value="default">Порядок каталога</option><option value="name">По названию</option><option value="price-asc">Сначала дешевле</option><option value="price-desc">Сначала дороже</option></select><span data-icon="chevron-down"></span></label></div>
+          <div class="catalog-toolbar"><label class="search-field"><span data-icon="search"></span><span class="sr-only">Поиск товаров</span><input id="catalog-search" type="search" placeholder="Название, артикул или ID товара…" autocomplete="off"><kbd id="catalog-search-shortcut">Ctrl K</kbd></label><label class="select-field"><span class="sr-only">Категория</span><select id="category-filter"><option value="">Все категории</option></select><span data-icon="chevron-down"></span></label><label class="select-field select-sort"><span class="sr-only">Сортировка</span><select id="sort-filter"><option value="default">Порядок каталога</option><option value="name">По названию</option><option value="price-asc">Сначала дешевле</option><option value="price-desc">Сначала дороже</option></select><span data-icon="chevron-down"></span></label></div>
           <div class="table-scroll"><table class="product-table"><thead><tr><th class="product-column">ТОВАР</th><th>КАТЕГОРИЯ</th><th>ЦЕНА</th><th>НАЛИЧИЕ</th><th>ПЕРЕВОДЫ</th><th class="last-cell"><span class="sr-only">Открыть</span></th></tr></thead><tbody id="product-rows"></tbody></table></div>
           <div class="empty-state" id="catalog-empty" hidden><span data-icon="search"></span><h2>Товары не найдены</h2><p>Попробуйте другой запрос или сбросьте фильтры.</p><button class="button secondary" id="reset-filters">Сбросить фильтры</button></div>
           <div class="table-footer"><p id="table-summary">Загрузка каталога…</p><div class="pagination"><button class="icon-button" id="previous-page" aria-label="Предыдущая страница"><span data-icon="chevron-left"></span></button><span id="page-number">1</span><button class="icon-button" id="next-page" aria-label="Следующая страница"><span data-icon="chevron-right"></span></button></div></div>
         </div>
-        <p class="page-footnote"><span data-icon="shield"></span><span id="local-note">Вы работаете с отдельной копией каталога.</span><span class="footnote-right">ENKA STUDIO · 01</span></p>
+        <p class="page-footnote"><span data-icon="shield"></span><span id="local-note">Вы работаете с отдельной копией каталога.</span></p>
       </section>
       <section id="attributes-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ЕДИНЫЙ СЛОВАРЬ</p><h1>Характеристики</h1><p class="page-description">Название характеристики переводится один раз для всех товаров.</p></div></div><div class="catalog-panel"><label class="attribute-search search-field"><span data-icon="search"></span><input id="attribute-search" type="search" placeholder="Найти характеристику…"></label><div class="attribute-table" id="attribute-rows"></div></div></section>
       <section id="history-view" class="view" hidden><div class="page-heading"><div><p class="eyebrow">ПРОЗРАЧНЫЕ ИЗМЕНЕНИЯ</p><h1>История каталога</h1><p class="page-description">Восстановление создаёт новый черновик. Публикация остаётся отдельным шагом.</p></div><button class="button secondary" id="history-refresh"><span data-icon="refresh"></span>Обновить</button></div><div class="history-list" id="history-list"></div></section>

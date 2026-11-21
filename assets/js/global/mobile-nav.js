@@ -27,7 +27,7 @@
       try {
         if (panel.id === 'favModal') window.openFavorites(event);
         else if (panel.id === 'ordersModal') window.openOrders(event);
-        else if (panel.id === 'trackingModal') window.openTracking();
+        else if (panel.id === 'trackingModal') window.openTracking('', true, button);
         else window.openAppModal(panel.id, button);
       } catch (error) {
         console.error('Error opening navigation panel:', error);
