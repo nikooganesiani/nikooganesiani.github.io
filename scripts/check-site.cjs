@@ -35,6 +35,9 @@ function readPage(file) {
 const html = readPage(path.join(root, 'index.html'));
 const footerOf = value => value.match(/<footer\b(?=[^>]*\bdata-site-footer\b)[^>]*>[\s\S]*?<\/footer>/)?.[0];
 const sharedFooter = footerOf(html);
+for (const page of ['terms', 'faq']) {
+  assert.ok(sharedFooter.includes('href="/info/' + page + '"'), 'Footer links to ' + page);
+}
 function verifyHeader(value, label) {
   const stylesheets = [...value.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
   assert.deepEqual(stylesheets, ['/assets/css/style.css'], label + ': one compiled Tailwind stylesheet');
@@ -139,6 +142,7 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   }
   for (const id of ['inlineName', 'inlinePhone', 'inlineOrderError', 'submitInlineOrderBtn', 'productAvailability', 'imageZoomModal']) assert.ok(productIds.includes(id), label + 'missing ' + id);
   assert.match(productHtml, /<label for="inlineName"/, label + 'name label');
+  assert.match(productHtml, /<form\b[^>]*id="inlineOrderForm"[\s\S]*?href="\/info\/terms"[\s\S]*?<\/form>/, label + 'purchase terms linked from the order form');
   assert.match(productHtml, /<label for="inlinePhone"/, label + 'phone label');
   assert.ok(!productHtml.includes('/img/no-image.png'), label + 'broken fallback image');
   for (const [, resource] of productHtml.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
@@ -185,7 +189,7 @@ for (const page of ['category', 'search']) {
 assert.ok(!html.includes('/assets/js/main/catalog-listing.js'), 'Homepage must not load listing controllers');
 console.log('Shared footer and breadcrumbs verified on product, category and search pages.');
 const infoDescriptions = new Set();
-for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
+for (const page of ['about', 'contacts', 'delivery', 'warranty', 'terms', 'faq', 'privacy']) {
   const value = readPage(path.join(root, 'info', page + '.html'));
   const label = 'Info ' + page;
   verifyHeader(value, label);
@@ -202,6 +206,12 @@ for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
   const nav = value.match(/<nav\b(?=[^>]*\bdata-info-nav\b)[^>]*>[\s\S]*?<\/nav>/)?.[0];
   assert.equal((nav?.match(/aria-current="page"/g) || []).length, 1, label + ': one active information link');
   assert.match(nav, new RegExp('href="/info/' + page + '" aria-current="page"'), label + ': correct active page');
+  if (page === 'terms') {
+    const seller = value.match(/<section\b[^>]*aria-labelledby="terms-contact"[\s\S]*?<\/section>/)?.[0];
+    const changes = value.match(/<section\b[^>]*aria-labelledby="terms-changes"[\s\S]*?<\/section>/)?.[0];
+    assert.match(seller, /href="mailto:[^"]+"/, label + ': seller email');
+    assert.match(changes, /href="tel:[^"]+"/, label + ': order changes phone number');
+  }
   const description = value.match(/<meta name="description" content="([^"]+)"/)?.[1];
   assert.ok(description?.length > 40, label + ': useful description');
   assert.ok(!infoDescriptions.has(description), label + ': distinct description');
@@ -217,5 +227,5 @@ for (const page of ['about', 'contacts', 'delivery', 'warranty', 'privacy']) {
   for (const [, fragment] of value.matchAll(/href="#([^"]+)"/g)) assert.ok(infoIds.includes(fragment), label + ': missing in-page anchor ' + fragment);
   for (const [, attributes] of value.matchAll(/<a\b([^>]*target="_blank"[^>]*)>/g)) assert.match(attributes, /rel="noopener noreferrer"/, label + ': safe external link');
 }
-console.log('All five information pages verified: metadata, navigation, unique IDs/scripts, local resources, anchors and download.');
+console.log('Information pages verified: metadata, navigation, unique IDs/scripts, local resources, anchors and download.');
 console.log('Shared header and native search verified on homepage, all products, category, search and information pages.');

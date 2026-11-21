@@ -6,7 +6,7 @@
     {% assign blog_edition = blog_card.editions[blog_locale] | default: blog_card.editions.ka %}
     {% assign blog_card_locale = blog_locale %}
     {% unless blog_card.editions[blog_locale] %}{% assign blog_card_locale = 'ka' %}{% endunless %}
-    <article class="blog-card{% if blog_card.cover == empty %} blog-card--text{% endif %}{% if include.mobile_count and forloop.index > include.mobile_count %} blog-card--desktop{% endif %}" lang="{{ blog_card_locale }}" translate="no"{% if include.adapt %} data-blog-card{% endif %}>
+    <article class="blog-card{% if blog_card.cover == empty %} blog-card--text{% endif %}" lang="{{ blog_card_locale }}" translate="no"{% if include.adapt %} data-blog-card{% endif %}>
       <a href="{{ blog_edition.url | relative_url }}" aria-labelledby="blog-{{ blog_variant }}-{{ blog_slug }}"{% if include.adapt %}
         {% for blog_translation in blog_card.editions %}{% unless blog_translation[0] == 'ka' %} data-blog-url-{{ blog_translation[0] }}="{{ blog_translation[1].url | relative_url }}"
         data-blog-title-{{ blog_translation[0] }}="{{ blog_translation[1].title | escape }}"

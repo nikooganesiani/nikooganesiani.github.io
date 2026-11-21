@@ -2,7 +2,7 @@
   <p class="notranslate text-muted text-[length:12px] leading-5 mb-2.5 tabular-nums max-[640px]:hidden" translate="no" data-product-sku>ID <span class="select-all">{{ page.sku | default: page.product_id | escape }}</span></p>
   <h1 data-product-name>{{ page.name | escape }}</h1>
   {% if page.brand and page.brand != '' %}
-  <p class="flex flex-wrap items-baseline gap-x-1.5 text-[length:13px] leading-6 mt-3 max-[640px]:hidden"><span class="text-muted">ბრენდი:</span><a class="notranslate font-medium text-accent no-underline hover:underline underline-offset-4 focus-visible:outline-brand" translate="no" href="/search/?q={{ page.brand | url_encode }}">{{ page.brand | escape }}</a></p>
+  <p class="flex flex-wrap items-baseline gap-x-1.5 text-[length:13px] leading-6 mt-3 max-[640px]:hidden"><span class="text-muted">ბრენდი:</span><a class="notranslate font-semibold text-accent no-underline hover:underline underline-offset-4 focus-visible:outline-brand" translate="no" href="/search/?q={{ page.brand | url_encode }}">{{ page.brand | escape }}</a></p>
   {% endif %}
   <span class="sr-only" data-product-stock data-stock="{{ product_stock | escape }}">{{ product_stock_label }}</span>
   {% assign highlight_count = 0 %}
@@ -18,7 +18,7 @@
   {% if highlight_count > 0 %}
   <div class="mt-7 max-[768px]:hidden">
     <dl class="product-highlights [&_>_div]:grid [&_>_div]:grid-cols-[minmax(0,_1fr)_minmax(0,_1fr)] [&_>_div]:gap-3 [&_>_div]:py-2.5 [&_>_div]:border-b [&_>_div]:border-line [&_>_div]:text-[length:13px] [&_>_div]:leading-[1.65] [&_dt]:text-muted [&_dd]:font-medium [&_dd]:text-ink [&_dd]:text-right [&_dt]:[overflow-wrap:anywhere] [&_dd]:[overflow-wrap:anywhere]">{{ product_highlights }}</dl>
-    <a class="inline-flex items-center gap-1 w-fit min-h-10 mt-2 text-[length:12px] font-medium text-accent no-underline hover:underline underline-offset-4" href="#productSpecifications">ყველა მახასიათებელი{% include icons.html name='chevron-right' size=13 %}</a>
+    <a class="inline-flex items-center gap-1 w-fit min-h-10 mt-2 text-[length:12px] font-medium text-accent no-underline hover:underline underline-offset-4" href="#productSpecifications">ყველა მახასიათებელი{% include icons.html name='chevron-down' size=13 %}</a>
   </div>
   {% endif %}
 </div>

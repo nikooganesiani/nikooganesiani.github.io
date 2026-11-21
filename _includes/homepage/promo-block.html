@@ -4,21 +4,20 @@
 <section class="relative w-full my-3 select-none" aria-roledescription="კარუსელი" aria-label="სპეციალური შეთავაზებები" data-promo-block>
   <p class="sr-only">ბანერებს შორის გადასასვლელად გამოიყენეთ მარცხენა და მარჯვენა ისრები.</p>
   <div class="sr-only" data-promo-status aria-live="polite" aria-atomic="true"></div>
-  <div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden overscroll-x-contain rounded-3xl max-[640px]:rounded-2xl data-[dragging=true]:snap-none data-[dragging=true]:cursor-grabbing" data-promo-track>
+  <div data-promo-track>
     {% for item in store_heroes %}
-      <div class="promo-slide w-full min-w-0 flex-[0_0_100%] snap-start relative" data-promo-slide data-title="{{ item.title | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ store_heroes.size }}">
+      <div data-promo-slide data-title="{{ item.title | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ store_heroes.size }}">
         {% if item.html %}{{ item.html }}{% else %}
-        <a href="{{ item.url | escape }}" class="enka-hero enka-hero-image" aria-label="{{ item.title | escape }}" draggable="false"><picture><img src="{{ item.image | escape }}" data-catalog-content alt="{{ item.title | escape }}" width="1500" height="500" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async" draggable="false"></picture></a>
+        <a href="{{ item.url | escape }}" class="enka-hero enka-hero-image promo-fallback" aria-label="{{ item.title | escape }}" draggable="false"><picture><img src="{{ item.image | escape }}" data-catalog-content alt="{{ item.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async" draggable="false"></picture></a>
         {% endif %}
       </div>
     {% endfor %}
   </div>
   {% if store_heroes.size > 1 %}
-  <div class="flex items-center justify-center min-h-11 pt-2">
-    <div class="relative flex items-center gap-2" data-promo-dots role="group" aria-label="აირჩიეთ შეთავაზება">
-      {% for item in store_heroes %}<button type="button" class="relative w-2 h-2 rounded-full bg-slate-300 cursor-pointer before:absolute before:-inset-2 before:content-['']" data-promo-dot aria-label="შეთავაზება {{ forloop.index }}: {{ item.title | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"></button>{% endfor %}
-      <div class="absolute left-0 top-0 w-2 h-2 rounded-full bg-blue-600 pointer-events-none transition-transform motion-reduce:transition-none" data-promo-worm aria-hidden="true"></div>
-    </div>
+  <button type="button" data-promo-step="-1" aria-label="წინა შეთავაზება">{% include icons.html name='chevron-left' size=20 %}</button>
+  <button type="button" data-promo-step="1" aria-label="შემდეგი შეთავაზება">{% include icons.html name='chevron-right' size=20 %}</button>
+  <div data-promo-dots role="group" aria-label="აირჩიეთ შეთავაზება">
+    {% for item in store_heroes %}<button type="button" data-promo-dot aria-label="{{ forloop.index }} / {{ store_heroes.size }} — {{ item.title | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"></button>{% endfor %}
   </div>
   {% endif %}
 </section>

@@ -16,6 +16,11 @@
     font-weight: 650;
     letter-spacing: -.02em;
   }
+  .blog-heading-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
   .blog-text-link {
     display: inline-flex;
     align-items: center;
@@ -294,12 +299,12 @@
   .blog-related-products img { width: 44px; height: 44px; object-fit: contain; flex: none; border-radius: .4rem; background: #fff; }
   .blog-article-footer { padding-block-start: .65rem; }
 
-  :is(.blog-card a, .blog-carousel-arrow, .blog-text-link, .blog-language-links a, .blog-toc a, .blog-toc-mobile :is(a, summary), .blog-more summary, .blog-related-products a):focus-visible {
+  :is(.blog-card a, .blog-carousel-arrow, .blog-heading-link, .blog-text-link, .blog-language-links a, .blog-toc a, .blog-toc-mobile :is(a, summary), .blog-more summary, .blog-related-products a):focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
   }
   @media (hover: hover) {
-    .blog-text-link:hover, .blog-language-links a:hover, .blog-toc a:hover, .blog-toc-mobile a:hover, .blog-more summary:hover {
+    .blog-heading-link:hover, .blog-text-link:hover, .blog-language-links a:hover, .blog-toc a:hover, .blog-toc-mobile a:hover, .blog-more summary:hover {
       color: var(--color-accent-strong);
       text-decoration: underline;
       text-underline-offset: .24em;
@@ -313,15 +318,8 @@
   }
 
   @media (min-width: 640px) {
-    .blog-carousel {
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-    }
     .blog-grid--home {
       --blog-card-gap: clamp(1rem, 2vw, 1.5rem);
-      flex: 1;
-      min-width: 0;
       grid-auto-flow: column;
       grid-template-columns: none;
       grid-auto-columns: calc((100% - 3 * var(--blog-card-gap)) / 4);
@@ -374,7 +372,6 @@
       flex: 0 0 clamp(7.25rem, 36vw, 12rem);
       scroll-snap-align: start;
     }
-    .blog-grid--home .blog-card--desktop { display: none; }
     .blog-grid--home .blog-card a { gap: .4rem; }
     .blog-grid--home .blog-card-media { aspect-ratio: 4 / 3; border-radius: .6rem; }
     .blog-grid--home .blog-card-copy h3 { font-size: .75rem; line-height: 1.38; }

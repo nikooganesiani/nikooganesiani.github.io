@@ -3,25 +3,24 @@
 {% assign blog_primary_slugs = include.slugs %}
 {% if include.variant == 'product' %}{% assign blog_primary_slugs = include.slugs | slice: 0, 3 %}{% endif %}
 <section class="blog-section blog-section--{{ include.variant }}" id="blog-section" aria-labelledby="blog-section-title">
-  <div class="blog-section-header">
-    <h2 id="blog-section-title">{{ include.title }}</h2>
-    {% if include.variant == 'home' %}
-      <a class="blog-text-link" href="{{ '/blog/' | relative_url }}" data-blog-archive-link>ყველა სტატია</a>
-    {% endif %}
-  </div>
   {% if include.variant == 'home' %}
-    {% assign blog_mobile_count = blog_section_size | at_most: 3 %}
-    {% assign blog_desktop_count = blog_section_size | at_least: 14 %}
-    {% assign blog_primary_slugs = blog_primary_slugs | concat: site.data.blog.archive | uniq | slice: 0, blog_desktop_count %}
-    {% assign blog_arrow_class = 'blog-carousel-arrow hidden min-[640px]:inline-flex items-center justify-center w-10 h-10 shrink-0 border border-solid border-[color:light-dark(#e7ebf0,var(--color-night-line))] rounded-full text-[color:light-dark(#667383,var(--color-night-copy))] bg-canvas cursor-pointer motion-safe:transition-colors hover:border-[color:light-dark(#c7cfd9,var(--color-night-line-strong))] hover:text-[color:light-dark(#253140,var(--color-night-ink))] hover:bg-[color:light-dark(#f8fafc,var(--color-night-surface))] disabled:opacity-[.28] disabled:cursor-default' %}
-    <div class="blog-carousel">
+    {% assign blog_home_count = blog_section_size | at_least: 14 %}
+    {% assign blog_primary_slugs = blog_primary_slugs | concat: site.data.blog.archive | uniq | slice: 0, blog_home_count %}
+    {% assign blog_arrow_class = 'carousel-arrow blog-carousel-arrow inline-flex items-center justify-center w-10 h-10 shrink-0 border border-solid border-[color:light-dark(#e7ebf0,var(--color-night-line))] rounded-full text-[color:light-dark(#667383,var(--color-night-copy))] bg-canvas cursor-pointer motion-safe:transition-colors hover:border-[color:light-dark(#c7cfd9,var(--color-night-line-strong))] hover:text-[color:light-dark(#253140,var(--color-night-ink))] hover:bg-[color:light-dark(#f8fafc,var(--color-night-surface))] disabled:opacity-[.28] disabled:cursor-default' %}
+    <div class="blog-section-header">
+      <h2 id="blog-section-title"><a class="blog-heading-link" href="{{ '/blog/' | relative_url }}" data-blog-archive-link>{{ include.title }}</a></h2>
       {% if blog_primary_slugs.size > 4 %}
-        <button type="button" class="{{ blog_arrow_class }}" data-blog-direction="-1" aria-controls="blog-home-track" aria-label="წინა სტატიები" hidden disabled>{% include icons.html name='chevron-left' size=18 %}</button>
-        <button type="button" class="{{ blog_arrow_class }} order-last" data-blog-direction="1" aria-controls="blog-home-track" aria-label="შემდეგი სტატიები" hidden disabled>{% include icons.html name='chevron-right' size=18 %}</button>
+        <div class="hidden gap-2 min-[640px]:flex">
+          <button type="button" class="{{ blog_arrow_class }}" data-blog-direction="-1" aria-controls="blog-home-track" aria-label="წინა სტატიები" hidden disabled>{% include icons.html name='chevron-left' size=18 %}</button>
+          <button type="button" class="{{ blog_arrow_class }}" data-blog-direction="1" aria-controls="blog-home-track" aria-label="შემდეგი სტატიები" hidden disabled>{% include icons.html name='chevron-right' size=18 %}</button>
+        </div>
       {% endif %}
-      {% include blog/cards.html slugs=blog_primary_slugs variant=include.variant adapt=true mobile_count=blog_mobile_count %}
     </div>
+    {% include blog/cards.html slugs=blog_primary_slugs variant=include.variant adapt=true %}
   {% else %}
+    <div class="blog-section-header">
+      <h2 id="blog-section-title">{{ include.title }}</h2>
+    </div>
     {% include blog/cards.html slugs=blog_primary_slugs variant=include.variant adapt=true %}
   {% endif %}
   {% if include.variant == 'product' and blog_section_size > 3 %}

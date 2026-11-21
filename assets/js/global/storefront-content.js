@@ -45,10 +45,31 @@
   function heroes(store) {
     const anchor=document.querySelector('[data-studio-heroes]');if(!anchor)return;
     const offers=engine.banners(store);
-    const root=document.createElement('section');root.className='relative w-full my-3 select-none';root.dataset.promoBlock='';root.setAttribute('aria-label',window.enkaI18n?.t('სპეციალური შეთავაზებები') || 'Offers');
-    root.innerHTML=`<div class="sr-only" data-promo-status aria-live="polite"></div><div class="flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden rounded-3xl" data-promo-track>${offers.map(h=>`<div class="promo-slide w-full min-w-0 flex-[0_0_100%] snap-start" data-promo-slide data-title="${esc(label(h.title))}">${globalThis.EnkaStoreVisuals.hero(h,locale())}</div>`).join('')}</div>${offers.length>1?`<div class="flex justify-center gap-3 py-4" data-promo-dots>${offers.map((_,i)=>`<button type="button" class="w-3 h-3 rounded-full bg-slate-300 aria-[current=true]:bg-brand" data-promo-dot aria-label="${i+1}" aria-current="${i===0}" tabindex="${i===0?0:-1}"></button>`).join('')}</div>`:''}`;
     anchor.querySelector('[data-promo-block]')?.enkaCleanup?.();
-    anchor.replaceChildren(root);globalThis.EnkaStoreVisuals.apply(root);window.enkaInitPromoBlock?.(root);
+    anchor.replaceChildren();
+    if (!offers.length) return;
+    const t = value => window.enkaI18n?.t(value) || value;
+    const root = document.createElement('section');
+    root.className = 'relative w-full my-3 select-none';
+    root.dataset.promoBlock = '';
+    root.setAttribute('aria-label', t('სპეციალური შეთავაზებები'));
+    root.setAttribute('aria-roledescription', t('კარუსელი'));
+    const slides = offers.map((offer, index) => `
+      <div data-promo-slide data-title="${esc(label(offer.title))}" role="group" aria-roledescription="${esc(t('სლაიდი'))}" aria-label="${index + 1} / ${offers.length}">
+        ${globalThis.EnkaStoreVisuals.hero(offer, locale())}
+      </div>`).join('');
+    const dots = offers.map((offer, index) => `
+      <button type="button" data-promo-dot aria-label="${index + 1} / ${offers.length} — ${esc(label(offer.title))}" aria-current="${index === 0}" tabindex="${index === 0 ? 0 : -1}"></button>`).join('');
+    root.innerHTML = `
+      <div class="sr-only" data-promo-status aria-live="polite" aria-atomic="true"></div>
+      <div data-promo-track>${slides}</div>
+      ${offers.length > 1 ? `
+        <button type="button" data-promo-step="-1" aria-label="${esc(t('წინა შეთავაზება'))}">${window.EnkaIcons.render('chevron-left', 20)}</button>
+        <button type="button" data-promo-step="1" aria-label="${esc(t('შემდეგი შეთავაზება'))}">${window.EnkaIcons.render('chevron-right', 20)}</button>
+        <div data-promo-dots role="group" aria-label="${esc(t('აირჩიეთ შეთავაზება'))}">${dots}</div>` : ''}`;
+    anchor.append(root);
+    globalThis.EnkaStoreVisuals.apply(root);
+    window.enkaInitPromoBlock?.(root);
   }
   function campaignRows(store) {
     const root=document.querySelector('[data-studio-campaigns]');if(!root)return;

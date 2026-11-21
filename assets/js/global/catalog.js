@@ -3,6 +3,7 @@
   const TTL = 5 * 60 * 1000;
   const locale = window.enkaI18n?.locale || 'ka';
   const CACHE_KEY = 'catalogCache_v5_' + locale;
+  const useSessionCache = window.CATALOG_SESSION_CACHE !== false;
   let cached = null;
   let promise = null;
   function prepare(value) {
@@ -56,7 +57,7 @@
   };
 
   window.fetchCatalogCached = function() {
-    if (!cached) {
+    if (!cached && useSessionCache) {
       try {
         const saved = JSON.parse(sessionStorage.getItem(CACHE_KEY));
         if (saved && Array.isArray(saved.products) && Date.now() - saved.ts >= 0 && Date.now() - saved.ts < TTL) cached = prepare(saved);
@@ -79,7 +80,9 @@
         const products = Array.isArray(data) ? data : data?.products;
         if (!Array.isArray(products)) throw new Error('Invalid catalog');
         cached = { products: products.filter(p => p && p.id && typeof p.name === 'string'), ...(data._enkaStore ? {store:data._enkaStore} : {}), ts: Date.now() };
-        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
+        if (useSessionCache) {
+          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(cached)); } catch { /* Storage is optional. */ }
+        }
         return prepare(cached);
       })
       .finally(() => { clearTimeout(timer); promise = null; });

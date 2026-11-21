@@ -1,0 +1,17 @@
+<section id="productFaq" class="mt-10 scroll-mt-[calc(var(--site-header-height,80px)+1rem)] border-t border-line pt-7 max-[768px]:mt-8" aria-labelledby="productFaqTitle">
+  <h2 id="productFaqTitle" class="mb-5 text-[length:22px] font-semibold leading-snug tracking-[-.025em] text-ink">ხშირად დასმული კითხვები</h2>
+  <div class="grid items-start gap-4 min-[850px]:grid-cols-3">
+    {% for topic in site.data.faq %}
+    <section class="min-w-0" aria-labelledby="productFaq-{{ topic.id }}">
+      <h3 id="productFaq-{{ topic.id }}" class="mb-2.5 flex min-h-9 items-center gap-2 text-[length:14px] font-semibold leading-snug text-ink">
+        <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-surface text-accent">{% include icons.html name=topic.icon size=18 %}</span>
+        <span>{{ topic.title }}</span>
+      </h3>
+      {% include faq/questions.html topic=topic %}
+      {% if topic.id == 'after-purchase' and page.warranty and page.warranty != '' %}
+      <p class="mt-2.5 text-[length:13px] leading-relaxed text-muted">გარანტია: <span class="font-semibold text-ink" data-product-warranty>{{ page.warranty | escape }}</span></p>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+</section>

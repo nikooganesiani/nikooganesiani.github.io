@@ -1,0 +1,24 @@
+---
+layout: info
+info_key: faq
+title: "ხშირად დასმული კითხვები"
+eyebrow: "დახმარება"
+description: "პასუხები ENKA Electronics-ში შეკვეთის, გადახდის, მიწოდების, გზავნილის სტატუსის, გარანტიისა და დაბრუნების შესახებ."
+intro: "აირჩიეთ თემა ან გახსენით კითხვა, რომ შეკვეთასთან დაკავშირებული პასუხი სწრაფად იპოვოთ."
+---
+<nav aria-label="კითხვების თემები" class="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1 print:hidden!">
+  {% for topic in site.data.faq %}
+  <a href="#{{ topic.id }}" class="group flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-canvas p-3.5 text-[length:13px] font-semibold leading-snug text-ink no-underline transition-colors hover:border-accent hover:text-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[640px]:min-h-12 max-[640px]:px-3 max-[640px]:py-2">
+    <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-accent">{% include icons.html name=topic.icon size=18 %}</span>
+    <span>{{ topic.title }}</span>
+    {% include icons.html name='chevron-down' size=15 class='ml-auto text-muted group-hover:text-accent' %}
+  </a>
+  {% endfor %}
+</nav>
+
+{% for topic in site.data.faq %}
+<section id="{{ topic.id }}" class="mt-9 scroll-mt-[calc(var(--site-header-height,80px)+1rem)] max-[640px]:mt-7" aria-labelledby="{{ topic.id }}-title">
+  <h2 id="{{ topic.id }}-title">{{ topic.title }}</h2>
+  {% include faq/questions.html topic=topic %}
+</section>
+{% endfor %}

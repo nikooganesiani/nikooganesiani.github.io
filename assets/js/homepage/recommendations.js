@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       section.dataset.recommendationRow = row.key || 'discover';
       const title = t(labels.get(row.key) || 'კიდევ მეტი თქვენთვის');
       section.setAttribute('aria-labelledby', prefix + '-title');
-      const arrowClass = 'hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] disabled:opacity-30';
+      const arrowClass = 'carousel-arrow hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] disabled:opacity-30';
       const arrow = (direction, label) => `<button type="button" id="${prefix}-${direction}" class="${arrowClass}" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled>${window.EnkaIcons.render(direction === 'left' ? 'chevron-left' : 'chevron-right', 18)}</button>`;
       section.innerHTML = `<div class="mb-5 flex items-center justify-between gap-4">
         <h2 id="${prefix}-title" class="text-[length:22px] font-semibold leading-snug tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${esc(title)}</h2>

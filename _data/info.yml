@@ -9,12 +9,21 @@ navigation:
     icon: phone
   - key: delivery
     title: გადახდა და მიწოდება
+    footer_title: მიწოდება
     url: /info/delivery
     icon: truck
   - key: warranty
     title: გარანტია და დაბრუნება
     url: /info/warranty
     icon: shield
+  - key: terms
+    title: შეძენის პირობები
+    url: /info/terms
+    icon: list
+  - key: faq
+    title: ხშირად დასმული კითხვები
+    url: /info/faq
+    icon: chat
   - key: privacy
     title: კონფიდენციალურობა
     url: /info/privacy

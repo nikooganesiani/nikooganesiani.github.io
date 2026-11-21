@@ -71,6 +71,167 @@
   100% { box-shadow: 0 0 0 0 rgb(34 197 94 / 0); }
 }
 
+@media (width > 768px) {
+  .carousel-arrow {
+    flex: 0 0 26px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background-color: var(--color-brand);
+    color: #fff;
+    cursor: pointer;
+    transform: none;
+  }
+
+  .carousel-arrow > svg {
+    display: block;
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.75;
+  }
+
+  .carousel-arrow [data-icon-body] {
+    transform: none !important;
+  }
+
+  .carousel-arrow:enabled:hover {
+    background-color: var(--color-brand-dark);
+  }
+
+  .carousel-arrow:disabled {
+    opacity: 1;
+    background-color: light-dark(#e0e5ec, var(--color-night-raised));
+    color: light-dark(#596777, var(--color-night-muted));
+    cursor: default;
+  }
+
+  .carousel-arrow:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+[data-promo-track] {
+  position: relative;
+  display: flex;
+  overflow: auto hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+[data-promo-track][data-dragging="true"] {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+:is([data-promo-slide], [data-promo-clone]) {
+  position: relative;
+  flex: 0 0 100%;
+  min-width: 0;
+  aspect-ratio: 51 / 10;
+  scroll-snap-align: start;
+}
+:is([data-promo-slide], [data-promo-clone]) .enka-hero {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+  border-radius: 12px;
+  outline-offset: -3px;
+}
+[data-promo-track] .promo-fallback {
+  background-color: #fff;
+}
+[data-promo-track] .promo-fallback img {
+  object-fit: contain;
+}
+
+[data-promo-dots],
+[data-promo-step] {
+  display: none;
+  position: absolute;
+}
+[data-promo-clone] { display: none; }
+@media (width > 640px) {
+  [data-promo-ready] [data-promo-dots] {
+    inset: auto auto clamp(6px, 1.3vw, 20px) 50%;
+    translate: -50% 0;
+    display: flex;
+    max-width: 80%;
+    padding-inline: 4px;
+    border-radius: 999px;
+    color: #fff;
+    background: rgb(20 17 27 / 55%);
+    backdrop-filter: blur(8px);
+  }
+  [data-promo-dot] {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 28px;
+    cursor: pointer;
+    border-radius: 999px;
+  }
+  [data-promo-dot]::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 48%);
+  }
+  [data-promo-dot]:is([aria-current="true"], :hover, :focus-visible)::before {
+    background: currentColor;
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+  [data-promo-ready] [data-promo-step] {
+    top: 50%;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--color-line);
+    background: var(--color-canvas);
+    color: var(--color-muted);
+    box-shadow: 0 2px 8px rgb(15 23 42 / 16%);
+    cursor: pointer;
+  }
+  [data-promo-step="-1"] { left: clamp(12px, 2.6vw, 40px); }
+  [data-promo-step="1"] { right: clamp(12px, 2.6vw, 40px); }
+  [data-promo-step]:is(:hover, :focus-visible) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: var(--color-surface);
+  }
+  [data-promo-step]:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+@media (width <= 640px) {
+  [data-promo-track]:has(> [data-promo-slide] + [data-promo-slide]) {
+    --promo-slide-width: 69.5%;
+    --promo-gap: 10px;
+    gap: var(--promo-gap);
+    margin-inline-end: calc(-1 * var(--promo-page-gutter, 1rem));
+  }
+  /* Let the end of the track snap fully before the carousel wraps. */
+  [data-promo-track]:has(> [data-promo-slide] + [data-promo-slide])::after {
+    content: "";
+    flex: 0 0 calc(100% - var(--promo-slide-width) - var(--promo-gap));
+  }
+  :is([data-promo-slide], [data-promo-clone]) {
+    flex-basis: var(--promo-slide-width, 100%);
+    aspect-ratio: 49 / 20;
+    scroll-snap-stop: always;
+  }
+  [data-promo-clone] { display: block; }
+  [data-promo-track] .enka-hero { border-radius: 8px; }
+  [data-promo-track] .promo-fallback img { object-fit: cover; }
+}
+
 /* Let cards travel to the viewport edges while keeping their snap alignment. */
 @media (width < 768px) {
   #main-content .product-carousel {

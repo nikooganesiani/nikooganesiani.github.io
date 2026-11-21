@@ -1,7 +1,8 @@
 (() => {
   const track = document.getElementById('blog-home-track');
-  const previous = track?.parentElement.querySelector('[data-blog-direction="-1"]');
-  const next = track?.parentElement.querySelector('[data-blog-direction="1"]');
+  const section = track?.closest('.blog-section');
+  const previous = section?.querySelector('[data-blog-direction="-1"]');
+  const next = section?.querySelector('[data-blog-direction="1"]');
   if (previous && next) {
     const update = () => {
       const max = track.scrollWidth - track.clientWidth;

@@ -6,7 +6,7 @@
     <ul class="grid gap-2.5 sm:grid-cols-3 lg:grid-cols-6 max-sm:-mx-4 max-sm:grid-flow-col max-sm:grid-rows-2 max-sm:auto-cols-[clamp(128px,40vw,156px)] max-sm:overflow-x-auto max-sm:overscroll-x-contain max-sm:snap-x max-sm:snap-proximity max-sm:scroll-px-4 max-sm:px-4 max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden max-sm:[&>li]:snap-start max-sm:[&_.category-item-btn]:h-[90px] max-sm:[&_.category-item-btn:focus-visible]:outline-offset-[-3px] max-sm:[&_[data-category-art]]:size-22 max-sm:[&_.enka-category-sprite]:size-22">
       <li class="min-w-0 sm:hidden">
         <a href="{{ '/category/' | relative_url }}" data-all-categories aria-haspopup="dialog" aria-controls="navModal" aria-expanded="false"
-           class="flex h-[90px] flex-col items-start justify-center gap-1.5 rounded-xl bg-[color:light-dark(#222,var(--color-night-blue))] px-4 text-white no-underline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-current">
+           class="flex h-full min-h-[90px] flex-col items-start justify-center gap-1.5 rounded-xl bg-[color:light-dark(#222,var(--color-night-blue))] px-4 text-white no-underline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-current">
           {% include icons.html name='menu' size=23 %}
           <span class="max-w-[75px] text-xs leading-tight font-semibold">ყველა კატეგორია</span>
         </a>

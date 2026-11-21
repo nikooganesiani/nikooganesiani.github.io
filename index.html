@@ -7,7 +7,7 @@ is_home: true
 
 <div class="max-w-store w-full mx-auto px-4 sm:px-6 min-[1280px]:px-8 py-4 pb-12 selection:bg-[color:light-dark(var(--color-blue-200),var(--color-night-blue))]">
   <h1 class="sr-only">ENKA Electronics — ტექნიკა თქვენი ყოველდღიურობისთვის</h1>
-  <div data-studio-heroes>{% include homepage/promo-block.html %}</div>
+  <div data-studio-heroes class="[--promo-page-gutter:1rem] sm:[--promo-page-gutter:1.5rem]">{% include homepage/promo-block.html %}</div>
   {% include homepage/mini-categories.html %}
   <div data-studio-campaigns class="dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">{% include homepage/campaigns.html %}</div>
   {% include blog/section.html slugs=site.data.blog.homepage title="ბლოგი" variant="home" %}
