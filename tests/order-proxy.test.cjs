@@ -36,3 +36,39 @@ test('Proxy rejects foreign origins, extra fields and oversized bodies before an
   assert.equal((await send(request({ name: 'x'.repeat(13000) }))).status, 413);
   assert.equal(calls, 0);
 });
+
+test('Proxy signs a bounded, ordered campaign trail without adding new attribution keys', async () => {
+  const { proxyOrder } = await load();
+  const now = Date.now();
+  let forwarded;
+  const result = await proxyOrder(request({ measurement: {
+    consent: { analytics_storage: 'granted' },
+    utm: { utm_source: 'facebook', utm_id: '200' },
+    campaign_touches: [
+      { at: now - 1000, utm_source: 'facebook', utm_id: '200', page: 'contains-private' },
+      { at: now - 2000, utm_source: 'instagram', utm_id: '100', fbclid: 'private' },
+      { at: now - 2500, utm_source: 'newsletter', utm_id: '995555123456' },
+      { at: now - 32 * 86400000, utm_source: 'facebook', utm_id: 'expired' }
+    ]
+  } }), { ORDER_WEBHOOK_SECRET: 'secret' }, async (_url, options) => {
+    forwarded = JSON.parse(options.body);
+    return Response.json({ id: 'one' });
+  });
+  assert.equal(result.status, 200);
+  const attr = forwarded.attribution;
+  const signed = JSON.parse(attr.__enka_measurement);
+  assert.deepEqual(signed.campaign_touches, [
+    { at: now - 2500, utm_source: 'newsletter' },
+    { at: now - 2000, utm_source: 'instagram', utm_id: '100' },
+    { at: now - 1000, utm_source: 'facebook', utm_id: '200' }
+  ]);
+  assert.equal(attr.campaign_touches, undefined);
+  assert.equal(attr.utm_id, '200');
+  assert.equal(attr.__enka_signature, createHmac('sha256', 'secret').update('intake.' + attr.__enka_timestamp + '.' + key.toLowerCase() + '.' + attr.__enka_measurement).digest('hex'));
+});
+
+test('Denied analytics consent strips the campaign trail from the payload', async () => {
+  const { cleanMeasurement } = await load();
+  const value = cleanMeasurement({ campaign_touches: [{ at: Date.now(), utm_source: 'facebook', utm_id: '123' }] }, request({}));
+  assert.equal(value.campaign_touches, undefined);
+});

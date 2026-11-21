@@ -4,6 +4,24 @@ const encoder = new TextEncoder();
 const hex = bytes => Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, '0')).join('');
 const safeId = value => typeof value === 'string' && /^[A-Za-z0-9_-]{1,500}$/.test(value) ? value : undefined;
 
+const TOUCH_LIMIT = 8;
+const TOUCH_WINDOW = 30 * 86400000;
+const TOUCH_FIELDS = { utm_source: 40, utm_medium: 40, utm_id: 96 };
+const MAX_CONTEXT_BYTES = 8192;
+
+function cleanTouchpoints(input, now) {
+  if (!Array.isArray(input)) return [];
+  return input.slice(-TOUCH_LIMIT).flatMap(entry => {
+    if (!Number.isSafeInteger(entry?.at) || entry.at > now + 300000 || now - entry.at >= TOUCH_WINDOW) return [];
+    const touch = { at: entry.at };
+    for (const [key, limit] of Object.entries(TOUCH_FIELDS)) {
+      const value = entry[key];
+      if (typeof value === 'string' && value.length <= limit && /^[A-Za-z0-9_.-]+$/.test(value) && !/9955\d{8}/.test(value)) touch[key] = value;
+    }
+    return touch.utm_source ? [touch] : [];
+  }).sort((a, b) => a.at - b.at);
+}
+
 export function cleanMeasurement(input, request) {
   const consent = {};
   for (const key of ['analytics_storage', 'ad_storage', 'ad_user_data', 'ad_personalization']) consent[key] = input?.consent?.[key] === 'granted' ? 'granted' : 'denied';
@@ -24,6 +42,8 @@ export function cleanMeasurement(input, request) {
     if (typeof fbc === 'string' && fbc.length <= 550 && /^fb\.\d+\.\d+\.[A-Za-z0-9_-]{1,500}$/.test(fbc)) context.meta.fbc = fbc;
   }
   if (consent.analytics_storage === 'granted') {
+    const touchpoints = cleanTouchpoints(input?.campaign_touches, Date.now());
+    if (touchpoints.length) context.campaign_touches = touchpoints;
     context.google = {};
     const { client_id, session_id } = input?.google || {};
     if (typeof client_id === 'string' && /^[A-Za-z0-9_.-]{1,128}$/.test(client_id)) context.google.client_id = client_id;
@@ -58,7 +78,13 @@ export async function proxyOrder(request, env, fetchImpl = fetch) {
   } catch { return fail('invalid_order', 400); }
   const { measurement, ...order } = payload;
   const context = cleanMeasurement(measurement, request);
-  const raw = JSON.stringify(context);
+  let raw = JSON.stringify(context);
+  // The database accepts a bounded UTF-8 envelope. Keep the newest touches if it is full.
+  while (context.campaign_touches?.length && encoder.encode(raw).length > MAX_CONTEXT_BYTES) {
+    context.campaign_touches.shift();
+    if (!context.campaign_touches.length) delete context.campaign_touches;
+    raw = JSON.stringify(context);
+  }
   const timestamp = String(Math.floor(Date.now() / 1000));
   const signingKey = await crypto.subtle.importKey('raw', encoder.encode(env.ORDER_WEBHOOK_SECRET), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const signature = hex(await crypto.subtle.sign('HMAC', signingKey, encoder.encode('intake.' + timestamp + '.' + key + '.' + raw)));
