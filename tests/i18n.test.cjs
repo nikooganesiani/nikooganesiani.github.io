@@ -39,9 +39,10 @@ test('Editorial dictionaries localize text and accessible fields without touchin
     assert.equal(p.source.nodeValue,'კატალოგი');
     assert.equal(p.window.enkaI18n.t('unknown product model'),'unknown product model');
     assert.notEqual(p.input.attrs.placeholder,'პროდუქტი, ბრენდი ან მოდელი');
-    const dynamic=new p.Text('ყიდვა');const root=new p.Element({},dynamic);
+    const dynamic=new p.Text('შეუკვეთეთ');const root=new p.Element({'aria-label':'შეუკვეთეთ: Example model'},dynamic);
     p.mutate([{type:'childList',addedNodes:[root]}]);
-    assert.equal(dynamic.nodeValue,locale==='ru'?'Купить':'Buy');
+    assert.equal(dynamic.nodeValue,locale==='ru'?'Заказать':'Order');
+    assert.equal(root.attrs['aria-label'],locale==='ru'?'Заказать: Example model':'Order: Example model');
     dynamic.nodeValue='ძიება';p.mutate([{type:'characterData',target:dynamic}]);
     assert.equal(dynamic.nodeValue,locale==='ru'?'Поиск':'Search');
   }

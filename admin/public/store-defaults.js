@@ -669,9 +669,9 @@ export default {
       "ru": "Обновить данные",
       "en": "Refresh details"
     },
-    "«ყიდვა»-ზე დაჭერით ეთანხმებით": {
-      "ru": "Нажимая «Купить», вы соглашаетесь с",
-      "en": "By clicking Buy, you agree to the"
+    "ღილაკზე „შეუკვეთეთ“ დაჭერით ეთანხმებით": {
+      "ru": "Нажимая «Заказать», вы соглашаетесь с",
+      "en": "By clicking “Order”, you agree to the"
     },
     "ონლაინ შეკვეთისთვის ჩართეთ JavaScript ან დაგვირეკეთ:": {
       "ru": "Для онлайн-заказа включите JavaScript или позвоните нам:",
@@ -861,9 +861,9 @@ export default {
       "ru": "Цена уточняется",
       "en": "Price to be confirmed"
     },
-    "ყიდვა": {
-      "ru": "Купить",
-      "en": "Buy"
+    "შეუკვეთეთ": {
+      "ru": "Заказать",
+      "en": "Order"
     },
     "დეტალურად": {
       "ru": "Подробнее",
@@ -1237,9 +1237,9 @@ export default {
       "ru": "ENKA Electronics — интернет-магазин техники. Здесь вы найдёте товары для дома, кухни, ухода за собой и повседневных нужд.",
       "en": "ENKA Electronics is an online appliance store. Here you will find products for your home, kitchen, personal care and everyday needs."
     },
-    "ჩვენი მიზანია, ტექნიკის შეძენა იყოს მარტივი: შეარჩიეთ პროდუქტი, დატოვეთ საკონტაქტო ინფორმაცია და დანარჩენ დეტალებს ოპერატორთან შეათანხმებთ.": {
-      "ru": "Наша цель — сделать покупку оборудования легкой: выберите товар, оставьте контактную информацию, а остальные детали вы согласуете с оператором.",
-      "en": "Our goal is to make the purchase of equipment easy: choose a product, leave contact information, and you will agree on the rest of the details with the operator."
+    "ჩვენი მიზანია, ტექნიკის შეკვეთა იყოს მარტივი: შეარჩიეთ პროდუქტი, დატოვეთ საკონტაქტო ინფორმაცია და დანარჩენ დეტალებს ოპერატორთან შეათანხმებთ.": {
+      "ru": "Выберите товар и оставьте контакты. Мы свяжемся с вами, чтобы уточнить детали заказа.",
+      "en": "Choose a product and leave your contact details. Our team will get in touch to confirm the rest of your order."
     },
     "დაათვალიერეთ კატალოგი": {
       "ru": "Просмотрите каталог",
@@ -1257,13 +1257,13 @@ export default {
       "ru": "по всей Грузии",
       "en": "throughout Georgia"
     },
-    "ყიდვა მარტივად": {
-      "ru": "Легко купить",
-      "en": "Easy to buy"
+    "როგორ შევუკვეთოთ": {
+      "ru": "Как заказать",
+      "en": "How to order"
     },
     "რა დაგხვდებათ ENKA-ში": {
-      "ru": "Что вы найдете в «ENKA»?",
-      "en": "What will you find in ENKA?"
+      "ru": "Что можно заказать в ENKA",
+      "en": "What you can find at ENKA"
     },
     "შეკვეთას მოგიტანთ კურიერი. მიწოდება უფასოა მთელ საქართველოში.": {
       "ru": "Курьер привезет вам заказ. Доставка бесплатная по всей Грузии.",
@@ -2090,12 +2090,8 @@ export default {
       "en": "Photo 3 — enlargement"
     },
     "პროდუქტის შეკვეთა": {
-      "ru": "Заказ продукта",
+      "ru": "Заказ товара",
       "en": "Product order"
-    },
-    "პროდუქტის შეძენა": {
-      "ru": "покупка продукта",
-      "en": "product purchase"
     },
     "გალერეის დახურვა": {
       "ru": "Закрыть галерею",
@@ -2621,9 +2617,9 @@ export default {
       "ru": "Не удалось проверить статус. Пожалуйста, попробуйте еще раз.",
       "en": "Failed to check status. Please try again."
     },
-    "ყიდვა:": {
-      "ru": "купить:",
-      "en": "buy:"
+    "შეუკვეთეთ:": {
+      "ru": "Заказать:",
+      "en": "Order:"
     },
     "არ არის მარაგში:": {
       "ru": "Нет в наличии:",
