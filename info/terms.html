@@ -7,35 +7,35 @@ description: "ENKA Electronics-ის შეძენის პირობე�
 intro: "გაიგეთ, როდის დასტურდება შეკვეთა, როგორ იხდით და ვის დაუკავშირდეთ, თუ შეკვეთის შეცვლა ან დაბრუნება გსურთ."
 ---
 {% assign company = site.data.studio.company | default: site.data.info.company %}
-<section class="flex items-start gap-4 rounded-2xl border border-line bg-[color:light-dark(#edf3ff,var(--color-night-blue))] p-7 max-[640px]:p-5 print:break-inside-avoid" aria-labelledby="terms-confirmation">
-  <span class="info-icon inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-canvas text-accent">{% include icons.html name='phone' size=22 %}</span>
+<section class="flex items-start gap-4 rounded-card border border-line bg-[color:light-dark(#edf3ff,var(--color-night-blue))] p-7 max-[640px]:p-5 print:break-inside-avoid" aria-labelledby="terms-confirmation">
+  <span class="info-icon inline-flex size-11 shrink-0 items-center justify-center rounded-control bg-canvas text-accent">{% include icons.html name='phone' size=22 %}</span>
   <div>
     <h2 id="terms-confirmation" class="mb-2!">როდის დასტურდება შეკვეთა?</h2>
     <p>ფორმის გაგზავნის შემდეგ ოპერატორი დაგიკავშირდებათ. შეკვეთა დასტურდება, როცა ტელეფონით შეათანხმებთ პროდუქტს, საბოლოო ფასს, მიწოდების მისამართსა და ვადას.</p>
   </div>
 </section>
 
-<div class="mt-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1 [&_section]:rounded-2xl [&_section]:border [&_section]:border-line [&_section]:bg-canvas [&_section]:p-6 [&_section]:print:break-inside-avoid max-[640px]:[&_section]:p-5 [&_h2]:text-[length:17px]! [&_h2]:mb-2.5! [&_p]:text-[length:14px]">
+<div class="mt-5 grid grid-cols-2 gap-4 max-[640px]:grid-cols-1 [&_section]:rounded-card [&_section]:border [&_section]:border-line [&_section]:bg-canvas [&_section]:p-6 [&_section]:print:break-inside-avoid max-[640px]:[&_section]:p-5 [&_h2]:text-[length:17px]! [&_h2]:mb-2.5! [&_p]:text-[length:14px]">
   <section aria-labelledby="terms-payment">
-    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-surface text-accent">{% include icons.html name='truck' size=20 %}</span>
+    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name='truck' size=20 %}</span>
     <h2 id="terms-payment">გადახდა და მიწოდება</h2>
     <p>საქართველოს მასშტაბით მიწოდება უფასოა. თანხას იხდით მიღებისას, ლარში, ნაღდი ფულით ან ბარათით. ბარათით გადახდის სურვილი ოპერატორს წინასწარ უთხარით.</p>
     <p><a href="{{ '/info/delivery' | relative_url }}">მიწოდების ვადები და გადახდის დეტალები</a></p>
   </section>
   <section aria-labelledby="terms-changes">
-    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-surface text-accent">{% include icons.html name='package' size=20 %}</span>
+    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name='package' size=20 %}</span>
     <h2 id="terms-changes">შეცვლა ან გაუქმება</h2>
     <p>თუ შეკვეთის შეცვლა ან გაუქმება გსურთ, დაგვიკავშირდით რაც შეიძლება მალე. თუ ამანათი უკვე გაგზავნილია, შემდეგ ნაბიჯებს ოპერატორი დაგიზუსტებთ.</p>
     <p><a href="tel:{{ company.phone_link | escape }}">{{ company.phone | escape }}</a></p>
   </section>
   <section aria-labelledby="terms-returns">
-    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-surface text-accent">{% include icons.html name='shield' size=20 %}</span>
+    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name='shield' size=20 %}</span>
     <h2 id="terms-returns">გარანტია და დაბრუნება</h2>
     <p>დისტანციურ შენაძენზე უარის თქმა შეგიძლიათ ნივთის მიღებიდან 14 კალენდარულ დღეში, კანონით გათვალისწინებული გამონაკლისების გარდა.</p>
     <p><a href="{{ '/info/warranty' | relative_url }}">დაბრუნების წესი, ფორმა და გარანტია</a></p>
   </section>
   <section aria-labelledby="terms-contact">
-    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-surface text-accent">{% include icons.html name='chat' size=20 %}</span>
+    <span class="mb-4 inline-flex size-10 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name='chat' size=20 %}</span>
     <h2 id="terms-contact">მოვაჭრე და პრეტენზიები</h2>
     <p>{{ company.legal_name | escape }}</p>
     <p><a href="mailto:{{ company.email | escape }}">{{ company.email | escape }}</a></p>

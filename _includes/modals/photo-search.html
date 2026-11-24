@@ -1,19 +1,16 @@
-<div id="photoSearchModal" class="modal hidden fixed [inset:var(--modal-viewport-top,_0px)_0_auto] z-[10000] w-full h-[var(--modal-viewport-height,_100dvh)] items-center justify-center p-6 bg-[rgb(15_23_42_/_.4)] opacity-0 [&.active]:opacity-100 transition-opacity overscroll-contain max-[640px]:p-3" role="dialog" aria-labelledby="photoSearchTitle" aria-describedby="photoSearchDescription" aria-hidden="true">
-  <div class="flex flex-col w-full max-w-190 max-h-full min-h-0 overflow-hidden rounded-3xl bg-canvas text-ink shadow-xl">
-    <header class="flex flex-none items-start justify-between gap-4 p-6 border-b border-line max-[640px]:p-4">
-      <div class="min-w-0 pt-1"><h2 id="photoSearchTitle" class="m-0 text-[length:20px] font-semibold tracking-tight">ფოტოთი ძიება</h2><p id="photoSearchDescription" class="mt-2 mb-0 text-[length:13px] leading-relaxed text-muted">ატვირთეთ პროდუქტის ფოტო — იპოვეთ მსგავსი ჩვენს კატალოგში.</p></div>
-      {% include modals/close-button.html color_only=true %}
-    </header>
-    <div class="modal-body min-h-0 overflow-y-auto overscroll-contain p-6 max-[640px]:p-4">
-      <div id="photoSearchDropzone" class="flex flex-col items-center justify-center gap-3 min-h-49 p-6 border-2 border-dashed border-[color:light-dark(#dfe5ed,var(--color-night-line))] rounded-2xl bg-surface text-center [&.is-dragging]:border-brand [&.is-dragging]:bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))]">
-        <span class="flex items-center justify-center w-12 h-12 rounded-2xl bg-canvas text-accent" aria-hidden="true">{% include icons.html name='camera' size=24 %}</span>
+<div id="photoSearchModal" class="modal modal--photo hidden {% include modals/classes.html part='overlay' %}" role="dialog" aria-labelledby="photoSearchTitle" aria-describedby="photoSearchDescription" aria-hidden="true">
+  <div class="modal-panel {% include modals/classes.html part='panel' %}">
+    {% include modals/header.html icon="camera" title_id="photoSearchTitle" title="ფოტოთი ძიება" description="ატვირთეთ პროდუქტის ფოტო — იპოვეთ მსგავსი ჩვენს კატალოგში." description_id="photoSearchDescription" color_only=true %}
+    <div class="modal-body modal-content {% include modals/classes.html part='body' %}">
+      <div id="photoSearchDropzone" class="grid justify-items-center gap-3 px-4 py-6 min-[641px]:grid-cols-[auto_1fr_auto] min-[641px]:items-center min-[641px]:justify-items-start min-[641px]:text-left min-[641px]:p-5 border-2 border-dashed border-[color:light-dark(#dfe5ed,var(--color-night-line))] rounded-card bg-surface text-center [&.is-dragging]:border-brand [&.is-dragging]:bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))]">
+        <span class="flex items-center justify-center w-12 h-12 min-[641px]:row-span-2 rounded-card bg-canvas text-accent" aria-hidden="true">{% include icons.html name='camera' size=24 %}</span>
         <p class="m-0 text-[length:14px] font-medium">გადმოიტანეთ ფოტო აქ ან აირჩიეთ ფაილი</p>
-        <button id="photoSearchChoose" type="button" data-modal-initial-focus class="inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-xl bg-brand text-white text-[length:13px] font-semibold cursor-pointer hover:bg-brand-dark">{% include icons.html name='upload' size=18 %}<span>ფოტოს არჩევა</span></button>
-        <p class="m-0 text-[length:11px] text-muted">JPG, PNG, WebP · 10 MB-მდე</p>
+        <button id="photoSearchChoose" type="button" data-modal-initial-focus class="min-[641px]:row-span-2 inline-flex items-center justify-center gap-2 min-h-11 px-5 py-2.5 rounded-control bg-brand text-white text-[length:13px] font-semibold cursor-pointer hover:bg-brand-dark">{% include icons.html name='upload' size=18 %}<span>ფოტოს არჩევა</span></button>
+        <p class="m-0 text-xs text-muted">JPG, PNG, WebP · 10 MB-მდე</p>
       </div>
       <input id="photoSearchFile" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" tabindex="-1" aria-label="ფოტოს არჩევა">
-      <div id="photoSearchSelected" class="flex items-center gap-4 p-3 rounded-2xl bg-surface" hidden>
-        <img id="photoSearchPreview" class="w-18 h-18 shrink-0 rounded-xl object-contain bg-canvas" alt="არჩეული ფოტო" width="72" height="72">
+      <div id="photoSearchSelected" class="flex items-center gap-4 p-3 [--group-radius:var(--radius-card)] rounded-(--group-radius) bg-surface" hidden>
+        <img id="photoSearchPreview" class="w-18 h-18 shrink-0 rounded-[calc(var(--group-radius)_-_--spacing(3))] object-contain bg-canvas" alt="არჩეული ფოტო" width="72" height="72">
         <div class="min-w-0 flex-1"><p id="photoSearchFilename" class="m-0 truncate text-[length:13px] font-medium notranslate" translate="no"></p><button id="photoSearchReplace" type="button" class="min-h-11 p-0 bg-transparent text-[length:12px] text-accent cursor-pointer underline underline-offset-4">სხვა ფოტოს არჩევა</button></div>
       </div>
       <div id="photoSearchLoading" class="photo-search-loading" hidden aria-hidden="true">
@@ -35,9 +32,9 @@
         </div>
       </div>
       <p id="photoSearchStatus" class="mt-4 mb-0 text-[length:13px] leading-relaxed text-muted empty:mt-0" role="status" aria-live="polite" aria-atomic="true"></p>
-      <button id="photoSearchRetry" type="button" class="min-h-11 mt-3 px-4 rounded-xl bg-surface text-accent text-[length:13px] cursor-pointer" hidden>ხელახლა ცდა</button>
+      <button id="photoSearchRetry" type="button" class="min-h-11 mt-3 px-4 rounded-control bg-surface text-accent text-[length:13px] cursor-pointer" hidden>ხელახლა ცდა</button>
       <section id="photoSearchResults" class="mt-5" aria-labelledby="photoSearchResultsTitle" hidden>
-        <h3 id="photoSearchResultsTitle" class="m-0 mb-1 text-[length:16px] font-semibold">მსგავსი პროდუქტები</h3>
+        <h3 id="photoSearchResultsTitle" class="m-0 mb-3 text-[length:16px] font-semibold">მსგავსი პროდუქტები</h3>
         <div id="photoSearchGrid" class="grid grid-cols-3 gap-x-4 gap-y-6 max-[640px]:grid-cols-2"></div>
       </section>
     </div>

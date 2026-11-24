@@ -18,13 +18,15 @@
 }
 
 @theme {
+  --radius-detail: .25rem;
+  --radius-control: .5rem;
+  --radius-media: .75rem;
+  --radius-card: 1rem;
+  --radius-panel: 1.5rem;
   --container-store: 100rem;
   --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #155dfc;
   --color-brand-dark: #1048cb;
-  --color-scrollbar: color-mix(in srgb, var(--color-accent) 24%, transparent);
-  --color-scrollbar-hover: color-mix(in srgb, var(--color-accent) 52%, transparent);
-  --color-scrollbar-active: color-mix(in srgb, var(--color-accent) 72%, transparent);
   --color-ink: light-dark(#202733, #e7edf6);
   --color-muted: light-dark(#68717e, #a4afbf);
   --color-surface: light-dark(#f6f7f9, #202936);
@@ -60,6 +62,41 @@
   font-display: swap;
 }
 
+@layer base {
+  @media (hover: hover) and (pointer: fine) and (forced-colors: none) {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      min-height: 40px;
+      border-radius: 0;
+      background-color: var(--color-accent);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: color-mix(in srgb, var(--color-accent) 96%, black);
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+      background-color: color-mix(in srgb, var(--color-accent) 92%, black);
+    }
+
+    @supports not selector(::-webkit-scrollbar) {
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-accent) transparent;
+      }
+    }
+  }
+}
+
 @layer utilities {
   :focus-visible:where(:not([data-field-frame], [data-field-frame] :is(input, textarea, select))) {
     outline: 2px solid var(--color-brand) !important;
@@ -81,6 +118,11 @@
 
 .modal.active[aria-hidden="true"] {
   display: none;
+}
+
+/* The sticky search field sits inside the space reserved for scrolling to page content. */
+html:has(#site-header form[role="search"]:focus-within) {
+  scroll-padding-top: 0;
 }
 
 @media print {
@@ -128,7 +170,6 @@
     overflow-x: auto;
     flex-wrap: nowrap;
     padding: 2px;
-    scrollbar-width: thin;
   }
 
   .listing-chip {
@@ -178,7 +219,6 @@
 .listing-options {
   max-block-size: 13rem;
   overflow: auto;
-  scrollbar-width: thin;
   margin-inline: -.2rem;
   padding: .125rem .2rem;
 }
@@ -287,7 +327,7 @@
     height: 26px;
     padding: 0;
     border: 0;
-    border-radius: 5px;
+    border-radius: var(--radius-detail);
     background-color: var(--color-brand);
     color: #fff;
     cursor: pointer;
@@ -345,7 +385,7 @@
   position: absolute;
   inset: 0;
   aspect-ratio: auto;
-  border-radius: 12px;
+  border-radius: var(--radius-card);
   outline-offset: -3px;
 }
 [data-promo-track] .promo-fallback {
@@ -437,7 +477,7 @@
     scroll-snap-stop: always;
   }
   [data-promo-clone] { display: block; }
-  [data-promo-track] .enka-hero { border-radius: 8px; }
+  [data-promo-track] .enka-hero { border-radius: var(--radius-media); }
   [data-promo-track] .promo-fallback img { object-fit: cover; }
 }
 

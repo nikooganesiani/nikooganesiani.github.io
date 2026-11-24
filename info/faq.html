@@ -8,8 +8,8 @@ intro: "აირჩიეთ თემა ან გახსენით კ�
 ---
 <nav aria-label="კითხვების თემები" class="grid grid-cols-3 gap-3 max-[640px]:grid-cols-1 print:hidden!">
   {% for topic in site.data.faq %}
-  <a href="#{{ topic.id }}" class="group flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-canvas p-3.5 text-[length:13px] font-semibold leading-snug text-ink no-underline transition-colors hover:border-accent hover:text-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[640px]:min-h-12 max-[640px]:px-3 max-[640px]:py-2">
-    <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-accent">{% include icons.html name=topic.icon size=18 %}</span>
+  <a href="#{{ topic.id }}" class="group flex min-h-16 items-center gap-3 rounded-card border border-line bg-canvas p-3.5 text-[length:13px] font-semibold leading-snug text-ink no-underline transition-colors hover:border-accent hover:text-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent max-[640px]:min-h-12 max-[640px]:px-3 max-[640px]:py-2">
+    <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name=topic.icon size=18 %}</span>
     <span>{{ topic.title }}</span>
     {% include icons.html name='chevron-down' size=15 class='ml-auto text-muted group-hover:text-accent' %}
   </a>

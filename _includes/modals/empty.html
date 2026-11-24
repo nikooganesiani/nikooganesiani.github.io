@@ -1,0 +1,8 @@
+<template id="{{ include.id }}">
+  <div class="modal-empty grid justify-items-center rounded-card bg-page px-5 py-7 text-center">
+    <span class="mb-4 grid size-14 place-items-center rounded-card bg-canvas text-accent" aria-hidden="true">{% include icons.html name=include.icon size=26 %}</span>
+    <h3 class="text-base font-semibold text-ink">{{ include.title }}</h3>
+    <p class="mt-2 max-w-80 text-sm leading-relaxed text-muted">{{ include.description }}</p>
+    <a href="{{ '/category/' | relative_url }}" class="mt-5 inline-flex min-h-11 items-center gap-2 rounded-control bg-brand px-5 text-sm font-semibold text-white hover:bg-brand-dark">პროდუქტების ნახვა {% include icons.html name='arrow-right' size=16 %}</a>
+  </div>
+</template>

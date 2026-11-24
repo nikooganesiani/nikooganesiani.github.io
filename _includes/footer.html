@@ -1,44 +1,70 @@
-{% assign company = site.data.studio.company | default: site.data.info.company %}
-<footer data-site-footer class="[--footer-surface:#191d24] [--footer-text:#c1c7d0] [--footer-muted:#959eac] [--footer-rule:#343941] flex-none mt-auto [background:var(--footer-surface)] text-[var(--footer-text)] pt-12 pb-0 max-[900px]:pt-10 forced-colors:border-t forced-colors:border-solid forced-colors:border-t-[CanvasText] print:bg-white print:text-[#222] print:pt-6 print:hidden!">
-    <div class="w-full max-w-store mx-auto [padding-inline:max(24px,_env(safe-area-inset-left,_0px))_max(24px,_env(safe-area-inset-right,_0px))] min-[1280px]:[padding-inline:max(32px,_env(safe-area-inset-left,_0px))_max(32px,_env(safe-area-inset-right,_0px))] max-[640px]:[padding-inline:max(20px,_env(safe-area-inset-left,_0px))_max(20px,_env(safe-area-inset-right,_0px))]">
-        <div class="grid grid-cols-[minmax(0,_1.55fr)_minmax(0,_1fr)_minmax(0,_.85fr)] gap-14 pb-10 max-[1100px]:grid-cols-[minmax(0,_1.3fr)_minmax(0,_1fr)_minmax(0,_.9fr)] max-[1100px]:gap-8 max-[900px]:grid-cols-[repeat(2,_minmax(0,_1fr))] max-[900px]:gap-y-8 max-[900px]:gap-x-10 max-[900px]:pb-9 max-[640px]:gap-y-7 max-[640px]:gap-x-6 max-[360px]:grid-cols-[minmax(0,_1fr)]">
-            <section class="min-w-0 pr-10 border-r border-solid border-r-[var(--footer-rule)] max-[1100px]:pr-7 max-[900px]:col-span-full max-[900px]:pt-0 max-[900px]:pr-0 max-[900px]:pb-7 max-[900px]:pl-0 max-[900px]:border-r-0 max-[900px]:border-b max-[900px]:border-solid max-[900px]:border-b-[var(--footer-rule)] max-[640px]:pb-4" aria-labelledby="footer-contact-title">
-                <h2 class="mt-0 mr-0 ml-0 text-[#f5f6f8] text-[length:12px] font-semibold leading-[1.6] text-left flex items-center gap-2.5 mb-4 before:[content:''] before:w-5 before:h-0.5 before:flex-none before:bg-[#749dff] max-[900px]:mb-3 max-[640px]:mb-1 print:text-[#222] print:before:bg-[#222]" id="footer-contact-title">კონტაქტები</h2>
-                <a href="tel:{{ company.phone_link | escape }}" class="inline-flex items-center gap-3 min-h-11 mb-1 rounded-md text-[#f5f6f8] text-[length:20px] font-medium tabular-nums leading-normal no-underline hover:text-[#9bb8ff] motion-safe:transition-colors max-[640px]:text-[length:18px] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]">
-                    {% include icons.html name='phone' size=18 class='flex-none text-[#9bb8ff]' %}<span>{{ company.phone | escape }}</span>
-                </a>
-                {% if company.hours != empty and company.hours %}<p class="mb-5 pl-[30px] text-[length:12px] leading-relaxed text-[var(--footer-muted)]">{{ company.hours | escape }}</p>{% endif %}
-                <ul class="m-0 p-0 list-none flex flex-wrap gap-2" role="list">
-                    <li><a href="{{ company.whatsapp | escape }}" target="_blank" rel="noopener noreferrer" class="site-footer-link flex items-center w-fit max-w-full min-h-11 m-0 py-2.5 px-3 border border-[var(--footer-rule)] rounded-lg bg-white/[.03] text-[var(--footer-text)] font-normal leading-[1.7] text-left no-underline cursor-pointer gap-2 text-[length:12px] hover:bg-white/[.07] hover:border-[#596577] hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] max-[640px]:gap-[7px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='chat' size=24 class='w-4.5 h-4.5' %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">WhatsApp</span></a></li>
-                    <li><a href="mailto:{{ company.email | escape }}" class="site-footer-link flex items-center w-fit max-w-full min-h-11 m-0 py-2.5 px-3 border border-[var(--footer-rule)] rounded-lg bg-white/[.03] text-[var(--footer-text)] font-normal leading-[1.7] text-left no-underline cursor-pointer gap-2 text-[length:12px] hover:bg-white/[.07] hover:border-[#596577] hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] max-[640px]:gap-[7px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='mail' size=24 class='w-4.5 h-4.5' %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">ელ-ფოსტა</span></a></li>
-                    <li><a href="{{ company.facebook | escape }}" target="_blank" rel="noopener noreferrer" class="site-footer-link flex items-center w-fit max-w-full min-h-11 m-0 py-2.5 px-3 border border-[var(--footer-rule)] rounded-lg bg-white/[.03] text-[var(--footer-text)] font-normal leading-[1.7] text-left no-underline cursor-pointer gap-2 text-[length:12px] hover:bg-white/[.07] hover:border-[#596577] hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] max-[640px]:gap-[7px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='facebook' size=24 class='w-4.5 h-4.5' %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">Facebook</span></a></li>
-                </ul>
-            </section>
-            <nav class="site-footer-column min-w-0 max-[360px]:[.site-footer-column_+_&]:pt-6 max-[360px]:[.site-footer-column_+_&]:border-t max-[360px]:[.site-footer-column_+_&]:border-solid max-[360px]:[.site-footer-column_+_&]:border-t-[var(--footer-rule)]" aria-labelledby="footer-info-title">
-                <h2 class="mt-0 mr-0 mb-4.5 ml-0 text-[#f5f6f8] text-[length:12px] font-semibold leading-[1.6] text-left max-[900px]:mb-3 print:text-[#222]" id="footer-info-title">ინფორმაცია</h2>
-                <ul class="m-0 p-0 list-none" role="list">
-                    {% if site.data.blog.archive.size > 0 %}<li><a href="{{ '/blog/' | relative_url }}" data-blog-archive-link class="site-footer-link flex items-center w-fit min-h-11 py-2.5 text-[var(--footer-text)] text-[length:13px] hover:text-white">ბლოგი</a></li>{% endif %}
-                    {% for item in site.data.info.navigation %}
-                    <li><a href="{{ item.url | relative_url }}" draggable="false" class="site-footer-link flex items-center gap-2.5 w-fit max-w-full min-h-11 m-0 py-2.5 px-0 border-0 rounded-sm bg-transparent text-[var(--footer-text)] text-[length:13px] font-normal leading-[1.7] text-left no-underline cursor-pointer hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"{% if page.info_key == item.key %} aria-current="page"{% endif %}><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">{{ item.footer_title | default: item.title }}</span></a></li>
-                    {% endfor %}
-                </ul>
-            </nav>
-            <nav class="site-footer-column min-w-0 max-[360px]:[.site-footer-column_+_&]:pt-6 max-[360px]:[.site-footer-column_+_&]:border-t max-[360px]:[.site-footer-column_+_&]:border-solid max-[360px]:[.site-footer-column_+_&]:border-t-[var(--footer-rule)]" aria-labelledby="footer-account-title">
-                <h2 class="mt-0 mr-0 mb-4.5 ml-0 text-[#f5f6f8] text-[length:12px] font-semibold leading-[1.6] text-left max-[900px]:mb-3 print:text-[#222]" id="footer-account-title">კაბინეტი</h2>
-                <ul class="m-0 p-0 list-none" role="list">
-                    <li><button type="button" aria-controls="favModal" aria-haspopup="dialog" aria-expanded="false" onclick="openFavorites(event)" class="site-footer-link flex items-center gap-2.5 w-fit max-w-full min-h-11 m-0 py-2.5 px-0 border-0 rounded-sm bg-transparent text-[var(--footer-text)] text-[length:13px] font-normal leading-[1.7] text-left no-underline cursor-pointer hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='heart' size=24 class='w-4.5 h-4.5' %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">რჩეულები</span></button></li>
-                    <li><button type="button" aria-controls="ordersModal" aria-haspopup="dialog" aria-expanded="false" onclick="openOrders(event)" class="site-footer-link flex items-center gap-2.5 w-fit max-w-full min-h-11 m-0 py-2.5 px-0 border-0 rounded-sm bg-transparent text-[var(--footer-text)] text-[length:13px] font-normal leading-[1.7] text-left no-underline cursor-pointer hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='package' size=24 class='w-4.5 h-4.5' %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">ჩემი შეკვეთები</span></button></li>
-                    <li><button type="button" id="footerTrackingBtn" aria-controls="trackingModal" aria-haspopup="dialog" aria-expanded="false" class="site-footer-link flex items-center gap-2.5 w-fit max-w-full min-h-11 m-0 py-2.5 px-0 border-0 rounded-sm bg-transparent text-[var(--footer-text)] text-[length:13px] font-normal leading-[1.7] text-left no-underline cursor-pointer hover:text-white [&[aria-expanded=true]]:text-white [&[aria-current=page]]:text-white active:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] max-[640px]:text-[length:12px] forced-colors:focus-visible:[outline-color:Highlight]! print:text-[#222] focus-visible:[outline:2px_solid_#9bb8ff]! focus-visible:[outline-offset:5px]"><span class="inline-flex items-center justify-center [flex:0_0_18px] text-[var(--footer-muted)] [&_svg]:block [&_svg]:w-4.5 [&_svg]:h-4.5 [&_svg]:[stroke-width:1.6] [.site-footer-link:hover_&]:text-[#9bb8ff] [.site-footer-link[aria-expanded=true]_&]:text-[#9bb8ff] [@media(hover:_hover)]:motion-safe:[transition:color_160ms_ease] print:text-[#222]" aria-hidden="true">{% include icons.html name='truck' size=18 %}</span><span class="min-w-0 [overflow-wrap:anywhere] [text-decoration-thickness:1px] underline-offset-[5px] [.site-footer-link:hover_&]:underline [.site-footer-link[aria-current=page]_&]:underline">შეკვეთის სტატუსი</span></button></li>
-                </ul>
-            </nav>
+{%- assign company = site.data.studio.company | default: site.data.info.company -%}
+{%- assign footer_heading = 'mb-2 text-base font-semibold leading-snug text-white sm:mb-3' -%}
+{%- assign footer_link = 'inline-flex min-h-11 max-w-full items-center gap-2.5 rounded-sm py-2 text-start text-sm leading-relaxed text-slate-300 hover:text-white hover:underline underline-offset-4 aria-[current=page]:underline aria-[current=page]:text-white motion-safe:transition-colors' -%}
+{%- assign footer_chip = 'inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-control border border-slate-600 px-3 text-sm font-medium text-slate-100 hover:border-blue-300 hover:bg-white/5 motion-safe:transition-colors' -%}
+<footer data-site-footer class="mt-auto border-t border-slate-700 bg-[#111c2c] bg-[radial-gradient(ellipse_at_top_left,#1e344f_0,transparent_55%)] text-slate-300 forced-colors:border-[CanvasText] print:hidden">
+  <div class="mx-auto w-full max-w-store px-4 sm:px-6 xl:px-8">
+    <div class="grid grid-cols-2 gap-x-5 gap-y-6 py-8 sm:grid-cols-3 sm:gap-x-8 sm:py-10 lg:grid-cols-[1.6fr_1.1fr_1.1fr_.8fr] lg:gap-x-10 lg:py-12">
+      <section aria-labelledby="footer-contact-title" class="col-span-full border-b border-slate-600/70 pb-6 lg:col-span-1 lg:border-0 lg:pb-0">
+        <h2 id="footer-contact-title" class="sr-only">კონტაქტები</h2>
+        <a href="{{ '/' | relative_url }}" class="mb-3 inline-flex min-h-11 max-w-full items-center rounded-sm">
+          <img src="{{ '/img/logohead.webp' | relative_url }}" class="h-auto w-64 max-w-full grayscale brightness-[3.6]" width="1220" height="118" alt="ENKA Electronics" loading="lazy">
+        </a>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 lg:block">
+          <a href="tel:{{ company.phone_link | escape }}" class="inline-flex min-h-11 items-center rounded-sm text-2xl font-medium tracking-tight text-white tabular-nums hover:text-blue-200" dir="ltr">{{ company.phone | escape }}</a>
+          {% if company.hours and company.hours != empty %}<p class="text-sm leading-relaxed text-slate-300">{{ company.hours | escape }}</p>{% endif %}
         </div>
-        <div class="flex flex-wrap items-center justify-between gap-y-2 gap-x-6 py-6 border-t border-solid border-t-[var(--footer-rule)] text-[var(--footer-muted)] text-[length:11px] font-normal leading-[1.8] [&_p]:m-0 max-[640px]:items-start max-[640px]:flex-col max-[640px]:gap-1 max-[640px]:[padding-block:20px_24px] print:text-[#222]">
-            <div class="flex w-full items-center justify-between gap-6 mb-2">
-                {% include language-picker.html placement='footer' %}
-                {% include theme-toggle.html %}
-            </div>
-            <p class="tabular-nums [&_span]:ml-1 [&_span]:text-[var(--footer-text)] [&_span]:font-medium [&_span]:tracking-[.01em] print:[&_span]:text-[#222]">© {{ 'now' | date: '%Y' }} <span>ENKA Electronics.</span></p>
-            <p>ყველა უფლება დაცულია</p>
-        </div>
+        <ul role="list" class="mt-4 flex flex-wrap gap-2">
+          {% if company.whatsapp and company.whatsapp != empty %}<li><a class="{{ footer_chip }}" href="{{ company.whatsapp | escape }}" target="_blank" rel="noopener noreferrer">{% include icons.html name='chat' size=17 %}<span>WhatsApp</span></a></li>{% endif %}
+          {% if company.email and company.email != empty %}<li><a class="{{ footer_chip }}" href="mailto:{{ company.email | escape }}">{% include icons.html name='mail' size=17 %}<span class="sr-only sm:not-sr-only">ელ-ფოსტა</span></a></li>{% endif %}
+          {% if company.facebook and company.facebook != empty %}<li><a class="{{ footer_chip }}" href="{{ company.facebook | escape }}" target="_blank" rel="noopener noreferrer" aria-label="Facebook">{% include icons.html name='facebook' size=17 %}</a></li>{% endif %}
+        </ul>
+      </section>
+
+      <nav aria-labelledby="footer-help-title">
+        <h2 id="footer-help-title" class="{{ footer_heading }}">დახმარება</h2>
+        <ul role="list">
+          {% for item in site.data.info.navigation %}
+            {% unless item.key == 'about' or item.key == 'terms' or item.key == 'privacy' %}
+              <li><a href="{{ item.url | relative_url }}" class="{{ footer_link }}"{% if page.info_key == item.key %} aria-current="page"{% endif %}>{{ item.footer_title | default: item.title }}</a></li>
+            {% endunless %}
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-account-title" class="[.no-js_&]:hidden">
+        <h2 id="footer-account-title" class="{{ footer_heading }}">კაბინეტი</h2>
+        <ul role="list" class="[&_svg]:text-blue-200 [&_button]:cursor-pointer">
+          <li><button type="button" id="footerTrackingBtn" class="{{ footer_link }}" aria-controls="trackingModal" aria-haspopup="dialog" aria-expanded="false">{% include icons.html name='truck' size=18 %}<span>შეკვეთის სტატუსი</span></button></li>
+          <li><button type="button" class="{{ footer_link }}" aria-controls="ordersModal" aria-haspopup="dialog" aria-expanded="false" onclick="openOrders(event)">{% include icons.html name='package' size=18 %}<span>ჩემი შეკვეთები</span></button></li>
+          <li><button type="button" class="{{ footer_link }}" aria-controls="favModal" aria-haspopup="dialog" aria-expanded="false" onclick="openFavorites(event)">{% include icons.html name='heart' size=18 %}<span>რჩეულები</span></button></li>
+        </ul>
+      </nav>
+
+      <nav aria-labelledby="footer-info-title" class="col-span-full border-t border-slate-600/70 pt-5 sm:col-span-1 sm:border-0 sm:pt-0">
+        <h2 id="footer-info-title" class="{{ footer_heading }}">ინფორმაცია</h2>
+        <ul role="list" class="flex flex-wrap gap-x-5 sm:block">
+          <li><a href="{{ '/category/' | relative_url }}" class="{{ footer_link }}">კატალოგი</a></li>
+          {% assign about = site.data.info.navigation | where: 'key', 'about' | first %}
+          {% if about %}<li><a href="{{ about.url | relative_url }}" class="{{ footer_link }}"{% if page.info_key == about.key %} aria-current="page"{% endif %}>{{ about.title }}</a></li>{% endif %}
+          {% if site.data.blog.archive.size > 0 %}<li><a href="{{ '/blog/' | relative_url }}" data-blog-archive-link class="{{ footer_link }}">ბლოგი</a></li>{% endif %}
+        </ul>
+      </nav>
     </div>
+
+    <div class="flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-slate-600/70 py-4">
+      <div class="flex items-center gap-3">
+        {% include language-picker.html placement='footer' %}
+        {% include theme-toggle.html %}
+      </div>
+      <div class="flex flex-wrap items-center gap-x-5">
+        {% for item in site.data.info.navigation %}
+          {% if item.key == 'terms' or item.key == 'privacy' %}
+            <a href="{{ item.url | relative_url }}" class="{{ footer_link }}"{% if page.info_key == item.key %} aria-current="page"{% endif %}>{{ item.title }}</a>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <p class="text-[0.8125rem] leading-relaxed text-slate-300 sm:ms-auto">© {{ 'now' | date: '%Y' }} <span>ENKA Electronics</span></p>
+    </div>
+  </div>
 </footer>

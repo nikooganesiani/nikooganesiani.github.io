@@ -104,7 +104,7 @@
     });
   }
   function baseProducts(products, state) {
-    return products.filter(product => !state.query || window.matchesCatalogSearch(product, state.query));
+    return state.query ? window.searchCatalog(products, state.query) : products;
   }
   function matchesPrice(product, state) {
     return (state.min === '' && state.max === '') || (product.priceValue > 0 &&
@@ -128,16 +128,6 @@
   function inSection(product, state) {
     return matches(categories(product), state.category) && matches(subs(product), state.sub);
   }
-  function relevance(product, query) {
-    const lower = value => String(value || '').toLocaleLowerCase('ka');
-    const raw = lower(query);
-    if ([product.id, product.sku].some(value => lower(value) === raw)) return 1000;
-    const name = lower(product.name);
-    const normalized = window.normalizeQuery?.(name) || name;
-    const normalizedQuery = window.normalizeQuery?.(raw) || raw;
-    return (name === raw ? 500 : name.startsWith(raw) || normalized.startsWith(normalizedQuery) ? 100 : name.includes(raw) || normalized.includes(normalizedQuery) ? 60 : 0) +
-      raw.split(/\s+/).filter(term => name.includes(term) || normalized.includes(window.normalizeQuery?.(term) || term)).length * 20;
-  }
   function sortResults(filtered, state) {
     if (state.sort.startsWith('price-')) {
       const direction = state.sort === 'price-asc' ? 1 : -1;
@@ -147,7 +137,7 @@
     } else if (state.sort.startsWith('name-')) {
       const direction = state.sort === 'name-asc' ? 1 : -1;
       filtered.sort((a, b) => a.name.localeCompare(b.name, window.enkaI18n?.locale || 'ka') * direction);
-    } else if (state.query) filtered.sort((a, b) => relevance(b, state.query) - relevance(a, state.query));
+    }
     return filtered;
   }
   function filterResults(source, state) {
@@ -463,7 +453,7 @@
         button.type = 'button';
         button.className = [
           'listing-chip',
-          'inline-flex min-h-[2.25rem] max-w-full items-center gap-[.45rem] [padding:.3rem_.625rem] [border:1px_solid_var(--listing-tint-line)] rounded-[.5rem] text-accent-strong [background:var(--listing-tint)] text-[length:.8125rem] leading-[1.4] wrap-anywhere cursor-pointer',
+          'inline-flex min-h-[2.25rem] max-w-full items-center gap-[.45rem] [padding:.3rem_.625rem] [border:1px_solid_var(--listing-tint-line)] rounded-control text-accent-strong [background:var(--listing-tint)] text-[length:.8125rem] leading-[1.4] wrap-anywhere cursor-pointer',
           'hover:border-accent'
         ].join(' ');
         if (animate && !previousKeys.has(key)) button.classList.add('listing-control-enter');
@@ -492,7 +482,7 @@
       const box = document.createElement('div');
       box.className = [
           'listing-empty',
-          'grid col-span-full justify-items-center gap-3 [padding:clamp(1.5rem,_4vw,_3.25rem)_1rem] border border-line rounded-[.875rem] bg-canvas text-center',
+          'grid col-span-full justify-items-center gap-3 [padding:clamp(1.5rem,_4vw,_3.25rem)_1rem] border border-line rounded-card bg-canvas text-center',
           '[&_h3]:text-ink [&_h3]:text-[length:1.15rem] [&_h3]:font-[650] [&_h3]:leading-[1.4]',
           '[&_p]:max-w-[31rem] [&_p]:text-muted [&_p]:leading-[1.65]',
           '[&_.listing-button]:mt-[.25rem]'
@@ -500,7 +490,7 @@
       const badge = document.createElement('span');
       badge.className = [
           'listing-empty-icon',
-          'grid place-items-center w-[3rem] h-[3rem] rounded-[.85rem] text-accent [background:var(--listing-tint)]'
+          'grid place-items-center w-[3rem] h-[3rem] rounded-media text-accent [background:var(--listing-tint)]'
         ].join(' ');
       badge.innerHTML = icon(iconName, 24);
       const heading = document.createElement('h3');
@@ -510,7 +500,7 @@
       const button = document.createElement(typeof action === 'string' ? 'a' : 'button');
       button.className = [
           'listing-button listing-button--primary',
-          'inline-flex min-h-11 items-center justify-center gap-[.45rem] [padding:.55rem_.875rem] border border-transparent rounded-[.625rem] text-sm leading-[1.4] font-[650] no-underline cursor-pointer',
+          'inline-flex min-h-11 items-center justify-center gap-[.45rem] [padding:.55rem_.875rem] border border-transparent rounded-control text-sm leading-[1.4] font-[650] no-underline cursor-pointer',
           'disabled:opacity-55 disabled:cursor-default',
           'text-white bg-brand',
           '[&:not(:disabled):hover]:bg-brand-dark'

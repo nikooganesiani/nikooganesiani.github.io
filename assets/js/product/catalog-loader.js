@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const button = document.getElementById('submitInlineOrderBtn');
   const status = document.getElementById('inlineOrderStatus');
   const retry = document.getElementById('productCatalogRetry');
+  const titleSuffix = document.querySelector('title')?.dataset.productTitleSuffix || '— ENKA Electronics';
+  const descriptionMeta = document.querySelector('meta[name="description"]');
+  const descriptionPrefix = descriptionMeta?.dataset.productDescriptionPrefix || '';
   const snapshot = {
     id: dataset.id, sku: dataset.sku, name: dataset.name, price: dataset.price,
     oldPrice: dataset.oldPrice, stockStatus: dataset.stock, images: [dataset.image]
@@ -36,11 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     dataset.name = name;
     window.currentProduct.name = name;
     document.querySelectorAll('[data-product-name]').forEach(el => { el.textContent = name; });
-    document.title = name + ' — ENKA Electronics';
+    document.title = name + ' ' + titleSuffix;
     const titleMeta = document.querySelector('meta[property="og:title"]');
-    if (titleMeta) titleMeta.content = document.title;
-    const descriptionMeta = document.querySelector('meta[name="description"]');
-    if (descriptionMeta && !keepStatic && product.description !== undefined) descriptionMeta.content = product.description;
+    if (titleMeta) titleMeta.content = name + ' — ENKA Electronics';
+    if (descriptionMeta && !keepStatic && product.description !== undefined) {
+      descriptionMeta.content = [descriptionPrefix, String(product.description ?? '').trim()].filter(Boolean).join(' ');
+    }
     const socialDescription = document.querySelector('meta[property="og:description"]');
     if (socialDescription && !keepStatic && product.description !== undefined) socialDescription.content = product.description;
     document.querySelectorAll('#mainGalleryTrack img, #modalTrack img').forEach((image, index) => {

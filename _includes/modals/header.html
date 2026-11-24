@@ -1,0 +1,8 @@
+<header class="modal-header grid grid-cols-[auto_minmax(0,1fr)_auto] items-center shrink-0 gap-3.5 px-6 py-4.5 max-[640px]:gap-2.5 max-[640px]:px-4 max-[640px]:py-3.5 [@media(max-height:480px)]:py-1.5">
+  <span class="grid place-items-center size-11 rounded-media bg-[light-dark(#edf3ff,var(--color-night-blue))] text-accent max-[640px]:size-9.5 max-[640px]:rounded-media" aria-hidden="true">{% include icons.html name=include.icon size=21 %}</span>
+  <div class="min-w-0">
+    <h2 id="{{ include.title_id }}" class="m-0 text-[length:clamp(1.0625rem,2.5vw,1.3125rem)] leading-[1.35] font-[650] tracking-tight wrap-anywhere"{% if include.focus_title %} tabindex="-1" data-modal-initial-focus{% endif %}>{{ include.title | escape }}{% if include.count_id %} <span id="{{ include.count_id }}" class="text-sm font-medium text-muted whitespace-nowrap"></span>{% endif %}</h2>
+    {% if include.description %}<p{% if include.description_id %} id="{{ include.description_id }}"{% endif %} class="mt-1 text-[length:13px] leading-[1.55] text-muted">{{ include.description | escape }}</p>{% endif %}
+  </div>
+  {% include modals/close-button.html color_only=include.color_only %}
+</header>

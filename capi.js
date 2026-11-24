@@ -156,7 +156,7 @@ function showOrderGuardToast(message, isWarning = true) {
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'enka-guard-toast';
-      toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[999999] py-3 px-5 rounded-[10px] text-white text-[14px] font-semibold shadow-[0_10px_25px_rgb(0_0_0/0.25)] transition-opacity duration-300 ease-[ease] text-center max-w-[90vw] opacity-0 data-[warning=true]:bg-[#dc2626] data-[warning=false]:bg-[#16a34a]';
+      toast.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-[999999] py-3 px-5 rounded-control text-white text-[14px] font-semibold shadow-[0_10px_25px_rgb(0_0_0/0.25)] transition-opacity duration-300 ease-[ease] text-center max-w-[90vw] opacity-0 data-[warning=true]:bg-[#dc2626] data-[warning=false]:bg-[#16a34a]';
       toast.setAttribute('role', 'status');
       toast.setAttribute('aria-live', 'polite');
       document.body.appendChild(toast);

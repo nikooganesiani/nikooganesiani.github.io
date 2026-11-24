@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const status = panel.querySelector('[data-personalization-status]');
     for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE || {})) {
       const group = document.createElement('div');
-      group.className = 'rounded-xl bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] p-3';
+      group.className = 'rounded-media bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] p-3';
       function option(key, label, parent = group) {
         const row = document.createElement('label');
         row.className = 'flex min-h-11 items-center gap-3 text-[color:light-dark(var(--color-slate-800),var(--color-night-ink))]';

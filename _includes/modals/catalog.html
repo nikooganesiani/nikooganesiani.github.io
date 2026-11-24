@@ -1,14 +1,11 @@
 {% assign store_catalog = site.data.catalog %}
 {% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
-<div class="modal modal--catalog hidden fixed [inset:var(--modal-viewport-top,_0px)_0_auto] z-[10000] w-full h-[var(--modal-viewport-height,_100dvh)] items-center justify-center p-6 bg-[rgb(15_23_42_/_.4)] opacity-[0] [transition:opacity_180ms_ease] overscroll-contain [-webkit-tap-highlight-color:transparent] [&.active]:opacity-[1] [&.modal--gallery]:items-center [&.modal--gallery]:p-0 [&.modal--gallery]:bg-canvas max-[640px]:items-end max-[640px]:pt-[max(12px,_env(safe-area-inset-top))] max-[640px]:pr-[max(10px,_env(safe-area-inset-right))] max-[640px]:pb-[max(10px,_env(safe-area-inset-bottom))] max-[640px]:pl-[max(10px,_env(safe-area-inset-left))] [@media(max-height:_540px)]:min-[640px]:p-3 motion-reduce:[transition:none]" id="navModal" role="dialog" aria-labelledby="navModalTitle" aria-hidden="true">
-  <div class="relative isolate flex h-[min(760px,calc(var(--modal-viewport-height,100dvh)-48px))] w-full max-w-250 min-h-0 max-h-full flex-col overflow-hidden rounded-3xl border border-line bg-canvas text-ink shadow-[0_24px_80px_-20px_rgb(15_23_42_/_.3)] transform-[translateY(12px)_scale(.985)] [transition:transform_220ms_cubic-bezier(.2,_.8,_.2,_1)] [.modal.active_&]:transform-none max-[640px]:h-[calc(var(--modal-viewport-height,100dvh)-24px)] max-[640px]:rounded-2xl motion-reduce:[transition:none]">
-    <header class="relative z-10 flex flex-none items-center justify-between gap-4 border-b border-line bg-canvas px-6 py-4 max-[640px]:px-4 max-[640px]:py-3">
-      <h2 id="navModalTitle" class="m-0 text-xl font-semibold tracking-tight focus:outline-none max-[640px]:text-lg" tabindex="-1" data-modal-initial-focus>კატალოგი</h2>
-      {% include modals/close-button.html %}
-    </header>
+<div class="modal modal--catalog hidden {% include modals/classes.html part='overlay' %}" id="navModal" role="dialog" aria-labelledby="navModalTitle" aria-hidden="true">
+  <div class="modal-panel {% include modals/classes.html part='panel' %}">
+    {% include modals/header.html icon="grid" title_id="navModalTitle" title="კატალოგი" focus_title=true %}
     <div class="relative isolate grid min-h-0 flex-1 grid-cols-[92px_minmax(0,1fr)] min-[641px]:grid-cols-[210px_minmax(0,1fr)]">
       <div id="navCatalogPattern" class="pointer-events-none absolute inset-0 -z-1 bg-[url('/img/categories/patterns/smarthome.svg')] bg-[length:160px_160px] opacity-[.48] dark:opacity-[.36]" aria-hidden="true"></div>
-      <nav id="dynamicNavAccordion" class="modal-body min-h-0 overflow-y-auto overscroll-contain border-r border-line p-2 backdrop-blur-[0.75px] [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[scrollbar-width:thin] min-[641px]:p-3" aria-label="პროდუქტის კატეგორიები">
+      <nav id="dynamicNavAccordion" class="modal-body min-h-0 overflow-y-auto overscroll-contain border-r border-line p-2 bg-canvas/90 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[scrollbar-width:thin] min-[641px]:p-3" aria-label="პროდუქტის კატეგორიები">
         <div id="navCatalogCategories" class="catalog-category-list flex flex-col gap-1.5">
           {% if site.data.studio.categoryTiles %}
           {% for tile in site.data.studio.categoryTiles %}{{ tile }}{% unless forloop.last %}<span class="catalog-category-separator" aria-hidden="true"></span>{% endunless %}{% endfor %}
@@ -17,10 +14,16 @@
           {% endif %}
         </div>
       </nav>
-      <div id="navCatalogContent" class="modal-body min-h-0 min-w-0 overflow-y-auto overscroll-contain p-3 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[scrollbar-width:thin] min-[641px]:p-6" aria-live="polite">
+      <div id="navCatalogContent" class="modal-body
+        max-[421px]:[&_.grid]:grid-cols-1 min-[641px]:max-[881px]:[&_.grid]:grid-cols-2
+        max-[421px]:[&_.enka-subcategory]:flex! max-[421px]:[&_.enka-subcategory]:items-center max-[421px]:[&_.enka-subcategory]:gap-2 max-[421px]:[&_.enka-subcategory]:min-h-16 max-[421px]:[&_.enka-subcategory]:h-auto!
+        max-[421px]:[&_.enka-subcategory-title]:flex-1 max-[421px]:[&_.enka-subcategory-title]:text-[length:13px]!
+        max-[421px]:[&_.enka-subcategory-media]:static! max-[421px]:[&_.enka-subcategory-media]:flex-none max-[421px]:[&_.enka-subcategory-media]:size-11!
+        max-[421px]:[&_.enka-subcategory::before]:opacity-[.14]! max-[421px]:[&_.enka-subcategory-arrow]:static! max-[421px]:[&_.enka-subcategory-arrow]:text-2xl! min-h-0 min-w-0 overflow-y-auto overscroll-contain p-3 [@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[scrollbar-width:thin] min-[641px]:p-6" aria-live="polite">
         {% comment %}The selected panel is built on demand; keep one HTML fallback.{% endcomment %}
         {% for panel in site.data.catalog_navigation.panels limit:1 %}
         <section data-catalog-panel="{{ panel.id | escape }}" aria-label="{{ panel.title | escape }}"{% unless forloop.first %} hidden{% endunless %}>
+          <h3 class="mb-3 text-base font-semibold leading-tight text-ink wrap-anywhere min-[641px]:mb-4 min-[641px]:text-xl">{{ panel.title | escape }}</h3>
           <div class="grid grid-cols-2 gap-2 min-[641px]:grid-cols-3 min-[641px]:gap-3">{{ panel.html }}</div>
         </section>
         {% endfor %}

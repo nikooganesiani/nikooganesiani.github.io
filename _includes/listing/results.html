@@ -5,8 +5,8 @@
   {% else %}
   {% for i in (1..8) %}<div class="listing-skeleton
       [animation:listing-pulse_1.5s_ease-in-out_infinite_alternate] pb-[3rem]
-      [&_div]:block [&_div]:bg-surface [&_div]:rounded-xl
-      [&_span]:block [&_span]:bg-surface [&_span]:rounded-xl
+      [&_div]:block [&_div]:bg-surface [&_div]:rounded-media
+      [&_span]:block [&_span]:bg-surface [&_span]:rounded-media
       [&_div]:[aspect-ratio:1] [&_div]:mb-[1rem]
       [&_span]:w-[74%] [&_span]:h-[.875rem] [&_span]:mb-[.55rem]
       [&_span:last-child]:w-[42%]
@@ -16,7 +16,7 @@
 <div id="loadMoreContainer" class="listing-more
       grid justify-items-center gap-[.65rem] mt-[2rem] text-muted text-sm
       [&_.listing-button]:min-w-[12rem]
-      [&_progress]:w-[11rem] [&_progress]:h-[.3rem] [&_progress]:border-0 [&_progress]:rounded-2xl [&_progress]:overflow-hidden [&_progress]:accent-brand
+      [&_progress]:w-[11rem] [&_progress]:h-[.3rem] [&_progress]:border-0 [&_progress]:rounded-card [&_progress]:overflow-hidden [&_progress]:accent-brand
       [&_progress::-webkit-progress-bar]:bg-line
       [&_progress::-webkit-progress-value]:bg-brand
       [&_progress::-moz-progress-bar]:bg-brand" hidden>

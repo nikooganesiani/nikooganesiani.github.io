@@ -11,16 +11,16 @@
       {% assign discovery_icon = item[0] %}
       {% unless site.data.icons[discovery_icon] %}{% assign discovery_icon = 'grid' %}{% endunless %}
       <a class="listing-section-link
-      flex [flex:1_0_auto] items-center gap-[.65rem] min-h-[3.25rem] max-w-full [padding:.55rem_.8rem] border border-line rounded-xl bg-canvas text-ink text-sm leading-[1.45] no-underline
+      flex [flex:1_0_auto] items-center gap-[.65rem] min-h-[3.25rem] max-w-full [padding:.55rem_.8rem] border border-line rounded-media bg-canvas text-ink text-sm leading-[1.45] no-underline
       [&_strong]:font-semibold [&_strong]:wrap-anywhere
       hover:text-accent hover:[border-color:var(--listing-tint-line)] hover:[background:var(--listing-tint)]
       [&[aria-current=true]]:text-accent [&[aria-current=true]]:[border-color:var(--listing-tint-line)] [&[aria-current=true]]:[background:var(--listing-tint)]
       [&[aria-current=true]]:border-accent
       focus-visible:[outline-offset:-3px]
-      [&_small]:ms-auto [&_small]:[padding:.15rem_.45rem] [&_small]:rounded-[.375rem] [&_small]:bg-surface [&_small]:text-muted [&_small]:text-xs [&_small]:tabular-nums
+      [&_small]:ms-auto [&_small]:[padding:.15rem_.45rem] [&_small]:rounded-media [&_small]:bg-surface [&_small]:text-muted [&_small]:text-xs [&_small]:tabular-nums
       [&[aria-current=true]_small]:[color:inherit] [&[aria-current=true]_small]:bg-canvas" href="/category/{{ item[0] | url_encode }}/">
         <span class="listing-section-icon
-      grid [flex:0_0_2rem] h-[2rem] place-items-center rounded-[.5rem] text-accent [background:var(--listing-tint)]">{% include icons.html name=discovery_icon size=22 %}</span>
+      grid [flex:0_0_2rem] h-[2rem] place-items-center rounded-media text-accent [background:var(--listing-tint)]">{% include icons.html name=discovery_icon size=22 %}</span>
         <strong>{{ item[1].title | escape }}</strong>
       </a>
     {% endfor %}

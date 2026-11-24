@@ -4,6 +4,21 @@
 {% if page.collection == 'products' or page.layout == 'product' %}{% assign is_product_page = true %}{% include product/state.html %}{% endif %}
 {% assign seo_title = page.title | default: site.title %}
 {% assign seo_description = page.description | default: page.excerpt | default: site.description %}
+{% assign page_locale = page.storefront_locale | default: page.blog_locale | default: 'ka' %}
+{% if is_product_page %}
+    {% case page_locale %}
+        {% when 'ru' %}
+            {% assign product_title_suffix = 'с бесплатной доставкой • ENKA Electronics' %}
+            {% assign product_description_prefix = 'Бесплатная доставка по Тбилиси и всей Грузии. Оплата при получении.' %}
+        {% when 'en' %}
+            {% assign product_title_suffix = 'with free delivery • ENKA Electronics' %}
+            {% assign product_description_prefix = 'Free delivery in Tbilisi and throughout Georgia. Pay on delivery.' %}
+        {% else %}
+            {% assign product_title_suffix = 'უფასო მიწოდებით • ENKA Electronics' %}
+            {% assign product_description_prefix = 'უფასო მიწოდება თბილისში და მთელ საქართველოში. გადახდა მიღებისას.' %}
+    {% endcase %}
+    {% assign product_meta_description = seo_description | strip_html | strip | prepend: ' ' | prepend: product_description_prefix | strip %}
+{% endif %}
 {% if page.listing_category %}
     {% assign seo_category = store_catalog[page.listing_category] %}
     {% assign seo_title = seo_category.title | default: seo_title %}
@@ -45,7 +60,6 @@
     <meta property="og:description" content="{{ seo_description | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% elsif page.blog_locale %} translate="no"{% endif %}>
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     <meta property="og:image" content="{% if is_product_page %}{{ first_product_img | absolute_url | escape }}{% else %}{{ page.blog_cover | default: '/img/logohead.webp' | absolute_url | escape }}{% endif %}">
-    {% assign page_locale = page.storefront_locale | default: page.blog_locale | default: 'ka' %}
     <meta property="og:locale" content="{% case page_locale %}{% when 'ru' %}ru_RU{% when 'en' %}en_US{% else %}ka_GE{% endcase %}">
     {% if page.blog_id %}
     <meta property="article:published_time" content="{{ page.blog_date }}">
@@ -59,7 +73,7 @@
     <link rel="preload" as="image" href="{{ first_product_img | escape }}" fetchpriority="high">
     {% endif %}
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
-    <title{% if is_product_page %} data-catalog-content{% elsif page.blog_locale %} translate="no"{% endif %}>
+    <title{% if is_product_page %} data-catalog-content data-product-title-suffix="{{ product_title_suffix | escape }}"{% elsif page.blog_locale %} translate="no"{% endif %}>
         {%- assign is_file = false -%}
         {%- if page.name -%}
             {%- if page.name contains ".html" or page.name contains ".md" -%}
@@ -67,7 +81,9 @@
             {%- endif -%}
         {%- endif -%}
 
-        {%- if page.name and is_file == false -%}
+        {%- if is_product_page -%}
+            {{ product_name | default: seo_title | escape }} {{ product_title_suffix | escape }}
+        {%- elsif page.name and is_file == false -%}
             {{ page.name | escape }} – ENKA Electronics
         {%- elsif seo_title -%}
             {{ seo_title | escape }} – ENKA Electronics
@@ -75,7 +91,11 @@
             ENKA Electronics
         {%- endif -%}
     </title>
-  <meta name="description" content="{{ seo_description | strip_html | escape }}"{% if is_product_page %} data-catalog-content{% elsif page.blog_locale %} translate="no"{% endif %}>
+    {% if is_product_page %}
+    <meta name="description" content="{{ product_meta_description | escape }}" data-catalog-content data-product-description-prefix="{{ product_description_prefix | escape }}">
+    {% else %}
+    <meta name="description" content="{{ seo_description | strip_html | escape }}"{% if page.blog_locale %} translate="no"{% endif %}>
+    {% endif %}
     <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
     {% unless is_product_page %}<link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">{% endunless %}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -89,7 +109,8 @@
     window.CATALOG_STRUCTURE = {{ store_catalog | jsonify | replace: '<', '\u003c' }};
     window.ENKA_STORE = {{ site.data.studio.store | jsonify | replace: '<', '\u003c' }};
     window.ENKA_COMPANY = {{ site.data.studio.company | default: site.data.info.company | jsonify | replace: '<', '\u003c' }};
-    window.ENKA_CATALOG_LABELS = {{ site.data.storefront_products[page_locale] | jsonify | replace: '<', '\u003c' }};
+    window.ENKA_CATALOG_LABELS_BY_LOCALE = {{ site.data.storefront_products | jsonify | replace: '<', '\u003c' }};
+    window.ENKA_CATALOG_LABELS = window.ENKA_CATALOG_LABELS_BY_LOCALE?.[{{ page_locale | jsonify }}];
     {% if page_locale != 'ka' %}window.ENKA_CATALOG_EDITORIAL = {{ site.data.catalog_editorial | jsonify | replace: '<', '\u003c' }};{% endif %}
     </script>
 

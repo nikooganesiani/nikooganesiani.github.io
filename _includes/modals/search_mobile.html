@@ -1,9 +1,6 @@
-<div class="modal modal--search hidden fixed [inset:var(--modal-viewport-top,_0px)_0_auto] z-[10000] w-full h-[var(--modal-viewport-height,_100dvh)] items-start justify-center p-6 bg-[rgb(15_23_42_/_.4)] opacity-0 overscroll-contain [&.active]:opacity-100 motion-safe:transition-opacity max-[640px]:pt-[max(12px,env(safe-area-inset-top))] max-[640px]:pr-[max(10px,env(safe-area-inset-right))] max-[640px]:pb-[max(12px,env(safe-area-inset-bottom))] max-[640px]:pl-[max(10px,env(safe-area-inset-left))]" id="searchModalMobile" role="dialog" aria-labelledby="mobileSearchTitle" aria-hidden="true">
-  <div class="flex flex-col w-full max-w-140 max-h-full min-h-0 overflow-hidden border border-line rounded-3xl bg-canvas text-ink shadow-xl max-[640px]:rounded-2xl">
-    <header class="flex shrink-0 items-center justify-between gap-3 border-b border-line px-6 py-4 max-[640px]:px-4 max-[640px]:py-3">
-      <h2 class="m-0 text-lg font-[650]" id="mobileSearchTitle">ძიება</h2>
-      {% include modals/close-button.html color_only=true %}
-    </header>
+<div class="modal modal--search hidden {% include modals/classes.html part='overlay' %}" id="searchModalMobile" role="dialog" aria-labelledby="mobileSearchTitle" aria-hidden="true">
+  <div class="modal-panel {% include modals/classes.html part='panel' %}">
+    {% include modals/header.html icon="search" title_id="mobileSearchTitle" title="ძიება" color_only=true %}
     {% include search-form.html mobile=true %}
   </div>
 </div>
@@ -11,12 +8,12 @@
 <template id="searchCategories">
   <section class="min-w-0 px-3 pt-2.5 pb-3 max-[640px]:px-4">
     <h3 class="m-0 flex items-center min-h-11 px-1.5 text-sm font-[650]">დაათვალიერეთ კატეგორიები</h3>
-    <ul class="grid grid-cols-2 gap-2">
+    <ul class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-2">
       {%- assign search_catalog = site.data.studio.catalog | default: site.data.catalog -%}
       {% for item in search_catalog %}
         {%- assign search_category_icon = item[0] -%}
         {%- unless site.data.icons[search_category_icon] -%}{%- assign search_category_icon = 'grid' -%}{%- endunless -%}
-        <li><a class="group flex items-center gap-2.5 min-h-12.5 min-w-0 py-2 px-3 rounded-xl bg-surface text-ink text-[length:13px] font-[550]" href="/category/{{ item[0] | url_encode }}/">{% include icons.html name=search_category_icon size=19 class='text-accent' %}<span class="min-w-0 wrap-anywhere underline-offset-4 hover:underline group-focus-visible:underline">{{ item[1].title | escape }}</span></a></li>
+        <li><a class="group flex items-center gap-2.5 min-h-12.5 min-w-0 py-2 px-3 rounded-media bg-surface hover:text-accent text-ink text-[length:13px] font-[550]" href="/category/{{ item[0] | url_encode }}/">{% include icons.html name=search_category_icon size=19 class='text-accent' %}<span class="min-w-0 wrap-anywhere underline-offset-4 hover:underline group-focus-visible:underline">{{ item[1].title | escape }}</span></a></li>
       {% endfor %}
     </ul>
   </section>

@@ -8,7 +8,7 @@ const structure = { kitchen: { title: 'სამზარეულო', subs: [{
 function context(extra = {}) {
   const scope = vm.createContext({ URL, URLSearchParams, setTimeout, clearTimeout,
     document: { addEventListener() {} }, window: { location: { search: '', hash: '' }, CATALOG_STRUCTURE: structure }, ...extra });
-  for (const file of ['admin/public/store-engine.js', 'assets/js/global/catalog.js', 'assets/js/main/catalog-nav.js', 'assets/js/main/catalog-listing.js']) vm.runInContext(read(file), scope);
+  for (const file of ['admin/public/store-engine.js', 'assets/js/global/catalog.js', 'assets/js/global/catalog-search.js', 'assets/js/main/catalog-listing.js']) vm.runInContext(read(file), scope);
   return scope;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
@@ -75,10 +75,10 @@ test('Category filtering uses catalog prices in lari, normalizes availability an
 test('Full search agrees with suggestions on brand, SKU, ID, terms and Georgian transliteration', () => {
   const scope = context(); const api = scope.window.CatalogListing;
   const products = api.prepareProducts(catalog);
-  for (const query of ['SOKANY', 'sk-1', 'coffee-a', 'coffee sokany', 'Wkviani', 'ъ', 'missing']) {
+  for (const query of ['SOKANY', 'sk-1', 'coffee-a', 'coffee sokany', 'Wkviani', 'cof fee', 'coffe grnider', 'ъ', 'missing']) {
     const state = api.readState('?result=' + encodeURIComponent(query), 'search');
-    const result = api.selectProducts(products, state, 'search').map(p => p.id).sort();
-    assert.deepEqual(Array.from(result), Array.from(products.filter(p => scope.window.matchesCatalogSearch(p, query)), p => p.id).sort(), query);
+    const result = api.selectProducts(products, state, 'search');
+    assert.deepEqual(Array.from(result, p => p.id), Array.from(scope.window.searchCatalog(catalog, query), p => p.id), query);
   }
   const state = api.readState('?result=coffee&cat=home', 'search');
   assert.equal(api.selectProducts(products, state, 'search').length, 0);

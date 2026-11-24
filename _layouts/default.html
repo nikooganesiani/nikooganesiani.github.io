@@ -5,7 +5,7 @@
 <html lang="{{ page.storefront_locale | default: page.blog_locale | default: 'ka' }}" data-enka-locale="{{ page.storefront_locale | default: page.blog_locale | default: 'ka' }}"{% if page.blog_locale %} data-blog-locale="{{ page.blog_locale }}"{% endif %} class="{% include document-classes.html %}">
 {% include head.html %}
 <body class="{% if page.collection == 'products' or page.layout == 'product' %} bg-page text-ink {% else %} bg-page text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))] {% endif %} min-h-screen flex flex-col max-sm:pb-[calc(var(--mobile-nav-height)+var(--mobile-buy-bar-height,0px))] print:pb-0 overflow-x-clip">
-    <a href="#main-content" class="fixed left-4 -top-25 z-[20000] rounded-xl bg-canvas text-accent py-3 px-5 focus:top-3 print:hidden!">მთავარ შინაარსზე გადასვლა</a>
+    <a href="#main-content" class="fixed left-4 -top-25 z-[20000] rounded-media bg-canvas text-accent py-3 px-5 focus:top-3 print:hidden!">მთავარ შინაარსზე გადასვლა</a>
     {% include page-transition.html %}
     {% include header.html %}
 

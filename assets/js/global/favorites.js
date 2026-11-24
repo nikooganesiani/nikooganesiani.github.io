@@ -304,7 +304,7 @@
     updateFavModalCount(favs.length);
 
     if (!favs.length) {
-      list.innerHTML = '<div class="modal-empty flex flex-col items-center pt-6 pr-2 pb-4 pl-2 text-center [&_h3]:mt-0 [&_h3]:mr-0 [&_h3]:mb-2 [&_h3]:ml-0 [&_h3]:text-[color:light-dark(#374151,var(--color-night-copy))] [&_h3]:text-[length:16px] [&_h3]:leading-[1.6] [&_h3]:font-semibold [&_p]:max-w-75 [&_p]:mt-0 [&_p]:mr-0 [&_p]:mb-6 [&_p]:ml-0 [&_p]:text-[color:light-dark(#637082,var(--color-night-copy))] [&_p]:text-[length:13px] [&_p]:leading-[1.8]"><span class="flex items-center justify-center w-16 h-16 mb-5 rounded-2xl bg-[color:light-dark(#f3f5f8,var(--color-night-surface))] text-[color:light-dark(#7c8795,var(--color-night-muted))]" aria-hidden="true">' + (window.EnkaIcons?.render('heart', 28, 'auto', '') || '') + '</span><h3>რჩეულებში ჯერ არაფერია</h3><p>პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ.</p><button type="button" class="[.listing-filter-actions_&]:min-w-0 [.listing-filter-actions_&]:px-3 [.listing-filter-actions_&]:text-[length:14px] inline-flex items-center justify-center gap-2.5 w-full min-h-12.5 py-3 px-4.5 border border-solid rounded-xl text-[length:15px] font-semibold leading-[1.6] cursor-pointer text-center no-underline [transition:background-color_150ms] disabled:bg-[#416fcb] disabled:cursor-wait bg-[color:light-dark(#f1f4f8,var(--color-night-blue))] text-[color:light-dark(#334155,var(--color-night-copy))] border-[color:light-dark(#e4e9ef,var(--color-night-line))] active:bg-[color:light-dark(#e4e9ef,var(--color-night-blue))] [.modal-empty_&]:w-auto [.modal-empty_&]:min-w-45 [@media(hover:_hover)]:hover:bg-[color:light-dark(#e9edf3,var(--color-night-blue))]" data-close-modal>პროდუქტების ნახვა</button></div>';
+      list.replaceChildren(document.getElementById("favEmpty").content.cloneNode(true));
       return;
     }
 
@@ -319,12 +319,12 @@
         var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
 
         return (
-          '<div class="flex items-center gap-3 py-3 border-b border-[color:light-dark(var(--color-slate-100),var(--color-night-line))] last:border-b-0" data-fav-index="' +
+          '<div class="flex items-center gap-3 [--group-radius:var(--radius-card)] rounded-(--group-radius) bg-page p-3" data-fav-index="' +
           index +
           '">' +
           '<a href="' +
           escapeHtml(href) +
-          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-xl bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] overflow-hidden flex items-center justify-center">' +
+          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-[calc(var(--group-radius)_-_--spacing(3))] bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] overflow-hidden flex items-center justify-center">' +
           (img
             ? '<img src="' + escapeHtml(img) + '" alt="" width="64" height="64" loading="lazy" class="w-full h-full object-contain">'
             : '') +
@@ -335,8 +335,8 @@
           '<div class="text-[14px] font-semibold text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))] leading-snug line-clamp-2">' +
           name +
           '</div>' +
-          '<div class="mt-1 flex items-baseline gap-2">' +
-          '<span class="text-[15px] font-bold text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">' +
+          '<div class="mt-2 flex flex-wrap items-baseline gap-x-2">' +
+          '<span class="text-base font-semibold tabular-nums text-accent">' +
           price +
           '</span>' +
           (oldPrice
@@ -344,7 +344,7 @@
             : '') +
           '</div>' +
           '</a>' +
-          '<button type="button" class="inline-flex items-center justify-center [flex:0_0_44px] w-11 h-11 p-0 border-0 rounded-[50%] text-[color:light-dark(#5b6573,var(--color-night-copy))] bg-[color:light-dark(#f3f5f7,var(--color-night-surface))] cursor-pointer [transition:background-color_150ms,_color_150ms] active:bg-[color:light-dark(#e3e8ee,var(--color-night-blue))] [@media(hover:_hover)]:hover:text-[color:light-dark(#202a37,var(--color-night-ink))] [@media(hover:_hover)]:hover:bg-[color:light-dark(#e9edf2,var(--color-night-blue))]" data-fav-remove="' +
+          '<button type="button" class="inline-flex items-center justify-center [flex:0_0_44px] w-11 h-11 p-0 border-0 rounded-full text-[color:light-dark(#5b6573,var(--color-night-copy))] bg-[color:light-dark(#f3f5f7,var(--color-night-surface))] cursor-pointer [transition:background-color_150ms,_color_150ms] active:bg-[color:light-dark(#e3e8ee,var(--color-night-blue))] [@media(hover:_hover)]:hover:text-[color:light-dark(#202a37,var(--color-night-ink))] [@media(hover:_hover)]:hover:bg-[color:light-dark(#e9edf2,var(--color-night-blue))]" data-fav-remove="' +
           index +
           '" aria-label="წაშლა რჩეულებიდან: ' + name + '">' + (window.EnkaIcons?.render('close', 18, 'auto', '') || '') + '</button>' +
           '</div>'

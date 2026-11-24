@@ -73,7 +73,9 @@ function harness({ mobile = false, search = '', storage = new Map() } = {}) {
     fetchCatalogCached: () => new Promise((resolve, reject) => pending.push({ resolve, reject })) };
   const context = vm.createContext({ document, window, URLSearchParams, setTimeout: fn => { timers.set(++timerId, fn); return timerId; }, clearTimeout: id => timers.delete(id) });
   const fetchCatalog = window.fetchCatalogCached;
-  vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global/catalog.js'), 'utf8'), context);
+  for (const file of ['catalog.js', 'catalog-search.js']) {
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global', file), 'utf8'), context);
+  }
   window.fetchCatalogCached = fetchCatalog;
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/main/search.js'), 'utf8'), context);
   document.fire('DOMContentLoaded');
@@ -216,18 +218,88 @@ test('Search history persists across desktop and mobile, deduplicates queries an
   assert.equal(reopened.results.querySelector('a'), null);
 });
 
-test('Search matches Latin case, Georgian transliteration, brand, SKU and multiple terms consistently', () => {
-  const context = vm.createContext({ window: {}, document: { addEventListener() {} } });
-  for (const file of ['assets/js/global/catalog.js', 'assets/js/main/catalog-nav.js']) {
-    vm.runInContext(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'), context);
+function catalogSearch(settings) {
+  const context = vm.createContext({ window: { ...settings } });
+  for (const file of ['catalog.js', 'catalog-search.js']) {
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global', file), 'utf8'), context);
   }
-  const match = context.window.matchesCatalogSearch;
+  return (products, query) => Array.from(context.window.searchCatalog(products, query), product => product.id);
+}
+
+test('Search matches Latin case, Georgian transliteration, brand, SKU and multiple terms consistently', () => {
+  const search = catalogSearch();
   const item = { id: 'z55ultra', name: 'Smart Watch Ultra 49mm', brand: 'ENKA', sku: 'SW-001' };
-  for (const query of ['watch', 'WATCH', 'smart 49mm', 'enka', 'sw-001', 'z55ultra']) assert.equal(match(item, query), true, query);
-  assert.equal(match({ name: 'ჭკვიანი სახლი' }, 'Wkviani'), true);
-  assert.equal(match({ name: 'სახლის მოვლა' }, 'saxlis movla'), true);
-  assert.equal(match(item, 'watch blender'), false);
-  assert.equal(match({ ...item, stockStatus: 'out_of_stock' }, 'watch'), false);
-  assert.equal(match(item, '  '), false);
-  assert.equal(match(item, 'ъ'), false);
+  for (const query of ['watch', 'WATCH', 'smart 49mm', 'enka', 'sw-001', 'z55ultra']) assert.deepEqual(search([item], query), ['z55ultra'], query);
+  assert.deepEqual(search([{ id: 'smart-home', name: 'ჭკვიანი სახლი' }], 'Wkviani'), ['smart-home']);
+  assert.deepEqual(search([{ id: 'home-care', name: 'სახლის მოვლა' }], 'saxlis movla'), ['home-care']);
+  for (const query of ['watch blender', '  ', 'ъ', '., —', 'SW-002']) assert.deepEqual(search([item], query), [], query);
+  assert.deepEqual(search([{ ...item, stockStatus: 'out_of_stock' }], 'watch'), []);
+});
+
+test('Search uses every catalog language and recovers typos and separators without confusing similar product types', () => {
+  const names = {
+    ka: { fryer: { name: 'აეროგრილი 12ლ Sokany SK-10099' }, blender: { name: 'ხელის ბლენდერი' } },
+    ru: { fryer: { name: 'Аэрогриль 12 л Sokany SK-10099' }, blender: { name: 'Погружной блендер' } },
+    en: { fryer: { name: '12 L air fryer Sokany SK-10099' }, blender: { name: 'Hand blender' } }
+  };
+  for (const locale of Object.keys(names)) {
+    const search = catalogSearch({ enkaI18n: { locale }, ENKA_CATALOG_LABELS_BY_LOCALE: names });
+    const products = [
+      { id: 'hair-dryer', name: 'Hair dryer Sokany', brand: 'Sokany' },
+      { id: 'blender', name: names[locale].blender.name },
+      { id: 'fryer', name: names[locale].fryer.name, brand: 'Sokany', sku: 'SK-10099' }
+    ];
+    for (const query of ['აეროგრილი', 'აეროგრილ', 'АЭРОГРИЛЬ', 'аэро гриль', 'аерогрль', 'aerogrili', 'airfryer', '  ＡＩＲ , — fryer! ',
+      'air fryre', 'airfryr', 'air fryer 12л', 'SK 10-099', 'სოკანი air fryer', 'сокани air fryer']) {
+      assert.deepEqual(search(products, query), ['fryer'], locale + ' ' + query);
+    }
+    for (const query of ['handblnder', 'погружной блендр', 'ხელის ბლენდეირ']) {
+      assert.deepEqual(search(products, query), ['blender'], locale + ' ' + query);
+    }
+    for (const query of ['air fryer 13l', 'SK-10098', 'air fryer blender', 'xzqzw']) {
+      assert.deepEqual(search(products, query), [], locale + ' ' + query);
+    }
+  }
+});
+
+test('Translated taxonomy and live titles apply to products without build-time names', () => {
+  const search = catalogSearch({ ENKA_STORE: { categories: [{ id: 'kitchen', title: { ka: 'სამზარეულო', ru: 'Кухня', en: 'Kitchen' },
+    subs: [{ id: 'coffee', title: { ka: 'ყავის აპარატი', ru: 'Кофемашина', en: 'Coffee machine' } }] }] } });
+  const products = [{ id: 'tf-1622', name: 'Tiffany TF-1622', brand: 'Tiffany', categories: ['kitchen'], subcategories: ['coffee'] }];
+  for (const query of ['кофе машина tiffnay', 'coffeemachne', 'ყავის აპარატი', 'кухня']) assert.deepEqual(search(products, query), ['tf-1622'], query);
+  assert.deepEqual(search([{ ...products[0], name: 'Tiffany Espresso' }], 'espresso'), ['tf-1622']);
+});
+
+test('Spelling recovery handles sound-alike letters, short words and multiple errors across the catalog', () => {
+  const names = {
+    ka: { fryer: { name: 'აეროგრილი' }, toaster: { name: 'ტოსტერი' }, iron: { name: 'უთო' }, straightener: { name: 'თმის უთო' },
+      kettle: { name: 'ელექტრო ჩაიდანი' } },
+    ru: { fryer: { name: 'Аэрогриль' }, iron: { name: 'Утюг' }, blender: { name: 'Погружной блендер' }, hairdryer: { name: 'Фен' },
+      juicer: { name: 'Соковыжималка' }, grinder: { name: 'Мясорубка' } }
+  };
+  const search = catalogSearch({ ENKA_CATALOG_LABELS_BY_LOCALE: names });
+  const products = [
+    { id: 'straightener', name: 'Hair straightener' }, { id: 'hairdryer', name: 'Hair dryer' },
+    { id: 'fryer', name: 'Air fryer 12 L', sku: 'AF-10099' }, { id: 'toaster', name: 'Toaster' },
+    { id: 'iron', name: 'Clothes iron' }, { id: 'kettle', name: 'Electric kettle' },
+    { id: 'blender', name: 'Hand blender', brand: 'Sokany' }, { id: 'juicer', name: 'Juicer' },
+    { id: 'grinder', name: 'Meat grinder' }, { id: 'dehydrator', name: 'Fruit dehydrator' }
+  ];
+  for (const [query, expected] of [
+    ['аирагрил', 'fryer'], ['თოსთერი', 'toaster'], ['უტო', 'iron'],
+    ['ელექთრო ჩაითანი', 'kettle'], ['сокавыжымалка', 'juicer'], ['фне', 'hairdryer'],
+    ['месарупка', 'grinder'], ['dehideratir', 'dehydrator'],
+    ['пгружной блэндр', 'blender'], ['soknay blneder', 'blender'], ['blned', 'blender'],
+    ['фшк акнук', 'fryer'], ['аir frуеr', 'fryer']
+  ]) assert.equal(search(products, query)[0], expected, query);
+  assert.deepEqual(search(products, 'air fryer'), ['fryer']);
+  assert.deepEqual(search(products, 'hairdryer'), ['hairdryer']);
+  for (const query of ['фне чайდანი', 'air frayar 13 L', 'AF-10098', 'xzqwvy', 'жщъуф']) assert.deepEqual(search(products, query), [], query);
+});
+
+test('One product with a literal prefix does not hide a better short-word correction', () => {
+  const search = catalogSearch();
+  const products = [{ id: 'iron', name: 'უთო' }, { id: 'headphones', name: 'უტოლა ყურსასმენები' }];
+  assert.ok(search(products, 'უტო').includes('iron'));
+  assert.deepEqual(search(products, 'უთო'), ['iron']);
 });

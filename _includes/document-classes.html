@@ -16,36 +16,6 @@ motion-reduce:[&_*::after]:[animation-delay:0ms]! motion-reduce:[&_*::after]:[tr
 [&.modal-open]:overscroll-none [&.modal-open_body]:overflow-hidden [&.modal-open_body]:overscroll-none
 [&_button]:touch-manipulation [&_a]:touch-manipulation [&_input]:touch-manipulation
 [&_button:disabled]:cursor-default [&_[hidden]]:hidden!
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar]:w-4
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar]:h-4
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-track]:bg-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:bg-scrollbar
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:rounded-full
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:border-[4px]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:border-solid
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:border-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:[background-clip:padding-box]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb]:min-h-10
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb:hover]:bg-scrollbar-hover
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb:active]:bg-scrollbar-active
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-corner]:bg-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[&]:[scrollbar-color:var(--color-scrollbar)_transparent]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&::-webkit-scrollbar-thumb:hover]:border-[2px]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar]:w-4
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar]:h-4
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-track]:bg-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:bg-scrollbar
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:rounded-full
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-[4px]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-solid
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:border-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:[background-clip:padding-box]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb]:min-h-10
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:hover]:bg-scrollbar-hover
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:active]:bg-scrollbar-active
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-corner]:bg-transparent
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[@supports(-moz-appearance:none)]:[&_*]:[scrollbar-color:var(--color-scrollbar)_transparent]
-[@media(hover:_hover)_and_(pointer:_fine)_and_(forced-colors:_none)]:[&_*::-webkit-scrollbar-thumb:hover]:border-[2px]
 overflow-y-scroll [scrollbar-gutter:stable] scroll-smooth [&.modal-open]:overflow-hidden!
 [&::view-transition-old(root)]:[animation-duration:0.4s] [&_*::view-transition-old(root)]:[animation-duration:0.4s] [&::view-transition-new(root)]:[animation-duration:0.4s] [&_*::view-transition-new(root)]:[animation-duration:0.4s]
 font-sans [-webkit-tap-highlight-color:transparent] [text-rendering:optimizeLegibility] [&_*]:font-sans

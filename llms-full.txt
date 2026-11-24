@@ -16,8 +16,8 @@ permalink: /llms-full.txt
 {% for product in site.products %}
 ### {{ product.title }}
 - **SKU / არტიკული**: {{ product.sku }}
-- **კატეგორია**: {{ product.category }} {% if product.subcategory %}/ {{ product.subcategory }}{% endif %}
-- **ფასი**: {{ product.price }} GEL {% if product.old_price %}(ძველი ფასი: {{ product.old_price }} GEL){% endif %}
+- **კატეგორია**: {{ product.categories | join: ', ' }}{% if product.subcategories.size > 0 %} / {{ product.subcategories | join: ', ' }}{% endif %}
+- **ფასი**: {{ product.price }} GEL{% if product.oldPrice and product.oldPrice != empty %} (ძველი ფასი: {{ product.oldPrice }} GEL){% endif %}
 - **ბმული**: https://enkaelectronics.com.ge{{ product.url }}
 - **აღწერა**: {{ product.description | strip_html | strip_newlines | truncate: 250 }}
 

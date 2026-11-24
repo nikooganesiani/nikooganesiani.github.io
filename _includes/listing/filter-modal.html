@@ -1,21 +1,7 @@
-<div id="mobileFilterModal" class="modal listing-modal hidden
-      fixed [inset:var(--modal-viewport-top,_0px)_0_auto] z-[10000] [height:var(--modal-viewport-height,_100dvh)] items-end justify-center [padding:max(.75rem,_env(safe-area-inset-top))_.6rem_max(.6rem,_env(safe-area-inset-bottom))] [background:rgb(15_23_42_/_.45)] opacity-0 overscroll-contain [transition:opacity_180ms_ease]
-      [&.active]:opacity-100
-      [&.active_.listing-modal-panel]:[translate:0]
-      motion-reduce:[transition:none]" role="dialog" aria-labelledby="mobileFilterTitle" aria-hidden="true">
-  <div class="listing-modal-panel
-      flex flex-col [width:min(100%,_32rem)] max-h-full border border-line rounded-2xl bg-canvas text-ink overflow-hidden [box-shadow:0_20px_64px_rgb(15_23_42_/_.24)] [translate:0_.875rem] [transition:translate_180ms_ease]
-      motion-reduce:[transition:none]">
-    <header class="listing-modal-header
-      flex flex-none items-center justify-between gap-3 [padding:.75rem_1rem]
-      border-b border-line
-      [&_h2]:m-0 [&_h2]:text-[length:1.125rem] [&_h2]:font-bold">
-      <h2 id="mobileFilterTitle" tabindex="-1" data-modal-initial-focus>ფილტრები</h2>
-      {% include modals/close-button.html %}
-    </header>
-    <div id="listingMobileFacets" class="modal-body listing-modal-body
-      min-h-0 overflow-y-auto overscroll-y-contain [padding:0_1rem]
-      [&_.listing-option]:min-h-11"></div>
+<div id="mobileFilterModal" class="modal listing-modal hidden {% include modals/classes.html part='overlay' %}" role="dialog" aria-labelledby="mobileFilterTitle" aria-hidden="true">
+  <div class="modal-panel {% include modals/classes.html part='panel' %} listing-modal-panel">
+    {% include modals/header.html icon="sliders-horizontal" title_id="mobileFilterTitle" title="ფილტრები" focus_title=true %}
+    <div id="listingMobileFacets" class="modal-body listing-modal-body min-h-0 overflow-y-auto overscroll-y-contain bg-page p-3 [&_.listing-facet]:mb-2 [&_.listing-facet]:rounded-media [&_.listing-facet]:bg-canvas [&_.listing-facet]:px-3 [&_summary]:min-h-11 [&_.listing-option]:min-h-11"></div>
     <footer class="listing-modal-footer
       flex flex-none items-center justify-between gap-3 [padding:.75rem_1rem]
       border-t border-line

@@ -1,4 +1,4 @@
-{%- assign search_frame = 'flex items-center w-full min-w-0 min-h-12 m-0 p-0 gap-0 rounded-xl border-2 border-brand bg-brand text-muted focus-within:border-brand-dark focus-within:shadow-[0_0_0_3px_rgb(21_93_252_/_10%)] [&_input]:flex-1 [&_input]:w-0 [&_input]:min-w-0 [&_input]:h-10 [&_input]:p-0 [&_input]:border-0 [&_input]:bg-transparent [&_input]:text-ink [&_input]:text-[length:14px] [&_input]:leading-normal [&_input::placeholder]:text-muted forced-colors:border-[CanvasText]' -%}
+{%- assign search_frame = 'flex items-center w-full min-w-0 min-h-12 m-0 p-0 gap-0 rounded-control border-2 border-brand bg-brand text-muted focus-within:border-brand-dark focus-within:shadow-[0_0_0_3px_rgb(21_93_252_/_10%)] [&_input]:flex-1 [&_input]:w-0 [&_input]:min-w-0 [&_input]:h-10 [&_input]:p-0 [&_input]:border-0 [&_input]:bg-transparent [&_input]:text-ink [&_input]:text-[length:14px] [&_input]:leading-normal [&_input::placeholder]:text-muted forced-colors:border-[CanvasText]' -%}
 {%- if include.mobile -%}
   {%- assign search_input = 'mobileSearchInput' -%}
   {%- assign search_prefix = 'mobileSearch' -%}
@@ -11,7 +11,7 @@
   {%- assign search_prefix = 'desktopSearch' -%}
   {%- assign search_placeholder = 'პროდუქტი, ბრენდი ან მოდელი' -%}
   {%- assign search_form = search_frame | prepend: 'relative min-[1024px]:max-w-180 max-[1024px]:[grid-column:2_/_4] max-[1024px]:[grid-row:2] max-[640px]:hidden ' -%}
-  {%- assign search_panel = 'header-search-results absolute top-[calc(100%_+_8px)] inset-x-0 z-[1] max-h-[min(480px,_calc(100dvh_-_var(--site-header-height)_-_28px))] @container rounded-2xl border border-[color:light-dark(#e4e8ee,var(--color-night-line))] shadow-[0_12px_32px_rgb(28_38_56_/_10%)]' -%}
+  {%- assign search_panel = 'header-search-results absolute top-[calc(100%_+_8px)] inset-x-0 z-[1] max-h-[min(480px,_calc(100dvh_-_var(--site-header-height)_-_28px))] @container rounded-card border border-[color:light-dark(#e4e8ee,var(--color-night-line))] shadow-[0_12px_32px_rgb(28_38_56_/_10%)]' -%}
   {%- assign search_submit = '' -%}
 {%- endif -%}
 <form class="{{ search_form }}"{% unless include.mobile %} data-field-frame{% endunless %} role="search" aria-label="პროდუქტის ძიება" action="{{ '/search/' | relative_url }}" method="get">
@@ -19,12 +19,12 @@
   <div class="shrink-0 px-6 py-4 max-[640px]:px-4">
     <div class="{{ search_frame }}" data-field-frame>
   {% endif %}
-      <div class="flex flex-1 items-center min-w-0 self-stretch pl-3.5 rounded-[calc(var(--radius-xl)_-_2px)] bg-canvas">
-        <input type="search" name="result" id="{{ search_input }}" aria-label="პროდუქტის ძიება" placeholder="{{ search_placeholder }}" autocomplete="off" enterkeyhint="search" maxlength="200"{% if include.mobile %} data-modal-initial-focus{% endif %}>
-        <button type="button" id="{{ search_prefix }}Clear" class="hidden [&.show]:inline-flex items-center justify-center shrink-0 w-11 h-11 rounded-lg bg-transparent text-muted cursor-pointer hover:text-ink" aria-label="ძიების გასუფთავება">{% include icons.html name='close' size=17 trigger='click' %}</button>
+      <div class="flex flex-1 items-center min-w-0 self-stretch pl-3.5 rounded-[calc(var(--radius-control)_-_2px)] bg-canvas">
+        <input type="search" name="result" id="{{ search_input }}" aria-label="პროდუქტის ძიება" placeholder="{{ search_placeholder }}" autocomplete="off" enterkeyhint="search" maxlength="200"{% if include.mobile %} data-modal-initial-focus class="text-base!"{% endif %}>
+        <button type="button" id="{{ search_prefix }}Clear" class="hidden [&.show]:inline-flex items-center justify-center shrink-0 w-11 h-11 rounded-control bg-transparent text-muted cursor-pointer hover:text-ink" aria-label="ძიების გასუფთავება">{% include icons.html name='close' size=17 trigger='click' %}</button>
         {% include photo-search-trigger.html %}
       </div>
-      <button type="submit" id="{{ search_prefix }}Btn" class="inline-flex items-center justify-center shrink-0 w-20 h-11 rounded-r-[calc(var(--radius-xl)_-_2px)] bg-brand text-white cursor-pointer hover:bg-brand-dark motion-safe:transition-colors {{ search_submit }}" aria-label="ძიება">{% include icons.html name='search' size=19 %}</button>
+      <button type="submit" id="{{ search_prefix }}Btn" class="inline-flex items-center justify-center shrink-0 w-20 h-11 rounded-r-[calc(var(--radius-control)_-_2px)] bg-brand text-white cursor-pointer hover:bg-brand-dark motion-safe:transition-colors {{ search_submit }}" aria-label="ძიება">{% include icons.html name='search' size=19 %}</button>
   {% if include.mobile %}
     </div>
   </div>

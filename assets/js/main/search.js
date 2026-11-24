@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyKey = 'enka_search_history_v1';
   const historyLimit = 6;
   const fallbackImage = '/img/no-image.svg';
-  const interactiveRow = 'group flex items-center gap-2.5 min-w-0 rounded-xl text-ink';
+  const interactiveRow = 'group flex items-center gap-2.5 min-w-0 rounded-control text-ink hover:bg-surface focus-visible:bg-surface';
   const hoverUnderline = 'underline-offset-4 hover:underline';
   const cleanQuery = value => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ').slice(0, 200) : '';
   const queryKey = query => query.normalize('NFC').toLocaleLowerCase('ka');
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function thumbnail(source) {
-    const image = node('img', 'shrink-0 size-13 p-[3px] rounded-[.625rem] border border-line bg-white object-contain [.site-search-entry_&]:size-9.5');
+    const image = node('img', 'shrink-0 size-13 p-[3px] rounded-control bg-white object-contain [.site-search-entry_&]:size-9.5');
     image.src = window.safeProductImage?.(source) || fallbackImage;
     image.alt = '';
     image.width = 52;
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function display(content, footer) {
-      const scroll = node('div', 'site-search-scroll flex-auto min-h-0 overflow-auto overscroll-contain [scrollbar-width:thin] scroll-py-2');
+      const scroll = node('div', 'site-search-scroll flex-auto min-h-0 overflow-auto overscroll-contain scroll-py-2');
       if (mobile) scroll.className += ' modal-body';
       scroll.append(content);
       results.replaceChildren(scroll);
@@ -176,13 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function historySection(kind, items) {
       const queries = kind === 'queries';
       const { group, heading } = section(queries ? 'ბოლო ძიებები' : 'ძიებული პროდუქტები');
-      const clearGroup = node('button', 'min-h-11 px-2 rounded-lg text-accent text-xs font-semibold cursor-pointer ' + hoverUnderline, 'გასუფთავება');
+      const clearGroup = node('button', 'min-h-11 px-2 rounded-control text-accent text-xs font-semibold cursor-pointer ' + hoverUnderline, 'გასუფთავება');
       clearGroup.type = 'button';
       clearGroup.setAttribute('aria-label', queries ? 'ბოლო ძიებების გასუფთავება' : 'პროდუქტების ისტორიის გასუფთავება');
       clearGroup.addEventListener('click', () => {
         updateHistory(kind, () => []);
         renderHistory();
-        input.focus();
+        input.focus({ preventScroll: true });
       });
       heading.append(clearGroup);
       const list = node('ul');
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.append(queries ? icon('clock') : thumbnail(item.image), label);
         trackLink(link, () => { if (queries) rememberQuery(item); else rememberProduct(item); });
 
-        const remove = node('button', 'site-search-remove grid place-items-center min-h-11 rounded-[.625rem] text-muted cursor-pointer hover:text-ink');
+        const remove = node('button', 'site-search-remove grid place-items-center min-h-11 rounded-control text-muted cursor-pointer hover:text-ink');
         remove.type = 'button';
         remove.setAttribute('aria-label', queries ? 'ძიების წაშლა ისტორიიდან' : 'პროდუქტის წაშლა ისტორიიდან');
         label.id = inputId + kind + index;
@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
           updateHistory(kind, stored => stored.filter(entry => queries ? queryKey(entry) !== queryKey(item) : entry.id !== item.id));
           const group = renderHistory()[kind];
           const buttons = group?.querySelectorAll('.site-search-remove');
-          (buttons?.[Math.min(index, buttons.length - 1)] || input).focus();
+          (buttons?.[Math.min(index, buttons.length - 1)] || input).focus({ preventScroll: true });
         });
         row.append(link, remove);
         list.append(row);
@@ -237,14 +237,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function message(text, { loading = false, retry = false } = {}) {
       const box = node('div', 'grid justify-items-center gap-2.5 px-4 py-6 text-muted text-sm text-center');
-      const symbol = node('span', 'grid place-items-center size-11 rounded-[.875rem] bg-surface text-accent');
+      const symbol = node('span', 'grid place-items-center size-11 rounded-media bg-surface text-accent');
       symbol.append(icon(loading ? 'loader' : 'search', 20));
       box.append(symbol, node('p', '', text));
       if (retry) {
-        const button = node('button', 'min-h-11 px-3 rounded-[.625rem] text-accent-strong font-semibold cursor-pointer ' + hoverUnderline, 'ხელახლა ცდა');
+        const button = node('button', 'min-h-11 px-3 rounded-control text-accent-strong font-semibold cursor-pointer ' + hoverUnderline, 'ხელახლა ცდა');
         button.type = 'button';
         button.addEventListener('click', () => {
-          input.focus();
+          input.focus({ preventScroll: true });
           message('ძიება…', { loading: true });
           render();
         });
@@ -257,14 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function render() {
       clearTimeout(timer);
       const query = cleanQuery(input.value);
-      if (!query || !form.contains(document.activeElement)) return;
+      if (!query || results.hidden) return;
       const request = ++revision;
-      const isCurrent = () => request === revision && cleanQuery(input.value) === query && form.contains(document.activeElement);
+      const isCurrent = () => request === revision && cleanQuery(input.value) === query;
       results.setAttribute('aria-busy', 'true');
       try {
         const { products } = await window.fetchCatalogCached();
         if (!isCurrent()) return;
-        const found = products.filter(product => window.matchesCatalogSearch(product, query));
+        const found = window.searchCatalog(products, query);
         results.removeAttribute('aria-busy');
         lastQuery = query;
         if (!found.length) {
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function searchPage() {
       const query = cleanQuery(input.value);
-      if (!query) { input.focus(); return; }
+      if (!query) { input.focus({ preventScroll: true }); return; }
       rememberQuery(query);
       dismiss();
       const url = searchUrl(query);
@@ -337,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (event.key === 'Escape') {
         event.preventDefault();
         event.stopPropagation();
-        input.focus();
+        input.focus({ preventScroll: true });
         dismiss();
         return;
       }
@@ -347,17 +347,21 @@ document.addEventListener('DOMContentLoaded', () => {
       if (current < 0) return;
       event.preventDefault();
       const index = current + (event.key === 'ArrowDown' ? 1 : -1);
-      if (index < 0) input.focus();
+      if (index < 0) input.focus({ preventScroll: true });
       else links[Math.min(index, links.length - 1)]?.focus();
     });
     clear?.addEventListener('click', () => {
       input.value = '';
-      input.focus();
+      input.focus({ preventScroll: true });
       schedule();
     });
     form.addEventListener('submit', event => { event.preventDefault(); if (!composing) searchPage(); });
-    if (!mobile) document.addEventListener('click', event => { if (!form.contains(event.target)) dismiss(); });
-    form.addEventListener('focusout', event => { if (!form.contains(event.relatedTarget)) dismiss(); });
+    if (!mobile) {
+      document.addEventListener('click', event => { if (!event.composedPath().includes(form)) dismiss(); });
+      form.addEventListener('focusout', event => {
+        if (event.relatedTarget && !form.contains(event.relatedTarget)) dismiss();
+      });
+    }
     if (mobile) form.addEventListener('focusin', event => { if (!form.contains(event.relatedTarget)) reopen(); });
     input.closest('.modal')?.addEventListener('modal:close', dismiss);
     window.addEventListener('resize', () => {

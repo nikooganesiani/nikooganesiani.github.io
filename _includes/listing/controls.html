@@ -21,10 +21,10 @@
       {% include listing/button-secondary-classes.html %}
       min-[1024px]:hidden max-[700px]:flex-1 max-[360px]:px-2" aria-haspopup="dialog" aria-controls="mobileFilterModal" aria-expanded="false">
       {% include icons.html name='sliders-horizontal' size=18 %}<span>ფილტრები</span><span id="mobileFilterDot" class="listing-filter-count
-      min-w-[1.2rem] [padding:.1rem_.3rem] rounded-[.375rem] text-white bg-brand text-xs tabular-nums" hidden></span>
+      min-w-[1.2rem] [padding:.1rem_.3rem] rounded-media text-white bg-brand text-xs tabular-nums" hidden></span>
     </button>
     <details id="sortMenu" class="group relative min-w-0 max-[700px]:flex-1">
-      <summary id="sortSelect" class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-lg border border-line bg-canvas px-3 text-sm font-medium hover:border-accent group-open:border-accent group-open:[&>svg]:rotate-180 [&::-webkit-details-marker]:hidden">
+      <summary id="sortSelect" class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-control border border-line bg-canvas px-3 text-sm font-medium hover:border-accent group-open:border-accent group-open:[&>svg]:rotate-180 [&::-webkit-details-marker]:hidden">
         <span class="sr-only">პროდუქტების დალაგება</span>
         <span class="flex min-w-0 items-center gap-1 min-[701px]:hidden" aria-hidden="true">
           <span id="listingSortCompact" class="truncate">დალაგება</span>
@@ -33,12 +33,12 @@
         <span id="listingSortFull" class="sr-only min-[701px]:not-sr-only">დალაგება</span>
         {% include icons.html name='chevron-down' size=16 %}
       </summary>
-      <fieldset class="absolute right-0 top-full z-40 mt-1.5 w-max min-w-full max-w-[85vw] rounded-xl border border-line bg-canvas p-1.5 shadow-lg">
+      <fieldset class="absolute right-0 top-full z-40 mt-1.5 w-max min-w-full max-w-[85vw] rounded-[calc(var(--radius-control)_+_--spacing(1.5))] bg-canvas p-1.5 shadow-lg">
         <legend class="sr-only">პროდუქტების დალაგება</legend>
         {% assign sort_keys = 'default,price-asc,price-desc,discount-desc,name-asc,name-desc' | split: ',' %}
         {% assign sort_names = 'რეკომენდებული|ფასი: ზრდადობით|ფასი: კლებადობით|უდიდესი ფასდაკლება|დასახელება: ა-ჰ|დასახელება: ჰ-ა' | split: '|' %}
         {% for key in sort_keys %}
-          <label class="relative flex min-h-10 cursor-pointer items-center justify-between gap-5 rounded-md px-3 text-sm text-ink hover:bg-surface has-checked:bg-[var(--listing-tint)] has-checked:text-accent has-checked:font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent">
+          <label class="relative flex min-h-10 cursor-pointer items-center justify-between gap-5 rounded-control px-3 text-sm text-ink hover:bg-surface has-checked:bg-[var(--listing-tint)] has-checked:text-accent has-checked:font-semibold has-focus-visible:outline-2 has-focus-visible:outline-accent">
             <input type="radio" name="listing-sort" value="{{ key }}" class="peer absolute inset-0 h-full w-full cursor-pointer opacity-0">
             <span>{% if forloop.first and page.listing_mode == 'search' %}შესაბამისობით{% else %}{{ sort_names[forloop.index0] }}{% endif %}</span>
             {% include icons.html name='check' size=16 class='invisible peer-checked:visible' %}

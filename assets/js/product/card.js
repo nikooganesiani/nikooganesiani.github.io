@@ -81,28 +81,26 @@
         <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[color:light-dark(#2c3644,var(--color-night-ink))] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_72px)_/_4)] min-[1280px]:[.product-carousel_>_&]:basis-[calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start min-[1440px]:[.product-carousel_>_&]:basis-[calc((100%_-_120px)_/_6)] max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)]" data-product-id="${safeId}">
 
             <!-- Блок изображения -->
-            <div class="product-card-media dark:bg-white relative w-full aspect-square bg-transparent rounded-xl overflow-hidden">
+            <div class="product-card-media dark:bg-white relative w-full aspect-square bg-transparent rounded-media overflow-hidden">
                 ${discountBadge}
 
-                <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-[50%] bg-transparent text-[color:light-dark(#8893a1,var(--color-night-muted))] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active]:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+                <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-full bg-transparent text-[color:light-dark(#8893a1,var(--color-night-muted))] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active]:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
                     ${window.EnkaIcons?.render('heart', 18, 'auto', '') || ''}
                 </button>
 
-                <!-- overflow-x-hidden не перехватывает свайп пальцем/тачпадом у родительской карусели, а gap-2 исключает попадание края соседнего фото -->
+                <a href="${productUrl}" class="absolute inset-0 z-[1]" draggable="false" tabindex="-1" aria-hidden="true"></a>
                 <div class="product-images-track flex w-full h-full gap-2 overflow-x-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="track-${uniqueId}">
                     ${imgs.map((img, index) => `
                         <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full bg-transparent overflow-hidden snap-start">
-                            <a href="${productUrl}" class="block w-full h-full" draggable="false" tabindex="-1" aria-hidden="true">
-                                <img class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal"
-                                     ${index === 0 ? 'src' : 'data-card-src'}="${escapeHtml(img)}"
-                                     alt="${safeName}"
-                                     width="600"
-                                     height="600"
-                                     loading="lazy"
-                                     decoding="async"
-                                     onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
-                                     draggable="false">
-                            </a>
+                            <img class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal"
+                                 ${index === 0 ? 'src' : 'data-card-src'}="${escapeHtml(img)}"
+                                 alt=""
+                                 width="600"
+                                 height="600"
+                                 loading="lazy"
+                                 decoding="async"
+                                 onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+                                 draggable="false">
                         </div>
                     `).join('')}
                 </div>
@@ -114,7 +112,7 @@
             <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
 
                 <!-- Название до двух строк -->
-                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="${safeName}">
+                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="${safeName}" draggable="false">
                     ${safeName}
                 </a>
 
@@ -130,8 +128,8 @@
                     ` : ''}
                 </div>
 
-                <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-lg -->
-                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-lg text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}">
+                <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-control -->
+                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-control text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'ყიდვა: ' : 'არ არის მარაგში: '}${safeName}">
                     ${window.EnkaIcons?.render('bag', 17, 'auto', '') || ''}
                     <span>${available ? 'ყიდვა' : 'არ არის მარაგში'}</span>
                 </${available ? 'a' : 'button'}>

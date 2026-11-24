@@ -14,7 +14,7 @@
         {% for bound in bounds %}
         <label for="{{ bound }}" class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1 text-xs font-medium text-muted">
           <span>{% if forloop.first %}მინ. ფასი{% else %}მაქს. ფასი{% endif %}</span>
-          <span data-field-frame class="flex h-10 min-w-0 w-full items-center gap-1 rounded-lg border border-line bg-canvas px-2.5 focus-within:border-accent">
+          <span data-field-frame class="flex h-10 min-w-0 w-full items-center gap-1 rounded-control border border-line bg-canvas px-2.5 focus-within:border-accent">
             <input id="{{ bound }}" type="number" inputmode="numeric" min="0" max="1000000000" step="1" class="w-full min-w-0 flex-1 text-sm font-medium tabular-nums text-ink [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none">
             <span class="card-price-currency text-sm" aria-hidden="true">₾</span>
           </span>
@@ -29,7 +29,7 @@
     <label id="listingBrandSearch" data-field-frame class="listing-brand-search
       [&_input]:w-full [&_input]:min-w-0 [&_input]:min-h-11 [&_input]:text-ink [&_input]:text-base
       focus-within:border-accent focus-within:[box-shadow:0_0_0_2px_color-mix(in_srgb,_var(--color-accent)_20%,_transparent)]
-      flex items-center gap-[.375rem] px-[.6rem] border border-line rounded-[.625rem] text-muted bg-page
+      flex items-center gap-[.375rem] px-[.6rem] border border-line rounded-media text-muted bg-page
       mb-2" hidden>
       {% include icons.html name='search' size=16 %}
       <span class="sr-only">ბრენდის ძიება</span>

@@ -154,6 +154,22 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   productCount++;
 }
 assert.ok(productCount > 0, 'No product pages built');
+assert.ok(fs.statSync(path.join(root, '404.html')).isFile(), 'Missing hosting fallback for unknown routes');
+for (const file of fs.readdirSync(root, { recursive: true })) {
+  assert.doesNotMatch(path.basename(file), /^HANDOFF-.*\.md$/i, 'Internal document published: ' + file);
+}
+const guide = fs.readFileSync(path.join(root, 'llms.txt'), 'utf8');
+for (const [, href] of guide.matchAll(/\]\((https:\/\/enkaelectronics\.com\.ge\/[^)]+)\)/g)) {
+  const target = path.join(root, new URL(href).pathname);
+  const files = [target, target + '.html', path.join(target, 'index.html')];
+  assert.ok(files.some(file => fs.statSync(file, { throwIfNoEntry: false })?.isFile()), 'Broken llms.txt link: ' + href);
+}
+const catalogText = fs.readFileSync(path.join(root, 'llms-full.txt'), 'utf8');
+const catalogEntries = catalogText.split(/^### /m).slice(1);
+assert.equal(catalogEntries.length, productCount, 'Text catalog must include every product');
+for (const entry of catalogEntries) {
+  assert.match(entry, /^- \*\*კატეგორია\*\*:[ \t]+[^\s/]/m, 'Missing category: ' + entry.split('\n')[0]);
+}
 console.log('Verified ' + productCount + ' product pages: metadata, schema, availability, forms, unique scripts/IDs and local links.');
 for (const page of ['category', 'search']) {
   const pageHtml = readPage(path.join(root, page, 'index.html'));

@@ -1,18 +1,3 @@
-const NORMALIZE_CHAR_MAP = {
-    'a':'ა','b':'ბ','c':'ც','d':'დ','e':'ე','f':'ფ','g':'გ','h':'ჰ','i':'ი','j':'ჯ','k':'კ','l':'ლ','m':'მ','n':'ნ','o':'ო','p':'პ','q':'ქ','r':'რ','s':'ს','t':'ტ','u':'უ','v':'ვ','w':'წ','x':'ხ','y':'ყ','z':'ზ',
-    'A':'ა','B':'ჩ','C':'ჩ','D':'დ','E':'ე','F':'ფ','G':'ღ','H':'ჰ','I':'ი','J':'ჟ','K':'კ','L':'ლ','M':'მ','N':'ნ','O':'ო','P':'პ','Q':'ქ','R':'ღ','S':'შ','T':'თ','U':'უ','V':'ვ','W':'ჭ','X':'ხ','Y':'ყ','Z':'ძ',
-    'а':'ა','б':'ბ','в':'ვ','г':'გ','д':'დ','е':'ე','ё':'ე','ж':'ჟ','з':'ზ','и':'ი','й':'ი','к':'კ','л':'ლ','м':'მ','н':'ნ','о':'ო','п':'პ','р':'რ','с':'ს','т':'ტ','у':'უ','ф':'ფ','х':'ხ','ц':'ც','ч':'ჩ','ш':'შ','щ':'შ','ъ':'','ы':'ი','ь':'','э':'ე','ю':'იუ','я':'ია'
-};
-
-window.normalizeQuery = function(q) {
-    if (!q) return '';
-    let res = '';
-    for (const char of q) {
-        res += NORMALIZE_CHAR_MAP[char] ?? char;
-    }
-    return res.toLowerCase();
-};
-
 window.closeNavModal = function() {
     window.closeAppModal?.('navModal');
 };
@@ -30,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let initialized = false;
   let products;
   let savedImages = {};
-  try { savedImages = JSON.parse(document.getElementById('catalogNavigationImages')?.textContent || '{}') || {}; } catch {}
   const settings = id => window.ENKA_STORE?.categories?.find(c => c.id === id);
 
   function selectCategory(id, focus = false) {
@@ -63,7 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (img.getAttribute('src') !== '/img/categories/no-photo.svg') img.src = '/img/categories/no-photo.svg';
       img.dataset.photoKey = visuals.photoKey('/img/categories/no-photo.svg');
     }));
-    section.append(grid);
+    const heading = document.createElement('h3');
+    heading.className = 'mb-3 text-base font-semibold leading-tight text-ink wrap-anywhere min-[641px]:mb-4 min-[641px]:text-xl';
+    heading.textContent = category.title || '';
+    section.append(heading, grid);
     content.replaceChildren(section);
     content.scrollTop = 0;
     if (focus) section.focus({ preventScroll: true });
@@ -91,9 +78,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (focusedCategory) [...categories.querySelectorAll('a')].find(link => link.dataset.cat === focusedCategory)?.focus({ preventScroll: true });
   }
 
+  function loadCatalogImages() {
+    window.fetchCatalogCached?.().then(data => {
+      products = data.products;
+      // Update photographs without moving focus or resetting the visitor's scroll.
+      const source = settings(selected);
+      content.querySelectorAll('a[data-subcat] img').forEach(img => {
+        const subId = img.closest('a').dataset.subcat;
+        const sub = source?.subs.find(item => item.id === subId) || { id: subId };
+        const selection = engine.subcategoryImage(products, selected, sub);
+        const image = selection?.image || '/img/categories/no-photo.svg';
+        if (img.getAttribute('src') !== image) img.src = image;
+        img.dataset.photoKey = visuals.photoKey(image);
+        img.dataset.subcategoryProduct = selection?.productId || '';
+      });
+    }).catch(() => {});
+  }
+
   function initialize() {
     if (initialized) return;
     initialized = true;
+    try { savedImages = JSON.parse(document.getElementById('catalogNavigationImages')?.textContent || '{}') || {}; } catch {}
+    loadCatalogImages();
     renderNavigation();
   }
   modal.addEventListener('modal:open', initialize);
@@ -122,18 +128,4 @@ document.addEventListener('DOMContentLoaded', () => {
     items[next].focus();
     selectCategory(items[next].dataset.cat);
   });
-  window.fetchCatalogCached?.().then(data => {
-    products = data.products;
-    // Update photographs without moving focus or resetting the visitor's scroll.
-    const source = settings(selected);
-    content.querySelectorAll('a[data-subcat] img').forEach(img => {
-      const subId = img.closest('a').dataset.subcat;
-      const sub = source?.subs.find(item => item.id === subId) || { id: subId };
-      const selection = engine.subcategoryImage(products, selected, sub);
-      const image = selection?.image || '/img/categories/no-photo.svg';
-      if (img.getAttribute('src') !== image) img.src = image;
-      img.dataset.photoKey = visuals.photoKey(image);
-      img.dataset.subcategoryProduct = selection?.productId || '';
-    });
-  }).catch(() => {});
 });

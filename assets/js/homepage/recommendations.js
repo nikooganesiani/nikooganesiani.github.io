@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { rootMargin: '500px 0px' });
   } else {
     // Keep the whole finite catalog accessible in browsers without observation support.
-    more.className = 'min-h-11 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white';
+    more.className = 'min-h-11 rounded-media bg-brand px-6 py-3 text-sm font-semibold text-white';
   }
   more.addEventListener('click', () => append(2, true));
   function rebuild() {
