@@ -30,7 +30,7 @@
     /**
      * Генерация HTML карточки товара
      */
-    window.createProductCardHTML = function (p, prefix = 'sim') {
+    window.createProductCardHTML = function (p, prefix = 'sim', purchaseLabel = 'ყიდვა') {
         if (!p || typeof p !== 'object') return '';
 
         if (!p.id) return '';
@@ -56,6 +56,7 @@
         const oldVal = parsePrice(p.oldPrice);
         const newVal = parsePrice(p.price);
         const available = window.isProductAvailable(p);
+        const buttonLabel = available ? escapeHtml(purchaseLabel) : 'არ არის მარაგში';
         let discountBadge = '';
 
         if (oldVal > newVal && newVal > 0) {
@@ -112,7 +113,7 @@
             <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
 
                 <!-- Название до двух строк -->
-                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline hover:text-accent max-[768px]:text-[length:12px]" title="${safeName}" draggable="false">
+                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline max-[768px]:text-[length:12px]" title="${safeName}" draggable="false">
                     ${safeName}
                 </a>
 
@@ -129,9 +130,9 @@
                 </div>
 
                 <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-control -->
-                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-control text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${available ? 'შეუკვეთეთ: ' : 'არ არის მარაგში: '}${safeName}">
+                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-control text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${buttonLabel}: ${safeName}">
                     ${window.EnkaIcons?.render('bag', 17, 'auto', '') || ''}
-                    <span>${available ? 'შეუკვეთეთ' : 'არ არის მარაგში'}</span>
+                    <span>${buttonLabel}</span>
                 </${available ? 'a' : 'button'}>
             </div>
         </div>`;

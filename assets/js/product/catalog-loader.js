@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     availability.hidden = available(product);
     availability.textContent = price > 0 ? labels[stock] + '. იხილეთ მსგავსი პროდუქტები ან დაგვიკავშირდით.' : 'ფასისა და ხელმისაწვდომობის დასაზუსტებლად დაგვიკავშირდით.';
     const mobile = document.getElementById('mobileBuyLabel');
-    mobile.textContent = available(product) ? 'შეუკვეთეთ' : 'დეტალურად';
+    mobile.textContent = available(product) ? 'შეკვეთა' : 'დეტალურად';
     document.querySelectorAll('[data-product-delivery]').forEach(el => { el.hidden = !available(product); });
     document.querySelectorAll('.product-mobile-stock').forEach(el => { el.hidden = available(product); });
     const schemaElement = document.getElementById('productSchema');
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const section = document.getElementById(prefix + 'Section');
     const track = document.getElementById(prefix + 'Scroll');
     if (!section || !track) return;
-    track.innerHTML = products.map(p => window.createProductCardHTML(p, prefix)).join('');
+    track.innerHTML = products.map(p => window.createProductCardHTML(p, prefix, 'ყიდვა')).join('');
     section.hidden = products.length === 0;
     window.bindProductCarousel?.(prefix + 'Scroll', prefix + 'ArrowLeft', prefix + 'ArrowRight');
   }
@@ -167,6 +167,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!window.enkaPersonalization?.allowed()) render('recent', []);
     else load();
   });
-  const ready = load();
-  window.EnkaPageTransition?.hold(ready);
+  load();
 });

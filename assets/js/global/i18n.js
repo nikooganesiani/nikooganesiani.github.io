@@ -86,7 +86,6 @@
       return response.json();
     }).then(data => { window.ENKA_TRANSLATIONS = data; applyTranslations(); }).catch(() => {}).finally(() => clearTimeout(timer));
     window.enkaI18n.ready = ready;
-    window.EnkaPageTransition?.hold(ready);
   } else {
     translate(document.head);
     translate(document.body);

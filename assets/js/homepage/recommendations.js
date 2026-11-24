@@ -11,15 +11,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const t = value => window.enkaI18n?.t(value) || value;
   const esc = window.escapeHTML;
   const structure = window.CATALOG_STRUCTURE || {};
-  const labels = new Map();
-  function updateLabels() {
-  labels.clear();
-  for (const [id, category] of Object.entries(structure)) {
-    labels.set('category:' + id, category.title);
-    category.subs?.forEach(sub => labels.set('sub:' + sub.id, sub.name));
+  const topics = new Map();
+  function updateTopics() {
+    topics.clear();
+    for (const [id, category] of Object.entries(window.CATALOG_STRUCTURE || {})) {
+      const path = '/category/' + encodeURIComponent(id) + '/';
+      topics.set('category:' + id, { title: category.title, path });
+      category.subs?.forEach(sub => {
+        topics.set('sub:' + sub.id, { title: sub.name, path: path + encodeURIComponent(sub.id) + '/' });
+      });
+    }
   }
-  }
-  updateLabels();
+  updateTopics();
   // Only the incoming same-site navigation, without saving or exporting a browsing trail.
   const context = engine.navigationContext(document.referrer, location.origin, structure);
   let catalog = null;
@@ -64,12 +67,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const prefix = 'recommendation-' + revision + '-' + cursor++;
       const section = document.createElement('section');
       section.dataset.recommendationRow = row.key || 'discover';
-      const title = t(labels.get(row.key) || 'კიდევ მეტი თქვენთვის');
+      const topic = topics.get(row.key);
+      const title = t(topic?.title || 'კიდევ მეტი თქვენთვის');
+      const heading = topic
+        ? `<a href="${esc(window.enkaRoute?.(topic.path) || topic.path)}" class="no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline">${esc(title)}</a>`
+        : esc(title);
       section.setAttribute('aria-labelledby', prefix + '-title');
       const arrowClass = 'carousel-arrow hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] disabled:opacity-30';
       const arrow = (direction, label) => `<button type="button" id="${prefix}-${direction}" class="${arrowClass}" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled>${window.EnkaIcons.render(direction === 'left' ? 'chevron-left' : 'chevron-right', 18)}</button>`;
       section.innerHTML = `<div class="mb-5 flex items-center justify-between gap-4">
-        <h2 id="${prefix}-title" class="text-[length:22px] font-semibold leading-snug tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${esc(title)}</h2>
+        <h2 id="${prefix}-title" class="text-[length:22px] font-semibold leading-snug tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${heading}</h2>
         <div class="flex shrink-0 gap-2">
           ${arrow('left', 'წინა პროდუქტები')}
           ${arrow('right', 'შემდეგი პროდუქტები')}
@@ -114,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     append(4);
   }
   window.addEventListener('enka:personalization-change', rebuild);
-  window.addEventListener('enka:store-change', () => { updateLabels(); rebuild(); });
+  window.addEventListener('enka:store-change', () => { updateTopics(); rebuild(); });
   window.addEventListener('enka:prices-change', event => { catalog=event.detail.products; rebuild(); });
   window.addEventListener('enka:personalization-choice', rebuild);
   window.addEventListener('pageshow', event => { if (event.persisted) rebuild(); });
@@ -134,6 +141,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally { loading = false; root.removeAttribute('aria-busy'); }
   }
   retry.addEventListener('click', load);
-  const ready = load();
-  window.EnkaPageTransition?.hold(ready);
+  load();
 });

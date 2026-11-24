@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.enkaOrderPending = false;
       fields.disabled = form.dataset.available !== 'true';
       button.disabled = fields.disabled;
-      buttonText.textContent = 'შეუკვეთეთ';
+      buttonText.textContent = 'შეკვეთა';
       form.removeAttribute('aria-busy');
     }
   });

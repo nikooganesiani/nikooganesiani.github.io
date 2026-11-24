@@ -12,11 +12,10 @@ test('Production bundling preserves classic globals, ordered execution and analy
   const put = (name, code) => { const file = path.join(root, name); fs.mkdirSync(path.dirname(file), {recursive:true}); fs.writeFileSync(file, code); };
   put('assets/css/style.css', 'body{color:blue}');
   put('assets/js/global/theme.js', 'window.order = ["theme"];');
-  put('assets/js/global/page-transition.js', 'window.order.push("transition");');
   put('assets/a.js', 'const shared = 5; function inlineHandler() { return shared; } window.order.push("a");');
   put('assets/b.js', 'window.order.push("b"); window.answer = inlineHandler();');
   put('assets/c.js', 'window.order.push("c");');
-  put('index.html', '<head><script src="/assets/js/global/theme.js"></script><script src="/assets/js/global/page-transition.js"></script><link rel="stylesheet" href="/assets/css/style.css"></head><script>window.CATALOG_STRUCTURE = {}; window.ENKA_STORE = null;</script><script src="/assets/a.js" defer></script>\n<script src="/assets/b.js" defer></script><script id="analytics" data-id="test" src="/assets/analytics.js" defer></script><script>window.order.push("inline");</script><script src="/assets/c.js" defer></script>');
+  put('index.html', '<head><script src="/assets/js/global/theme.js"></script><link rel="stylesheet" href="/assets/css/style.css"></head><script>window.CATALOG_STRUCTURE = {}; window.ENKA_STORE = null;</script><script src="/assets/a.js" defer></script>\n<script src="/assets/b.js" defer></script><script id="analytics" data-id="test" src="/assets/analytics.js" defer></script><script>window.order.push("inline");</script><script src="/assets/c.js" defer></script>');
   const manifest = optimizeSite(root);
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   assert.match(html, /id="analytics" data-id="test" src="\/assets\/analytics.js" defer/);
@@ -29,7 +28,7 @@ test('Production bundling preserves classic globals, ordered execution and analy
     assert.equal(path.basename(url).split('.')[0],digest(code));
     vm.runInContext(code,context);
   }
-  assert.deepEqual([...context.window.order], ['theme','transition','a','b','c']);
+  assert.deepEqual([...context.window.order], ['theme','a','b','c']);
   assert.equal(context.window.answer,5);
   assert.equal(vm.runInContext('inlineHandler()',context),5);
   assert.equal(context.window.ENKA_STORE,null);

@@ -46,8 +46,6 @@
     })();
     </script>
     <script src="{{ '/assets/js/global/theme.js' | relative_url }}"></script>
-    <script src="{{ '/assets/js/global/page-transition.js' | relative_url }}"></script>
-    <link rel="expect" blocking="render" href="#page-transition">
     {% if page.robots %}<meta name="robots" content="{{ page.robots | escape }}">{% endif %}
     <link rel="canonical" href="{{ page.canonical_path | default: page.url | absolute_url }}">
     {% if page.blog_alternates %}

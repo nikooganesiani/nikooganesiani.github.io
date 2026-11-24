@@ -42,12 +42,12 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
         if (!manifest.data.includes(url)) manifest.data.push(url);
         return `<script src="${url}" defer></script>`;
       });
-      for (const source of ['/assets/js/global/theme.js', '/assets/js/global/page-transition.js']) {
-        const tag = `<script src="${source}"></script>`;
-        if (!html.includes(tag)) continue;
-        const code = minify(fs.readFileSync(path.join(root, source), 'utf8')).replace(/<\/script/gi, '<\\/script');
-        manifest.inline[source] = digest(code);
-        html = html.replace(tag, () => `<script data-enka-source="${source}">${code}</script>`);
+      const theme = '/assets/js/global/theme.js';
+      const themeTag = `<script src="${theme}"></script>`;
+      if (html.includes(themeTag)) {
+        const code = minify(fs.readFileSync(path.join(root, theme), 'utf8')).replace(/<\/script/gi, '<\\/script');
+        manifest.inline[theme] = digest(code);
+        html = html.replace(themeTag, () => `<script data-enka-source="${theme}">${code}</script>`);
       }
       const matches = [...html.matchAll(script)];
       const groups = []; let group = [];

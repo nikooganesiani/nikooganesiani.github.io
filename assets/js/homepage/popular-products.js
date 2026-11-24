@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const status = document.getElementById('popularStatus');
   const retry = document.getElementById('popularRetry');
   if (!section || !track) return;
+  const productId = document.getElementById('productData')?.dataset.id;
   const ids = [...new Set((section.dataset.popularIds || '').split(',').filter(Boolean))];
 
   async function load() {
@@ -13,8 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const { products } = await window.fetchCatalogCached();
       const selected = ids.map(id => products.find(p => String(p.id) === id || String(p.sku) === id))
-        .filter(p => window.isProductAvailable(p) && String(p.id) !== document.getElementById('productData')?.dataset.id);
-      track.innerHTML = selected.map(p => window.createProductCardHTML(p, 'pop')).join('');
+        .filter(p => window.isProductAvailable(p) && String(p.id) !== productId);
+      track.innerHTML = selected.map(p => window.createProductCardHTML(p, 'pop', productId ? 'ყიდვა' : undefined)).join('');
       status.textContent = selected.length ? '' : 'ამჟამად პოპულარული პროდუქტები არ არის.';
       window.syncFavButtons?.();
     } catch {

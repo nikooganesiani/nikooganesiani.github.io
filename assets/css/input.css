@@ -288,8 +288,8 @@ html:has(#site-header form[role="search"]:focus-within) {
     animation: listing-result-enter 340ms cubic-bezier(.25, .5, .35, 1);
   }
 
-  /* Start the reveal as the navigation cover or mobile filters fade out. */
-  :root:is([data-page-transition="arriving"], :has(.listing-modal.active))
+  /* Pause result animations while mobile filters cover the listing. */
+  :root:has(.listing-modal.active)
     :is(.listing-result-enter, .listing-discovery, .listing-control-enter) {
     animation-play-state: paused;
   }
@@ -550,96 +550,20 @@ html:has(#site-header form[role="search"]:focus-within) {
   margin-left: 3px;
 }
 
-/* lesimpleliott's purple-dragon-56 (MIT); assets/licenses/uiverse-page-loader.txt. */
-/* A cross-document root snapshot freezes the loader while the new document
-   initializes. The live cover already provides the navigation transition. */
-@view-transition { navigation: none; }
-/* Keep the cover's reveal independent of a transition started by browser code. */
-html[data-page-transition]::view-transition-group(root),
-html[data-page-transition]::view-transition-old(root),
-html[data-page-transition]::view-transition-new(root) { animation: none !important; mix-blend-mode: normal; }
-html[data-page-transition]::view-transition-old(root) { display: none; }
-#page-transition {
-  position: fixed;
-  inset: 0;
-  z-index: 1000000;
-  display: grid;
-  place-items: center;
-  background: #fafbfd;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  transition: opacity 220ms cubic-bezier(.4, 0, .2, 1), visibility 0s 220ms;
-  contain: strict;
+@media screen and (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  ::view-transition { background: var(--color-page); }
+  ::view-transition-group(root) { animation: none; }
+  ::view-transition-old(root) { display: none; }
+
+  ::view-transition-new(root) {
+    animation: page-enter 900ms ease-in-out both;
+    mix-blend-mode: normal;
+  }
 }
-[data-theme="dark"] #page-transition { background: #101720; }
-html:is([data-page-transition="leaving"], [data-page-transition="arriving"]) #page-transition {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transition: opacity 100ms cubic-bezier(.4, 0, .2, 1);
+
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-html[data-page-transition] #page-transition { will-change: opacity; }
-html[data-page-transition="arriving"] #page-transition { transition: none; }
-.page-loader { display: flex; gap: 15px; width: 150px; height: 100px; }
-.page-loader__group { position: relative; display: flex; justify-content: center; align-items: flex-end; width: 40px; height: 100px; }
-.page-loader__ball {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #8cb4ff;
-  transform-origin: bottom;
-  animation-duration: 1000ms;
-  animation-iteration-count: infinite;
-  animation-delay: calc(var(--page-loader-phase, 0ms) + var(--group-delay));
-}
-.page-loader__ball:nth-child(2) { background: #4a89ff; }
-.page-loader__ball:nth-child(3) { background: #155dfc; }
-html[data-page-transition] .page-loader__ball { animation-name: page-loader-bounce-1; will-change: transform; }
-html[data-page-transition] .page-loader__ball:nth-child(2) { animation-name: page-loader-bounce-2; }
-html[data-page-transition] .page-loader__ball:nth-child(3) { animation-name: page-loader-bounce-3; }
-/* Upstream keyframes/easings and dimensions retained; only colors are changed. */
-@keyframes page-loader-bounce-1 {
-  0%, 100% { transform: translateY(0) scale(1); }
-  10% { transform: translateY(0) scale(1.3, .8); }
-  11% { transform: translateY(0) scale(.7, 1.2); animation-timing-function: cubic-bezier(0, 0, .5, 1); }
-  39% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(0, 0, .5, 1); }
-  40% { transform: translateY(-75px) scale(1); }
-  41% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, 0); }
-  69% { transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, 0); }
-  70% { transform: translateY(0) scale(1.5, .4); }
-  80% { transform: translateY(0) scale(.8, 1.2); }
-  90% { transform: translateY(0) scale(1.1, .8); }
-}
-@keyframes page-loader-bounce-2 {
-  0%, 100% { transform: translateY(0) scale(1); }
-  10% { transform: translateY(0) scale(1.3, .8); }
-  11% { transform: translateY(0) scale(.7, 1.2); animation-timing-function: cubic-bezier(0, .5, .5, 1); }
-  39% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(0, .5, .5, 1); }
-  40% { transform: translateY(-75px) scale(1); }
-  41% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, .5); }
-  69% { transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, .5); }
-  70% { transform: translateY(0) scale(1.5, .4); }
-  80% { transform: translateY(0) scale(.8, 1.2); }
-  90% { transform: translateY(0) scale(1.1, .8); }
-}
-@keyframes page-loader-bounce-3 {
-  0%, 100% { transform: translateY(0) scale(1); }
-  10% { transform: translateY(0) scale(1.3, .8); }
-  11% { transform: translateY(0) scale(.7, 1.2); animation-timing-function: cubic-bezier(0, 1, .5, 1); }
-  39% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(0, 1, .5, 1); }
-  40% { transform: translateY(-75px) scale(1); }
-  41% { transform: translateY(-75px) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, 1); }
-  69% { transform: translateY(0) scale(1); animation-timing-function: cubic-bezier(1, 0, 1, 1); }
-  70% { transform: translateY(0) scale(1.5, .4); }
-  80% { transform: translateY(0) scale(.8, 1.2); }
-  90% { transform: translateY(0) scale(1.1, .8); }
-}
-@media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-  #page-transition, html[data-page-transition] #page-transition { transition: none; }
-  html[data-page-transition] .page-loader__ball:nth-child(n) { animation: none; will-change: auto; }
-  .page-loader__ball:not(:last-child) { display: none; }
-}
-@media print { #page-transition { display: none; } }

@@ -293,9 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!query) { input.focus({ preventScroll: true }); return; }
       rememberQuery(query);
       dismiss();
-      const url = searchUrl(query);
-      if (window.EnkaPageTransition) window.EnkaPageTransition.navigate(url);
-      else window.location.assign(url);
+      window.location.assign(searchUrl(query));
     }
 
     function schedule() {

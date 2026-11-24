@@ -19,7 +19,7 @@
       {% endcapture %}
       {% if recommendation_count > 0 %}
       <section aria-labelledby="recommendationFallback-{{ recommendation_category_id }}">
-        <h2 id="recommendationFallback-{{ recommendation_category_id }}" class="mb-5 text-[length:22px] font-semibold tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">{{ recommendation_category[1].title }}</h2>
+        <h2 id="recommendationFallback-{{ recommendation_category_id }}" class="mb-5 text-[length:22px] font-semibold tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]"><a href="{{ '/category/' | append: recommendation_category_id | append: '/' | relative_url }}" class="no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline">{{ recommendation_category[1].title | escape }}</a></h2>
         <div class="product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pb-2.5 [&::-webkit-scrollbar]:hidden max-[768px]:gap-4" tabindex="0" role="group" aria-label="{{ recommendation_category[1].title | escape }}">{{ recommendation_cards }}</div>
       </section>
       {% endif %}

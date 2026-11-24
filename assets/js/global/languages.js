@@ -161,8 +161,7 @@
     if (!['ka', 'ru', 'en'].includes(code) && window.enkaI18n?.locale !== undefined && window.enkaI18n.locale !== 'ka') {
       clearGoogleChoice();
       saveChoice(code);
-      if (window.EnkaPageTransition) window.EnkaPageTransition.reload();
-      else location.reload();
+      location.reload();
       return;
     }
     if (['ka', 'ru', 'en'].includes(code) && window.enkaI18n) {
@@ -175,8 +174,7 @@
         return;
       }
       if (applied !== 'ka' || window.enkaI18n.locale !== code) {
-        if (window.EnkaPageTransition) window.EnkaPageTransition.reload();
-        else location.reload();
+        location.reload();
         return;
       }
       sync(code);

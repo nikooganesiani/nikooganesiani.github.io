@@ -955,10 +955,7 @@
 
     render();
     window.enkaI18n?.ready?.then(updateHeading);
-    if (!search || state.query) {
-      const ready = load();
-      window.EnkaPageTransition?.hold(ready);
-    }
+    if (!search || state.query) load();
   }
   window.CatalogListing = { readState, routeURL, priceRange, prepareProducts, selectProducts, mount };
 })();
