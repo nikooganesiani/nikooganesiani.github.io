@@ -12,7 +12,13 @@ for(const locale of ['ru','en']){
 
  walk('_site/assets/js',file=>{
   if (!file.endsWith('.js') || /(?:languages|i18n)\.js$/.test(file)) return;
-  for(const match of fs.readFileSync(file,'utf8').matchAll(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`/g)){
+  let script = fs.readFileSync(file, 'utf8');
+  if (path.basename(file) === 'catalog-search.js') {
+    // These two literal arrays describe phonetic equivalence, including Georgian vowels.
+    // Keep checking every other string in the search controller.
+    script = script.replace(/\bconst (?:consonantGroups|vowelGroups)\s*=\s*\[(?:\s*'[^']*'\s*,?)*\];/g, '');
+  }
+  for(const match of script.matchAll(/'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`/g)){
    const raw=match[0]; if(!/[\u10a0-\u10ff]/.test(raw))continue;
    let value; try {value=raw[0]==='`'?raw.slice(1,-1).replace(/\$\{[^}]+\}/g,' '):vm.runInNewContext(raw);}catch{continue;}
    if(value.startsWith('input['))continue;
