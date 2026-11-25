@@ -294,6 +294,11 @@ document.addEventListener('change', event => {
   }
   if (state.product && target.dataset.specIndex != null) {
     const pairs = Object.entries(state.product.specs); const index = Number(target.dataset.specIndex); const part = target.dataset.specPart;
+    if (part === 'key' && (!target.value.trim() || target.value.length > 300)) {
+      target.value = pairs[index][0];
+      toast(t('Введите название характеристики длиной до 300 символов.'), true);
+      return;
+    }
     if (part === 'key' && pairs.some(([key], position) => key === target.value && position !== index)) { toast(t('Характеристика с таким названием уже существует.'), true); renderEditor(); return; }
     pairs[index][part === 'key' ? 0 : 1] = target.value; state.product.specs = Object.fromEntries(pairs); registerAttributes(state.document); markDirty();
   }
