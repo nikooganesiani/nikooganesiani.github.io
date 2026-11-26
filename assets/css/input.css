@@ -404,6 +404,11 @@ html:has(#site-header form[role="search"]:focus-within) {
   object-fit: contain;
 }
 
+/* Each category illustration occupies at most 100 CSS pixels. */
+@media (resolution <= 2dppx) {
+  .enka-category-sprite { background-image: url('/img/categories/objects-600.webp'); }
+}
+
 [data-promo-dots],
 [data-promo-step] {
   display: none;

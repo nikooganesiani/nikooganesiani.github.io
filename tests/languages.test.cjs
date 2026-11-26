@@ -8,7 +8,10 @@ function browser({ saved, blocked = false, native = false } = {}) {
   class Element {
     constructor() { this.events = {}; this.attrs = {}; this.dataset = {}; this.hidden = false; this.open = false; this.textContent = ''; }
     addEventListener(name, callback) { (this.events[name] ||= []).push(callback); }
-    dispatchEvent(event) { for (const callback of this.events[event.type] || []) callback(event); }
+    dispatchEvent(event) {
+      event.currentTarget = this;
+      for (const callback of this.events[event.type] || []) callback(event);
+    }
     setAttribute(name, value) { this.attrs[name] = value; }
     getAttribute(name) { return this.attrs[name]; }
     focus() {}

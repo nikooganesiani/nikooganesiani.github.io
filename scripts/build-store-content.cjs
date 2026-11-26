@@ -50,11 +50,13 @@ async function buildStoreContent(data, root = process.cwd()) {
     }
     const layout = engine.homeLayout(store).filter(block => block.enabled);
     const priorityBanner = engine.priorityBanner(layout, offers);
+    let bannerPreloads = [];
     const homeBlocks = store && layout.map(block => {
       if (block.type === 'banner') {
         const slides = engine.bannerOffers(block, offers);
         const heroes = slides.map((offer, index) => {
           const options = { priority: block.id === priorityBanner && index === 0, carousel: slides.length > 1, localSrcsets: bannerSrcsets };
+          if (options.priority) bannerPreloads = visuals.heroPreloads(offer, options);
           const locales = ['ka', 'ru', 'en'];
           return {
             title: Object.fromEntries(locales.map(locale => [locale, engine.text(offer.title, locale)])),
@@ -71,7 +73,7 @@ async function buildStoreContent(data, root = process.cwd()) {
     const bannerSizes = { single: visuals.bannerSizes(), carousel: visuals.bannerSizes(true) };
     const storefrontSettings = store && Object.fromEntries(['ka', 'ru', 'en'].map(locale => [locale, engine.storefrontSettings(store, locale)]));
     const content = store ? { store, storefrontSettings, catalog, homeBlocks, company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
-      campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData), bannerSrcsets, bannerSizes } : { bannerSrcsets, bannerSizes };
+      campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData), bannerSrcsets, bannerSizes, bannerPreloads } : { bannerSrcsets, bannerSizes };
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));
   }
   const assets = path.join(root, 'assets/js/global');

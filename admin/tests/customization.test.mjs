@@ -23,6 +23,10 @@ test('Image banners need no product and customization survives backup and static
   const banner = built.homeBlocks.find(block => block.type === 'banner').heroes[0].html.en;
   assert.match(banner,/enka-hero-image/);assert.match(banner,/srcset="\/img\/mobile.webp"/);assert.match(banner,/href="\/category\/\?gadget"/);
   assert.match(banner,/alt="Banner"/);assert.match(banner,/loading="eager" fetchpriority="high"/);
+  assert.deepEqual(built.bannerPreloads.map(({url, media}) => [url, media]), [
+    ['https://images.example/banner.webp', '(width > 640px)'],
+    ['/img/mobile.webp', '(width <= 640px)']
+  ]);
   assert.match(built.categoryTiles[0],/background-color:#ffeedd/);assert.doesNotMatch(built.categoryTiles[0],/data-category-title/);assert.deepEqual(d.catalog,before);
 });
 
@@ -44,6 +48,21 @@ test('Shared rendering escapes content and supports image crops, mobile sources 
   const html=visuals.hero(h);assert.match(html,/&lt;img/);assert.doesNotMatch(html,/<img src=x/);assert.match(html,/rel="noopener noreferrer"/);assert.match(html,/object-position:25% 50%/);assert.match(html,/data-visual-style=/);assert.doesNotMatch(html,/ style=/);
   assert.equal(visuals.hero({...h,type:'product',productId:'test'},'en'),'');
   assert.doesNotMatch(html,/<h2|<strong|<button|data-hero-price|data-product-name|data-product-id|enka-hero-copy|enka-hero-button/);
+});
+
+test('A responsive hero uses the same sources for preloading and rendering', () => {
+  const hero = fixture().store.heroes[0];
+  const localSrcsets = {
+    [hero.image]: '/desktop-640.webp 640w, /desktop-960.webp 960w',
+    [hero.mobileImage]: '/mobile-400.webp 400w, /mobile-640.webp 640w'
+  };
+  const options = { localSrcsets, carousel: true, priority: true };
+  const markup = visuals.hero(hero, 'ka', true, options);
+  const [desktop, mobile] = visuals.heroPreloads(hero, options);
+  for (const { srcset, sizes } of [desktop, mobile]) {
+    assert.ok(markup.includes('srcset="' + srcset + '" sizes="' + sizes + '"'));
+  }
+  assert.ok(markup.includes('<source media="' + mobile.media + '"'));
 });
 
 test('Editing an existing category preserves its original illustration; custom images can replace it',()=>{

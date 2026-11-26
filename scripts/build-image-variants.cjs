@@ -16,11 +16,13 @@ async function buildLocalImageSrcset(root, source, profile) {
   const width = metadata.autoOrient?.width || metadata.width;
   const widths = variantWidths(width, profile);
   if (!widths.length || metadata.pages > 1) return '';
+  // A 380px banner at 2x fits a 768px file without moving to the 960px variant.
+  if (profile === 'banner' && width > 768) widths.push(768);
 
   const directory = path.join(root, 'assets/compiled');
   fs.mkdirSync(directory, { recursive: true });
   const candidates = [];
-  for (const size of widths) {
+  for (const size of widths.sort((a, b) => a - b)) {
     const bytes = await original.clone().autoOrient().resize({ width: size }).webp({ quality: 80, effort: 5 }).toBuffer();
     if (bytes.length >= stat.size) continue;
     const name = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 16) + '.webp';

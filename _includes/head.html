@@ -47,6 +47,11 @@
     </script>
     <script src="{{ '/assets/js/global/theme.js' | relative_url }}"></script>
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    {% if page.is_home %}
+    {% for preload in site.data.studio.bannerPreloads %}
+    <link rel="preload" as="image" fetchpriority="high"{% if preload.media %} media="{{ preload.media | escape }}"{% endif %}{% if preload.srcset %} imagesrcset="{{ preload.srcset | escape }}" imagesizes="{{ preload.sizes | escape }}"{% else %} href="{{ preload.url | escape }}"{% endif %}>
+    {% endfor %}
+    {% endif %}
     {% if page.robots %}<meta name="robots" content="{{ page.robots | escape }}">{% endif %}
     <link rel="canonical" href="{{ page.canonical_path | default: page.url | absolute_url }}">
     {% if page.blog_alternates %}

@@ -3,7 +3,9 @@
   const pickers = [...document.querySelectorAll('[data-language-picker]')];
   if (!pickers.length) return;
   const buttons = [...document.querySelectorAll('[data-language]')];
-  const languages = new Map(buttons.map(button => [button.dataset.language, button]));
+  const automaticLanguages = document.getElementById('site-automatic-languages')?.content;
+  const languages = new Map([...buttons, ...(automaticLanguages?.querySelectorAll('[data-language]') ?? [])]
+    .map(button => [button.dataset.language, button]));
   const engine = document.getElementById('site-translation-engine');
   const pageLocale = document.documentElement.dataset?.enkaLocale;
   const native = ['ka', 'ru', 'en'];
@@ -43,16 +45,20 @@
     }
   }
 
-  function sync(code) {
-    const language = languages.get(code);
-    const flag = language.querySelector('img');
-    for (const button of buttons) {
+  function markSelection(options, code) {
+    for (const button of options) {
       const selected = button.dataset.language === code;
       if (button.tagName === 'A') {
         if (selected) button.setAttribute('aria-current', 'page');
         else button.removeAttribute('aria-current');
       } else button.setAttribute('aria-pressed', String(selected));
     }
+  }
+
+  function sync(code) {
+    const language = languages.get(code);
+    const flag = language.querySelector('img');
+    markSelection(document.querySelectorAll('[data-language]'), code);
     for (const picker of pickers) {
       const summary = picker.querySelector('.language-trigger');
       picker.querySelector('[data-language-flag]').src = flag.getAttribute('src');
@@ -208,10 +214,7 @@
     }
   }
 
-  const displayNames = [];
-  if (typeof Intl.DisplayNames === 'function') {
-    for (const locale of ['ka', 'en', 'ru']) displayNames.push(new Intl.DisplayNames([locale], { type: 'language' }));
-  }
+  let displayNames;
   for (const picker of pickers) {
     const summary = picker.querySelector('.language-trigger');
     picker.addEventListener('toggle', () => {
@@ -222,7 +225,23 @@
     picker.addEventListener('keydown', event => {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); picker.open = false; summary.focus(); }
     });
+    if (automaticLanguages) {
+      const disclosure = picker.querySelector('.language-more');
+      const populate = () => {
+        if (!disclosure.open) return;
+        const list = picker.querySelector('.language-list');
+        const options = automaticLanguages.cloneNode(true);
+        const languageButtons = options.querySelectorAll('[data-language]');
+        markSelection(languageButtons, applied);
+        for (const button of languageButtons) button.addEventListener('click', onLanguageClick);
+        list.append(options);
+        disclosure.removeEventListener('toggle', populate);
+      };
+      disclosure.addEventListener('toggle', populate);
+    }
     picker.querySelector('[data-language-search]').addEventListener('input', event => {
+      displayNames ||= typeof Intl.DisplayNames === 'function'
+        ? native.map(locale => new Intl.DisplayNames([locale], { type: 'language' })) : [];
       const query = event.target.value.trim().toLocaleLowerCase();
       let count = 0;
       for (const button of picker.querySelectorAll('.language-list [data-language]')) {
@@ -235,7 +254,8 @@
     });
     picker.querySelector('[data-language-retry]').addEventListener('click', () => choose(requested));
   }
-  for (const button of buttons) button.addEventListener('click', event => {
+  function onLanguageClick(event) {
+    const button = event.currentTarget;
     if (pageLocale && button.tagName === 'A') {
       if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       if (pageLocale === 'ka' && button.dataset.language === 'ka' && (!native.includes(applied) || !native.includes(requested))) {
@@ -260,7 +280,8 @@
     const picker = button.closest('[data-language-picker]');
     picker.open = false;
     picker.querySelector('.language-trigger').focus({ preventScroll: true });
-  });
+  }
+  for (const button of buttons) button.addEventListener('click', onLanguageClick);
   document.addEventListener('click', event => {
     for (const picker of pickers) if (!picker.contains(event.target)) picker.open = false;
   });
