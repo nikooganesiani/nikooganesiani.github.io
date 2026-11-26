@@ -1,7 +1,7 @@
 import { ApiError } from './service.mjs';
 import '../public/card-images.js';
 
-const { originalName, variantName, variantWidths } = globalThis.EnkaCardImages;
+const { originalName, variantName, variantWidths, animatedWebP } = globalThis.EnkaCardImages;
 const maxFileSize = 200 * 1024;
 
 async function webpBytes(file) {
@@ -46,7 +46,7 @@ export async function readWebP(request) {
   return { bytes: await webpBytes(form.get('file')), name: crypto.randomUUID() + '.webp' };
 }
 
-export async function saveProductPhoto(request, storage, base = '/media') {
+export async function saveResponsivePhoto(request, storage, base = '/media', profile = 'card') {
   if (Number(request.headers.get('content-length')) > 7 * maxFileSize + 8192) throw new ApiError(413, 'Изображение слишком большое.');
   const form = await request.formData();
   const existing = form.get('source');
@@ -64,8 +64,13 @@ export async function saveProductPhoto(request, storage, base = '/media') {
   const dimensions = webpDimensions(bytes);
   if (!dimensions?.width || !dimensions.height || dimensions.width > 16384 || dimensions.height > 16384) throw new ApiError(422, 'Не удалось прочитать размер фотографии.');
 
-  const widths = variantWidths(dimensions.width);
   const submitted = [...form.keys()].filter(key => key !== 'file' && key !== 'source');
+  if (profile !== 'card' && animatedWebP(bytes)) {
+    if (existing !== null || submitted.length) throw new ApiError(422, 'Для анимированного изображения используется оригинал.');
+    await storage.create(name, bytes);
+    return { url: `${base}/${name}` };
+  }
+  const widths = variantWidths(dimensions.width, profile);
   const complete = widths.length === submitted.length && widths.every(width => form.getAll(`w${width}`).length === 1);
   if (!complete && (existing !== null || submitted.length)) throw new ApiError(422, 'Неполный набор миниатюр.');
   const variants = [];
@@ -74,7 +79,7 @@ export async function saveProductPhoto(request, storage, base = '/media') {
     const size = webpDimensions(image);
     const height = Math.max(1, Math.round(dimensions.height * width / dimensions.width));
     if (size?.width !== width || size.height !== height) throw new ApiError(422, 'Размер миниатюры не соответствует оригиналу.');
-    variants.push([variantName(name, width), image]);
+    variants.push([variantName(name, width, profile), image]);
   }
 
   if (existing === null) await storage.create(name, bytes);
@@ -82,3 +87,9 @@ export async function saveProductPhoto(request, storage, base = '/media') {
   const ready = complete && writes.every(result => result.status === 'fulfilled');
   return { url: `${base}/${name}`, ...(ready ? { width: dimensions.width } : {}) };
 }
+
+export const responsivePhotoRoutes = new Map([
+  ['/api/product-photo', 'card'],
+  ['/api/banner-image', 'banner'],
+  ['/api/blog-cover', 'cover']
+]);

@@ -4,6 +4,7 @@
   const esc = value => window.escapeHTML(value);
   let current; let products = []; let signature = JSON.stringify(window.ENKA_STORE || ''); let productSignature = ''; let timer;
   const rowMarkup = new WeakMap();
+  const renderedBanners = new WeakMap();
   const fallbackStructure = structuredClone(window.CATALOG_STRUCTURE || {});
   const locale = () => window.enkaI18n?.locale || 'ka';
   const label = value => engine.text(value, locale());
@@ -43,7 +44,11 @@
     });
     window.ENKA_COMPANY={...after};
   }
-  function heroes(anchor, offers) {
+  const bannerSignature = (offers, priority) => JSON.stringify([offers, priority]);
+  function heroes(anchor, offers, priority = false) {
+    const signature = bannerSignature(offers, priority);
+    if (renderedBanners.get(anchor) === signature) return;
+    renderedBanners.set(anchor, signature);
     anchor.querySelector('[data-promo-block]')?.enkaCleanup?.();
     anchor.replaceChildren();
     if (!offers.length) return;
@@ -55,7 +60,9 @@
     root.setAttribute('aria-roledescription', t('კარუსელი'));
     const slides = offers.map((offer, index) => `
       <div data-promo-slide data-title="${esc(label(offer.title))}" role="group" aria-roledescription="${esc(t('სლაიდი'))}" aria-label="${index + 1} / ${offers.length}">
-        ${globalThis.EnkaStoreVisuals.hero(offer, locale())}
+        ${globalThis.EnkaStoreVisuals.hero(offer, locale(), false, {
+          priority: priority && index === 0, carousel: offers.length > 1, localSrcsets: window.ENKA_BANNER_SRCSETS
+        })}
       </div>`).join('');
     const dots = offers.map((offer, index) => `
       <button type="button" data-promo-dot aria-label="${index + 1} / ${offers.length} — ${esc(label(offer.title))}" aria-current="${index === 0}" tabindex="${index === 0 ? 0 : -1}"></button>`).join('');
@@ -79,12 +86,13 @@
     rowMarkup.set(root,html);
     root.innerHTML=html;globalThis.EnkaStoreVisuals.apply(root);window.syncFavButtons?.();
   }
-  function renderHome(layout, updateHeroes) {
+  function renderHome(layout) {
     const storage = document.querySelector('[data-home-storage]');
     const slots = [...layout.children, ...storage.children];
     const blocks = engine.homeLayout(current).filter(block => block.enabled);
     const rows = engine.rows(products, current, Date.now(), true);
     const offers = engine.banners(current);
+    const priority = engine.priorityBanner(blocks, offers);
     const used = new Set();
     for (const [index, block] of blocks.entries()) {
       const singleton = engine.homeSingletons.includes(block.type);
@@ -96,7 +104,7 @@
       used.add(slot);
       if (block.type === 'banner') {
         slot.dataset.studioHeroes = '';
-        if (updateHeroes || !existing) heroes(slot, block.sourceId ? offers.filter(offer => offer.id === block.sourceId) : offers);
+        heroes(slot, engine.bannerOffers(block, offers), block.id === priority);
       }
       if (block.type === 'campaign') {
         slot.dataset.studioCampaigns = '';
@@ -118,7 +126,7 @@
   function render(updateHeroes = false) {
     if(!current)return;
     const layout = document.querySelector('[data-home-layout]');
-    if (layout) { renderHome(layout, updateHeroes); return; }
+    if (layout) { renderHome(layout); return; }
     // A cached page generated before the block editor still has fixed anchors.
     const hero = document.querySelector('[data-studio-heroes]');
     if (updateHeroes && hero) heroes(hero, engine.banners(current));
@@ -144,8 +152,21 @@
       render(changed || first && locale()!=='ka');schedule();
     }
   };
+  if (window.ENKA_STORE) {
+    const blocks = engine.homeLayout(window.ENKA_STORE);
+    const offers = engine.banners(window.ENKA_STORE);
+    const priority = engine.priorityBanner(blocks, offers);
+    // The initial HTML already includes the selected image for this release and language.
+    for (const slot of document.querySelectorAll('[data-home-layout] > [data-studio-heroes]')) {
+      const block = blocks.find(block => block.id === slot.dataset.homeBlock);
+      if (block) renderedBanners.set(slot, bannerSignature(engine.bannerOffers(block, offers), block.id === priority));
+    }
+  }
   document.addEventListener('DOMContentLoaded',()=>{
-    if(window.ENKA_STORE){current=window.ENKA_STORE;if(locale()!=='ka')categories(current);}
+    if (window.ENKA_STORE) {
+      current = window.ENKA_STORE;
+      if (locale() !== 'ka') categories(current);
+    }
     window.fetchCatalogCached?.().then(data=>{if(data.store)window.enkaStorefront.apply(data.store,data.products);}).catch(()=>{});
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&current&&productSignature){products=engine.applyProducts(products,current);render();window.dispatchEvent(new CustomEvent('enka:prices-change',{detail:{products}}));schedule();}});

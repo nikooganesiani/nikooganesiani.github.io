@@ -23,6 +23,15 @@
     return changed;
   }
   const banners = store => (store?.heroes || []).filter(h=>plain(h) && h.enabled && (h.type==='image' || (h.type===undefined && !Object.hasOwn(h,'productId'))) && safeImage(h.image) && safeLink(h.link));
+  const bannerOffers = (block, offers) => block.sourceId ? offers.filter(offer => offer.id === block.sourceId) : offers;
+  function priorityBanner(blocks, offers) {
+    for (const block of blocks) {
+      // The category strip is short enough to share the first screen with a banner.
+      if (!block.enabled || block.type === 'categories') continue;
+      if (block.type !== 'banner') break;
+      if (bannerOffers(block, offers).length) return block.id;
+    }
+  }
   const homeTypes = ['banner', 'categories', 'campaign', 'blog', 'products', 'category', 'recommendations'];
   const homeSingletons = ['categories', 'blog', 'recommendations'];
   const homeLimit = 80;
@@ -236,6 +245,11 @@
       if ((hero.type !== undefined && hero.type !== 'image') || ['productId','buttonLabel','buttonColor','textColor'].some(key=>Object.hasOwn(hero,key))) errors.push('Баннеры: доступны только изображения со ссылкой.');
       if (!safeImage(hero.image) || !safeLink(hero.link)) errors.push('Баннеры: добавьте изображение и корректную ссылку.');
       if (hero.newTab !== undefined && typeof hero.newTab !== 'boolean') errors.push('Баннеры: проверьте открытие ссылки.');
+      for (const key of ['image', 'mobileImage']) {
+        const width = hero[key + 'Width'];
+        const images = globalThis.EnkaCardImages;
+        if (width !== undefined && (!images?.originalName(hero[key]) || !images.validWidth(width))) errors.push('Баннеры: проверьте данные миниатюр.');
+      }
       errors.push(...appearanceErrors(hero));
       heroIds.add(hero?.id);
     }
@@ -251,5 +265,5 @@
     }
     return [...new Set(errors)];
   }
-  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, renameSection, resolveSection, homeTypes, homeSingletons, homeLimit, defaultHome, homeLayout, homeProducts };
+  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, bannerOffers, priorityBanner, renameSection, resolveSection, homeTypes, homeSingletons, homeLimit, defaultHome, homeLayout, homeProducts };
 })();

@@ -2,7 +2,7 @@ import { DurableObject } from 'cloudflare:workers';
 import { authenticate } from './server/auth.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
 import { CatalogStore } from './server/store.mjs';
-import { readWebP, saveProductPhoto } from './server/media.mjs';
+import { readWebP, responsivePhotoRoutes, saveResponsivePhoto } from './server/media.mjs';
 import { blogLocales } from './public/blog-model.js';
 
 const SECURITY = {
@@ -64,11 +64,12 @@ export default {
     if (!['staging', 'production'].includes(env.APP_ENV)) return secure(json({ error: 'Не задано корректное окружение панели.' }, 503));
     const url = new URL(request.url);
     if (!['GET', 'HEAD'].includes(request.method) && request.headers.get('Origin') !== url.origin) return secure(json({ error: 'Запрос должен быть отправлен из этой панели.' }, 403));
-    if (['/api/upload', '/api/product-photo'].includes(url.pathname) && request.method === 'POST') {
+    const imageProfile = responsivePhotoRoutes.get(url.pathname);
+    if ((url.pathname === '/api/upload' || imageProfile) && request.method === 'POST') {
       try {
         if (env.APP_ENV === 'production' && !env.PUBLIC_IMAGES_BASE?.startsWith('https://')) return secure(json({ error: 'Сначала настройте публичный адрес рабочего хранилища изображений.' }, 503));
         const base = env.PUBLIC_IMAGES_BASE?.replace(/\/$/, '') || '/media';
-        if (url.pathname === '/api/product-photo') {
+        if (imageProfile) {
           const storage = {
             async read(name) {
               const object = await env.IMAGES_BUCKET.get(name);
@@ -81,7 +82,7 @@ export default {
               });
             }
           };
-          return secure(json(await saveProductPhoto(request, storage, base)));
+          return secure(json(await saveResponsivePhoto(request, storage, base, imageProfile)));
         }
         const { bytes, name } = await readWebP(request);
         await env.IMAGES_BUCKET.put(name, bytes, { httpMetadata: { contentType: 'image/webp' } });

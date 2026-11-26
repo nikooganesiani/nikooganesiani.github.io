@@ -26,6 +26,10 @@
       copy.dataset.promoClone = '';
       copy.inert = true;
       copy.setAttribute('aria-hidden', 'true');
+      copy.querySelectorAll('img').forEach(image => {
+        image.loading = 'lazy';
+        image.fetchPriority = 'low';
+      });
       return copy;
     }
     const before = clone(slides.at(-1));

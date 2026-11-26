@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { CatalogStore } from './server/store.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
-import { readWebP, saveProductPhoto } from './server/media.mjs';
+import { readWebP, responsivePhotoRoutes, saveResponsivePhoto } from './server/media.mjs';
 import { readPublishedCatalog } from './server/published.mjs';
 import { publishedArticles } from './public/blog-model.js';
 
@@ -83,8 +83,8 @@ const server = http.createServer(async (req, res) => {
         const file = await readWebP(request);
         photoStorage.create(file.name, file.bytes);
         response = json({ url: '/media/' + file.name });
-      } else if (url.pathname === '/api/product-photo' && req.method === 'POST') {
-        response = json(await saveProductPhoto(request, photoStorage));
+      } else if (responsivePhotoRoutes.has(url.pathname) && req.method === 'POST') {
+        response = json(await saveResponsivePhoto(request, photoStorage, '/media', responsivePhotoRoutes.get(url.pathname)));
       } else response = await runSerialized(() => handleApi(request, service, 'Локальный редактор', { publicImagesBase: '', storefrontBase: 'http://127.0.0.1:4173' }));
       res.writeHead(response.status, Object.fromEntries(response.headers));
       res.end(Buffer.from(await response.arrayBuffer())); return;

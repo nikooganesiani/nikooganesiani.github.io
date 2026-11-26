@@ -20,7 +20,10 @@ test('Image banners need no product and customization survives backup and static
   assert.deepEqual(validateDocument(d),[]);const before=clone(d.catalog);
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'enka-visuals-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'_data'));
   await buildStoreContent({...d.catalog,_enkaStore:d.store},root);const built=JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json')));
-  assert.match(built.heroes[0].html,/enka-hero-image/);assert.match(built.heroes[0].html,/srcset="\/img\/mobile.webp"/);assert.match(built.heroes[0].html,/href="\/category\/\?gadget"/);assert.match(built.categoryTiles[0],/background-color:#ffeedd/);assert.doesNotMatch(built.categoryTiles[0],/data-category-title/);assert.deepEqual(d.catalog,before);
+  const banner = built.homeBlocks.find(block => block.type === 'banner').heroes[0].html.en;
+  assert.match(banner,/enka-hero-image/);assert.match(banner,/srcset="\/img\/mobile.webp"/);assert.match(banner,/href="\/category\/\?gadget"/);
+  assert.match(banner,/alt="Banner"/);assert.match(banner,/loading="eager" fetchpriority="high"/);
+  assert.match(built.categoryTiles[0],/background-color:#ffeedd/);assert.doesNotMatch(built.categoryTiles[0],/data-category-title/);assert.deepEqual(d.catalog,before);
 });
 
 test('Unsafe URLs, style injection and invalid appearance ranges are rejected on import/save',()=>{
@@ -69,7 +72,8 @@ test('Old layouts are removed on open and import; existing image banners lose pr
   assert.deepEqual(importDocument({document:old}).store.heroes,[image]);assert.deepEqual(createDocument({...old.catalog,_enkaStore:old.store}).store.heroes,[image]);
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'enka-retired-banners-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));fs.mkdirSync(path.join(root,'_data'));
   await buildStoreContent({...old.catalog,_enkaStore:old.store},root);const built=JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json')));
-  assert.deepEqual(built.heroes.map(h=>h.id),['image']);assert.equal(old.store.heroes.length,3,'building must not mutate the published source');
+  assert.deepEqual(built.store.heroes.map(h=>h.id),['image']);assert.equal(built.homeBlocks[0].heroes.length,1);
+  assert.equal(old.store.heroes.length,3,'building must not mutate the published source');
   assert.deepEqual(engine.banners(old.store).map(h=>h.id),['image'],'cached image banners survive obsolete metadata; retired layouts stay hidden');
   const published={...old.catalog,_enkaStore:old.store};
   const api=await readPublishedCatalog(async key=>key==='catalog'?published:null);

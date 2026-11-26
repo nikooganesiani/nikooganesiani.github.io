@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { buildLocalImageSrcset } = require('./build-image-variants.cjs');
 async function buildStoreContent(data, root = process.cwd()) {
   if (fs.existsSync(path.join(root, '_data/icons.json'))) require('./build-icons.cjs').buildIcons(root);
   await import('../admin/public/store-engine.js');
@@ -34,14 +35,42 @@ async function buildStoreContent(data, root = process.cwd()) {
     });
     fs.writeFileSync(path.join(directory,'catalog_navigation.json'),JSON.stringify({images,panels}));
     const rowData = row => ({ id: row.id, showRow: row.showRow, title: engine.text(row.title), template: row.template, appearance: row.appearance, frame: visuals.campaignFrame(row, 'ka', true), productIds: row.products.map(product => product.id) });
-    const homeBlocks = store && engine.homeLayout(store).filter(block => block.enabled).map(block => {
+    const offers = engine.banners(store);
+    const localImages = new Set(offers.flatMap(offer => [offer.image, offer.mobileImage]));
+    const bannerDirectory = path.join(root, 'img/banners');
+    if (fs.existsSync(bannerDirectory)) {
+      for (const file of fs.readdirSync(bannerDirectory, { withFileTypes: true })) {
+        if (file.isFile()) localImages.add('/img/banners/' + file.name);
+      }
+    }
+    const bannerSrcsets = {};
+    for (const source of localImages) {
+      const srcset = await buildLocalImageSrcset(root, source, 'banner');
+      if (srcset) bannerSrcsets[source] = srcset;
+    }
+    const layout = engine.homeLayout(store).filter(block => block.enabled);
+    const priorityBanner = engine.priorityBanner(layout, offers);
+    const homeBlocks = store && layout.map(block => {
+      if (block.type === 'banner') {
+        const slides = engine.bannerOffers(block, offers);
+        const heroes = slides.map((offer, index) => {
+          const options = { priority: block.id === priorityBanner && index === 0, carousel: slides.length > 1, localSrcsets: bannerSrcsets };
+          const locales = ['ka', 'ru', 'en'];
+          return {
+            title: Object.fromEntries(locales.map(locale => [locale, engine.text(offer.title, locale)])),
+            html: Object.fromEntries(locales.map(locale => [locale, visuals.hero(offer, locale, true, options)]))
+          };
+        });
+        return { ...block, heroes };
+      }
       if (!['products', 'category'].includes(block.type)) return block;
       const shelf = engine.homeProducts(block, priced, store);
       const row = { id: block.id, title: { ka: shelf.title }, template: 'cards', products: shelf.products };
       return { ...block, row: rowData(row) };
     });
-    const content = store ? { store, catalog, homeBlocks, heroes: engine.banners(store).map(h=>({id:h.id, title:engine.text(h.title), html:visuals.hero(h,'ka',true)})), company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
-      campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData) } : {};
+    const bannerSizes = { single: visuals.bannerSizes(), carousel: visuals.bannerSizes(true) };
+    const content = store ? { store, catalog, homeBlocks, company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
+      campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData), bannerSrcsets, bannerSizes } : { bannerSrcsets, bannerSizes };
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));
   }
   const assets = path.join(root, 'assets/js/global');

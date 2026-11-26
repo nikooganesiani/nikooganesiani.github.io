@@ -106,7 +106,8 @@ test('Build uses the published store for static categories, heroes, contacts and
   const products=await buildStoreContent({...d.catalog,_enkaStore:d.store},root);
   const output=JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json')));
   assert.equal(products[0].price,'84');assert.equal(output.catalog.kitchen.title,'სამზარეულო');assert.deepEqual(output.campaignRows[0].productIds,['coffee']);assert.deepEqual(output.company,d.store.company);
-  await buildStoreContent(d.catalog,root);assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json'))),{});
+  await buildStoreContent(d.catalog,root);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'_data/studio.json'))).store, undefined);
 });
 
 test('Restoring an older snapshot cannot resurrect retired product banner layouts',async()=>{

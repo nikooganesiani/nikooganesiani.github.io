@@ -12,12 +12,29 @@
     for (const char of String(value || '')) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619) >>> 0;
     return hash.toString(16).padStart(8, '0');
   }
-  function hero(hero, locale='ka', staticHTML=false) {
+  const bannerSizes = (carousel = false) => (carousel ? '(max-width: 640px) calc(69.5vw - 11px)' : '(width < 640px) calc(100vw - 2rem)') +
+    ', (width < 1280px) calc(100vw - 3rem), min(96rem, 100vw - 4rem)';
+  function hero(hero, locale='ka', staticHTML=false, storefront) {
     if ((hero.type!==undefined && hero.type!=='image') || (hero.type===undefined && Object.hasOwn(hero,'productId')) || !image(hero.image) || !engine.safeLink(hero.link)) return '';
     const title=engine.text(hero.title,locale);
     const appearance=`background-color:${color(hero.backgroundColor,'#eaf1ff')};--hero-ratio:${number(hero.ratio,3,1,5)};--hero-mobile-ratio:${number(hero.mobileRatio,1.4,0.5,5)}`;
     const fit=`object-fit:${hero.fit==='contain'?'contain':'cover'};object-position:${number(hero.positionX,50,0,100)}% ${number(hero.positionY,50,0,100)}%`;
-    return `<a class="enka-hero enka-hero-image" href="${esc(hero.link)}"${hero.newTab?' target="_blank" rel="noopener noreferrer"':''}${style(appearance,staticHTML)} aria-label="${esc(title)}" draggable="false"><picture>${image(hero.mobileImage)?`<source media="(max-width: 640px)" srcset="${esc(hero.mobileImage)}">`:''}<img src="${esc(hero.image)}" alt="${esc(title)}"${style(fit,staticHTML)} loading="lazy" data-catalog-content></picture></a>`;
+    const sizes = bannerSizes(storefront?.carousel);
+    const srcset = key => {
+      if (!storefront) return '';
+      const source = hero[key];
+      return storefront.localSrcsets?.[source] || globalThis.EnkaCardImages.srcset(source, hero[key + 'Width'], 'banner');
+    };
+    const desktop = srcset('image');
+    const mobile = srcset('mobileImage');
+    const responsive = set => ` srcset="${esc(set)}" sizes="${sizes}"`;
+    const mobileAttributes = image(hero.mobileImage) && (mobile
+      ? responsive(mobile) + ` data-original="${esc(hero.mobileImage)}"` : ` srcset="${esc(hero.mobileImage)}"`);
+    const loading = storefront?.priority ? 'loading="eager" fetchpriority="high"' : 'loading="lazy" decoding="async"';
+    const fallback = desktop || mobile
+      ? ' onerror="this.onerror=null;this.removeAttribute(\'srcset\');const source=this.previousElementSibling;if(source?.dataset.original)source.srcset=source.dataset.original"'
+      : '';
+    return `<a class="enka-hero enka-hero-image" href="${esc(hero.link)}"${hero.newTab?' target="_blank" rel="noopener noreferrer"':''}${style(appearance,staticHTML)} aria-label="${esc(title)}" draggable="false"><picture>${mobileAttributes ? `<source media="(max-width: 640px)"${mobileAttributes}>` : ''}<img src="${esc(hero.image)}"${desktop ? responsive(desktop) : ''} alt="${esc(title)}"${style(fit,staticHTML)} ${loading}${fallback} data-catalog-content></picture></a>`;
   }
   function category(category, locale='ka', icon='', staticHTML=false) {
     const a=engine.categoryAppearance(category); const title=engine.text(category.title,locale);
@@ -43,5 +60,5 @@
     };
   }
   function apply(root, assetBase='') { root.querySelectorAll('[data-visual-style]').forEach(node=>{node.style.cssText=node.dataset.visualStyle.replaceAll("'/img/",`'${assetBase}/img/`);}); if(assetBase)root.querySelectorAll('img[src^="/img/"],source[srcset^="/img/"]').forEach(node=>{const key=node.tagName==='SOURCE'?'srcset':'src';node.setAttribute(key,assetBase+node.getAttribute(key));}); if(assetBase)root.querySelectorAll('.enka-category-sprite').forEach(node=>{node.style.backgroundImage=`url('${assetBase}/img/categories/objects.webp')`;}); }
-  globalThis.EnkaStoreVisuals = {hero,category,subcategory,photoKey,campaignFrame,apply};
+  globalThis.EnkaStoreVisuals = {hero,bannerSizes,category,subcategory,photoKey,campaignFrame,apply};
 })();

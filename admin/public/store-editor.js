@@ -21,7 +21,7 @@ export function ensureStore(document) {
   return true;
 }
 
-export function createStoreEditor({ state, escape: e, markDirty, toast, confirmMessage, renderApp, uploadImage, icon }) {
+export function createStoreEditor({ state, escape: e, markDirty, toast, confirmMessage, renderApp, studioMedia, icon }) {
   const root = document.querySelector('#store-view');
   const homeEditor = createHomeEditor({ root, state, escape: e, markDirty, toast, confirmMessage, icon });
   const datePicker=createDatePicker();
@@ -30,6 +30,7 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
   let query = ''; let textPage = 0; let onlyMissing = false; let selected = ''; let previewAt = ''; let previewLocale='ka'; let previewDevice='desktop';
   const store = () => state.document.store;
   const valueAt = path => path.split('.').reduce((obj, key) => obj?.[key], store());
+  const bannerWidthPath = path => /^heroes\.\d+\.(?:image|mobileImage)$/.test(path) ? path + 'Width' : '';
   function input(label, path, {type='text',hint='',options,value=valueAt(path),multi=false}={}) {
     label=t(label);hint=t(hint);
     if(type==='datetime-local')return dateControl(label,path,value);
@@ -90,7 +91,9 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     return ui`<div class="studio-selected-products">${rule.productIds.map((id,i)=>`<div class="studio-actions"><span>${e(state.document.catalog.products.find(p=>p.id===id)?.name || id)}</span>${moves(`campaigns.${index}.productIds`,i,rule.productIds.length)}</div>`).join('')}</div><p class="field-hint">Вручную добавлено: ${rule.productIds.length} · Исключено: ${rule.excludeIds.length}. Исключения имеют приоритет над разделами.</p><div class="studio-product-choices">${products.map(p=>`<div><span>${e(p.name)} <small>${e(p.id)}</small></span>${['productIds','excludeIds'].map(key=>`<label><input type="checkbox" data-campaign-product="${index}" data-key="${key}" value="${e(p.id)}"${rule[key].includes(p.id)?' checked':''}>${key==='productIds'?t('Добавить'):t('Исключить')}</label>`).join('')}</div>`).join('')}</div>`;
   }
   function mediaField(label,path,value=valueAt(path)) {
-    return ui`<div class="studio-media-field">${input(label,path,{value,hint:t('HTTPS-ссылка или путь /img/…; JPG, PNG и WebP можно загрузить с компьютера.')})}<div class="studio-actions"><label class="button secondary studio-upload">Загрузить изображение<input type="file" accept="image/jpeg,image/png,image/webp" data-store-upload="${e(path)}"></label>${button('clear-media',t('Убрать изображение'),`data-path="${e(path)}"`)}</div></div>`;
+    const widthPath = bannerWidthPath(path);
+    const prepare = widthPath ? button('prepare-media', t('Подготовить миниатюры'), `data-path="${e(path)}"${studioMedia.canPrepare(value, valueAt(widthPath)) ? '' : ' hidden'}`) : '';
+    return ui`<div class="studio-media-field">${input(label,path,{value,hint:t('HTTPS-ссылка или путь /img/…; JPG, PNG и WebP можно загрузить с компьютера.')})}<div class="studio-actions"><label class="button secondary studio-upload">Загрузить изображение<input type="file" accept="image/jpeg,image/png,image/webp" data-store-upload="${e(path)}"></label>${prepare}${button('clear-media',t('Убрать изображение'),`data-path="${e(path)}"`)}</div></div>`;
   }
   const numberField=(label,path,value)=>input(label,path,{type:'number',value});
   function previewControls() {
@@ -112,7 +115,9 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     const parts=path.split('.');const key=parts.pop();
     if(parts[0]==='categories' && parts[2]==='appearance' && !store().categories[parts[1]].appearance)store().categories[parts[1]].appearance=engine.categoryAppearance(store().categories[parts[1]]);
     if(parts[0]==='campaigns' && parts[2]==='appearance' && !store().campaigns[parts[1]].appearance)store().campaigns[parts[1]].appearance=engine.campaignAppearance(store().campaigns[parts[1]]);
-    valueAt(parts.join('.'))[key]=value;
+    const parent = valueAt(parts.join('.'));
+    if (bannerWidthPath(path) && parent[key] !== value) delete parent[key + 'Width'];
+    parent[key]=value;
   }
   function refreshVisuals() {
     root.querySelectorAll('[data-subcategory-preview]').forEach(target => {
@@ -183,7 +188,11 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     if(target.id==='campaign-product-search') {const i=store().campaigns.findIndex(c=>c.id===selected);root.querySelector('#campaign-product-choices').innerHTML=productChoices(i,target.value);return;}
     if(target.dataset.siteString!==undefined) {const source=Object.keys(store().strings)[Number(target.dataset.siteString)];store().strings[source][target.dataset.locale]=target.value;markDirty();return;}
     if(target.dataset.storePath && !['checkbox','datetime-local'].includes(target.type) && target.tagName!=='SELECT') {
-      const parts=target.dataset.storePath.split('.');const key=parts.pop();setValue(target.dataset.storePath,target.type==='number'?Number(target.value):target.value);markDirty();if(state.view==='campaigns')refreshPreview();else refreshVisuals();
+      const path = target.dataset.storePath;
+      setValue(path,target.type==='number'?Number(target.value):target.value);
+      const widthPath = bannerWidthPath(path);
+      if (widthPath) target.closest('.studio-media-field').querySelector('[data-store-action="prepare-media"]').hidden = !studioMedia.canPrepare(target.value, valueAt(widthPath));
+      markDirty();if(state.view==='campaigns')refreshPreview();else refreshVisuals();
     }
   });
   root.addEventListener('change',async event=>{
@@ -202,7 +211,14 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     if(target.matches('[data-visual-locale]')){previewLocale=target.value;refreshVisuals();return;}
     if(target.matches('[data-visual-device]')){previewDevice=target.value;refreshVisuals();return;}
     if(target.dataset.storeUpload){const file=target.files[0];target.value='';if(!file)return;const path=target.dataset.storeUpload;
-      try{const url=await uploadImage(file);setValue(path,url);markDirty();render();toast(t('Изображение добавлено в черновик.'));}catch(error){toast(error.message,true);}return;}
+      try {
+        const widthPath = bannerWidthPath(path);
+        const result = widthPath ? await studioMedia.uploadResponsive(file, 'banner') : { url: await studioMedia.upload(file) };
+        if (!result?.url) return;
+        setValue(path, result.url);
+        if (widthPath && result.width) setValue(widthPath, result.width);
+        markDirty();render();toast(t('Изображение добавлено в черновик.'));
+      } catch(error){toast(error.message,true);}return;}
 
     if(target.id==='site-text-missing'){onlyMissing=target.checked;textPage=0;render();return;}
     if(target.dataset.storeChoice){const parts=target.dataset.storeChoice.split('.');const key=parts.pop();const parent=valueAt(parts.join('.'));parent[key]=target.checked?[...new Set([...parent[key],target.value])]:parent[key].filter(id=>id!==target.value);markDirty();refreshPreview();return;}
@@ -252,6 +268,20 @@ export function createStoreEditor({ state, escape: e, markDirty, toast, confirmM
     }
     if(action==='reset-campaign-design'){delete s.campaigns[i].appearance;markDirty();render();return;}
     if(action==='clear-media'){setValue(b.dataset.path,'');markDirty();render();return;}
+    if (action === 'prepare-media') {
+      const path = b.dataset.path;
+      const widthPath = bannerWidthPath(path);
+      const source = valueAt(path);
+      if (!widthPath || !studioMedia.canPrepare(source, valueAt(widthPath))) return;
+      try {
+        setValue(widthPath, await studioMedia.prepare(source, 'banner'));
+        markDirty();
+        b.closest('.studio-media-field').querySelector('[data-store-path]').focus();
+        b.hidden = true;
+        toast(t('Миниатюры готовы. Сохраните черновик.'));
+      } catch { /* The upload status already shows the error. */ }
+      return;
+    }
     if(action==='reset-category-design'){delete s.categories[i].appearance;markDirty();render();return;}
     if(action==='select-campaign'){selected=b.dataset.id;previewAt='';render();return;}
     if(action==='text-prev'||action==='text-next'){textPage+=action==='text-prev'?-1:1;render();return;}

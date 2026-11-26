@@ -1,6 +1,6 @@
 <div data-home-block="{{ include.id | escape }}" data-home-type="{{ include.type }}"{% if include.type == 'banner' %} data-studio-heroes{% elsif include.type == 'campaign' %} data-studio-campaigns{% endif %}>
   {% case include.type %}
-  {% when 'banner' %}{% include homepage/promo-block.html source=include.block.sourceId %}
+  {% when 'banner' %}{% include homepage/promo-block.html heroes=include.block.heroes %}
   {% when 'categories' %}{% include homepage/mini-categories.html %}
   {% when 'campaign' %}{% include homepage/campaigns.html source=include.block.sourceId %}
   {% when 'blog' %}{% include blog/section.html slugs=site.data.blog.homepage title="ბლოგი" variant="home" %}

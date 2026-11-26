@@ -18,7 +18,7 @@ const statusBadge = status => `<span class="blog-status" data-status="${status}"
 const dateLabel = date => date ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(date + 'T00:00:00Z')) : '';
 const contains = (values, query) => values.join(' ').toLowerCase().includes(query.trim().toLowerCase());
 
-export function createBlogEditor({ state, markDirty, toast, confirmMessage, uploadImage, icon }) {
+export function createBlogEditor({ state, markDirty, toast, confirmMessage, studioMedia, icon }) {
   const root = document.querySelector('#blog-view');
   const button = (label, attr, style = 'secondary', name = '') =>
     `<button type="button" class="button ${style}" ${attr}>${name ? icon(name) : ''}${l(label)}</button>`;
@@ -52,9 +52,13 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
   const titleOf = article => article.editions[getLocale()]?.title || article.editions.ka.title || article.slug || t('Новая статья');
   const coverSource = value => value.startsWith('/img/') && state.session?.storefrontBase?.startsWith('https://')
     ? new URL(value, state.session.storefrontBase).href : value;
-  const cover = (article, className, alt = '') => blogImage(article.cover)
-    ? `<img class="${className}" src="${e(coverSource(article.cover))}" alt="${e(alt)}">`
-    : `<span class="${className} blog-cover-placeholder" aria-hidden="true">${icon('image')}</span>`;
+  function cover(article, className, alt = '') {
+    if (!blogImage(article.cover)) return `<span class="${className} blog-cover-placeholder" aria-hidden="true">${icon('image')}</span>`;
+    const small = className === 'blog-thumbnail';
+    const card = small || className === 'blog-card-cover';
+    const srcset = card && globalThis.EnkaCardImages.srcset(article.cover, article.coverWidth, 'cover');
+    return `<img class="${className}" src="${e(coverSource(article.cover))}" alt="${e(alt)}"${srcset ? ` loading="lazy" srcset="${e(srcset)}" sizes="auto, ${small ? 58 : 400}px"` : ''}>`;
+  }
 
   function render() {
     root.hidden = state.view !== 'blog';
@@ -177,6 +181,7 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
         <section class="blog-surface blog-side-card"><h2 tabindex="-1" data-blog-cover-heading>${l('Обложка')}</h2>
           <div data-blog-cover-preview>${coverPreview(article)}</div>
           <div class="blog-cover-actions">${mediaUpload('cover')}
+            ${button('Подготовить миниатюры', `data-blog-action="prepare-cover"${studioMedia.canPrepare(article.cover, article.coverWidth) ? '' : ' hidden'}`)}
             ${iconButton('Убрать обложку', 'trash', `data-blog-action="remove-cover"${article.cover ? '' : ' hidden'}`)}</div>
           <details class="blog-options" data-blog-cover-options><summary>${l('Адрес и описание')}${icon('chevron-down')}</summary>
             <div class="blog-fields-stack">
@@ -400,6 +405,7 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
     }
     if (target.dataset.blogField) {
       const key = target.dataset.blogField;
+      if (key === 'cover' && article.cover !== value) delete article.coverWidth;
       article[key] = value;
       if (key === 'status') {
         if (value === 'published' && !article.date) {
@@ -410,8 +416,7 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
       }
       if (key === 'slug') root.querySelector('[data-blog-path]').textContent = validSlug(value) ? blogPath('ka', value) : t('Пример адреса: /blog/kak-vybrat-kofemashinu/');
       if (key === 'cover') {
-        root.querySelector('[data-blog-cover-preview]').innerHTML = coverPreview(article);
-        root.querySelector('[data-blog-action="remove-cover"]').hidden = !value;
+        refreshCover(article);
       }
       if (key === 'homepage') root.querySelector('[data-blog-rank]').hidden = !value;
     } else if (target.dataset.blogEdition) {
@@ -440,23 +445,33 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
     if (target.dataset.blogUpload === undefined || !target.files?.length) return;
     const block = target.dataset.blogUpload === 'cover' ? null : edition().blocks[Number(target.dataset.blogUpload)];
     try {
-      const url = await uploadImage(target.files[0]);
-      if (!url) return;
+      const file = target.files[0];
       if (block) {
+        const url = await studioMedia.upload(file);
+        if (!url) return;
         block.url = url;
         const section = target.closest('[data-blog-block]');
         section.querySelector('[data-blog-image-preview]').innerHTML = blockImage(block);
         section.querySelector('[data-blog-block-field="url"]').value = url;
       } else {
-        article.cover = url;
-        root.querySelector('[data-blog-field="cover"]').value = url;
-        root.querySelector('[data-blog-cover-preview]').innerHTML = coverPreview(article);
-        root.querySelector('[data-blog-action="remove-cover"]').hidden = false;
+        const result = await studioMedia.uploadResponsive(file, 'cover');
+        if (!result?.url) return;
+        if (article.cover !== result.url) delete article.coverWidth;
+        article.cover = result.url;
+        if (result.width) article.coverWidth = result.width;
+        root.querySelector('[data-blog-field="cover"]').value = result.url;
+        refreshCover(article);
       }
       markDirty();
       target.value = '';
     } catch { target.value = ''; }
   });
+
+  function refreshCover(article) {
+    root.querySelector('[data-blog-cover-preview]').innerHTML = coverPreview(article);
+    root.querySelector('[data-blog-action="remove-cover"]').hidden = !article.cover;
+    root.querySelector('[data-blog-action="prepare-cover"]').hidden = !studioMedia.canPrepare(article.cover, article.coverWidth);
+  }
 
   root.addEventListener('toggle', event => {
     if (event.target.matches('[data-blog-matches]')) matchOpen = event.target.open;
@@ -512,6 +527,17 @@ export function createBlogEditor({ state, markDirty, toast, confirmMessage, uplo
       return;
     }
     if (!article) return;
+    if (action === 'prepare-cover') {
+      if (!studioMedia.canPrepare(article.cover, article.coverWidth)) return;
+      try {
+        article.coverWidth = await studioMedia.prepare(article.cover, 'cover');
+        markDirty();
+        root.querySelector('[data-blog-upload="cover"]').focus();
+        target.hidden = true;
+        toast(t('Миниатюры готовы. Сохраните черновик.'));
+      } catch { /* The upload status already shows the error. */ }
+      return;
+    }
     if (action === 'jump-cover') {
       const heading = root.querySelector('[data-blog-cover-heading]');
       heading.focus({ preventScroll: true });

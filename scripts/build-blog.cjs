@@ -1,5 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { buildLocalImageSrcset } = require('./build-image-variants.cjs');
+const imageSrcset = globalThis.EnkaCardImages.srcset;
 
 const archiveText = {
   ka: { title: 'ბლოგი', description: 'ტექნიკის შერჩევის გზამკვლევები და პრაქტიკული რჩევები ENKA Electronics-ისგან.' },
@@ -17,6 +19,7 @@ async function buildBlog(articles, products, root, localizedProducts = {}) {
   const pages = {};
   const cards = {};
   const byProduct = Object.create(null);
+  const localCovers = new Map();
   if (published.length) fs.mkdirSync(directory, { recursive: true });
   const makePage = (file, metadata) => {
     current.add(file);
@@ -25,12 +28,14 @@ async function buildBlog(articles, products, root, localizedProducts = {}) {
   };
   const alternatePaths = (locales, slug) => Object.fromEntries(locales.map(locale => [locale, blogPath(locale, slug)]));
   for (const article of published) {
-    const { slug, cover, date, author, updated } = article;
+    const { slug, cover, coverWidth, date, author, updated } = article;
     const locales = blogLocales.filter(locale => article.editions[locale]);
     const alternates = alternatePaths(locales, slug);
     const matches = products.filter(product => articleMatches(article, product));
     const relatedProducts = matches.slice(0, 6).map(({ id, name, images }) => ({ id, name, image: images?.[0] }));
-    cards[slug] = { cover, date, editions: {} };
+    if (!localCovers.has(cover)) localCovers.set(cover, await buildLocalImageSrcset(root, cover, 'cover'));
+    const coverSrcset = localCovers.get(cover) || imageSrcset(cover, coverWidth, 'cover');
+    cards[slug] = { cover, coverSrcset, date, editions: {} };
     for (const locale of locales) {
       const edition = article.editions[locale];
       const key = locale + '-' + slug;

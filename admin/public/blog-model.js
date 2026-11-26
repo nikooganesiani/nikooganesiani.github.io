@@ -1,6 +1,8 @@
 import './store-engine.js';
+import './card-images.js';
 
 const engine = globalThis.EnkaStoreEngine;
+const { originalName, validWidth } = globalThis.EnkaCardImages;
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const text = (value, limit) => typeof value === 'string' && value.length <= limit;
 export const escapeBlog = value => String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -58,6 +60,7 @@ export function validateBlog(articles, publishing = false) {
     if ((live || article.date !== '') && !validDate(article.date)) report('укажите дату публикации.');
     if (article.updated !== '' && (!validDate(article.updated) || article.updated < article.date)) report('дата обновления должна быть не раньше даты публикации.');
     if (!text(article.author, 150) || (article.cover !== '' && !blogImage(article.cover))) report('проверьте автора и ссылку на обложку.');
+    if (article.coverWidth !== undefined && (!originalName(article.cover) || !validWidth(article.coverWidth))) report('проверьте данные миниатюр обложки.');
     if (typeof article.homepage !== 'boolean' || !Number.isInteger(article.rank) || article.rank < 0 || article.rank > 9999) report('приоритет показа должен быть от 0 до 9999.');
     if (!object(article.placements) || placementKeys.some(key => !Array.isArray(article.placements[key]) ||
       article.placements[key].length > 2000 || article.placements[key].some(value => !text(value, 300) || !value.trim()))) report('проверьте привязки к каталогу.');
@@ -95,12 +98,13 @@ export function validateBlog(articles, publishing = false) {
 
 export function publishedArticles(articles = []) {
   return articles.filter(article => article.status === 'published').map(article => {
-    const { id, slug, status, date, updated, author, cover, homepage, rank, placements } = article;
+    const { id, slug, status, date, updated, author, cover, coverWidth, homepage, rank, placements } = article;
     const editions = Object.fromEntries(blogLocales.filter(locale => locale === 'ka' || article.editions[locale]?.enabled).map(locale => {
       const { enabled, title, summary, seoTitle, seoDescription, coverAlt, blocks } = article.editions[locale];
       return [locale, { enabled, title, summary, seoTitle, seoDescription, coverAlt, blocks: blocks.map(({ type, text, url, alt }) => ({ type, text, url, alt })) }];
     }));
-    return { id, slug, status, date, updated, author, cover, homepage, rank, placements: Object.fromEntries(placementKeys.map(key => [key, placements[key]])), editions };
+    return { id, slug, status, date, updated, author, cover, ...(validWidth(coverWidth) ? { coverWidth } : {}),
+      homepage, rank, placements: Object.fromEntries(placementKeys.map(key => [key, placements[key]])), editions };
   });
 }
 

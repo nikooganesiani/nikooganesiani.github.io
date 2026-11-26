@@ -6,7 +6,7 @@ import { initStudioLanguage, getLocale } from './studio-i18n.js';
 import './card-images.js';
 
 initStudioLanguage();
-const { originalName, validWidth, variantWidths } = globalThis.EnkaCardImages;
+const { originalName, validWidth, variantWidths, animatedWebP } = globalThis.EnkaCardImages;
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -39,8 +39,14 @@ const STATE_NAMES = { missing: 'Нет перевода', stale: 'Оригина
 const money = value => Number.isFinite(priceOf(value)) ? new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 2 }).format(priceOf(value)) + ' ₾' : '—';
 const date = value => value ? new Intl.DateTimeFormat(getLocale(), { dateStyle: 'medium', timeStyle: 'short', timeZone:'Asia/Tbilisi' }).format(new Date(value)) : t('Ещё не опубликован');
 const state = { server: null, document: null, session: null, taxonomy: [], dirty: false, busy: false, page: 1, pageSize: 8, view: 'catalog', filter: 'all', query: '', category: '', sort: 'default', product: null, editorTab: 'base', previewLocale: 'ka', originalIds: new Set() };
-const storeEditor = createStoreEditor({ state, escape:e, markDirty, toast, confirmMessage, renderApp:render, uploadImage, icon });
-const blogEditor = createBlogEditor({ state, markDirty, toast, confirmMessage, uploadImage, icon });
+const studioMedia = {
+  upload: uploadImage,
+  uploadResponsive: (file, profile) => busy(t('Подготавливаем и загружаем изображение…'), () => uploadResponsivePhoto(file, profile)),
+  canPrepare: (source, width) => !!studioImageName(source) && !validWidth(width),
+  prepare: (source, profile) => busy(t('Подготавливаем миниатюры…'), () => prepareImageVariants(source, profile))
+};
+const storeEditor = createStoreEditor({ state, escape:e, markDirty, toast, confirmMessage, renderApp:render, studioMedia, icon });
+const blogEditor = createBlogEditor({ state, markDirty, toast, confirmMessage, studioMedia, icon });
 let toastTimer;
 function toast(message, error = false) { clearTimeout(toastTimer); $('#toast').textContent = t(message); $('#toast').classList.toggle('error', error); $('#toast').hidden = false; toastTimer = setTimeout(() => { $('#toast').hidden = true; }, error ? 8500 : 4300); }
 function showAlert(message) {
@@ -380,13 +386,16 @@ async function convertImage(file) {
   } finally { bitmap.close(); }
 }
 
-async function appendCardImages(form, original) {
+async function appendImageVariants(form, original, profile) {
+  if (profile !== 'card' && animatedWebP(new Uint8Array(await original.slice(0, 21).arrayBuffer()))) {
+    throw new Error(t('Для анимированного изображения используется оригинал.'));
+  }
   const bitmap = await createImageBitmap(original);
   try {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     const thumbnails = [];
-    for (const width of variantWidths(bitmap.width)) {
+    for (const width of variantWidths(bitmap.width, profile)) {
       canvas.width = width;
       canvas.height = Math.max(1, Math.round(bitmap.height * width / bitmap.width));
       context.imageSmoothingQuality = 'high';
@@ -403,8 +412,10 @@ async function appendCardImages(form, original) {
   } finally { bitmap.close(); }
 }
 
-async function postProductPhoto(form) {
-  const response = await fetch('/api/product-photo', { method: 'POST', body: form, signal: AbortSignal.timeout(30000) });
+const photoRoutes = { card: '/api/product-photo', banner: '/api/banner-image', cover: '/api/blog-cover' };
+
+async function postResponsivePhoto(form, profile) {
+  const response = await fetch(photoRoutes[profile], { method: 'POST', body: form, signal: AbortSignal.timeout(30000) });
   const result = await response.json();
   if (!response.ok) {
     const error = new Error(result.error || t('Ошибка загрузки.'));
@@ -414,30 +425,47 @@ async function postProductPhoto(form) {
   return result;
 }
 
-async function uploadProductPhoto(file) {
+async function uploadResponsivePhoto(file, profile) {
   const original = await convertImage(file);
   const form = new FormData();
   form.set('file', original, 'product.webp');
-  try { await appendCardImages(form, original); }
-  catch { return postProductPhoto(form); }
-  try { return await postProductPhoto(form); }
+  try { await appendImageVariants(form, original, profile); }
+  catch { return postResponsivePhoto(form, profile); }
+  try { return await postResponsivePhoto(form, profile); }
   catch (error) {
     if (error.status !== 422 || [...form.keys()].length === 1) throw error;
     // An unusual source can still be saved if its thumbnails fail validation.
     const originalOnly = new FormData();
     originalOnly.set('file', original, 'product.webp');
-    return postProductPhoto(originalOnly);
+    return postResponsivePhoto(originalOnly, profile);
   }
 }
 
-function pendingCardImages() {
+function studioImageName(source) {
   const base = state.session?.publicImagesBase?.replace(/\/$/, '') || '/media';
+  const name = originalName(source);
+  return name && source === `${base}/${name}` ? name : null;
+}
+
+async function prepareImageVariants(source, profile) {
+  const name = studioImageName(source);
+  if (!name) throw new Error(t('Не удалось подготовить миниатюру.'));
+  const response = await fetch(`/media/${name}`, { signal: AbortSignal.timeout(15000) });
+  if (!response.ok) throw new Error(t('Не удалось подготовить миниатюру.'));
+  const form = new FormData();
+  form.set('source', source);
+  await appendImageVariants(form, await response.blob(), profile);
+  const result = await postResponsivePhoto(form, profile);
+  if (!validWidth(result.width)) throw new Error(t('Не удалось подготовить миниатюру.'));
+  return result.width;
+}
+
+function pendingCardImages() {
   const pending = new Map();
   for (const product of state.document.catalog.products) for (const source of new Set(product.images)) {
-    const name = originalName(source);
-    if (!name || source !== `${base}/${name}` || validWidth(product.cardImages?.[source])) continue;
-    if (!pending.has(source)) pending.set(source, { name, products: [] });
-    pending.get(source).products.push(product);
+    if (!studioMedia.canPrepare(source, product.cardImages?.[source])) continue;
+    if (!pending.has(source)) pending.set(source, []);
+    pending.get(source).push(product);
   }
   return pending;
 }
@@ -450,16 +478,10 @@ $('#prepare-card-images').onclick = async () => {
       let next = 0, finished = 0, failed = 0;
       const run = async () => {
         while (next < jobs.length) {
-          const [source, { name, products }] = jobs[next++];
+          const [source, products] = jobs[next++];
           try {
-            const response = await fetch(`/media/${name}`, { signal: AbortSignal.timeout(15000) });
-            if (!response.ok) throw new Error();
-            const form = new FormData();
-            form.set('source', source);
-            await appendCardImages(form, await response.blob());
-            const result = await postProductPhoto(form);
-            if (!validWidth(result.width)) throw new Error();
-            for (const product of products) (product.cardImages ||= {})[source] = result.width;
+            const width = await prepareImageVariants(source, 'card');
+            for (const product of products) (product.cardImages ||= {})[source] = width;
             markDirty();
           } catch { failed++; }
           $('#busy-text').textContent = `${t('Подготавливаем миниатюры…')} ${++finished} / ${jobs.length}`;
@@ -478,7 +500,7 @@ $('#image-file').addEventListener('change', async event => {
     let missingThumbnails = false;
     for (const file of files) {
       if (product.images.length >= 30) throw new Error(t('Максимум 30 изображений на товар.'));
-      const result = await uploadProductPhoto(file);
+      const result = await uploadResponsivePhoto(file, 'card');
       if (!product.images.includes(result.url)) product.images.push(result.url);
       if (validWidth(result.width)) (product.cardImages ||= {})[result.url] = result.width;
       else missingThumbnails = true;

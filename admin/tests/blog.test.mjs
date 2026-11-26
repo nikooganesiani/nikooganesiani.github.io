@@ -68,6 +68,8 @@ test('The public catalog gives the build a matching release while keeping drafts
   const env = { CATALOG_KV: { async get(key) { return kv.get(key); } } };
   const getCatalog = suffix => api.fetch(new Request('https://catalog.example/catalog' + suffix), env);
   const article = liveArticle();
+  article.cover = 'https://images.example/0ad4c817-c4e4-47ef-be7b-6d76ba7a9db3.webp';
+  article.coverWidth = 1200;
   const hidden = liveArticle('hidden');
   hidden.status = 'archived';
   const draft = newArticle();
@@ -79,7 +81,9 @@ test('The public catalog gives the build a matching release while keeping drafts
   assert.deepEqual(importDocument({ products }, document).blog, document.blog);
   await service.publish({ expectedRevision: 2 }, 'Editor');
   assert.equal((await (await getCatalog('')).json())._enkaBlog, undefined);
-  assert.deepEqual((await (await getCatalog('?include=blog')).json())._enkaBlog.map(post => post.slug), ['coffee-guide']);
+  const published = (await (await getCatalog('?include=blog')).json())._enkaBlog;
+  assert.deepEqual(published.map(post => post.slug), ['coffee-guide']);
+  assert.equal(published[0].coverWidth, 1200);
   assert.equal((await (await getCatalog('')).json())._enkaBlog, undefined);
   const changed = service.view().document;
   changed.blog[0].slug = 'new-address';
@@ -96,6 +100,8 @@ test('Static generation makes localized article routes, sorts cards and removes 
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.mkdirSync(path.join(root, '_data'));
   const article = liveArticle();
+  article.cover = 'https://images.example/0ad4c817-c4e4-47ef-be7b-6d76ba7a9db3.webp';
+  article.coverWidth = 1200;
   article.placements.categoryIds = ['kitchen'];
   article.placements.excludeIds = ['b'];
   Object.assign(article.editions.en, { enabled: true, title: 'Coffee guide', summary: 'Short summary',
@@ -111,7 +117,9 @@ test('Static generation makes localized article routes, sorts cards and removes 
   assert.deepEqual(data.products.a, ['coffee-guide']);
   assert.equal(data.products.b, undefined);
   assert.equal(data.cards['coffee-guide'].editions.en.url, '/en/blog/coffee-guide/');
+  assert.match(data.cards['coffee-guide'].coverSrcset, /-cover-v1-240\.webp 240w/);
   const page = data.pages['en-coffee-guide'];
+  assert.equal(page.cover, article.cover);
   assert.equal(page.products[0].id, 'a');
   assert.deepEqual(page.toc, [{ id: 'section-2', text: 'Check the size' }, { id: 'section-3', text: 'Check the filter' }]);
   for (const { id } of page.toc) assert.ok(page.html.includes('<h2 id="' + id + '">'));

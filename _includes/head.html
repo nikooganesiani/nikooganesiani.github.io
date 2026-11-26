@@ -95,7 +95,7 @@
     <meta name="description" content="{{ seo_description | strip_html | escape }}"{% if page.blog_locale %} translate="no"{% endif %}>
     {% endif %}
     <link rel="preload" href="/fonts/GoogleSansVariable.woff2" as="font" type="font/woff2" crossorigin>
-    {% unless is_product_page %}<link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">{% endunless %}
+    {% if is_product_page == false and page.is_home != true %}<link rel="preload" href="/img/logohead.webp" as="image" fetchpriority="high">{% endif %}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="preconnect" href="https://img.enkaelectronics.com.ge" crossorigin>
     {{ lcp_preload }}
@@ -106,6 +106,7 @@
     <script>
     window.CATALOG_STRUCTURE = {{ store_catalog | jsonify | replace: '<', '\u003c' }};
     window.ENKA_STORE = {{ site.data.studio.store | jsonify | replace: '<', '\u003c' }};
+    {% if page.is_home %}window.ENKA_BANNER_SRCSETS = {{ site.data.studio.bannerSrcsets | jsonify | replace: '<', '\u003c' }};{% endif %}
     window.ENKA_COMPANY = {{ site.data.studio.company | default: site.data.info.company | jsonify | replace: '<', '\u003c' }};
     window.ENKA_CATALOG_LABELS_BY_LOCALE = {{ site.data.storefront_products | jsonify | replace: '<', '\u003c' }};
     window.ENKA_CATALOG_LABELS = window.ENKA_CATALOG_LABELS_BY_LOCALE?.[{{ page_locale | jsonify }}];

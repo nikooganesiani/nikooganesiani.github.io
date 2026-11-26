@@ -1,15 +1,19 @@
 {% assign store_heroes = site.data.promo_block %}
-{% if site.data.studio.store %}{% assign store_heroes = site.data.studio.heroes %}{% endif %}
-{% if include.source != nil and include.source != '' %}{% assign store_heroes = store_heroes | where: 'id', include.source %}{% endif %}
+{% if site.data.studio.store %}{% assign store_heroes = include.heroes %}{% endif %}
+{% assign banner_locale = page.storefront_locale | default: 'ka' %}
+{% assign banner_sizes = site.data.studio.bannerSizes.single %}
+{% if store_heroes.size > 1 %}{% assign banner_sizes = site.data.studio.bannerSizes.carousel %}{% endif %}
 {% if store_heroes and store_heroes.size > 0 %}
 <section class="relative w-full my-3 select-none" aria-roledescription="კარუსელი" aria-label="სპეციალური შეთავაზებები" data-promo-block>
   <p class="sr-only">ბანერებს შორის გადასასვლელად გამოიყენეთ მარცხენა და მარჯვენა ისრები.</p>
   <div class="sr-only" data-promo-status aria-live="polite" aria-atomic="true"></div>
   <div data-promo-track>
     {% for item in store_heroes %}
-      <div data-promo-slide data-title="{{ item.title | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ store_heroes.size }}">
-        {% if item.html %}{{ item.html }}{% else %}
-        <a href="{{ item.url | escape }}" class="enka-hero enka-hero-image promo-fallback" aria-label="{{ item.title | escape }}" draggable="false"><picture><img src="{{ item.image | escape }}" data-catalog-content alt="{{ item.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" decoding="async" draggable="false"></picture></a>
+      {% assign banner_title = item.title[banner_locale] | default: item.title %}
+      <div data-promo-slide data-title="{{ banner_title | escape }}" role="group" aria-roledescription="სლაიდი" aria-label="{{ forloop.index }} / {{ store_heroes.size }}">
+        {% if item.html %}{{ item.html[banner_locale] }}{% else %}
+        {% assign banner_srcset = site.data.studio.bannerSrcsets[item.image] %}
+        <a href="{{ item.url | escape }}" class="enka-hero enka-hero-image promo-fallback" aria-label="{{ banner_title | escape }}" draggable="false"><picture><img src="{{ item.image | escape }}"{% if banner_srcset %} srcset="{{ banner_srcset | escape }}" sizes="{{ banner_sizes }}" onerror="this.onerror=null;this.removeAttribute('srcset')"{% endif %} data-catalog-content alt="{{ banner_title | escape }}"{% if forloop.first %} loading="eager" fetchpriority="high"{% else %} loading="lazy" decoding="async"{% endif %} draggable="false"></picture></a>
         {% endif %}
       </div>
     {% endfor %}
@@ -18,7 +22,7 @@
   <button type="button" data-promo-step="-1" aria-label="წინა შეთავაზება">{% include icons.html name='chevron-left' size=20 %}</button>
   <button type="button" data-promo-step="1" aria-label="შემდეგი შეთავაზება">{% include icons.html name='chevron-right' size=20 %}</button>
   <div data-promo-dots role="group" aria-label="აირჩიეთ შეთავაზება">
-    {% for item in store_heroes %}<button type="button" data-promo-dot aria-label="{{ forloop.index }} / {{ store_heroes.size }} — {{ item.title | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"></button>{% endfor %}
+    {% for item in store_heroes %}<button type="button" data-promo-dot aria-label="{{ forloop.index }} / {{ store_heroes.size }} — {{ item.title[banner_locale] | default: item.title | escape }}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"></button>{% endfor %}
   </div>
   {% endif %}
 </section>
