@@ -13,6 +13,7 @@
 /.pnpm-store/
 /vendor/
 /assets/css/style.css
+/assets/css/home.generated.css
 /assets/compiled/
 /assets/i18n/data.js
 /assets/i18n/ru.*.json

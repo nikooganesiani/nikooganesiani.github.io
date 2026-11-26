@@ -572,7 +572,7 @@ html:has(#site-header form[role="search"]:focus-within) {
   ::view-transition-old(root) { display: none; }
 
   ::view-transition-new(root) {
-    animation: page-enter 900ms ease-in-out both;
+    animation: page-enter 240ms ease-out both;
     mix-blend-mode: normal;
   }
 }

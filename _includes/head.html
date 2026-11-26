@@ -46,11 +46,13 @@
     })();
     </script>
     <script src="{{ '/assets/js/global/theme.js' | relative_url }}"></script>
-    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
     {% if page.is_home %}
+    <link rel="stylesheet" href="{{ '/assets/css/home.generated.css' | relative_url }}">
     {% for preload in site.data.studio.bannerPreloads %}
     <link rel="preload" as="image" fetchpriority="high"{% if preload.media %} media="{{ preload.media | escape }}"{% endif %}{% if preload.srcset %} imagesrcset="{{ preload.srcset | escape }}" imagesizes="{{ preload.sizes | escape }}"{% else %} href="{{ preload.url | escape }}"{% endif %}>
     {% endfor %}
+    {% else %}
+    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
     {% endif %}
     {% if page.robots %}<meta name="robots" content="{{ page.robots | escape }}">{% endif %}
     <link rel="canonical" href="{{ page.canonical_path | default: page.url | absolute_url }}">

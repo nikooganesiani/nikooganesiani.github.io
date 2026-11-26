@@ -13,7 +13,7 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
   }
   const directory = path.join(root, 'assets/compiled');
   fs.mkdirSync(directory, { recursive: true });
-  const manifest = { bundles: {}, styles: {}, inline: {}, data: [] };
+  const manifest = { bundles: {}, styles: {}, lazy: {}, inline: {}, data: [] };
   const transformed = new Map();
   function emit(code, extension, sources) {
     const url = '/assets/compiled/' + digest(code) + '.' + extension;
@@ -21,8 +21,13 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
     if (sources) manifest.bundles[url] = sources;
     return url;
   }
-  const css = '/assets/css/style.css';
-  manifest.styles[css] = emit(fs.readFileSync(path.join(root, css)), 'css');
+  const ranker = '/assets/js/global/catalog-search.js';
+  const emitRanker = () => manifest.lazy[ranker] ||= emit(minify(fs.readFileSync(path.join(root, ranker), 'utf8')), 'js', [ranker]);
+  for (const name of ['style.css', 'home.generated.css']) {
+    const source = '/assets/css/' + name;
+    const file = path.join(root, source);
+    if (name === 'style.css' || fs.existsSync(file)) manifest.styles[source] = emit(fs.readFileSync(file), 'css');
+  }
   // Local service mocks and the analytics script's DOM identity stay intact.
   const excluded = new Set(['/assets/js/main/config.js', '/assets/js/global/order-intake.js', '/capi.js']);
   const boundaries = new Set(['/assets/js/main/catalog-listing.js', '/assets/js/global/mobile-nav.js', '/assets/js/global/recommendation-engine.js']);
@@ -34,6 +39,9 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
       if (entry.isDirectory()) { if (entry.name !== 'assets') visit(file); continue; }
       if (!entry.name.endsWith('.html')) continue;
       let html = fs.readFileSync(file, 'utf8');
+      html = html.replaceAll(`data-catalog-search-src="${ranker}"`, () => `data-catalog-search-src="${emitRanker()}"`)
+        .replaceAll(`<script src="${ranker}" defer></script>`, () => `<script src="${emitRanker()}" defer></script>`);
+      const standalone = new Set([...excluded, ...Object.values(manifest.lazy)]);
       // Shared build-time store data belongs in the browser cache, rather than
       // being parsed from a fresh copy of every product and information page.
       html = html.replace(/<script>\s*(window\.CATALOG_STRUCTURE\s*=[\s\S]*?)<\/script>/g, (_, code) => {
@@ -52,11 +60,11 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
       const groups = []; let group = [];
       for (const match of matches) {
         const previous = group.at(-1);
-        if (excluded.has(match[1]) || manifest.data.includes(match[1]) || boundaries.has(match[1]) || (previous && html.slice(previous.index + previous[0].length, match.index).trim())) {
+        if (standalone.has(match[1]) || manifest.data.includes(match[1]) || boundaries.has(match[1]) || (previous && html.slice(previous.index + previous[0].length, match.index).trim())) {
           if (group.length) groups.push(group);
           group = [];
         }
-        if (!excluded.has(match[1]) && !manifest.data.includes(match[1])) group.push(match);
+        if (!standalone.has(match[1]) && !manifest.data.includes(match[1])) group.push(match);
       }
       if (group.length) groups.push(group);
       for (const items of groups.reverse()) {
@@ -68,7 +76,9 @@ function optimizeSite(root = path.resolve(__dirname, '../_site')) {
         const start = items[0].index; const last = items.at(-1);
         html = html.slice(0, start) + `<script src="${url}" defer></script>` + html.slice(last.index + last[0].length);
       }
-      html = html.replaceAll(`href="${css}"`, `href="${manifest.styles[css]}"`);
+      html = html.replace(/href="(\/assets\/css\/[^"]+\.css)"/g, (attribute, source) => (
+        manifest.styles[source] ? `href="${manifest.styles[source]}"` : attribute
+      ));
       fs.writeFileSync(file, html); pages++;
     }
   }

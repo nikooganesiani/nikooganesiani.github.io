@@ -1,8 +1,9 @@
-<template id="site-automatic-languages">
-  {% for language in site.data.languages offset:3 %}
-  <button type="button" class="language-option notranslate flex items-center gap-3 w-full min-h-11 p-2.5 border-0 rounded-control bg-transparent text-[color:light-dark(#343e4c,var(--color-night-ink))] text-start [font:inherit] cursor-pointer [&_>_span[dir]]:flex-1 [&_>_span[dir]]:min-w-0 hover:bg-surface [&[aria-pressed=true]]:bg-[color:light-dark(#eef4ff,var(--color-night-blue))] [&[aria-pressed=true]]:text-accent forced-colors:[&[aria-pressed=true]]:[outline:1px_solid_Highlight]" translate="no" data-language="{{ language.code }}" lang="{{ language.code }}" aria-pressed="false">
-    <img class="block w-6 h-4.5 flex-none rounded-sm object-cover shadow-[0_0_0_1px_rgb(0_0_0_/_9%)]" src="{{ '/img/flags/' | append: language.flag | append: '.svg' | relative_url }}" width="24" height="18" alt="" loading="lazy">
-    <span dir="auto">{{ language.name }}</span><span class="text-[color:light-dark(#8d96a4,var(--color-night-muted))] text-[length:10px]">{{ language.code | upcase }}</span>{% include icons.html name='check' size=16 class='flex-none text-accent invisible [.language-option[aria-pressed=true]_&]:visible' %}
+<template id="site-language-option" data-flag-directory="{{ '/img/flags/' | relative_url }}">
+  <button type="button" class="language-option notranslate flex items-center gap-3 w-full min-h-11 p-2.5 border-0 rounded-control bg-transparent text-[color:light-dark(#343e4c,var(--color-night-ink))] text-start [font:inherit] cursor-pointer [&_>_span[dir]]:flex-1 [&_>_span[dir]]:min-w-0 hover:bg-surface [&[aria-pressed=true]]:bg-[color:light-dark(#eef4ff,var(--color-night-blue))] [&[aria-pressed=true]]:text-accent forced-colors:[&[aria-pressed=true]]:[outline:1px_solid_Highlight]" translate="no" aria-pressed="false">
+    <img class="block w-6 h-4.5 flex-none rounded-sm object-cover shadow-[0_0_0_1px_rgb(0_0_0_/_9%)]" width="24" height="18" alt="" loading="lazy">
+    <span dir="auto"></span><span data-language-abbreviation class="text-[color:light-dark(#8d96a4,var(--color-night-muted))] text-[length:10px]"></span>{% include icons.html name='check' size=16 class='flex-none text-accent invisible [.language-option[aria-pressed=true]_&]:visible' %}
   </button>
-  {% endfor %}
 </template>
+<script type="application/json" id="site-automatic-languages">
+  {{ site.data.languages | slice: 3, site.data.languages.size | jsonify | replace: '<', '\u003c' }}
+</script>

@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@11.25.0",
   "scripts": {
-    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify",
+    "build:css": "tailwindcss -i ./assets/css/input.css -o ./assets/css/style.css --minify && tailwindcss -i ./assets/css/home.css -o ./assets/css/home.generated.css --minify",
     "check": "node --test tests/*.test.cjs admin/tests/*.test.mjs",
     "check:site": "node scripts/check-site.cjs",
     "generate": "node generate_pages.js",

@@ -13,6 +13,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const productUrl = id => localize('/product/' + encodeURIComponent(id) + '/');
   let history = { queries: [], products: [] };
   let storageUnavailable = false;
+  let rankerPromise;
+
+  function loadRanker() {
+    if (window.searchCatalog) return Promise.resolve(window.searchCatalog);
+    if (rankerPromise) return rankerPromise;
+    const source = document.documentElement.dataset.catalogSearchSrc;
+    if (!source) return Promise.reject(new Error('Catalog search unavailable'));
+    rankerPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const finish = () => {
+        clearTimeout(timer);
+        if (window.searchCatalog) resolve(window.searchCatalog);
+        else {
+          script.remove();
+          reject(new Error('Catalog search unavailable'));
+        }
+      };
+      const timer = setTimeout(finish, 10000);
+      script.src = source;
+      script.onload = script.onerror = finish;
+      document.head.append(script);
+    }).catch(error => {
+      rankerPromise = undefined;
+      throw error;
+    });
+    return rankerPromise;
+  }
 
   function productImage(product) {
     return (Array.isArray(product.images) && product.images[0]) || product.image;
@@ -262,9 +289,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const isCurrent = () => request === revision && cleanQuery(input.value) === query;
       results.setAttribute('aria-busy', 'true');
       try {
-        const { products } = await window.fetchCatalogCached();
+        const [{ products }, rank] = await Promise.all([window.fetchCatalogCached(), loadRanker()]);
         if (!isCurrent()) return;
-        const found = window.searchCatalog(products, query);
+        const found = rank(products, query);
         results.removeAttribute('aria-busy');
         lastQuery = query;
         if (!found.length) {
@@ -302,6 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
       clear?.classList.toggle('show', !!input.value);
       if (composing) return;
       if (!cleanQuery(input.value)) { renderHistory(); return; }
+      // Fetch during the typing debounce so ranking is ready when results are needed.
+      loadRanker().catch(() => {});
       message('ძიება…', { loading: true });
       timer = setTimeout(render, 180);
     }
@@ -312,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else schedule();
     }
 
+    input.addEventListener('focus', () => { loadRanker().catch(() => {}); }, { once: true });
     input.addEventListener('input', schedule);
     input.addEventListener('compositionstart', () => { composing = true; dismiss(); });
     input.addEventListener('compositionend', () => { composing = false; schedule(); });

@@ -1,0 +1,17 @@
+@import "./input.css";
+
+@source not "../../_pages";
+@source not "../../info";
+@source not "../../_layouts/blog-article.html";
+@source not "../../_layouts/blog-index.html";
+@source not "../../_layouts/info.html";
+@source not "../../_layouts/product.html";
+@source not "../../_includes/faq";
+@source not "../../_includes/listing";
+@source not "../../_includes/pages";
+@source not "../../_includes/product";
+@source not "../../_includes/personalization-controls.html";
+@source not "../js/info.js";
+@source not "../js/product/{catalog-loader,inline-order,tracking,zoom-modal}.js";
+@source not "../js/main/{catalog-listing,categorypage,searchpage}.js";
+@source not "../js/global/personalization-controls.js";

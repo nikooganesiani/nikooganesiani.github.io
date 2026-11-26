@@ -5,10 +5,11 @@
   let current; let products = []; let signature = JSON.stringify(window.ENKA_STORE || ''); let productSignature = ''; let timer;
   const rowMarkup = new WeakMap();
   const renderedBanners = new WeakMap();
-  const fallbackStructure = structuredClone(window.CATALOG_STRUCTURE || {});
+  let fallbackStructure;
   const locale = () => window.enkaI18n?.locale || 'ka';
   const label = value => engine.text(value, locale());
   function categories(store) {
+    fallbackStructure ||= structuredClone(window.CATALOG_STRUCTURE || {});
     const next = engine.structure(store, locale(), fallbackStructure);
     const structure = window.CATALOG_STRUCTURE ||= {};
     Object.keys(structure).forEach(key => delete structure[key]); Object.assign(structure,next);
@@ -153,12 +154,13 @@
       render(changed || first && locale()!=='ka');schedule();
     }
   };
-  if (window.ENKA_STORE) {
+  const initialBanners = document.querySelectorAll('[data-home-layout] > [data-studio-heroes]');
+  if (window.ENKA_STORE && initialBanners.length) {
     const blocks = engine.homeLayout(window.ENKA_STORE);
     const offers = engine.banners(window.ENKA_STORE);
     const priority = engine.priorityBanner(blocks, offers);
     // The initial HTML already includes the selected image for this release and language.
-    for (const slot of document.querySelectorAll('[data-home-layout] > [data-studio-heroes]')) {
+    for (const slot of initialBanners) {
       const block = blocks.find(block => block.id === slot.dataset.homeBlock);
       if (block) renderedBanners.set(slot, bannerSignature(engine.bannerOffers(block, offers), block.id === priority));
     }

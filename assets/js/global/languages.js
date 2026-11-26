@@ -3,9 +3,17 @@
   const pickers = [...document.querySelectorAll('[data-language-picker]')];
   if (!pickers.length) return;
   const buttons = [...document.querySelectorAll('[data-language]')];
-  const automaticLanguages = document.getElementById('site-automatic-languages')?.content;
-  const languages = new Map([...buttons, ...(automaticLanguages?.querySelectorAll('[data-language]') ?? [])]
-    .map(button => [button.dataset.language, button]));
+  const optionTemplate = document.getElementById('site-language-option');
+  const languageData = document.getElementById('site-automatic-languages');
+  const automaticLanguages = languageData && optionTemplate ? JSON.parse(languageData.textContent) : [];
+  const languages = new Map(buttons.map(button => [button.dataset.language, {
+    name: button.querySelector('[dir]').textContent,
+    flag: button.querySelector('img').getAttribute('src'),
+    href: button.href
+  }]));
+  for (const { code, flag, name } of automaticLanguages) {
+    languages.set(code, { name, flag: optionTemplate.dataset.flagDirectory + flag + '.svg' });
+  }
   const engine = document.getElementById('site-translation-engine');
   const pageLocale = document.documentElement.dataset?.enkaLocale;
   const native = ['ka', 'ru', 'en'];
@@ -57,15 +65,14 @@
 
   function sync(code) {
     const language = languages.get(code);
-    const flag = language.querySelector('img');
     markSelection(document.querySelectorAll('[data-language]'), code);
     for (const picker of pickers) {
       const summary = picker.querySelector('.language-trigger');
-      picker.querySelector('[data-language-flag]').src = flag.getAttribute('src');
+      picker.querySelector('[data-language-flag]').src = language.flag;
       picker.querySelector('[data-language-code]').textContent = code.toUpperCase();
       const attribution = picker.querySelector('.language-attribution');
       if (attribution) attribution.hidden = ['ka', 'ru', 'en'].includes(code);
-      summary.setAttribute('aria-label', ({ru:'Язык',en:'Language',ka:'ენა'}[code] || 'Language') + ': ' + language.querySelector('[dir]').textContent);
+      summary.setAttribute('aria-label', ({ru:'Язык',en:'Language',ka:'ენა'}[code] || 'Language') + ': ' + language.name);
     }
     document.documentElement.lang = code === 'iw' ? 'he' : code;
     document.documentElement.dir = ['ar', 'iw', 'fa', 'ur'].includes(code) ? 'rtl' : 'ltr';
@@ -225,15 +232,23 @@
     picker.addEventListener('keydown', event => {
       if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); picker.open = false; summary.focus(); }
     });
-    if (automaticLanguages) {
+    if (automaticLanguages.length) {
       const disclosure = picker.querySelector('.language-more');
       const populate = () => {
         if (!disclosure.open) return;
         const list = picker.querySelector('.language-list');
-        const options = automaticLanguages.cloneNode(true);
-        const languageButtons = options.querySelectorAll('[data-language]');
-        markSelection(languageButtons, applied);
-        for (const button of languageButtons) button.addEventListener('click', onLanguageClick);
+        const options = document.createDocumentFragment();
+        for (const { code } of automaticLanguages) {
+          const { name, flag } = languages.get(code);
+          const button = optionTemplate.content.firstElementChild.cloneNode(true);
+          button.dataset.language = button.lang = code;
+          button.querySelector('img').setAttribute('src', flag);
+          button.querySelector('[dir]').textContent = name;
+          button.querySelector('[data-language-abbreviation]').textContent = code.toUpperCase();
+          button.addEventListener('click', onLanguageClick);
+          options.append(button);
+        }
+        markSelection(options.children, applied);
         list.append(options);
         disclosure.removeEventListener('toggle', populate);
       };

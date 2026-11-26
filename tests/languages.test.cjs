@@ -8,6 +8,7 @@ function browser({ saved, blocked = false, native = false } = {}) {
   class Element {
     constructor() { this.events = {}; this.attrs = {}; this.dataset = {}; this.hidden = false; this.open = false; this.textContent = ''; }
     addEventListener(name, callback) { (this.events[name] ||= []).push(callback); }
+    removeEventListener(name, callback) { this.events[name] = this.events[name]?.filter(value => value !== callback); }
     dispatchEvent(event) {
       event.currentTarget = this;
       for (const callback of this.events[event.type] || []) callback(event);
@@ -22,20 +23,31 @@ function browser({ saved, blocked = false, native = false } = {}) {
   const fonts = [];
   const timers = new Map();
   const observers = [];
+  function languageButton(code) {
+    const button = new Element();
+    button.dataset.language = code;
+    button.textContent = code;
+    const flag = new Element(); flag.attrs.src = '/img/flags/' + code + '.svg';
+    const name = new Element(); name.textContent = code;
+    const abbreviation = new Element();
+    button.querySelector = selector => ({ img: flag, '[dir]': name, '[data-language-abbreviation]': abbreviation })[selector];
+    return button;
+  }
   const pickers = Array.from({ length: 2 }, () => {
     const picker = new Element();
-    picker.parts = Object.fromEntries(['.language-trigger', '[data-language-flag]', '[data-language-code]', '[data-language-status]', '[data-language-retry]', '[data-language-search]', '.language-empty'].map(selector => [selector, new Element()]));
+    picker.parts = Object.fromEntries(['.language-trigger', '[data-language-flag]', '[data-language-code]', '[data-language-status]', '[data-language-retry]', '[data-language-search]', '.language-empty', '.language-more', '.language-list'].map(selector => [selector, new Element()]));
     picker.querySelector = selector => picker.parts[selector];
-    picker.buttons = ['ka', 'en', 'ru', 'de'].map(code => {
-      const button = new Element();
-      button.dataset.language = code;
-      button.textContent = code;
-      const flag = new Element(); flag.attrs.src = '/img/flags/' + code + '.svg';
-      const name = new Element(); name.textContent = code;
-      button.querySelector = selector => selector === 'img' ? flag : name;
+    picker.buttons = ['ka', 'en', 'ru'].map(code => {
+      const button = languageButton(code);
       button.closest = () => picker;
       return button;
     });
+    picker.parts['.language-list'].append = fragment => {
+      for (const button of fragment.children) {
+        button.closest = () => picker;
+        picker.buttons.push(button);
+      }
+    };
     picker.querySelectorAll = () => picker.buttons.slice(3);
     picker.contains = node => picker === node || picker.buttons.includes(node);
     return picker;
@@ -48,7 +60,16 @@ function browser({ saved, blocked = false, native = false } = {}) {
   document.documentElement = { classList: { contains: () => true } };
   document.head = { append: script => scripts.push(script) };
   document.createElement = () => new Element();
-  document.getElementById = () => engine;
+  document.createDocumentFragment = () => ({ children: [], append(node) { this.children.push(node); } });
+  const elements = {
+    'site-language-option': {
+      dataset: { flagDirectory: '/img/flags/' },
+      content: { firstElementChild: { cloneNode: () => languageButton('') } }
+    },
+    'site-automatic-languages': { textContent: JSON.stringify([{ code: 'de', flag: 'de', name: 'Deutsch' }]) },
+    'site-translation-engine': engine
+  };
+  document.getElementById = id => elements[id];
   document.querySelectorAll = selector => selector === '[data-language-picker]' ? pickers : pickers.flatMap(picker => picker.buttons);
   const window = native ? { enkaI18n: { locale: ['ru', 'en'].includes(saved) ? saved : 'ka' } } : {};
   let reloads = 0;
@@ -68,7 +89,14 @@ function browser({ saved, blocked = false, native = false } = {}) {
   return {
     document, window, pickers, scripts, fonts, store, selections,
     get reloads() { return reloads; },
-    click(code, position = 0) { pickers[position].buttons.find(button => button.dataset.language === code).dispatchEvent({ type: 'click' }); },
+    click(code, position = 0) {
+      const picker = pickers[position];
+      if (code === 'de') {
+        picker.parts['.language-more'].open = true;
+        picker.parts['.language-more'].dispatchEvent({ type: 'toggle' });
+      }
+      picker.buttons.find(button => button.dataset.language === code).dispatchEvent({ type: 'click' });
+    },
     async flush() { await Promise.resolve(); await Promise.resolve(); },
     ready() {
       window.google = { translate: { TranslateElement: function(options) {
@@ -106,7 +134,10 @@ test('Native Russian and English restore without Google and synchronize both pic
 
 test('An automatic translation starts the full font before the Google widget responds', async () => {
   const page = browser({ native: true });
+  assert.ok(page.pickers.every(picker => picker.buttons.length === 3));
   page.click('de');
+  assert.deepEqual(page.pickers.map(picker => picker.buttons.length), [4, 3]);
+  assert.equal(page.pickers[0].buttons[3].querySelector('[dir]').textContent, 'Deutsch');
   assert.deepEqual(page.fonts, ['400 1em "Google Sans Full"']);
   assert.equal(page.document.documentElement.lang, 'ka');
   page.ready(); await page.flush();

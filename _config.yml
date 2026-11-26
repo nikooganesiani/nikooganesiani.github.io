@@ -37,6 +37,7 @@ exclude:
   - ICONS.md
   - generate_pages.js
   - assets/css/input.css
+  - assets/css/home.css
   - .github
   - .gitignore
   - .git

@@ -38,10 +38,10 @@
   if(locale !== 'ka')document.documentElement.lang=locale;
   // Catalog content is localized exclusively by the published admin API.
   const excluded = 'script,style,textarea,[translate="no"],.notranslate,[contenteditable="true"],.product-specs,.product-highlights,[data-product-name],.product-description,.product-name,.search-result-name,.modal-product-name,.modal-order-name,#confirmProduct,[data-product-warranty],[data-catalog-content]';
-  function translate(root) {
+  function translate(root, descendants = true) {
     if (!root || !active) return;
     if (root.nodeType === 3) {
-      if (root.parentElement?.closest(excluded)) return;
+      if (!root.nodeValue.trim() || root.parentElement?.closest(excluded)) return;
       const previous = textSources.get(root);
       const source = previous && root.nodeValue === previous.rendered ? previous.source : root.nodeValue;
       const trimmed = source.trim();
@@ -72,7 +72,7 @@
         if (result !== current) root.setAttribute(name, result);
       }
     }
-    for (const child of root.childNodes) translate(child);
+    if (descendants) for (const child of root.childNodes) translate(child);
   }
   active = translator.size > 0 || locale !== 'ka';
   function applyTranslations() { configure(store); translate(document.head); translate(document.body); }
@@ -94,9 +94,10 @@
   const download = document.querySelector?.('[download][href$="withdrawal-form.txt"]');
   if (download && locale !== 'ka') download.href = download.href.replace('withdrawal-form.txt', 'withdrawal-form.' + locale + '.txt');
   new MutationObserver(records => {
+    if (!active) return;
     for (const record of records) {
-      if (record.type === 'childList') record.addedNodes.forEach(translate);
-      else translate(record.target);
+      if (record.type === 'childList') record.addedNodes.forEach(node => translate(node));
+      else translate(record.target, false);
     }
   }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['href','action','placeholder','aria-label','title','alt','data-count-label','aria-roledescription'] });
 })((locale, dictionary, store) => {

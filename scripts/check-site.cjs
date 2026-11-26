@@ -4,13 +4,13 @@ const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '../_site');
 const cssDirectory = path.resolve(__dirname, '../assets/css');
 const cssInput = fs.readFileSync(path.join(cssDirectory, 'input.css'), 'utf8');
-assert.deepEqual(fs.readdirSync(cssDirectory).sort(), ['input.css', 'style.css'], 'Storefront CSS must contain only the Tailwind input and generated bundle');
+assert.deepEqual(fs.readdirSync(cssDirectory).sort(), ['home.css', 'home.generated.css', 'input.css', 'style.css'], 'Storefront CSS contains two Tailwind entry points and their built stylesheets');
 assert.ok(!/@apply\b|@layer\s+components\b/.test(cssInput), 'Component styling belongs in Tailwind classes on markup');
 const manifestPath = path.join(root, 'assets/build-manifest.json');
 const assetManifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : null;
 if (assetManifest) {
   const { digest } = require('./optimize-site.cjs');
-  for (const url of [...Object.keys(assetManifest.bundles), ...Object.values(assetManifest.styles), ...assetManifest.data]) {
+  for (const url of [...Object.keys(assetManifest.bundles), ...Object.values(assetManifest.styles), ...Object.values(assetManifest.lazy ?? {}), ...assetManifest.data]) {
     const content = fs.readFileSync(path.join(root, url));
     assert.equal(path.basename(url).split('.')[0], digest(content), 'Compiled asset content matches its cache key: ' + url);
   }
@@ -30,6 +30,7 @@ function readPage(file) {
     return assetManifest.bundles[url].map(source => `<script src="${source}" defer></script>`).join('\n');
   });
   for (const [source, url] of Object.entries(assetManifest.styles)) value = value.replaceAll(`href="${url}"`, `href="${source}"`);
+  for (const [source, url] of Object.entries(assetManifest.lazy ?? {})) value = value.replaceAll(`data-catalog-search-src="${url}"`, `data-catalog-search-src="${source}"`);
   return value;
 }
 const html = readPage(path.join(root, 'index.html'));
@@ -39,9 +40,13 @@ const footerWithoutLanguageTargets = value => footerOf(value)?.replace(/(<a href
 for (const page of ['terms', 'faq']) {
   assert.ok(sharedFooter.includes('href="/info/' + page + '"'), 'Footer links to ' + page);
 }
-function verifyHeader(value, label) {
+function verifyHeader(value, label, { home = false, listing = false } = {}) {
   const stylesheets = [...value.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"/g)].map(match => match[1]);
-  assert.deepEqual(stylesheets, ['/assets/css/style.css'], label + ': one compiled Tailwind stylesheet');
+  const stylesheet = home ? 'home.generated.css' : 'style.css';
+  assert.deepEqual(stylesheets, ['/assets/css/' + stylesheet], label + ': one compiled Tailwind stylesheet');
+  const catalogSearch = '/assets/js/global/catalog-search.js';
+  assert.equal(value.includes(`src="${catalogSearch}" defer`), listing, label + ': listing loads the search ranker with its other controllers');
+  assert.equal(value.includes(`data-catalog-search-src="${catalogSearch}"`), !listing, label + ': search ranker available on demand');
   assert.ok(!/<style\b/i.test(value), label + ': no inline CSS overlays');
   assert.equal((value.match(/id="site-header"/g) || []).length, 1, label + ': one shared header');
   const header = value.match(/<header\b(?=[^>]*\bid="site-header")[^>]*>[\s\S]*?<\/header>/)?.[0];
@@ -82,7 +87,12 @@ function verifyHeader(value, label) {
   assert.equal((value.match(/id="site-translation-engine"/g) || []).length, 1, label + ': one translation engine');
   assert.ok(!value.includes('translate.google.com/translate?'), label + ': forms remain on the store origin');
 }
-verifyHeader(html, 'Homepage');
+verifyHeader(html, 'Homepage', { home: true });
+for (const locale of ['ru', 'en']) {
+  const localized = readPage(path.join(root, locale, 'index.html'));
+  assert.match(localized, /rel="stylesheet" href="\/assets\/css\/home\.generated\.css"/, locale + ' homepage uses the homepage stylesheet');
+  assert.match(localized, /data-catalog-search-src="\/assets\/js\/global\/catalog-search\.js"/, locale + ' homepage loads the ranker on demand');
+}
 assert.ok(sharedFooter, 'Homepage must use the shared footer');
 assert.ok(!/{%|{{/.test(html), 'Unrendered Liquid on homepage');
 assert.equal((html.match(/<h1\b/g) || []).length, 1, 'Homepage needs one h1');
@@ -173,7 +183,7 @@ for (const entry of catalogEntries) {
 console.log('Verified ' + productCount + ' product pages: metadata, schema, availability, forms, unique scripts/IDs and local links.');
 for (const page of ['category', 'search']) {
   const pageHtml = readPage(path.join(root, page, 'index.html'));
-  verifyHeader(pageHtml, page);
+  verifyHeader(pageHtml, page, { listing: true });
   assert.equal(footerWithoutLanguageTargets(pageHtml), footerWithoutLanguageTargets(html), page + ': footer must match the shared homepage footer');
   assert.ok(!/{%|{{/.test(pageHtml), page + ': rendered Liquid');
   assert.equal((pageHtml.match(/<h1\b/g) || []).length, 1, page + ': one h1');

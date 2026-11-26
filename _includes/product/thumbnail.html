@@ -1,0 +1,2 @@
+{%- assign thumbnail_srcset = page.card_srcsets[include.image] -%}
+<img src="{{ include.image | escape }}"{% if thumbnail_srcset %} srcset="{{ thumbnail_srcset | escape }}" sizes="{{ include.size }}px"{% endif %} alt="" width="{{ include.size }}" height="{{ include.size }}" loading="lazy" decoding="async" onerror="if(this.hasAttribute('srcset'))this.removeAttribute('srcset');else{this.onerror=null;this.src='/img/no-image.svg'}">
