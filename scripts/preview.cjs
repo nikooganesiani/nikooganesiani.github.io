@@ -2,6 +2,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const zlib = require('node:zlib');
+require('../admin/public/card-images.js');
 const rootFlag = process.argv.indexOf('--root');
 const root = rootFlag >= 0 ? path.resolve(process.argv[rootFlag + 1]) : path.resolve(__dirname, '../_site');
 const compress = process.argv.includes('--compress');
@@ -34,7 +35,7 @@ http.createServer((req, res) => {
   try { url = new URL(req.url, 'http://localhost'); pathname = decodeURIComponent(url.pathname); } catch { res.writeHead(400).end(); return; }
   res.setHeader('Cache-Control', 'no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  if (studio && req.method === 'GET' && /^\/media\/[a-f0-9-]+\.webp$/.test(pathname)) {
+  if (studio && req.method === 'GET' && pathname.startsWith('/media/') && globalThis.EnkaCardImages.mediaName(pathname.slice(7))) {
     proxyStudio(pathname, res, types['.webp']);
     return;
   }

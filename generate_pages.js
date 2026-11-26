@@ -4,6 +4,7 @@ const { buildLocalizations } = require('./scripts/build-localizations.cjs');
 const { buildStoreContent } = require('./scripts/build-store-content.cjs');
 const { buildBlog } = require('./scripts/build-blog.cjs');
 const { buildStorefrontLocales, fetchPublishedCatalog } = require('./scripts/build-storefront-locales.cjs');
+require('./admin/public/card-images.js');
 
 function parsePrice(value) {
   const raw = String(value ?? '').replace(/₾/g, '').replace(/\s/g, '').replace(',', '.');
@@ -45,6 +46,13 @@ function normalizeCatalog(data) {
 }
 
 function productFrontMatter(product, page = {}) {
+  const rawImages = Array.isArray(product.images) ? product.images : [product.image];
+  const cardImages = globalThis.EnkaCardImages;
+  const cardSrcsets = Object.fromEntries(rawImages.flatMap(source => {
+    const normalized = normalizeMedia(source);
+    const candidates = cardImages.srcset(source, product.cardImages?.[source]);
+    return normalized && candidates ? [[normalized, candidates]] : [];
+  }));
   // JSON is valid YAML and safely preserves quotes, newlines and Georgian text.
   const metadata = {
     generated: true,
@@ -59,7 +67,8 @@ function productFrontMatter(product, page = {}) {
     price: String(parsePrice(product.price)),
     oldPrice: parsePrice(product.oldPrice) > parsePrice(product.price) ? String(parsePrice(product.oldPrice)) : '',
     stockStatus: normalizeStock(product.stockStatus),
-    images: [...new Set((Array.isArray(product.images) ? product.images : [product.image]).map(normalizeMedia).filter(Boolean))],
+    images: [...new Set(rawImages.map(normalizeMedia).filter(Boolean))],
+    ...(Object.keys(cardSrcsets).length ? { card_srcsets: cardSrcsets, card_image_sizes: cardImages.sizes } : {}),
     specs: product.specs && typeof product.specs === 'object' ? product.specs : {},
     description: product.description || '',
     longDescription: product.longDescription || product.description || '',

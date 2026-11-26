@@ -1,4 +1,5 @@
 import './store-engine.js';
+import './card-images.js';
 import { validateBlog } from './blog-model.js';
 export const storeEngine = globalThis.EnkaStoreEngine;
 export const LOCALES = ['ru', 'en'];
@@ -36,6 +37,10 @@ export function validateDocument(document, publishing = false) {
     if (product.oldPrice !== '' && product.oldPrice != null && (!Number.isFinite(priceOf(product.oldPrice)) || priceOf(product.oldPrice) <= priceOf(product.price))) errors.push(`${label}: старая цена должна быть больше текущей.`);
     if (product.stockStatus && !Object.hasOwn(STOCK_LABELS, product.stockStatus)) errors.push(`${label}: неизвестный статус наличия.`);
     if (!Array.isArray(product.images) || product.images.length > 30 || product.images.some(image => !safeMedia(image))) errors.push(`${label}: изображения должны быть HTTPS-ссылками; максимум 30.`);
+    if (product.cardImages !== undefined) {
+      const { originalName, validWidth } = globalThis.EnkaCardImages;
+      if (!plain(product.cardImages) || !Array.isArray(product.images) || Object.entries(product.cardImages).some(([source, width]) => !product.images.includes(source) || !originalName(source) || !validWidth(width))) errors.push(`${label}: неверные данные миниатюр.`);
+    }
     for (const field of TEXT_FIELDS.slice(1)) if (product[field] != null && (typeof product[field] !== 'string' || product[field].length > 30000)) errors.push(`${label}: поле «${FIELD_LABELS[field]}» слишком длинное или имеет неверный тип.`);
     for (const field of ['sku', 'brand']) if (product[field] != null && (typeof product[field] !== 'string' || product[field].length > 300)) errors.push(`${label}: неверное поле ${field}.`);
     for (const field of ['categories', 'subcategories']) if (!Array.isArray(product[field]) || product[field].some(value => typeof value !== 'string' || value.length > 150)) errors.push(`${label}: неверное поле ${field}.`);

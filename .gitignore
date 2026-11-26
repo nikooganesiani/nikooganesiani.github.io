@@ -19,6 +19,7 @@
 /_data/i18n.json
 /assets/js/global/store-engine.js
 /assets/js/global/store-visuals.js
+/assets/js/global/card-images.js
 /_data/studio.json
 /_data/catalog_navigation.json
 /admin/node_modules/

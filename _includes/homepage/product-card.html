@@ -16,7 +16,8 @@
     <div class="product-images-track flex w-full h-full gap-2 overflow-x-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {% for image in product.images %}{% unless image contains 'youtube.com' or image contains 'youtu.be' %}
         {% assign card_image_count = card_image_count | plus: 1 %}
-        <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full overflow-hidden snap-start"><img src="{{ image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal" onerror="this.onerror=null;this.src='/img/no-image.svg'" draggable="false"></div>
+        {% assign card_srcset = product.card_srcsets[image] %}
+        <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full overflow-hidden snap-start"><img {% if card_image_count == 1 %}src{% else %}data-card-src{% endif %}="{{ image | escape }}"{% if card_srcset %} sizes="{{ product.card_image_sizes | escape }}" {% if card_image_count == 1 %}srcset{% else %}data-card-srcset{% endif %}="{{ card_srcset | escape }}"{% endif %} alt="" width="600" height="600" loading="lazy" decoding="async" class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal" onerror="if(this.hasAttribute('srcset'))this.removeAttribute('srcset');else{this.onerror=null;this.src='/img/no-image.svg'}" draggable="false"></div>
       {% endunless %}{% endfor %}
       {% if card_image_count == 0 %}<div class="[flex:0_0_100%] w-full h-full"><img src="{{ card_image | escape }}" alt="" width="600" height="600" loading="lazy" decoding="async" class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal" onerror="this.onerror=null;this.src='/img/no-image.svg'" draggable="false"></div>{% endif %}
     </div>

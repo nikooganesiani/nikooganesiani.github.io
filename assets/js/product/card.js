@@ -2,6 +2,7 @@
     'use strict';
 
     const FALLBACK_IMAGE = '/img/no-image.svg';
+    const cardImages = globalThis.EnkaCardImages;
     const cardPreviews = new WeakMap();
     const SLIDE_GAP = 8; // 8px (gap-2) — буфер против субпиксельного наложения соседних фото
 
@@ -45,7 +46,7 @@
         const rawImages = Array.isArray(p.images) ? p.images : (p.image ? [p.image] : []);
         const imgs = rawImages.filter(
             (img) => typeof img === 'string' && img.trim() !== '' && !img.includes('youtube.com') && !img.includes('youtu.be')
-        ).map(img => window.safeProductImage(img));
+        );
         if (imgs.length === 0) {
             imgs.push(FALLBACK_IMAGE);
         }
@@ -91,19 +92,23 @@
 
                 <a href="${productUrl}" class="absolute inset-0 z-[1]" draggable="false" tabindex="-1" aria-hidden="true"></a>
                 <div class="product-images-track flex w-full h-full gap-2 overflow-x-hidden snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="track-${uniqueId}">
-                    ${imgs.map((img, index) => `
+                    ${imgs.map((img, index) => {
+                        const source = window.safeProductImage(img);
+                        const srcset = cardImages?.srcset(source, p.cardImages?.[img]);
+                        return `
                         <div class="flex items-center justify-center [flex:0_0_100%] w-full h-full bg-transparent overflow-hidden snap-start">
                             <img class="block w-full h-full object-contain object-center mix-blend-multiply dark:mix-blend-normal"
-                                 ${index === 0 ? 'src' : 'data-card-src'}="${escapeHtml(img)}"
+                                 ${index === 0 ? 'src' : 'data-card-src'}="${escapeHtml(source)}"
+                                 ${srcset ? `sizes="${cardImages.sizes}" ${index === 0 ? 'srcset' : 'data-card-srcset'}="${escapeHtml(srcset)}"` : ''}
                                  alt=""
                                  width="600"
                                  height="600"
                                  loading="lazy"
                                  decoding="async"
-                                 onerror="this.onerror=null;this.src='${FALLBACK_IMAGE}';"
+                                 onerror="if(this.hasAttribute('srcset'))this.removeAttribute('srcset');else{this.onerror=null;this.src='${FALLBACK_IMAGE}'}"
                                  draggable="false">
                         </div>
-                    `).join('')}
+                    `; }).join('')}
                 </div>
 
                 ${dotsHtml}
@@ -141,6 +146,10 @@
     function loadCardSlide(slide) {
         const image = slide?.querySelector('img');
         if (image?.dataset.cardSrc) {
+            if (image.dataset.cardSrcset) {
+                image.srcset = image.dataset.cardSrcset;
+                image.removeAttribute('data-card-srcset');
+            }
             image.src = image.dataset.cardSrc;
             image.removeAttribute('data-card-src');
         }
@@ -174,6 +183,7 @@
             for (let i = first - 1; i <= last + 1; i++) {
                 const image = loadCardSlide(track.children[i]);
                 if (!image || image.complete) continue;
+                if (image.srcset) image.sizes = `${Math.ceil(width)}px`;
                 image.loading = 'eager';
                 if (i >= first && i <= last && image.decode) pending.push(image.decode().catch(() => {}));
             }

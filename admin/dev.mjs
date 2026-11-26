@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { CatalogStore } from './server/store.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
-import { readWebP } from './server/media.mjs';
+import { readWebP, saveProductPhoto } from './server/media.mjs';
 import { readPublishedCatalog } from './server/published.mjs';
 import { publishedArticles } from './public/blog-model.js';
 
@@ -18,7 +18,22 @@ const port = Number(portFlag >= 0 ? process.argv[portFlag + 1] : 4175);
 const seedFlag = process.argv.indexOf('--catalog-file');
 const seed = seedFlag >= 0 ? path.resolve(process.argv[seedFlag + 1]) : path.join(defaultDirectory, 'seed.catalog.json');
 if (!fs.existsSync(seed)) throw new Error('Не найдена копия каталога. Запустите node admin/dev.mjs --catalog-file ПУТЬ_К_JSON');
-fs.mkdirSync(path.join(directory, 'media'), { recursive: true });
+const mediaDirectory = path.join(directory, 'media');
+fs.mkdirSync(mediaDirectory, { recursive: true });
+const photoStorage = {
+  read(name) {
+    try { return fs.readFileSync(path.join(mediaDirectory, name)); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+  },
+  create(name, bytes) {
+    const temporary = path.join(mediaDirectory, `${crypto.randomUUID()}.tmp`);
+    try {
+      fs.writeFileSync(temporary, bytes, { flag: 'wx' });
+      try { fs.linkSync(temporary, path.join(mediaDirectory, name)); }
+      catch (error) { if (error.code !== 'EEXIST') throw error; }
+    } finally { fs.rmSync(temporary, { force: true }); }
+  }
+};
 const db = new DatabaseSync(path.join(directory, 'catalog.sqlite'));
 db.exec('PRAGMA journal_mode = WAL');
 const store = new CatalogStore((query, ...values) => db.prepare(query).all(...values), callback => {
@@ -66,8 +81,10 @@ const server = http.createServer(async (req, res) => {
       let response;
       if (url.pathname === '/api/upload' && req.method === 'POST') {
         const file = await readWebP(request);
-        fs.writeFileSync(path.join(directory, 'media', file.name), file.bytes, { flag: 'wx' });
+        photoStorage.create(file.name, file.bytes);
         response = json({ url: '/media/' + file.name });
+      } else if (url.pathname === '/api/product-photo' && req.method === 'POST') {
+        response = json(await saveProductPhoto(request, photoStorage));
       } else response = await runSerialized(() => handleApi(request, service, 'Локальный редактор', { publicImagesBase: '', storefrontBase: 'http://127.0.0.1:4173' }));
       res.writeHead(response.status, Object.fromEntries(response.headers));
       res.end(Buffer.from(await response.arrayBuffer())); return;
@@ -79,8 +96,8 @@ const server = http.createServer(async (req, res) => {
       if(!target.startsWith(imageRoot+path.sep)){res.writeHead(403).end();return;}
     } else if (url.pathname.startsWith('/media/')) {
       const name = url.pathname.slice(7);
-      if (!/^[a-f0-9-]+\.webp$/.test(name)) { res.writeHead(404).end(); return; }
-      target = path.join(directory, 'media', name);
+      if (!globalThis.EnkaCardImages.mediaName(name)) { res.writeHead(404).end(); return; }
+      target = path.join(mediaDirectory, name);
     } else {
       target = path.resolve(publicRoot, '.' + decodeURIComponent(url.pathname));
       if (target !== publicRoot && !target.startsWith(publicRoot + path.sep)) { res.writeHead(403).end(); return; }

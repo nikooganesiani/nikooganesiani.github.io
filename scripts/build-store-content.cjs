@@ -46,7 +46,7 @@ async function buildStoreContent(data, root = process.cwd()) {
   }
   const assets = path.join(root, 'assets/js/global');
   if (fs.existsSync(assets)) {
-    for(const name of ['store-engine.js','store-visuals.js'])fs.copyFileSync(path.join(__dirname,'../admin/public',name),path.join(assets,name));
+    for(const name of ['store-engine.js','store-visuals.js','card-images.js'])fs.copyFileSync(path.join(__dirname,'../admin/public',name),path.join(assets,name));
   }
   return store ? engine.applyProducts(data.products, store) : (Array.isArray(data) ? data : data.products);
 }

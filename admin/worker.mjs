@@ -2,7 +2,7 @@ import { DurableObject } from 'cloudflare:workers';
 import { authenticate } from './server/auth.mjs';
 import { CatalogService, handleApi, json, ApiError } from './server/service.mjs';
 import { CatalogStore } from './server/store.mjs';
-import { readWebP } from './server/media.mjs';
+import { readWebP, saveProductPhoto } from './server/media.mjs';
 import { blogLocales } from './public/blog-model.js';
 
 const SECURITY = {
@@ -64,18 +64,33 @@ export default {
     if (!['staging', 'production'].includes(env.APP_ENV)) return secure(json({ error: 'Не задано корректное окружение панели.' }, 503));
     const url = new URL(request.url);
     if (!['GET', 'HEAD'].includes(request.method) && request.headers.get('Origin') !== url.origin) return secure(json({ error: 'Запрос должен быть отправлен из этой панели.' }, 403));
-    if (url.pathname === '/api/upload' && request.method === 'POST') {
+    if (['/api/upload', '/api/product-photo'].includes(url.pathname) && request.method === 'POST') {
       try {
         if (env.APP_ENV === 'production' && !env.PUBLIC_IMAGES_BASE?.startsWith('https://')) return secure(json({ error: 'Сначала настройте публичный адрес рабочего хранилища изображений.' }, 503));
+        const base = env.PUBLIC_IMAGES_BASE?.replace(/\/$/, '') || '/media';
+        if (url.pathname === '/api/product-photo') {
+          const storage = {
+            async read(name) {
+              const object = await env.IMAGES_BUCKET.get(name);
+              return object ? new Uint8Array(await object.arrayBuffer()) : null;
+            },
+            async create(name, bytes) {
+              await env.IMAGES_BUCKET.put(name, bytes, {
+                onlyIf: new Headers({ 'If-None-Match': '*' }),
+                httpMetadata: { contentType: 'image/webp', cacheControl: 'public, max-age=31536000, immutable' }
+              });
+            }
+          };
+          return secure(json(await saveProductPhoto(request, storage, base)));
+        }
         const { bytes, name } = await readWebP(request);
         await env.IMAGES_BUCKET.put(name, bytes, { httpMetadata: { contentType: 'image/webp' } });
-        const base = env.PUBLIC_IMAGES_BASE?.replace(/\/$/, '');
-        return secure(json({ url: base ? `${base}/${name}` : `/media/${name}` }));
+        return secure(json({ url: `${base}/${name}` }));
       } catch (error) { return secure(json({ error: error instanceof ApiError ? error.message : 'Не удалось загрузить изображение.' }, error.status || 500)); }
     }
     if (url.pathname.startsWith('/media/') && request.method === 'GET') {
       const name = url.pathname.slice(7);
-      if (!/^[a-f0-9-]+\.webp$/.test(name)) return secure(new Response('Not found', { status: 404 }));
+      if (!globalThis.EnkaCardImages.mediaName(name)) return secure(new Response('Not found', { status: 404 }));
       const object = await env.IMAGES_BUCKET.get(name);
       return secure(object ? new Response(object.body, { headers: { 'Content-Type': 'image/webp' } }) : new Response('Not found', { status: 404 }));
     }

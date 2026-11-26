@@ -3,8 +3,10 @@ import { LOCALES, TEXT_FIELDS, FIELD_LABELS, STOCK_LABELS, clone, priceOf, stock
 import { ensureStore, createStoreEditor } from './store-editor.js';
 import { createBlogEditor } from './blog-editor.js';
 import { initStudioLanguage, getLocale } from './studio-i18n.js';
+import './card-images.js';
 
 initStudioLanguage();
+const { originalName, validWidth, variantWidths } = globalThis.EnkaCardImages;
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
@@ -106,6 +108,7 @@ function filteredProducts() {
 }
 function renderCatalog() {
   const products = state.document.catalog.products;
+  $('#prepare-card-images').hidden = state.view !== 'catalog' || !pendingCardImages().size;
   const translated = products.filter(product => LOCALES.every(locale => rowCoverage(product, locale).state === 'approved')).length;
   $('#title-count').textContent = products.length; $('#nav-count').textContent = products.length; $('#stat-total').textContent = products.length;
   $('#stat-stock').textContent = products.filter(product => stockOf(product) === 'in_stock').length;
@@ -336,7 +339,11 @@ document.addEventListener('click', async event => {
     for (const locale of LOCALES) delete state.document.translations[locale].products[product.id];
     markDirty(); $('#product-dialog').close(); render(); return;
   }
-  if (button.dataset.imageRemove != null) { product.images.splice(Number(button.dataset.imageRemove), 1); markDirty(); renderEditor(); }
+  if (button.dataset.imageRemove != null) {
+    const [removed] = product.images.splice(Number(button.dataset.imageRemove), 1);
+    if (product.cardImages && !product.images.includes(removed)) delete product.cardImages[removed];
+    markDirty(); renderEditor();
+  }
   if (button.dataset.imageMove != null) { const index = Number(button.dataset.imageMove); const next = index + Number(button.dataset.direction); [product.images[index], product.images[next]] = [product.images[next], product.images[index]]; markDirty(); renderEditor(); }
   if (button.id === 'add-image-url') { const url = $('#image-url').value.trim(); if (!safeMedia(url)) { toast(t('Введите корректную HTTPS-ссылку.'), true); return; } if (!product.images.includes(url)) product.images.push(url); markDirty(); renderEditor(); }
   if (button.id === 'upload-image') $('#image-file').click();
@@ -372,16 +379,113 @@ async function convertImage(file) {
     throw new Error(t('Не удалось уменьшить фотографию до 200 КБ. Попробуйте другое изображение.'));
   } finally { bitmap.close(); }
 }
+
+async function appendCardImages(form, original) {
+  const bitmap = await createImageBitmap(original);
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    const thumbnails = [];
+    for (const width of variantWidths(bitmap.width)) {
+      canvas.width = width;
+      canvas.height = Math.max(1, Math.round(bitmap.height * width / bitmap.width));
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      let thumbnail;
+      for (const quality of [.8, .68, .52]) {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', quality));
+        if (blob?.type === 'image/webp' && blob.size <= 200 * 1024) { thumbnail = blob; break; }
+      }
+      if (!thumbnail) throw new Error(t('Не удалось подготовить миниатюру.'));
+      thumbnails.push([width, thumbnail]);
+    }
+    for (const [width, blob] of thumbnails) form.append(`w${width}`, blob, `${width}.webp`);
+  } finally { bitmap.close(); }
+}
+
+async function postProductPhoto(form) {
+  const response = await fetch('/api/product-photo', { method: 'POST', body: form, signal: AbortSignal.timeout(30000) });
+  const result = await response.json();
+  if (!response.ok) {
+    const error = new Error(result.error || t('Ошибка загрузки.'));
+    error.status = response.status;
+    throw error;
+  }
+  return result;
+}
+
+async function uploadProductPhoto(file) {
+  const original = await convertImage(file);
+  const form = new FormData();
+  form.set('file', original, 'product.webp');
+  try { await appendCardImages(form, original); }
+  catch { return postProductPhoto(form); }
+  try { return await postProductPhoto(form); }
+  catch (error) {
+    if (error.status !== 422 || [...form.keys()].length === 1) throw error;
+    // An unusual source can still be saved if its thumbnails fail validation.
+    const originalOnly = new FormData();
+    originalOnly.set('file', original, 'product.webp');
+    return postProductPhoto(originalOnly);
+  }
+}
+
+function pendingCardImages() {
+  const base = state.session?.publicImagesBase?.replace(/\/$/, '') || '/media';
+  const pending = new Map();
+  for (const product of state.document.catalog.products) for (const source of new Set(product.images)) {
+    const name = originalName(source);
+    if (!name || source !== `${base}/${name}` || validWidth(product.cardImages?.[source])) continue;
+    if (!pending.has(source)) pending.set(source, { name, products: [] });
+    pending.get(source).products.push(product);
+  }
+  return pending;
+}
+
+$('#prepare-card-images').onclick = async () => {
+  const jobs = [...pendingCardImages()];
+  if (!jobs.length) return;
+  try {
+    await busy(t('Подготавливаем миниатюры…'), async () => {
+      let next = 0, finished = 0, failed = 0;
+      const run = async () => {
+        while (next < jobs.length) {
+          const [source, { name, products }] = jobs[next++];
+          try {
+            const response = await fetch(`/media/${name}`, { signal: AbortSignal.timeout(15000) });
+            if (!response.ok) throw new Error();
+            const form = new FormData();
+            form.set('source', source);
+            await appendCardImages(form, await response.blob());
+            const result = await postProductPhoto(form);
+            if (!validWidth(result.width)) throw new Error();
+            for (const product of products) (product.cardImages ||= {})[source] = result.width;
+            markDirty();
+          } catch { failed++; }
+          $('#busy-text').textContent = `${t('Подготавливаем миниатюры…')} ${++finished} / ${jobs.length}`;
+        }
+      };
+      await Promise.all(Array.from({ length: Math.min(3, jobs.length) }, run));
+      renderCatalog();
+      toast(failed ? `${t('Миниатюры обработаны:')} ${finished - failed} / ${jobs.length}. ${t('Для остальных фотографий используются оригиналы.')}` : t('Миниатюры готовы. Сохраните черновик.'), !!failed);
+    });
+  } catch {}
+};
+
 $('#image-file').addEventListener('change', async event => {
   const files = [...event.target.files]; event.target.value = ''; const product = state.product; if (!files.length || !product) return;
   try { await busy(t('Подготавливаем и загружаем фотографии…'), async () => {
+    let missingThumbnails = false;
     for (const file of files) {
       if (product.images.length >= 30) throw new Error(t('Максимум 30 изображений на товар.'));
-      const blob = await convertImage(file); const form = new FormData(); form.append('file', blob, 'product.webp');
-      const response = await fetch('/api/upload', { method: 'POST', body: form, credentials: 'same-origin' }); const result = await response.json(); if (!response.ok) throw new Error(result.error || t('Ошибка загрузки.'));
-      product.images.push(result.url); markDirty();
+      const result = await uploadProductPhoto(file);
+      if (!product.images.includes(result.url)) product.images.push(result.url);
+      if (validWidth(result.width)) (product.cardImages ||= {})[result.url] = result.width;
+      else missingThumbnails = true;
+      markDirty();
     }
-    renderEditor(); toast(t('Фотографии добавлены в черновик.'));
+    renderEditor();
+    toast(t(missingThumbnails ? 'Фотографии сохранены. Миниатюры можно подготовить из каталога.' : 'Фотографии добавлены в черновик.'));
   }); } catch (error) { renderEditor(); toast(error.message, true); }
 });
 $('#import-file').addEventListener('change', async event => {

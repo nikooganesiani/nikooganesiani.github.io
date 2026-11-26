@@ -1,5 +1,12 @@
 // Studio interface translations. Storefront and product content have separate dictionaries.
 export default {
+  "Подготовить миниатюры": {"en":"Prepare thumbnails","ka":"მინიატურების მომზადება"},
+  "Подготавливаем миниатюры…": {"en":"Preparing thumbnails…","ka":"მინიატურები მზადდება…"},
+  "Миниатюры обработаны:": {"en":"Thumbnails prepared:","ka":"მომზადებული მინიატურები:"},
+  "Для остальных фотографий используются оригиналы.": {"en":"The remaining photos use their originals.","ka":"დანარჩენი ფოტოებისთვის ორიგინალები გამოიყენება."},
+  "Миниатюры готовы. Сохраните черновик.": {"en":"Thumbnails are ready. Save the draft.","ka":"მინიატურები მზადაა. შეინახეთ მონახაზი."},
+  "Фотографии сохранены. Миниатюры можно подготовить из каталога.": {"en":"Photos saved. You can prepare thumbnails from the catalog.","ka":"ფოტოები შენახულია. მინიატურების მომზადება კატალოგიდან შეგიძლიათ."},
+  "Не удалось подготовить миниатюру.": {"en":"Could not prepare the thumbnail.","ka":"მინიატურის მომზადება ვერ მოხერხდა."},
   "Ассортимент": {"en":"Inventory","ka":"ასორტიმენტი"},
   "Витрина": {"en":"Storefront","ka":"ვიტრინა"},
   "Перейти к содержимому": {"en":"Skip to content","ka":"შიგთავსზე გადასვლა"},

@@ -123,6 +123,23 @@ test('Catalog and product cards work with blocked storage and escape untrusted c
   assert.equal(context.window.safeProductLink('javascript:alert(1)'), '/');
 });
 
+test('Static and live cards advertise the same variants and keep other photos on demand', () => {
+  const first = 'https://img.example.test/0ad4c817-c4e4-47ef-be7b-6d76ba7a9db3.webp';
+  const second = 'https://img.example.test/584f6a73-f018-4eab-bf55-d962988ae39f.webp';
+  const data = { ...product, images: [first, second], cardImages: { [first]: 800, [second]: 480 } };
+  const context = catalogContext();
+  for (const file of ['admin/public/card-images.js', 'assets/js/product/card.js']) vm.runInContext(read(file), context);
+  const html = context.window.createProductCardHTML(data);
+  const metadata = productFrontMatter(data).split('\n').find(line => line.startsWith('card_srcsets: '));
+  const expected = JSON.parse(metadata.slice('card_srcsets: '.length));
+  assert.match(html, new RegExp(`\\ssrcset="${expected[first]}"`));
+  assert.ok(html.includes(`data-card-srcset="${expected[second]}"`));
+  assert.ok(html.includes(`data-card-src="${second}"`));
+  const legacy = context.window.createProductCardHTML({ ...product, images: [first] });
+  assert.ok(legacy.includes(`src="${first}"`));
+  assert.doesNotMatch(legacy, /\ssrcset=/);
+});
+
 test('Card photo previews ignore a pending image after the pointer leaves', async () => {
   let finishDecoding;
   const decoded = new Promise(resolve => { finishDecoding = resolve; });
