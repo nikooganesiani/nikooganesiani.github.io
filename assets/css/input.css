@@ -1,7 +1,6 @@
 @import "tailwindcss" source(none);
 @import "../../admin/public/store-visuals.css";
 @import "../../admin/public/blog-content.css";
-@import "../vendor/photo-search/loader.css";
 
 @source "../../_includes";
 @source "../../_layouts";
@@ -24,7 +23,7 @@
   --radius-card: 1rem;
   --radius-panel: 1.5rem;
   --container-store: 100rem;
-  --font-sans: 'Google Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: var(--enka-storefront-font, 'Google Sans Core'), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #155dfc;
   --color-brand-dark: #1048cb;
   --color-ink: light-dark(#202733, #e7edf6);
@@ -53,13 +52,23 @@
 }
 
 @font-face {
-  font-family: 'Google Sans Variable';
-  src: url('/fonts/GoogleSansVariable.woff2') format('woff2 supports variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2-variations'),
-       url('/fonts/GoogleSansVariable.woff2') format('woff2');
+  font-family: 'Google Sans Core';
+  src: url('/fonts/GoogleSansVariableCore-v1.woff2') format('woff2');
   font-weight: 400 700;
   font-style: normal;
   font-display: swap;
+}
+
+@font-face {
+  font-family: 'Google Sans Full';
+  src: url('/fonts/GoogleSansVariableFull-v1.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root[lang]:not(:lang(ka, en, ru)) {
+  --enka-storefront-font: 'Google Sans Full';
 }
 
 @layer base {

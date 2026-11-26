@@ -141,5 +141,12 @@ document.addEventListener('DOMContentLoaded', () => {
     } finally { loading = false; root.removeAttribute('aria-busy'); }
   }
   retry.addEventListener('click', load);
-  load();
+  if ('IntersectionObserver' in window) {
+    const nearby = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      nearby.disconnect();
+      load();
+    }, { rootMargin: '700px 0px' });
+    nearby.observe(root);
+  } else load();
 });

@@ -265,5 +265,12 @@
     }
     return [...new Set(errors)];
   }
-  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, bannerOffers, priorityBanner, renameSection, resolveSection, homeTypes, homeSingletons, homeLimit, defaultHome, homeLayout, homeProducts };
+  function storefrontSettings(store, locale) {
+    const strings = Object.fromEntries(Object.entries(store.strings || {})
+      .filter(([, translations]) => Object.hasOwn(translations, locale))
+      .map(([source, translations]) => [source, { [locale]: translations[locale] }]));
+    return { ...store, strings };
+  }
+
+  globalThis.EnkaStoreEngine = { text, active, matches, campaignPrice, applyProducts, structure, rows, validate, safeLink, safeImage, categoryAppearance, campaignAppearance, subcategoryProducts, subcategoryImage, migrateBanners, banners, bannerOffers, priorityBanner, renameSection, resolveSection, homeTypes, homeSingletons, homeLimit, defaultHome, homeLayout, homeProducts, storefrontSettings };
 })();

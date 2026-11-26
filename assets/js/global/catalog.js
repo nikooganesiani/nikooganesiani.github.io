@@ -9,7 +9,7 @@
   function prepare(value) {
     if(value.store && globalThis.EnkaStoreEngine) {
       value.products = globalThis.EnkaStoreEngine.applyProducts(value.products,value.store);
-      window.enkaStorefront?.apply(value.store,value.products);
+      window.enkaStorefront?.apply(value.store,value.products, { pricesApplied: true });
     }
     return value;
   }

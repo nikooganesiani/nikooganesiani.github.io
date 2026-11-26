@@ -2,6 +2,7 @@ const statusMap = { 'ასაღები': 'შეკვეთა მზად
 const statusOrder = [ 'ასაღები', 'საწყობშია', 'გატანილია ჩასაბარებლად', 'ჩაბარებულია' ];
 let trackingController;
 let trackingRevision = 0;
+let trackingInitialized = false;
 
 function resetTrackingRequest() {
     ++trackingRevision;
@@ -56,6 +57,7 @@ function getStatusBadge(statusName) {
 }
 
 window.openTracking = function(id = '', updateURL = true, trigger) {
+    initializeTracking();
     resetTrackingRequest();
     const url = new URL(window.location);
     if (id) { url.searchParams.set('orderstatus', id); } else { url.searchParams.set('orderstatus', ''); }
@@ -73,15 +75,9 @@ window.openTracking = function(id = '', updateURL = true, trigger) {
     if (id) document.getElementById('trackingCheckBtn')?.click();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const footerTrackingBtn = document.getElementById('footerTrackingBtn');
-    if (footerTrackingBtn) {
-        footerTrackingBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.openTracking('', true, e.currentTarget);
-        });
-    }
-
+function initializeTracking() {
+    if (trackingInitialized) return;
+    trackingInitialized = true;
     const trackingCheckBtn = document.getElementById('trackingCheckBtn');
     const trackingOrderId = document.getElementById('trackingOrderId');
     const trackingResult = document.getElementById('trackingResult');
@@ -205,6 +201,13 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('footerTrackingBtn')?.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.openTracking('', true, event.currentTarget);
+    });
     const params = new URLSearchParams(window.location.search);
     if (params.has('orderstatus')) window.openTracking(params.get('orderstatus'), false);
 });

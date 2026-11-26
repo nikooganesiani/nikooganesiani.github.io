@@ -4,9 +4,8 @@ const crypto = require('node:crypto');
 const { transformSync } = require('esbuild');
 
 const digest = value => crypto.createHash('sha256').update(value).digest('hex').slice(0, 16);
-// Keep classic-script globals available to HTML event handlers. No wrapper or
-// identifier mangling: these scripts originally share a global lexical scope.
-const minify = code => transformSync(code, { minifyWhitespace: true, minifySyntax: true, minifyIdentifiers: false, target: 'es2020', legalComments: 'inline' }).code;
+// The default script format preserves top-level identifiers for other scripts and HTML handlers.
+const minify = code => transformSync(code, { minify: true, charset: 'utf8', target: 'es2020', legalComments: 'inline' }).code;
 function optimizeSite(root = path.resolve(__dirname, '../_site')) {
   const manifestPath = path.join(root, 'assets/build-manifest.json');
   if (fs.existsSync(manifestPath) && fs.readFileSync(path.join(root, 'index.html'), 'utf8').includes('data-enka-source=')) {

@@ -29,6 +29,7 @@ function harness(fetch, url = 'https://example.test/') {
     clearTimeout: id => timers.delete(id)
   });
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/main/tracking.js'), 'utf8'), context);
+  if (!new URL(url).searchParams.has('orderstatus')) context.window.openTracking();
   return { element, context, timers, check: () => element('trackingCheckBtn').events.click() };
 }
 

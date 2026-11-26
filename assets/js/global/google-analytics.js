@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const id = document.getElementById('enka-google-analytics')?.dataset.measurementId || '';
+  const tag = document.getElementById('enka-google-analytics');
+  const id = tag?.dataset.measurementId || '';
   if (!/^G-[A-Z0-9]+$/.test(id)) return;
   // Keep development traffic out of the production property.
   if (!['enkaelectronics.com.ge', 'www.enkaelectronics.com.ge'].includes(location.hostname)) return;
@@ -62,6 +63,7 @@
       gtag('config', id, settings);
       const script = document.createElement('script');
       script.async = true;
+      if ('enkaHome' in tag.dataset) script.fetchPriority = 'low';
       script.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
       document.head.appendChild(script);
       gtag('event', 'page_view', { send_to: id });

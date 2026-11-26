@@ -94,6 +94,22 @@
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('photoSearchModal');
     if (!modal) return;
+    document.querySelectorAll('[data-photo-search]').forEach(button => button.addEventListener('click', () => {
+      window.openAppModal('photoSearchModal', button);
+    }));
+    let stylesheet;
+    modal.addEventListener('modal:open', () => {
+      if (stylesheet) return;
+      stylesheet = document.createElement('link');
+      stylesheet.rel = 'stylesheet';
+      stylesheet.href = '/assets/vendor/photo-search/loader.css';
+      stylesheet.onerror = () => { stylesheet.remove(); stylesheet = null; };
+      document.head.append(stylesheet);
+    });
+    modal.addEventListener('modal:open', () => initialize(modal), { once: true });
+  });
+
+  function initialize(modal) {
     const get = suffix => document.getElementById('photoSearch' + suffix);
     const fileInput = get('File'), status = get('Status'), grid = get('Grid');
     const dropzone = get('Dropzone'), loading = get('Loading'), results = get('Results');
@@ -115,9 +131,6 @@
       controller = null;
       stopLoading();
     }
-    document.querySelectorAll('[data-photo-search]').forEach(button => button.addEventListener('click', () => {
-      window.openAppModal('photoSearchModal', button);
-    }));
     get('Choose').addEventListener('click', () => fileInput.click());
     get('Replace').addEventListener('click', () => fileInput.click());
     fileInput.addEventListener('change', () => { const file = fileInput.files[0]; fileInput.value = ''; if (file) search(file); });
@@ -202,5 +215,5 @@
         if (revision === run) { controller = null; stopLoading(); }
       }
     }
-  });
+  }
 })();

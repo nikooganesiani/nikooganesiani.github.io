@@ -190,6 +190,8 @@
       return;
     }
     status('Translating…');
+    // Start the font and translation together. The font switches when sync sets lang.
+    if (!native.includes(code)) document.fonts?.load('400 1em "Google Sans Full"').catch(() => {});
     try {
       const combo = await loadEngine();
       if (current !== revision) return;

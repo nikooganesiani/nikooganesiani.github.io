@@ -140,15 +140,16 @@
     if(times.length)timer=setTimeout(()=>{products=engine.applyProducts(products,current);render();window.dispatchEvent(new CustomEvent('enka:prices-change',{detail:{products}}));schedule();},Math.min(Math.max(1,Math.min(...times)-now+20),2147483647));
   }
   window.enkaStorefront = {
-    apply(store, catalogProducts) {
+    apply(store, catalogProducts, { pricesApplied = false } = {}) {
       if(!store || !engine)return;
-      products=engine.applyProducts(catalogProducts,store);current=store;
-      const next=JSON.stringify(store);
+      const settings = engine.storefrontSettings(store, locale());
+      products=pricesApplied ? catalogProducts : engine.applyProducts(catalogProducts,settings);current=settings;
+      const next=JSON.stringify(settings);
       const nextProducts=JSON.stringify(products);const first=!productSignature;
       if(next===signature && nextProducts===productSignature)return;
       productSignature=nextProducts;
       const changed=next!==signature;
-      if(changed){signature=next;window.ENKA_STORE=store;window.enkaI18n?.setStore(store);categories(store);contacts(store);window.dispatchEvent(new CustomEvent('enka:store-change'));}
+      if(changed){signature=next;window.ENKA_STORE=settings;window.enkaI18n?.setStore(settings);categories(settings);contacts(settings);window.dispatchEvent(new CustomEvent('enka:store-change'));}
       render(changed || first && locale()!=='ka');schedule();
     }
   };
@@ -167,7 +168,10 @@
       current = window.ENKA_STORE;
       if (locale() !== 'ka') categories(current);
     }
-    window.fetchCatalogCached?.().then(data=>{if(data.store)window.enkaStorefront.apply(data.store,data.products);}).catch(()=>{});
+    const refresh = () => window.fetchCatalogCached?.().catch(() => {});
+    if (document.querySelector('[data-home-layout]') && document.visibilityState === 'visible') {
+      window.requestAnimationFrame(() => setTimeout(refresh, 0));
+    } else refresh();
   });
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&current&&productSignature){products=engine.applyProducts(products,current);render();window.dispatchEvent(new CustomEvent('enka:prices-change',{detail:{products}}));schedule();}});
 })();

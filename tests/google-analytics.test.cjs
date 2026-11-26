@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function browser({ id = 'G-TEST123', host = 'enkaelectronics.com.ge', consent = false } = {}) {
+function browser({ id = 'G-TEST123', host = 'enkaelectronics.com.ge', consent = false, home = false } = {}) {
   const listeners = new Map(), scripts = [];
   let enabled = consent;
   const window = {
@@ -12,7 +12,7 @@ function browser({ id = 'G-TEST123', host = 'enkaelectronics.com.ge', consent = 
   };
   const document = {
     title: 'ENKA', referrer: 'https://example.com/?phone=private#secret',
-    getElementById(key) { return key === 'enka-google-analytics' ? { dataset: { measurementId: id } } : key === 'productData' ? { dataset: { id: 'sku1', name: 'Kettle', price: '89' } } : null; },
+    getElementById(key) { return key === 'enka-google-analytics' ? { dataset: { measurementId: id, ...(home && { enkaHome: '' }) } } : key === 'productData' && !home ? { dataset: { id: 'sku1', name: 'Kettle', price: '89' } } : null; },
     createElement() { return {}; }, head: { appendChild(script) { scripts.push(script); } },
     addEventListener() {}
   };
@@ -44,6 +44,12 @@ test('Advanced mode loads before consent with denied defaults and sends each vie
   b.choose(true);
   assert.equal(b.scripts.length, 1);
   assert.equal(b.commands().filter(c => c[0] === 'event').length, 2);
+});
+test('The homepage gives Google a lower fetch priority while starting consent mode and queuing the page view immediately', () => {
+  const b = browser({ home: true });
+  assert.equal(b.scripts[0].fetchPriority, 'low');
+  assert.deepEqual(b.commands()[0].slice(0, 2), ['consent', 'default']);
+  assert.deepEqual(b.commands().filter(c => c[0] === 'event').map(c => c[1]), ['page_view']);
 });
 test('Accepted COD order is one lead without contact data; refusal keeps cookieless conversions', () => {
   const b = browser({ consent: true });

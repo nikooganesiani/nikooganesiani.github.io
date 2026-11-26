@@ -8,7 +8,7 @@
       <section aria-labelledby="footer-contact-title" class="col-span-full border-b border-slate-600/70 pb-6 lg:col-span-1 lg:border-0 lg:pb-0">
         <h2 id="footer-contact-title" class="sr-only">კონტაქტები</h2>
         <a href="{{ '/' | relative_url }}" class="mb-3 inline-flex min-h-11 max-w-full items-center rounded-sm">
-          <img src="{{ '/img/logohead.webp' | relative_url }}" class="h-auto w-64 max-w-full grayscale brightness-[3.6]" width="1220" height="118" alt="ENKA Electronics" loading="lazy">
+          <img src="{{ '/img/logohead.webp' | relative_url }}" srcset="{{ '/img/logohead-610.webp' | relative_url }} 610w, {{ '/img/logohead.webp' | relative_url }} 1220w" sizes="256px" class="h-auto w-64 max-w-full grayscale brightness-[3.6]" width="1220" height="118" alt="ENKA Electronics" loading="lazy">
         </a>
         <div class="flex flex-wrap items-center gap-x-3 gap-y-1 lg:block">
           <a href="tel:{{ company.phone_link | escape }}" class="inline-flex min-h-11 items-center rounded-sm text-2xl font-medium tracking-tight text-white tabular-nums hover:text-blue-200" dir="ltr">{{ company.phone | escape }}</a>

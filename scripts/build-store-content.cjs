@@ -69,7 +69,8 @@ async function buildStoreContent(data, root = process.cwd()) {
       return { ...block, row: rowData(row) };
     });
     const bannerSizes = { single: visuals.bannerSizes(), carousel: visuals.bannerSizes(true) };
-    const content = store ? { store, catalog, homeBlocks, company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
+    const storefrontSettings = store && Object.fromEntries(['ka', 'ru', 'en'].map(locale => [locale, engine.storefrontSettings(store, locale)]));
+    const content = store ? { store, storefrontSettings, catalog, homeBlocks, company:store.company, categoryTiles:store.categories.filter(c=>c.visible!==false).map(c=>visuals.category(c,'ka',catalog[c.id].icon,true)),
       campaignRows:engine.rows(priced,store,Date.now(),true).map(rowData), bannerSrcsets, bannerSizes } : { bannerSrcsets, bannerSizes };
     fs.writeFileSync(path.join(directory, 'studio.json'), JSON.stringify(content));
   }

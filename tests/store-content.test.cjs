@@ -5,6 +5,19 @@ const path=require('node:path');
 const vm=require('node:vm');
 const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8');
 
+test('Storefront settings keep only the current UI dictionary and retain multilingual catalog labels', () => {
+  const context = vm.createContext({});
+  vm.runInContext(read('admin/public/store-engine.js'), context);
+  const categories = [{ title: { ka: 'სამზარეულო', ru: 'Кухня', en: 'Kitchen' } }];
+  const strings = { 'კატალოგი': { ka: 'პროდუქტები', en: 'Products', ru: 'Каталог' }, 'მეტი': { en: 'More' } };
+  const store = { categories, strings };
+  const localized = context.EnkaStoreEngine.storefrontSettings(store, 'ka');
+  assert.deepEqual(JSON.parse(JSON.stringify(localized.strings)), { 'კატალოგი': { ka: 'პროდუქტები' } });
+  assert.equal(localized.categories, categories);
+  assert.equal(store.strings, strings);
+  assert.equal(store.strings['კატალოგი'].en, 'Products');
+});
+
 test('An open storefront starts and ends a scheduled campaign without refetching or compounding discounts',()=>{
   let now=Date.parse('2026-11-10T12:00:00+04:00');
   const timers=new Map();let serial=0;const events=[];const listeners={};const rows={innerHTML:'',querySelectorAll:()=>[]};

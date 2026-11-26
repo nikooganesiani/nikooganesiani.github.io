@@ -16,6 +16,7 @@ function browser({ saved, blocked = false, native = false } = {}) {
   }
   const store = new Map(saved ? [['enka_language', saved]] : []);
   const scripts = [];
+  const fonts = [];
   const timers = new Map();
   const observers = [];
   const pickers = Array.from({ length: 2 }, () => {
@@ -40,6 +41,7 @@ function browser({ saved, blocked = false, native = false } = {}) {
   const engine = { id: 'site-translation-engine', querySelector: () => combo || null };
   const document = new Element();
   document.cookie = '';
+  document.fonts = { load: async font => fonts.push(font) };
   document.documentElement = { classList: { contains: () => true } };
   document.head = { append: script => scripts.push(script) };
   document.createElement = () => new Element();
@@ -61,7 +63,7 @@ function browser({ saved, blocked = false, native = false } = {}) {
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../assets/js/global/languages.js'), 'utf8'), context);
   const selections = [];
   return {
-    document, window, pickers, scripts, store, selections,
+    document, window, pickers, scripts, fonts, store, selections,
     get reloads() { return reloads; },
     click(code, position = 0) { pickers[position].buttons.find(button => button.dataset.language === code).dispatchEvent({ type: 'click' }); },
     async flush() { await Promise.resolve(); await Promise.resolve(); },
@@ -82,12 +84,14 @@ function browser({ saved, blocked = false, native = false } = {}) {
 test('Original Georgian loads no external translation script', () => {
   const page = browser();
   assert.equal(page.scripts.length, 0);
+  assert.deepEqual(page.fonts, []);
 });
 
 test('Native Russian and English restore without Google and synchronize both pickers', () => {
   for (const saved of ['ru', 'en']) {
     const page = browser({ saved, native: true });
     assert.equal(page.scripts.length, 0);
+    assert.deepEqual(page.fonts, []);
     assert.equal(page.document.documentElement.lang, saved);
     for (const picker of page.pickers) assert.equal(picker.parts['[data-language-code]'].textContent, saved.toUpperCase());
     page.click('ka');
@@ -95,6 +99,15 @@ test('Native Russian and English restore without Google and synchronize both pic
     assert.equal(page.reloads, 1);
     assert.equal(page.scripts.length, 0);
   }
+});
+
+test('An automatic translation starts the full font before the Google widget responds', async () => {
+  const page = browser({ native: true });
+  page.click('de');
+  assert.deepEqual(page.fonts, ['400 1em "Google Sans Full"']);
+  assert.equal(page.document.documentElement.lang, 'ka');
+  page.ready(); await page.flush();
+  assert.equal(page.document.documentElement.lang, 'de');
 });
 
 test('Choosing a native language cancels a pending external translation', async () => {
