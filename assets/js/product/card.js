@@ -64,9 +64,9 @@
             const percent = Math.round(((oldVal - newVal) / oldVal) * 100);
             if (percent > 0) {
                 discountBadge = `
-                <div class="absolute top-2.5 left-2.5 z-[10] py-1 px-2 rounded-md text-[length:12px] leading-[1.5] font-semibold bg-[#ef4444] text-white pointer-events-none select-none">
+                <span class="pointer-events-none absolute start-2 top-2 z-10 rounded-detail bg-[#bd263b] px-1.5 py-0.5 text-xs font-semibold leading-5 text-white tabular-nums">
                     -${percent}%
-                </div>`;
+                </span>`;
             }
         }
 
@@ -77,17 +77,20 @@
             </div>` : '';
 
         const formattedPrice = formatPriceDisplay(p.price);
-        const formattedOldPrice = oldVal > newVal ? formatPriceDisplay(p.oldPrice) : '';
+        const formattedOldPrice = oldVal > newVal && newVal > 0 ? formatPriceDisplay(p.oldPrice) : '';
 
         return `
         <div class="product-card relative flex flex-col min-w-0 border-0 rounded-none bg-transparent text-[color:light-dark(#2c3644,var(--color-night-ink))] overflow-visible [.product-carousel_>_&]:[flex:0_0_calc((100%_-_72px)_/_4)] min-[1280px]:[.product-carousel_>_&]:basis-[calc((100%_-_96px)_/_5)] [.product-carousel_>_&]:snap-start min-[1440px]:[.product-carousel_>_&]:basis-[calc((100%_-_120px)_/_6)] max-[1024px]:[.product-carousel_>_&]:basis-[calc((100%_-_48px)_/_3)] max-[768px]:[.product-carousel_>_&]:basis-[calc((100%_-_32px)_/_2.5)]" data-product-id="${safeId}">
 
             <!-- Блок изображения -->
-            <div class="product-card-media dark:bg-white relative w-full aspect-square bg-transparent rounded-media overflow-hidden">
+            <div class="product-card-media relative w-full aspect-square rounded-media overflow-hidden">
                 ${discountBadge}
 
-                <button type="button" class="btn-fav-card card-hover-favorite absolute top-1.5 right-1.5 z-[10] flex items-center justify-center w-11 h-11 border-0 rounded-full bg-transparent text-[color:light-dark(#8893a1,var(--color-night-muted))] cursor-pointer [transition:color_.2s,_background_.2s] hover:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active]:text-[color:light-dark(#d14b62,var(--color-night-danger))] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
+                <button type="button" class="btn-fav-card card-hover-action absolute end-1.5 top-1.5 z-10 size-11 items-center justify-center rounded-full bg-white text-slate-600 cursor-pointer hover:text-[#bd263b] [&.active]:text-[#bd263b] [&.active_svg]:fill-current" aria-pressed="false" aria-label="დამატება რჩეულებში: ${safeName}" title="დამატება რჩეულებში" onclick="toggleFav(event, this)">
                     ${window.EnkaIcons?.render('heart', 18, 'auto', '') || ''}
+                </button>
+                <button type="button" class="cursor-pointer card-hover-action card-compare-action absolute end-1.5 top-13.5 z-10 size-11 items-center justify-center rounded-full bg-white text-slate-600" data-compare-toggle="${safeId}" aria-pressed="${window.enkaCompare?.has(rawId) === true}" aria-label="შედარება" title="შედარება">
+                    ${window.EnkaIcons?.render('compare', 18, 'auto', '') || ''}
                 </button>
 
                 <a href="${productUrl}" class="absolute inset-0 z-[1]" draggable="false" tabindex="-1" aria-hidden="true"></a>
@@ -115,29 +118,25 @@
             </div>
 
             <!-- Информация о товаре -->
-            <div class="flex flex-col pt-4 pr-[1px] pb-0 pl-[1px] min-w-0">
+            <div class="flex min-w-0 flex-1 flex-col gap-2 pt-3">
 
                 <!-- Название до двух строк -->
-                <a href="${productUrl}" class="product-name block overflow-hidden whitespace-nowrap text-ellipsis text-[length:13px] leading-[1.65] font-[550] text-[color:light-dark(#414b59,var(--color-night-copy))] mb-2 no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline max-[768px]:text-[length:12px]" title="${safeName}" draggable="false">
+                <a href="${productUrl}" class="product-name line-clamp-2 h-[2lh] wrap-anywhere text-[length:13px] leading-snug font-[550] text-ink no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline" title="${safeName}" draggable="false">
                     ${safeName}
                 </a>
 
                 <!-- Блок цены -->
-                <div class="flex items-baseline flex-wrap gap-1.5 mb-3">
-                    <div class="product-card-price ${oldVal > newVal && newVal > 0 ? 'text-accent' : 'text-[color:light-dark(#000,var(--color-night-ink))]'} whitespace-nowrap text-[length:18px] font-bold leading-6 tracking-[-.02em] tabular-nums max-[768px]:text-[length:16px]">
-                        ${newVal > 0 ? `<span>${formattedPrice}</span><span class="card-price-currency">₾</span>` : 'ფასი ზუსტდება'}
-                    </div>
+                <div class="flex min-h-6 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                    ${newVal > 0 ? `
+                        <span class="product-card-price ${formattedOldPrice ? 'text-accent' : 'text-ink'} whitespace-nowrap text-[length:18px] font-bold leading-6 tracking-[-.02em] tabular-nums max-[768px]:text-base"><span>${formattedPrice}</span><span class="card-price-currency">₾</span></span>
+                    ` : '<span class="text-[length:13px] font-medium leading-6 text-muted">ფასი ზუსტდება</span>'}
                     ${formattedOldPrice ? `
-                        <span class="text-[color:light-dark(#929ba8,var(--color-night-muted))] text-[length:12px] leading-[1.4] line-through [text-decoration-thickness:1px]">
-                            ${formattedOldPrice}₾
-                        </span>
+                        <del class="whitespace-nowrap text-xs leading-snug text-muted tabular-nums">${formattedOldPrice} ₾</del>
                     ` : ''}
                 </div>
 
-                <!-- Кнопка с плавной анимацией (transition-all duration-200 ease-out active:scale-95) и соосным скруглением rounded-control -->
-                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="flex items-center justify-center gap-1.5 w-full mt-0 bg-brand border border-solid border-brand rounded-control text-white min-h-10 py-[9px] px-3 text-[length:12px] leading-[1.5] font-[550] no-underline cursor-pointer shadow-none [transition:border-color_.2s,_color_.2s,_background_.2s] hover:bg-[#104dce] hover:border-[#104dce] hover:text-white disabled:border-[color:light-dark(#eceff3,var(--color-night-line))] disabled:text-[color:light-dark(#929ba8,var(--color-night-muted))] disabled:bg-[color:light-dark(#f7f8fa,var(--color-night-surface))] disabled:cursor-default [&_svg]:shrink-0" aria-label="${buttonLabel}: ${safeName}">
-                    ${window.EnkaIcons?.render('bag', 17, 'auto', '') || ''}
-                    <span>${buttonLabel}</span>
+                <${available ? 'a href="' + productUrl + '#inlineOrderForm"' : 'button type="button" disabled'} class="product-card-action mt-auto motion-safe:transition-colors ${available ? 'bg-brand text-white hover:bg-brand-dark' : 'border-line bg-surface text-muted'}" aria-label="${buttonLabel}: ${safeName}">
+                    ${buttonLabel}
                 </${available ? 'a' : 'button'}>
             </div>
         </div>`;

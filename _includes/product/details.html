@@ -4,6 +4,7 @@
   {% if yt_id != '' %}<a href="#productVideo" data-product-video-trigger>ვიდეო განხილვა</a>{% endif %}
   <a href="#productFaq">ხშირად დასმული კითხვები</a>
   {% if include.blog_slugs.size > 0 %}<a href="#blog-section">სასარგებლო სტატიები</a>{% endif %}
+  <button type="button" class="inline-flex shrink-0 items-center gap-1.5 min-h-14 py-3 text-[length:13px] font-medium text-muted whitespace-nowrap cursor-pointer hover:text-accent focus-visible:outline-offset-[-2px] max-[768px]:min-h-13 max-[768px]:text-[length:12px] [.no-js_&]:hidden" data-compare-open="product" aria-controls="compareModal" aria-haspopup="dialog" aria-expanded="false">{% include icons.html name='compare' size=16 %}<span>შედარება</span></button>
 </nav>
 <div class="grid grid-cols-[minmax(0,_1fr)_minmax(0,_1fr)] gap-x-[clamp(32px,_5vw,_76px)] pt-7.5 [&_>_section]:min-w-0 [&_>_section]:scroll-mt-[calc(var(--site-header-height,80px)+1rem)] [&_h2]:text-[color:light-dark(#26303e,var(--color-night-ink))] [&_h2]:text-[length:22px] [&_h2]:font-semibold [&_h2]:tracking-[-.025em] [&_h2]:leading-[1.4] [&_h2]:mt-0 [&_h2]:mr-0 [&_h2]:mb-5.5 [&_h2]:ml-0 min-[768px]:max-[901px]:gap-x-9 max-[768px]:grid-cols-[minmax(0,_1fr)] max-[768px]:gap-9 max-[768px]:pt-7.5 max-[768px]:[&_h2]:text-[length:21px]" id="productInformation">
   <section id="productDescription" aria-labelledby="productDescriptionTitle">

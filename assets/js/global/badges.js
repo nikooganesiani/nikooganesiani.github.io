@@ -13,6 +13,11 @@
   window.updateBadges = function() {
     for (const [key, selector] of [['myFavs', '.fav-badge'], ['myOrders', '.orders-badge']]) {
       const count = readCount(key);
+      const footerCount = document.querySelector(`[data-footer-count="${key}"]`);
+      if (footerCount) {
+        footerCount.textContent = count ? '(' + count + ')' : '';
+        footerCount.hidden = count === 0;
+      }
       for (const badge of document.querySelectorAll(selector)) {
         badge.textContent = count > 99 ? '99+' : String(count);
         badge.classList.toggle('hidden', count <= 0);

@@ -1,4 +1,76 @@
 {
+  "შედარება": {
+    "ru": "Сравнить",
+    "en": "Compare"
+  },
+  "პროდუქტების შედარება": {
+    "ru": "Сравнение товаров",
+    "en": "Product comparison"
+  },
+  "შედარებაში დამატებულია. გახსნა": {
+    "ru": "Товар добавлен в сравнение. Открыть",
+    "en": "Added to comparison. Open"
+  },
+  "ამოღებულია შედარებიდან": {
+    "ru": "Товар удалён из сравнения",
+    "en": "Removed from comparison"
+  },
+  "შედარებიდან ამოღება": {
+    "ru": "Убрать из сравнения",
+    "en": "Remove from comparison"
+  },
+  "მონიშნეთ მინიმუმ ორი პროდუქტი, რომ მათი ფასები და მახასიათებლები შეადაროთ.": {
+    "ru": "Отметьте хотя бы два товара, чтобы сравнить их цены и характеристики.",
+    "en": "Select at least two products to compare their prices and specs."
+  },
+  "შედარებისთვის კიდევ ერთი პროდუქტი დაამატეთ.": {
+    "ru": "Добавьте ещё один товар для сравнения.",
+    "en": "Add one more product to compare."
+  },
+  "შედარებისთვის მონაცემები ვერ ჩაიტვირთა.": {
+    "ru": "Не удалось загрузить данные для сравнения.",
+    "en": "Couldn’t load comparison details."
+  },
+  "სცადეთ ხელახლა": {
+    "ru": "Повторить попытку",
+    "en": "Try again"
+  },
+  "პროდუქტი აღარ არის კატალოგში": {
+    "ru": "Товар больше не в каталоге",
+    "en": "Product no longer in the catalog"
+  },
+  "მითითებული არ არის": {
+    "ru": "Не указано",
+    "en": "Not specified"
+  },
+  "მახასიათებლები არ არის მითითებული.": {
+    "ru": "Характеристики не указаны.",
+    "en": "No specifications listed."
+  },
+  "გვერდი ვერ მოიძებნა": {
+    "ru": "Страница не найдена",
+    "en": "Page not found"
+  },
+  "გვერდი ვერ მოიძებნა – ENKA Electronics": {
+    "ru": "Страница не найдена – ENKA Electronics",
+    "en": "Page not found – ENKA Electronics"
+  },
+  "გვერდი ვერ მოიძებნა — ENKA Electronics": {
+    "ru": "Страница не найдена — ENKA Electronics",
+    "en": "Page not found — ENKA Electronics"
+  },
+  "შესაძლოა, ასეთი გვერდი არ არსებობს ან ბმული აღარ მოქმედებს.": {
+    "ru": "Возможно, такой страницы нет или ссылка больше не работает.",
+    "en": "This page may not exist, or the link may no longer work."
+  },
+  "დაგეხმარებით სასურველი ტექნიკის პოვნაში.": {
+    "ru": "Поможем вам найти нужную технику.",
+    "en": "We’ll help you find the products you’re looking for."
+  },
+  "მთავარ გვერდზე": {
+    "ru": "На главную",
+    "en": "Back to home"
+  },
   "ENKA Electronics - ხარისხიანი ტექნიკა საქართველოში უფასო მიტანით და ადგილზე გადახდით.": {
     "ru": "ENKA Electronics — техника с бесплатной доставкой по Грузии и оплатой при получении.",
     "en": "ENKA Electronics offers appliances with free delivery across Georgia and payment on delivery."
@@ -54,6 +126,10 @@
   "მხოლოდ აუცილებელი": {
     "ru": "Только необходимые",
     "en": "Essential only"
+  },
+  "უარყოფა": {
+    "ru": "Отказаться",
+    "en": "Decline"
   },
   "თანხმობა": {
     "ru": "Согласен",

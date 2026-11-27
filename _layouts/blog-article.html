@@ -6,7 +6,7 @@ layout: default
 {% assign blog_archive_path = '/blog/' %}
 {% unless page.blog_locale == 'ka' %}{% assign blog_archive_path = blog_archive_path | prepend: page.blog_locale | prepend: '/' %}{% endunless %}
 {% assign blog_archive = blog_archive_path | relative_url %}
-<div class="blog-shell blog-article-shell">
+<div class="store-shell blog-shell blog-article-shell">
   <div class="blog-page-nav">
     {% include blog/breadcrumbs.html ui=blog_ui archive=blog_archive %}
     {% include blog/languages.html label=blog_ui.article_language %}

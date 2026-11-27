@@ -3,14 +3,19 @@
   {% if page.storefront_locale and page.listing_mode == 'category' and listing_products.size > 0 %}
     {% for product in listing_products limit:16 %}{% include homepage/product-card.html product=product %}{% endfor %}
   {% else %}
-  {% for i in (1..8) %}<div class="listing-skeleton
-      [animation:listing-pulse_1.5s_ease-in-out_infinite_alternate] pb-[3rem]
-      [&_div]:block [&_div]:bg-surface [&_div]:rounded-media
-      [&_span]:block [&_span]:bg-surface [&_span]:rounded-media
-      [&_div]:[aspect-ratio:1] [&_div]:mb-[1rem]
-      [&_span]:w-[74%] [&_span]:h-[.875rem] [&_span]:mb-[.55rem]
-      [&_span:last-child]:w-[42%]
-      motion-reduce:[animation:none]" aria-hidden="true"><div></div><span></span><span></span></div>{% endfor %}
+  {% for i in (1..8) %}
+    <div class="listing-skeleton motion-safe:[animation:listing-pulse_1.5s_ease-in-out_infinite_alternate]" aria-hidden="true">
+      <div class="aspect-square rounded-media bg-surface"></div>
+      <div class="grid gap-2 pt-3">
+        <div class="flex h-[2lh] flex-col justify-center gap-1.5 text-[length:13px] leading-snug">
+          <span class="h-2.5 w-3/4 rounded-detail bg-surface"></span>
+          <span class="h-2.5 w-1/2 rounded-detail bg-surface"></span>
+        </div>
+        <span class="h-6 w-2/5 rounded-detail bg-surface"></span>
+        <span class="h-11 rounded-control bg-surface"></span>
+      </div>
+    </div>
+  {% endfor %}
   {% endif %}
 </div>
 <div id="loadMoreContainer" class="listing-more

@@ -5,9 +5,9 @@ description: "ტექნიკა სახლისთვის, სამზ
 is_home: true
 ---
 
-<div class="max-w-store w-full mx-auto px-4 sm:px-6 min-[1280px]:px-8 py-4 pb-12 selection:bg-[color:light-dark(var(--color-blue-200),var(--color-night-blue))]">
+<div class="store-shell pt-4 pb-12 selection:bg-[color:light-dark(var(--color-blue-200),var(--color-night-blue))]">
   <h1 class="sr-only">ENKA Electronics — ტექნიკა თქვენი ყოველდღიურობისთვის</h1>
-  <div data-home-layout class="[--promo-page-gutter:1rem] sm:[--promo-page-gutter:1.5rem] dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">
+  <div data-home-layout class="dark:[&_.enka-campaign-decorated]:bg-[var(--color-night-blue)]! dark:[&_.enka-campaign-title]:text-ink! dark:[&_.enka-campaign-custom_.product-card]:bg-canvas!">
     {% if site.data.studio.homeBlocks %}
       {% for block in site.data.studio.homeBlocks %}{% include homepage/slot.html type=block.type id=block.id block=block %}{% endfor %}
     {% else %}

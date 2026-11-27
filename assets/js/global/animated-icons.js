@@ -48,6 +48,7 @@
     };
     if (name === 'loader') move(['rotate(0deg)', 'rotate(360deg)'], 900, { easing: 'linear' });
     else if (name === 'heart') move(['scale(1)', 'scale(1.12)', 'scale(1)', 'scale(1.08)', 'scale(1)'], 650);
+    else if (name === 'compare') animate(parts[1], { transform: ['rotate(0deg)', 'rotate(-8deg)', 'rotate(5deg)', 'rotate(0deg)'] }, 420);
     else if (name === 'truck') {
       move(['translateY(0)', 'translateY(-1px)', 'translateY(0)', 'translateY(-.5px)', 'translateY(0)'], loop ? 1000 : 500);
       for (const wheel of body.querySelectorAll('circle')) {

@@ -47,3 +47,7 @@
 .catalog-subcategory-panel--enter .enka-subcategory:nth-child(3n + 2){animation-delay:25ms}
 .catalog-subcategory-panel--enter .enka-subcategory:nth-child(3n){animation-delay:50ms}
 @media(prefers-reduced-motion:reduce){.catalog-subcategory-panel--enter,.catalog-subcategory-panel--enter .enka-subcategory{animation:none}}
+:where(.enka-hero, .enka-category, .enka-subcategory, .enka-campaign-decorated, .enka-campaign-pattern,
+  .enka-campaign-custom .product-card, .enka-campaign-custom .product-card-media) {
+  corner-shape: var(--store-corner-shape);
+}

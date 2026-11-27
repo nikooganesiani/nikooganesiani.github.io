@@ -7,13 +7,12 @@
   {% if include.variant == 'home' %}
     {% assign blog_home_count = blog_section_size | at_least: 14 %}
     {% assign blog_primary_slugs = blog_primary_slugs | concat: site.data.blog.archive | uniq | slice: 0, blog_home_count %}
-    {% assign blog_arrow_class = 'carousel-arrow blog-carousel-arrow inline-flex items-center justify-center w-10 h-10 shrink-0 border border-solid border-[color:light-dark(#e7ebf0,var(--color-night-line))] rounded-full text-[color:light-dark(#667383,var(--color-night-copy))] bg-canvas cursor-pointer motion-safe:transition-colors hover:border-[color:light-dark(#c7cfd9,var(--color-night-line-strong))] hover:text-[color:light-dark(#253140,var(--color-night-ink))] hover:bg-[color:light-dark(#f8fafc,var(--color-night-surface))] disabled:opacity-[.28] disabled:cursor-default' %}
     <div class="blog-section-header">
       <h2 id="blog-section-title"><a class="blog-heading-link" href="{{ '/blog/' | relative_url }}" data-blog-archive-link>{{ include.title }}</a></h2>
       {% if blog_primary_slugs.size > 4 %}
         <div class="hidden gap-2 min-[640px]:flex">
-          <button type="button" class="{{ blog_arrow_class }}" data-blog-direction="-1" aria-controls="blog-home-track" aria-label="წინა სტატიები" hidden disabled>{% include icons.html name='chevron-left' size=18 %}</button>
-          <button type="button" class="{{ blog_arrow_class }}" data-blog-direction="1" aria-controls="blog-home-track" aria-label="შემდეგი სტატიები" hidden disabled>{% include icons.html name='chevron-right' size=18 %}</button>
+          <button type="button" class="carousel-arrow blog-carousel-arrow inline-flex" data-blog-direction="-1" aria-controls="blog-home-track" aria-label="წინა სტატიები" hidden disabled>{% include icons.html name='chevron-left' size=18 %}</button>
+          <button type="button" class="carousel-arrow blog-carousel-arrow inline-flex" data-blog-direction="1" aria-controls="blog-home-track" aria-label="შემდეგი სტატიები" hidden disabled>{% include icons.html name='chevron-right' size=18 %}</button>
         </div>
       {% endif %}
     </div>

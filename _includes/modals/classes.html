@@ -2,9 +2,9 @@
 {%- when 'overlay' -%}
 fixed [inset:var(--modal-viewport-top,0px)_0_auto] z-[10000] h-[var(--modal-viewport-height,100dvh)] items-center justify-center px-6 py-[clamp(.75rem,4vh,2rem)] overscroll-contain bg-[rgb(15_23_42_/_.4)] opacity-0 [&.active]:opacity-100 motion-safe:transition-opacity motion-safe:duration-180 max-[640px]:items-end max-[640px]:[padding:max(.5rem,env(safe-area-inset-top))_max(.5rem,env(safe-area-inset-right))_max(.5rem,env(safe-area-inset-bottom))_max(.5rem,env(safe-area-inset-left))] [&.modal--search]:items-start [&.modal--gallery]:items-center [&.modal--gallery]:p-0 [&.modal--gallery]:bg-canvas
 {%- when 'panel' -%}
-relative isolate flex flex-col w-full max-w-lg min-h-0 max-h-full overflow-hidden rounded-panel bg-canvas text-ink shadow-[0_24px_80px_-24px_rgb(5_16_36_/_38%),0_4px_16px_rgb(5_16_36_/_8%)] motion-safe:transform-[translateY(.75rem)_scale(.99)] motion-safe:transition-transform motion-safe:duration-210 motion-safe:ease-[cubic-bezier(.2,.8,.2,1)] [.modal.active_&]:transform-none [.modal--catalog_&]:h-192 [.modal--catalog_&]:max-w-5xl [.modal--photo_&]:max-w-184 [.modal--search_&]:max-w-xl max-[640px]:rounded-card max-[640px]:motion-safe:transform-[translateY(1rem)] max-[640px]:motion-safe:[.modal--search:not(.active)_&]:transform-[translateY(-.5rem)]
+relative isolate flex flex-col w-full max-w-lg min-h-0 max-h-full overflow-hidden bg-canvas text-ink shadow-[0_20px_60px_-16px_rgb(5_16_36_/_36%)] motion-safe:transform-[translateY(.75rem)_scale(.99)] motion-safe:transition-transform motion-safe:duration-210 motion-safe:ease-[cubic-bezier(.2,.8,.2,1)] [.modal.active_&]:transform-none [.modal--catalog_&]:h-192 [.modal--catalog_&]:max-w-5xl [.modal--photo_&]:max-w-184 [.modal--search_&]:max-w-xl max-[640px]:motion-safe:transform-[translateY(1rem)] max-[640px]:motion-safe:[.modal--search:not(.active)_&]:transform-[translateY(-.5rem)]
 {%- when 'body' -%}
-min-h-0 overflow-y-auto overscroll-y-contain scroll-py-4 p-6 max-[640px]:p-4
+min-h-0 overflow-y-auto overscroll-y-contain scroll-py-4 px-(--modal-gutter) pt-2 pb-(--modal-gutter)
 {%- when 'footer' -%}
-shrink-0 bg-page px-6 py-3.5 max-[640px]:px-4 [@media(max-height:480px)]:py-2
+shrink-0 border-t border-line {% if include.actions %}px-(--modal-close-inset) pt-3 pb-(--modal-close-inset) [@media(max-height:480px)]:pt-2{% else %}px-(--modal-gutter) py-3 [@media(max-height:480px)]:py-2{% endif %}
 {%- endcase -%}

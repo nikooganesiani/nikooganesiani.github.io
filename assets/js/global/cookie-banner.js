@@ -1,13 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   const banner = document.getElementById('cookie-banner');
   if (!banner || !window.enkaPrivacy) return;
-  const settingsButton = document.getElementById('cookie-settings-btn');
+  const settingsButtons = [
+    document.getElementById('cookie-settings-btn'),
+    document.getElementById('cookie-settings-inline-btn')
+  ].filter(Boolean);
   const settings = document.getElementById('cookie-settings');
-  settingsButton?.addEventListener('click', () => {
+  function toggleSettings() {
     if (!settings) return;
     settings.hidden = !settings.hidden;
-    settingsButton.setAttribute('aria-expanded', String(!settings.hidden));
-  });
+    for (const button of settingsButtons) button.setAttribute('aria-expanded', String(!settings.hidden));
+  }
+  for (const button of settingsButtons) button.addEventListener('click', toggleSettings);
   function render() {
     const hidden = window.enkaPrivacy.getChoice() !== null && (!window.enkaPersonalization || window.enkaPersonalization.getChoice() !== null);
     if (hidden && banner.contains(document.activeElement)) document.getElementById('main-content')?.focus({ preventScroll: true });

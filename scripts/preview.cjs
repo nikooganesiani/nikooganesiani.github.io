@@ -66,7 +66,21 @@ http.createServer((req, res) => {
   if (target !== root && !target.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
   if (fs.existsSync(target) && fs.statSync(target).isDirectory()) target = path.join(target, 'index.html');
   if (!fs.existsSync(target) && !path.extname(target)) target += '.html';
-  if (!fs.existsSync(target) || !fs.statSync(target).isFile()) { res.writeHead(404).end('Not found'); return; }
+  if (!fs.existsSync(target) || !fs.statSync(target).isFile()) {
+    res.statusCode = 404;
+    // Follow the same directory fallback as the static storefront host.
+    let directory = path.dirname(target);
+    if (!directory.startsWith(root + path.sep)) directory = root;
+    while (true) {
+      target = path.join(directory, '404.html');
+      if (fs.statSync(target, { throwIfNoEntry: false })?.isFile()) break;
+      if (directory === root) { res.end('Not found'); return; }
+      directory = path.dirname(directory);
+    }
+  }
+  if (/^\/fonts\/GoogleSansVariable(?:Core|Full)-v\d+\.woff2$/.test(pathname)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
   res.setHeader('Content-Type', types[path.extname(target)] || 'application/octet-stream');
   if (mock && pathname === '/assets/js/main/config.js') {
     res.end("window.CATALOG_API_URL='/__preview/catalog'; window.WORKER_URL_TRACKING='/__preview/tracking';" +

@@ -3,7 +3,7 @@
 {% case blog_variant %}
   {% when 'home' %}{% assign blog_cover_sizes = 'auto, (width < 640px) clamp(7.25rem, 36vw, 12rem), min(23vw, 24rem)' %}
   {% when 'product' %}{% assign blog_cover_sizes = 'auto, (max-width: 640px) 4.85rem, clamp(4rem, 7.4vw, 6.75rem)' %}
-  {% else %}{% assign blog_cover_sizes = 'auto, (max-width: 640px) 30vw, (max-width: 820px) 45vw, min(30vw, 24rem)' %}
+  {% else %}{% assign blog_cover_sizes = 'auto, (max-width: 640px) 30vw, (max-width: 820px) 45vw, (width < 1280px) calc((100vw - 6rem) / 3), min(calc((100vw - 7rem) / 3), 31rem)' %}
 {% endcase %}
 <div class="blog-grid blog-grid--{{ blog_variant }} blog-grid--count-{{ include.slugs.size }}"{% if blog_variant == 'home' %} id="blog-home-track"{% endif %}>
   {% for blog_slug in include.slugs %}

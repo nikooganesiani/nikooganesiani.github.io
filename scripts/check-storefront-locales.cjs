@@ -17,7 +17,7 @@ function checkStorefrontLocales(root = '_site') {
   const heads = new Map();
   const origin = 'https://enkaelectronics.com.ge';
   const available = new Set(fs.readdirSync(root, { recursive: true }).map(file => file.split(path.sep).join('/')));
-  const fileFor = route => route.slice(1) + (route.endsWith('/') ? 'index.html' : '.html');
+  const fileFor = route => route.slice(1) + (route.endsWith('/') ? 'index.html' : route.endsWith('.html') ? '' : '.html');
   function metadata(route) {
     if (heads.has(route)) return heads.get(route);
     assert.ok(available.has(fileFor(route)), 'Language link leads to a missing page: ' + route);
@@ -42,7 +42,7 @@ function checkStorefrontLocales(root = '_site') {
   for (const file of available) {
     const locale = file.match(/^(ru|en)\/.*\.html$/)?.[1];
     if (!locale) continue;
-    const route = '/' + file.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+    const route = '/' + file.replace(/\/index\.html$/, '/').replace(/^((?:ru|en)\/info\/.+)\.html$/, '$1');
     const url = origin + route;
     const page = metadata(route);
     assert.equal(page.locale, locale, route);
@@ -78,6 +78,19 @@ function checkStorefrontLocales(root = '_site') {
     assert.match(html, new RegExp('href="/' + locale + '/info/about"'), locale + ' localized footer links');
     const search = metadata('/' + locale + '/search/');
     assert.ok(search.noindex, locale + ' search stays out of the index');
+  }
+  const fallbacks = { ka: '/404.html', ru: '/ru/404.html', en: '/en/404.html' };
+  for (const [locale, route] of Object.entries(fallbacks)) {
+    const page = metadata(route);
+    assert.equal(page.locale, locale, route + ' language');
+    assert.ok(page.noindex && !indexed.has(origin + route), route + ' stays out of the index');
+    const nodes = [...elements(parse(fs.readFileSync(path.join(root, fileFor(route)), 'utf8')))];
+    const pickers = nodes.filter(node => attribute(node, 'data-language-picker') !== undefined);
+    assert.equal(pickers.length, 2, route + ' uses the shared header and footer language pickers');
+    for (const picker of pickers) {
+      const links = [...elements(picker)].filter(node => node.tagName === 'a' && attribute(node, 'data-language'));
+      assert.deepEqual(Object.fromEntries(links.map(link => [attribute(link, 'data-language'), attribute(link, 'href')])), fallbacks);
+    }
   }
   console.log('Localized SEO verified for ' + totals.ru + ' Russian and ' + totals.en + ' English indexable pages.');
 }

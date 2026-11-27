@@ -1,7 +1,7 @@
 <div class="modal hidden {% include modals/classes.html part='overlay' %}" id="favModal" role="dialog" aria-labelledby="favModalTitle" aria-hidden="true">
   <div class="modal-panel {% include modals/classes.html part='panel' %}">
     {% include modals/header.html icon="heart" title_id="favModalTitle" title="რჩეულები" focus_title=true description="შეინახეთ ის, რაც მოგწონთ. დაუბრუნდით ნებისმიერ დროს." count_id="favModalCount" %}
-    <div class="modal-body modal-content {% include modals/classes.html part='body' %}">{% include modals/empty.html id="favEmpty" icon="heart" title="რჩეულებში ჯერ არაფერია" description="პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ." %}
+    <div class="modal-body modal-content {% include modals/classes.html part='body' %}">{% include modals/empty.html id="favEmpty" title="რჩეულებში ჯერ არაფერია" description="პროდუქტზე გულის მონიშვნით შეინახავთ მას აქ." %}
       <div id="favList" class="grid gap-3"></div></div>
     <footer class="modal-footer {% include modals/classes.html part='footer' %}"><p class="m-0 text-[color:light-dark(#637082,var(--color-night-copy))] text-[length:12px] leading-[1.7] [&_a]:text-[color:light-dark(#475569,var(--color-night-copy))] [&_a]:underline-offset-[3px]">რჩეულები ინახება ამ ბრაუზერში.</p></footer></div>
 </div>

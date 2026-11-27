@@ -108,8 +108,8 @@ for (const [, resource] of html.matchAll(/(?:href|src)="(\/(?!\/)[^"#]*)"/g)) {
   assert.ok([file, file + '.html', path.join(file, 'index.html')].some(candidate => fs.existsSync(candidate)), 'Missing homepage resource: ' + resource);
   checked++;
 }
-assert.ok((html.match(/class="product-card(?:\s|")/g) || []).length > 0, 'Popular products need a server-rendered fallback');
-assert.match(html, /id="recommendationFeed"/, 'Homepage contains the automatic recommendation feed');
+assert.match(html, /id="recommendationFeed"[^>]*>\s*<noscript>[\s\S]*?class="product-card(?:\s|")[\s\S]*?<\/noscript>\s*<\/div>/,
+  'The recommendation feed shows static cards only with JavaScript disabled');
 assert.ok(!/data-personalization-controls|id="recommendationInterests"|data-recommendation-hide/.test(html), 'Homepage recommendations must not require configuring interests');
 const recommendationCatalog = JSON.parse(html.match(/id="recommendationCatalog">([\s\S]*?)<\/script>/)?.[1] || 'null');
 assert.ok(Array.isArray(recommendationCatalog) && recommendationCatalog.length > 0, 'Offline recommendations contain a valid embedded catalog');
@@ -164,7 +164,10 @@ for (const entry of fs.readdirSync(productsDir, { withFileTypes: true })) {
   productCount++;
 }
 assert.ok(productCount > 0, 'No product pages built');
-assert.ok(fs.statSync(path.join(root, '404.html')).isFile(), 'Missing hosting fallback for unknown routes');
+const notFound = readPage(path.join(root, '404.html'));
+verifyHeader(notFound, '404');
+assert.equal(footerWithoutLanguageTargets(notFound), footerWithoutLanguageTargets(html), '404 uses the shared footer');
+assert.match(notFound, /<meta name="robots" content="noindex, follow">/, '404 stays out of the index');
 for (const file of fs.readdirSync(root, { recursive: true })) {
   assert.doesNotMatch(path.basename(file), /^HANDOFF-.*\.md$/i, 'Internal document published: ' + file);
 }

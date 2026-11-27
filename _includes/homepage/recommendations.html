@@ -2,6 +2,8 @@
 {% if site.data.studio.store %}{% assign store_catalog = site.data.studio.catalog %}{% endif %}
 <section id="recommendationsSection" class="mt-9" aria-label="პროდუქტები თქვენთვის" data-popular-ids="{{ site.data.popular_items.items | default: site.data.popular_items | join: ',' | escape }}">
   <div id="recommendationFeed" class="space-y-10 sm:space-y-12">
+    <noscript>
+    <div class="space-y-10 sm:space-y-12">
     {% for recommendation_category in store_catalog %}
       {% assign recommendation_category_id = recommendation_category[0] %}
       {% assign recommendation_products = site.products | where_exp: 'item', 'item.categories contains recommendation_category_id' %}
@@ -24,13 +26,15 @@
       </section>
       {% endif %}
     {% endfor %}
+    </div>
+    <p class="mt-5 text-sm text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))]">პერსონალური რეკომენდაციებისთვის ჩართეთ JavaScript. ყველა პროდუქტი ხელმისაწვდომია <a class="text-accent underline" href="/category/">კატალოგში</a>.</p>
+    </noscript>
   </div>
   <p id="recommendationsStatus" class="mt-6 text-sm leading-relaxed text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] empty:hidden" role="status" aria-live="polite"></p>
   <div class="mt-5 flex flex-wrap items-center gap-3">
     <button id="recommendationsMore" type="button" class="sr-only focus:not-sr-only focus:min-h-11 focus:rounded-control focus:bg-brand focus:px-6 focus:py-3 focus:text-white" hidden>მეტი პროდუქტის ნახვა</button>
     <button id="recommendationsRetry" type="button" class="min-h-11 rounded-control border border-[color:light-dark(var(--color-slate-300),var(--color-night-line-strong))] bg-canvas px-4 py-2 text-sm font-semibold text-accent hover:bg-[color:light-dark(var(--color-blue-50),var(--color-night-blue))]" hidden>ხელახლა ცდა</button>
   </div>
-  <noscript><p class="mt-5 text-sm text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))]">პერსონალური რეკომენდაციებისთვის ჩართეთ JavaScript. ყველა პროდუქტი ხელმისაწვდომია <a class="text-accent underline" href="/category/">კატალოგში</a>.</p></noscript>
 </section>
 <script type="application/json" id="recommendationCatalog">[
 {%- for product in site.products -%}

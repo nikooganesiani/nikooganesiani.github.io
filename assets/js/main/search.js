@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const historyKey = 'enka_search_history_v1';
   const historyLimit = 6;
   const fallbackImage = '/img/no-image.svg';
-  const interactiveRow = 'group flex items-center gap-2.5 min-w-0 rounded-control text-ink hover:bg-surface focus-visible:bg-surface';
+  const interactiveRow = 'flex min-w-0 items-center rounded-control text-ink';
   const hoverUnderline = 'underline-offset-4 hover:underline';
   const cleanQuery = value => typeof value === 'string' ? value.trim().replace(/\s+/g, ' ').slice(0, 200) : '';
   const queryKey = query => query.normalize('NFC').toLocaleLowerCase('ka');
@@ -49,7 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = ['string', 'number'].includes(typeof product?.id) ? String(product.id) : '';
     const name = typeof product?.name === 'string' ? product.name.trim().slice(0, 400) : '';
     if (!id || id === '.' || id === '..' || !name) return null;
-    return { id, name, image: window.safeProductImage?.(productImage(product)) || fallbackImage };
+    const source = productImage(product);
+    const image = window.safeProductImage?.(source) || fallbackImage;
+    const imageWidth = product.cardImages?.[source] ?? product.imageWidth;
+    const entry = { id, name, image };
+    if (window.EnkaCardImages?.validWidth(imageWidth)) entry.imageWidth = imageWidth;
+    return entry;
   }
 
   function readHistory() {
@@ -107,42 +112,52 @@ document.addEventListener('DOMContentLoaded', () => {
     return element;
   }
 
-  function thumbnail(source) {
-    const image = node('img', 'shrink-0 size-13 p-[3px] rounded-control bg-white object-contain [.site-search-entry_&]:size-9.5');
-    image.src = window.safeProductImage?.(source) || fallbackImage;
+  function thumbnail(source, size, imageWidth) {
+    const image = node('img', 'block aspect-square shrink-0 rounded-control bg-white object-contain');
+    const imageSource = window.safeProductImage?.(source) || fallbackImage;
     image.alt = '';
-    image.width = 52;
-    image.height = 52;
+    image.width = size;
+    image.height = size;
     image.loading = 'lazy';
     image.decoding = 'async';
-    image.onerror = () => { image.onerror = null; image.src = fallbackImage; };
+    const srcset = window.EnkaCardImages?.srcset(imageSource, imageWidth);
+    if (srcset) {
+      image.sizes = size + 'px';
+      image.srcset = srcset;
+    }
+    image.onerror = () => {
+      if (image.hasAttribute('srcset')) image.removeAttribute('srcset');
+      else { image.onerror = null; image.src = fallbackImage; }
+    };
+    image.src = imageSource;
     return image;
   }
 
   function section(title) {
-    const group = node('section', 'site-search-section min-w-0 px-3 pt-2.5 pb-3 max-[640px]:px-4');
-    const heading = node('div', 'flex items-center justify-between gap-2 min-h-11 px-1.5');
-    heading.append(node('h3', 'm-0 text-sm font-[650]', title));
+    const group = node('section', 'site-search-section min-w-0');
+    const heading = node('div', 'site-search-section-heading');
+    heading.append(node('h3', 'min-w-0 wrap-anywhere text-sm font-[650] leading-tight', title));
     group.append(heading);
     return { group, heading };
   }
 
   function resultLink(product, money) {
-    const link = node('a', 'search-result px-2 py-1.5 text-sm font-semibold [&+.search-result]:mt-0.5 ' + interactiveRow);
+    const link = node('a', 'search-result group gap-2.5 p-2 text-sm font-semibold leading-snug hover:bg-surface focus-visible:bg-surface ' + interactiveRow);
     link.href = productUrl(product.id);
     const copy = node('div', 'min-w-0');
-    const name = node('div', 'search-result-name w-fit max-w-full wrap-anywhere group-focus-visible:underline ' + hoverUnderline, product.name);
-    const price = node('div', 'flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-0.5 text-accent-strong text-sm tabular-nums');
+    const name = node('div', 'search-result-name wrap-anywhere underline-offset-4 group-hover:underline group-focus-visible:underline', product.name);
+    const price = node('div', 'mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm tabular-nums text-accent-strong');
     const value = window.productPrice(product.price);
     const oldValue = window.productPrice(product.oldPrice);
-    price.append(node('strong', hoverUnderline, value > 0 ? money(value) : 'ფასი ზუსტდება'));
+    price.append(node('strong', '', value > 0 ? money(value) : 'ფასი ზუსტდება'));
     if (value > 0 && oldValue > value) {
-      const old = node('del', 'text-muted text-xs font-normal underline-offset-4 hover:[text-decoration-line:underline_line-through]', money(oldValue));
+      const old = node('del', 'text-xs font-normal text-muted', money(oldValue));
       old.setAttribute('aria-label', 'ძველი ფასი: ' + money(oldValue));
       price.append(old);
     }
     copy.append(name, price);
-    link.append(thumbnail(productImage(product)), copy);
+    const source = productImage(product);
+    link.append(thumbnail(source, 48, product.cardImages?.[source]), copy);
     trackLink(link, () => rememberProduct(product));
     return link;
   }
@@ -203,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function historySection(kind, items) {
       const queries = kind === 'queries';
       const { group, heading } = section(queries ? 'ბოლო ძიებები' : 'ძიებული პროდუქტები');
-      const clearGroup = node('button', 'min-h-11 px-2 rounded-control text-accent text-xs font-semibold cursor-pointer ' + hoverUnderline, 'გასუფთავება');
+      const clearGroup = node('button', 'site-search-clear min-h-11 shrink-0 cursor-pointer rounded-control px-3 text-xs font-semibold leading-tight text-accent ' + hoverUnderline, 'გასუფთავება');
       clearGroup.type = 'button';
       clearGroup.setAttribute('aria-label', queries ? 'ბოლო ძიებების გასუფთავება' : 'პროდუქტების ისტორიის გასუფთავება');
       clearGroup.addEventListener('click', () => {
@@ -214,16 +229,18 @@ document.addEventListener('DOMContentLoaded', () => {
       heading.append(clearGroup);
       const list = node('ul');
       items.forEach((item, index) => {
-        const row = node('li', 'grid grid-cols-[minmax(0,1fr)_2.75rem] items-center');
-        const link = node('a', 'site-search-entry min-h-11.5 px-2 py-1 text-sm font-[550] [&>span:first-child]:text-muted ' + interactiveRow);
+        const row = node('li', 'site-search-history-row grid grid-cols-[minmax(0,1fr)_2.75rem] items-center rounded-control');
+        const link = node('a', 'site-search-entry min-h-11 gap-3 ps-1.5 pe-2 py-1 text-sm font-[550] leading-tight ' + interactiveRow);
         link.href = queries ? searchUrl(item) : productUrl(item.id);
         const name = queries ? item : window.ENKA_CATALOG_LABELS?.[item.id]?.name || item.name;
-        const label = node('span', 'min-w-0 line-clamp-2 wrap-anywhere group-focus-visible:underline ' + hoverUnderline, name);
+        const label = node('span', 'min-w-0 line-clamp-2 wrap-anywhere', name);
         label.setAttribute('translate', 'no');
-        link.append(queries ? icon('clock') : thumbnail(item.image), label);
+        const leading = node('span', 'grid size-8 shrink-0 place-items-center text-muted');
+        leading.append(queries ? icon('clock') : thumbnail(item.image, 32, item.imageWidth));
+        link.append(leading, label);
         trackLink(link, () => { if (queries) rememberQuery(item); else rememberProduct(item); });
 
-        const remove = node('button', 'site-search-remove grid place-items-center min-h-11 rounded-control text-muted cursor-pointer hover:text-ink');
+        const remove = node('button', 'site-search-remove grid size-11 cursor-pointer place-items-center rounded-control text-muted hover:bg-surface hover:text-ink focus-visible:bg-surface focus-visible:text-ink');
         remove.type = 'button';
         remove.setAttribute('aria-label', queries ? 'ძიების წაშლა ისტორიიდან' : 'პროდუქტის წაშლა ისტორიიდან');
         label.id = inputId + kind + index;
@@ -300,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const format = new Intl.NumberFormat(window.enkaI18n?.locale || 'ka', { maximumFractionDigits: 2 });
         const count = format.format(found.length);
-        const group = node('div', 'px-3 py-2 max-[640px]:px-4');
+        const group = node('div', 'site-search-section');
         found.slice(0, 6).forEach(product => group.append(resultLink(product, amount => format.format(amount) + ' ₾')));
 
         const all = node('a', 'site-search-all flex flex-none items-center justify-center min-h-12 px-3 py-2 border-t border-line text-accent-strong text-sm font-[650] focus-visible:underline ' + hoverUnderline, 'ყველა შედეგის ნახვა');

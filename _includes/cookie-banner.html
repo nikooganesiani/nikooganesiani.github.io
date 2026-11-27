@@ -1,17 +1,21 @@
-<aside class="fixed left-4 right-4 bottom-[calc(var(--mobile-nav-height,_65px)_+_12px_+_env(safe-area-inset-bottom))] z-[150] pointer-events-none min-[640px]:left-6 min-[640px]:right-auto min-[640px]:bottom-6 min-[640px]:w-[420px] max-[640px]:left-3 max-[640px]:right-3 print:hidden!" id="cookie-banner" role="region" aria-labelledby="cookie-banner-title" hidden>
-  <div class="pointer-events-auto max-h-[calc(100dvh_-_var(--mobile-nav-height,_65px)_-_40px_-_env(safe-area-inset-bottom))] overflow-y-auto rounded-[calc(var(--radius-control)_+_--spacing(4))] min-[640px]:rounded-[calc(var(--radius-control)_+_--spacing(5))] bg-[#2c2c2c] p-4 text-white shadow-[0_4px_24px_#00000026] min-[640px]:p-5" id="cookie-banner-card">
-    <p class="m-0 text-[14px] leading-[1.45]" id="cookie-banner-title">ვიყენებთ <a href="{{ '/info/privacy#personalization' | relative_url }}" class="font-medium text-white underline underline-offset-[3px] hover:no-underline">cookies</a><span>, რათა გავაანალიზოთ საიტის გამოყენება, შემოგთავაზოთ საინტერესო პროდუქტები და გავაუმჯობესოთ თქვენი გამოცდილება.</span></p>
-    <div class="mt-3 flex items-center justify-between gap-4">
-      <button id="cookie-accept-btn" type="button" class="inline-flex min-h-10 min-w-20 items-center justify-center rounded-control border-0 bg-[#f0f0f2] px-5 py-2 text-[14px] font-semibold leading-[1.5] text-[#242424] cursor-pointer hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">დადასტურება</button>
-      <button id="cookie-settings-btn" type="button" aria-expanded="false" aria-controls="cookie-settings" class="inline-flex min-h-10 items-center justify-center rounded-control border-0 bg-transparent px-1 py-2 text-[13px] leading-[1.5] text-[#e3e3e3] underline underline-offset-[3px] cursor-pointer hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">პარამეტრები</button>
+{% assign cookie_secondary = 'inline-flex min-h-11 items-center justify-center rounded-control border border-white/25 bg-white/10 px-3 py-2 text-center font-semibold text-white cursor-pointer hover:bg-white/20' %}
+{% assign cookie_choice = 'min-h-11 rounded-control px-3 py-2 text-sm font-semibold cursor-pointer' %}
+{% assign cookie_settings = 'rounded-control text-sm font-medium text-white/85 underline underline-offset-4 cursor-pointer hover:text-white' %}
+<aside class="store-shell pointer-events-none fixed inset-x-0 bottom-(--cookie-offset) z-[150] [--cookie-offset:max(1.5rem,env(safe-area-inset-bottom,0px))] max-[640px]:[--cookie-offset:calc(var(--mobile-nav-height)_+_var(--mobile-buy-bar-height,0px)_+_.75rem)] print:hidden!" id="cookie-banner" role="region" aria-labelledby="cookie-banner-title" hidden>
+  <div class="@container pointer-events-auto max-h-[calc(100dvh_-_var(--cookie-offset)_-_max(1rem,env(safe-area-inset-top,0px)))] max-w-[26rem] overflow-y-auto overscroll-contain rounded-panel bg-[#2c2c2c] p-4 text-white shadow-[0_4px_24px_#00000026] [&_:focus-visible]:outline-white!" id="cookie-banner-card">
+    <p class="text-sm leading-relaxed">
+      <span id="cookie-banner-title">ვიყენებთ <a href="{{ '/info/privacy#personalization' | relative_url }}" class="font-medium underline underline-offset-[3px] hover:no-underline">cookies</a><span>, რათა გავაანალიზოთ საიტის გამოყენება, შემოგთავაზოთ საინტერესო პროდუქტები და გავაუმჯობესოთ თქვენი გამოცდილება.</span></span>
+      <button id="cookie-settings-inline-btn" type="button" aria-expanded="false" aria-controls="cookie-settings" class="{{ cookie_settings }} inline-block min-h-6 @min-[22rem]:hidden">პარამეტრები</button>
+    </p>
+    <div class="mt-3 grid grid-cols-2 items-stretch gap-2 @min-[22rem]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <button id="cookie-accept-btn" type="button" class="{{ cookie_choice }} bg-brand text-white hover:bg-brand-dark">დადასტურება</button>
+      <button id="cookie-settings-btn" type="button" aria-expanded="false" aria-controls="cookie-settings" class="{{ cookie_settings }} hidden min-h-11 px-2 @min-[22rem]:block">პარამეტრები</button>
+      <button id="cookie-decline-btn" type="button" class="{{ cookie_choice }} bg-[#f0f0f2] text-[#242424] hover:bg-white">უარყოფა</button>
     </div>
-    <div id="cookie-settings" class="mt-4 border-t border-solid border-white/20 pt-4" hidden>
-      <p class="m-0 text-[13px] leading-[1.5] text-[#e3e3e3]">ნახვები პროდუქტების შესარჩევად მხოლოდ თქვენს ბრაუზერში ინახება. Google თანხმობამდე ზომავს აქტივობას ანალიტიკური და სარეკლამო ქუქიების გარეშე. თანხმობა რთავს Google-ის ქუქიებს, სარეკლამო პერსონალიზაციასა და Meta-ს ანალიტიკას. თანხმობით ადასტურებთ, რომ ხართ 16 წლის ან უფროსი. <a href="{{ '/info/privacy#personalization' | relative_url }}" class="text-white underline underline-offset-[3px] hover:no-underline">მონაცემები და პარამეტრები</a>.</p>
-      <p class="mt-2 mb-0 text-[12px] leading-[1.45] text-[#e3e3e3]">თანხმობის გაუქმება ნებისმიერ დროს შეგიძლიათ <a href="{{ '/info/privacy#personalization' | relative_url }}" class="text-white underline underline-offset-[3px] hover:no-underline">კონფიდენციალურობის გვერდზე</a>.</p>
-      <div class="mt-3 grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
-        <button id="cookie-decline-btn" type="button" class="inline-flex min-h-11 items-center justify-center rounded-control border border-white/25 bg-white/10 px-3 py-2 text-[13px] font-semibold leading-[1.4] text-white cursor-pointer hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">მხოლოდ აუცილებელი</button>
-        <button id="cookie-personalize-btn" type="button" class="inline-flex min-h-11 items-center justify-center rounded-control border border-white/25 bg-white/10 px-3 py-2 text-[13px] font-semibold leading-[1.4] text-white cursor-pointer hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">მხოლოდ რეკომენდაციები</button>
-      </div>
+    <div id="cookie-settings" class="mt-4 border-t border-white/20 pt-4 text-[13px] leading-relaxed text-white/85 [&_a]:text-white [&_a]:underline [&_a]:underline-offset-[3px]" hidden>
+      <p>ნახვები პროდუქტების შესარჩევად მხოლოდ თქვენს ბრაუზერში ინახება. Google თანხმობამდე ზომავს აქტივობას ანალიტიკური და სარეკლამო ქუქიების გარეშე. თანხმობა რთავს Google-ის ქუქიებს, სარეკლამო პერსონალიზაციასა და Meta-ს ანალიტიკას. თანხმობით ადასტურებთ, რომ ხართ 16 წლის ან უფროსი. <a href="{{ '/info/privacy#personalization' | relative_url }}">მონაცემები და პარამეტრები</a>.</p>
+      <p class="mt-2">თანხმობის გაუქმება ნებისმიერ დროს შეგიძლიათ <a href="{{ '/info/privacy#personalization' | relative_url }}">კონფიდენციალურობის გვერდზე</a>.</p>
+      <button id="cookie-personalize-btn" type="button" class="{{ cookie_secondary }} mt-3">მხოლოდ რეკომენდაციები</button>
     </div>
   </div>
 </aside>

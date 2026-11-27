@@ -6,14 +6,14 @@
 </div>
 
 <template id="searchCategories">
-  <section class="min-w-0 px-3 pt-2.5 pb-3 max-[640px]:px-4">
-    <h3 class="m-0 flex items-center min-h-11 px-1.5 text-sm font-[650]">დაათვალიერეთ კატეგორიები</h3>
+  <section class="site-search-section min-w-0">
+    <h3 class="site-search-section-heading text-sm font-[650] leading-tight">დაათვალიერეთ კატეგორიები</h3>
     <ul class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-2">
       {%- assign search_catalog = site.data.studio.catalog | default: site.data.catalog -%}
       {% for item in search_catalog %}
         {%- assign search_category_icon = item[0] -%}
         {%- unless site.data.icons[search_category_icon] -%}{%- assign search_category_icon = 'grid' -%}{%- endunless -%}
-        <li><a class="group flex items-center gap-2.5 min-h-12.5 min-w-0 py-2 px-3 rounded-media bg-surface hover:text-accent text-ink text-[length:13px] font-[550]" href="/category/{{ item[0] | url_encode }}/">{% include icons.html name=search_category_icon size=19 class='text-accent' %}<span class="min-w-0 wrap-anywhere underline-offset-4 hover:underline group-focus-visible:underline">{{ item[1].title | escape }}</span></a></li>
+        <li><a class="group flex min-h-12 min-w-0 items-center gap-2.5 rounded-control bg-surface px-3 py-2 text-[length:13px] font-[550] leading-snug text-ink hover:text-accent" href="/category/{{ item[0] | url_encode }}/"><span class="grid size-6 shrink-0 place-items-center text-accent">{% include icons.html name=search_category_icon size=20 %}</span><span class="min-w-0 wrap-anywhere underline-offset-4 group-hover:underline group-focus-visible:underline">{{ item[1].title | escape }}</span></a></li>
       {% endfor %}
     </ul>
   </section>

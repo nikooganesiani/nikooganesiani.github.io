@@ -7,11 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const slides = [...track.children];
   const positions = new WeakMap();
   const behavior = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
-  const current = el => Math.max(0, Math.min(slides.length - 1, Math.round(el.scrollLeft / (el.clientWidth || 1))));
+  const direction = el => getComputedStyle(el).direction === 'rtl' ? -1 : 1;
+  const current = el => Math.max(0, Math.min(slides.length - 1, Math.round(Math.abs(el.scrollLeft) / (el.clientWidth || 1))));
   function go(el, index, instant = false) {
     index = (index + slides.length) % slides.length;
     positions.set(el, index);
-    el.scrollTo({ left: index * el.clientWidth, behavior: instant ? 'auto' : behavior() });
+    el.scrollTo({ left: direction(el) * index * el.clientWidth, behavior: instant ? 'auto' : behavior() });
+  }
+  function handleNavigation(el, event) {
+    const { key } = event;
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (key === 'Home') go(el, 0);
+    else if (key === 'End') go(el, slides.length - 1);
+    else go(el, current(el) + direction(el) * (key === 'ArrowRight' ? 1 : -1));
   }
   function sync(el, selector, counterId) {
     const index = current(el);
@@ -56,12 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       scheduled = true;
       requestAnimationFrame(() => { update(); scheduled = false; });
     }, { passive: true });
-    el.addEventListener('keydown', event => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      event.preventDefault();
-      event.stopPropagation();
-      go(el, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(el) + (event.key === 'ArrowRight' ? 1 : -1));
-    });
+    el.addEventListener('keydown', event => handleNavigation(el, event));
     if (typeof ResizeObserver !== 'undefined') new ResizeObserver(() => {
       const index = positions.get(el) || 0;
       go(el, index, true);
@@ -69,11 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }).observe(el);
     update();
   });
-  modal.addEventListener('keydown', event => {
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-    event.preventDefault();
-    go(modalTrack, event.key === 'Home' ? 0 : event.key === 'End' ? slides.length - 1 : current(modalTrack) + (event.key === 'ArrowRight' ? 1 : -1));
-  });
+  modal.addEventListener('keydown', event => handleNavigation(modalTrack, event));
 
   const specs = document.getElementById('specsBlock');
   const expand = document.getElementById('btnExpandSpecs');

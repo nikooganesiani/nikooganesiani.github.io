@@ -1,11 +1,11 @@
-<div class="divide-y divide-line rounded-card border border-line bg-canvas">
+<div class="divide-y divide-line{% unless include.flat %} rounded-card border border-line bg-canvas{% endunless %}">
   {% for item in include.topic.questions %}
   <details class="group/answer print:break-inside-avoid" name="{{ include.topic.id }}">
-    <summary class="flex min-h-15 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 text-sm font-semibold leading-relaxed text-ink hover:text-accent-strong focus-visible:rounded-md focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden max-[640px]:px-4">
+    <summary class="flex min-h-15 cursor-pointer list-none items-center justify-between gap-3 py-3 text-sm font-semibold leading-relaxed text-ink hover:text-accent-strong focus-visible:rounded-md focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden{% unless include.flat %} px-5 max-[640px]:px-4{% endunless %}">
       <span>{{ item.question }}</span>
-      <span class="inline-flex size-8 shrink-0 items-center justify-center rounded-control bg-surface text-accent">{% include icons.html name='chevron-down' size=16 class='motion-safe:transition-transform group-open/answer:rotate-180' %}</span>
+      <span class="inline-flex size-8 shrink-0 items-center justify-center text-accent{% unless include.flat %} rounded-control bg-surface{% endunless %}">{% include icons.html name='chevron-down' size=16 class='motion-safe:transition-transform group-open/answer:rotate-180' %}</span>
     </summary>
-    <div class="px-5 pb-4 text-sm leading-relaxed text-muted max-[640px]:px-4">
+    <div class="pb-4 text-sm leading-relaxed text-muted{% unless include.flat %} px-5 max-[640px]:px-4{% endunless %}">
       <p>{{ item.answer }}</p>
       {% if item.url %}<p class="mt-2.5"><a class="text-accent-strong underline underline-offset-4" href="{{ item.url | relative_url }}">{{ item.link }}</a></p>{% endif %}
     </div>

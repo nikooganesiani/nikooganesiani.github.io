@@ -1,0 +1,17 @@
+<div class="modal hidden {% include modals/classes.html part='overlay' %}" id="compareModal" role="dialog" aria-labelledby="compareModalTitle" aria-hidden="true">
+  <div class="modal-panel compare-panel {% include modals/classes.html part='panel' %}">
+    <header class="modal-header flex items-center justify-between gap-3">
+      <h2 id="compareModalTitle" tabindex="-1" data-modal-initial-focus class="[margin-inline-start:calc(var(--modal-gutter)_-_var(--modal-close-inset))] text-lg font-[650] leading-snug tracking-tight wrap-anywhere sm:text-xl">პროდუქტების შედარება</h2>
+      {% include modals/close-button.html %}
+    </header>
+    <div class="min-h-0 flex flex-col">
+      <p id="compareStatus" class="px-(--modal-gutter) py-3 text-sm leading-relaxed text-muted" role="status"></p>
+      <button type="button" id="compareRetry" class="mx-(--modal-gutter) mb-4 min-h-11 self-start rounded-control px-3 text-sm font-semibold text-accent bg-surface cursor-pointer hover:bg-line" hidden>სცადეთ ხელახლა</button>
+      <div id="compareResults" class="compare-results mx-(--modal-gutter) min-h-0 overflow-auto overscroll-contain" role="region" aria-labelledby="compareModalTitle" tabindex="0" hidden></div>
+      <p id="compareNoSpecs" class="px-(--modal-gutter) pt-3 pb-1 text-sm text-muted" hidden>მახასიათებლები არ არის მითითებული.</p>
+    </div>
+    <footer class="flex shrink-0 justify-end px-(--modal-gutter) py-2">
+      <a id="compareBrowse" class="inline-flex min-h-11 items-center rounded-control text-sm font-semibold text-accent underline-offset-4 hover:underline" href="{{ '/category/' | relative_url }}">სხვა პროდუქტების ნახვა</a>
+    </footer>
+  </div>
+</div>

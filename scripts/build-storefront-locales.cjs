@@ -30,6 +30,7 @@ function buildStorefrontLocales(root, base, translations, products, productFront
   localized.ka = Object.fromEntries(products.map(product => [product.id, { name: product.name }]));
   const sources = [
     ['index.html', '/'],
+    ['404.html', '/404.html'],
     ['_pages/category.html', '/category/'],
     ['_pages/search.html', '/search/'],
     ...fs.readdirSync(path.join(root, 'info')).filter(file => file.endsWith('.html')).map(file => ['info/' + file, '/info/' + path.basename(file, '.html')])

@@ -1,6 +1,12 @@
 {% assign sub_products = site.products | where_exp: 'item', 'item.subcategories contains first_sub' | where_exp: 'item', 'item.product_id != page.product_id' | where: 'stockStatus', 'in_stock' %}
 {% assign cat_products = site.products | where_exp: 'item', 'item.categories contains first_cat' | where_exp: 'item', 'item.product_id != page.product_id' | where: 'stockStatus', 'in_stock' %}
-{% if first_sub and sub_name %}{% include product/recommendations.html prefix='subcat' heading=sub_name products=sub_products %}{% endif %}
-{% if first_cat and cat_name %}{% include product/recommendations.html prefix='cat' heading=cat_name products=cat_products exclude=sub_products %}{% endif %}
+{% if first_sub and sub_name %}
+  {% capture subcat_href %}/category/{{ first_cat | url_encode }}/{{ first_sub | url_encode }}/{% endcapture %}
+  {% include product/recommendations.html prefix='subcat' heading=sub_name href=subcat_href products=sub_products %}
+{% endif %}
+{% if first_cat and cat_name %}
+  {% capture cat_href %}/category/{{ first_cat | url_encode }}/{% endcapture %}
+  {% include product/recommendations.html prefix='cat' heading=cat_name href=cat_href products=cat_products exclude=sub_products %}
+{% endif %}
 {% include product/recommendations.html prefix='recent' heading='ბოლოს ნანახი' %}
 <p id="recommendationsStatus" role="status" class="text-sm text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] mt-4 empty:hidden"></p>

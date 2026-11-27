@@ -73,8 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? `<a href="${esc(window.enkaRoute?.(topic.path) || topic.path)}" class="no-underline underline-offset-4 hover:text-accent hover:underline focus-visible:text-accent focus-visible:underline">${esc(title)}</a>`
         : esc(title);
       section.setAttribute('aria-labelledby', prefix + '-title');
-      const arrowClass = 'carousel-arrow hidden sm:inline-flex h-10 w-10 items-center justify-center rounded-full border border-[color:light-dark(var(--color-slate-200),var(--color-night-line))] bg-canvas text-[color:light-dark(var(--color-slate-600),var(--color-night-copy))] hover:bg-[color:light-dark(var(--color-slate-100),var(--color-night-surface))] disabled:opacity-30';
-      const arrow = (direction, label) => `<button type="button" id="${prefix}-${direction}" class="${arrowClass}" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled>${window.EnkaIcons.render(direction === 'left' ? 'chevron-left' : 'chevron-right', 18)}</button>`;
+      const arrow = (direction, label) => `<button type="button" id="${prefix}-${direction}" class="carousel-arrow hidden min-[641px]:inline-flex" aria-label="${esc(t(label))}" aria-controls="${prefix}-track" disabled>${window.EnkaIcons.render(direction === 'left' ? 'chevron-left' : 'chevron-right', 18)}</button>`;
       section.innerHTML = `<div class="mb-5 flex items-center justify-between gap-4">
         <h2 id="${prefix}-title" class="text-[length:22px] font-semibold leading-snug tracking-tight text-[color:light-dark(var(--color-slate-900),var(--color-night-ink))]">${heading}</h2>
         <div class="flex shrink-0 gap-2">
@@ -128,13 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
   async function load() {
     if (loading) return;
     loading = true; retry.hidden = true; root.setAttribute('aria-busy', 'true');
+    if (!catalog) status.textContent = t('პროდუქტები იტვირთება…');
     try {
       const data = await window.fetchCatalogCached();
       catalog = data.products; stale = false; rebuild();
     } catch {
       stale = true;
       if (!catalog) {
-        try { catalog = JSON.parse(document.getElementById('recommendationCatalog').textContent); } catch { /* Keep server-rendered rows. */ }
+        try { catalog = JSON.parse(document.getElementById('recommendationCatalog').textContent); } catch { /* Show the retry state below. */ }
       }
       rebuild(); retry.hidden = false;
       if (!catalog) status.textContent = t('კატალოგი ვერ ჩაიტვირთა. სცადეთ ხელახლა.');

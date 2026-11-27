@@ -4,8 +4,8 @@
   <div class="flex items-center justify-between gap-5 mb-6 max-[768px]:mb-5">
     <h2 id="popularTitle" class="m-0 text-[color:light-dark(#26303e,var(--color-night-ink))] text-[length:22px] font-semibold tracking-[-.025em] leading-[1.4] max-[768px]:text-[length:21px]">პოპულარული</h2>
     <div class="flex gap-2 max-[768px]:hidden" aria-label="პოპულარული პროდუქტების ნავიგაცია">
-      <button type="button" class="carousel-arrow inline-flex items-center justify-center" id="popularArrowLeft" aria-label="წინა პროდუქტები" aria-controls="popularScroll" disabled onclick="scrollCarousel('popularScroll', -1)">{% include icons.html name='chevron-left' size=18 %}</button>
-      <button type="button" class="carousel-arrow inline-flex items-center justify-center" id="popularArrowRight" aria-label="შემდეგი პროდუქტები" aria-controls="popularScroll" disabled onclick="scrollCarousel('popularScroll', 1)">{% include icons.html name='chevron-right' size=18 %}</button>
+      <button type="button" class="carousel-arrow inline-flex" id="popularArrowLeft" aria-label="წინა პროდუქტები" aria-controls="popularScroll" disabled onclick="scrollCarousel('popularScroll', -1)">{% include icons.html name='chevron-left' size=18 %}</button>
+      <button type="button" class="carousel-arrow inline-flex" id="popularArrowRight" aria-label="შემდეგი პროდუქტები" aria-controls="popularScroll" disabled onclick="scrollCarousel('popularScroll', 1)">{% include icons.html name='chevron-right' size=18 %}</button>
     </div>
   </div>
   <div class="product-carousel flex gap-6 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] pt-0.5 pb-2.5 [&::-webkit-scrollbar]:hidden max-[768px]:gap-4" id="popularScroll" tabindex="0" role="group" aria-label="პოპულარული პროდუქტები">

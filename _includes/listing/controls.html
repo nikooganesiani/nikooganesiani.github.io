@@ -4,8 +4,8 @@
       <h1 id="listingSearchTitle" class="text-[clamp(1.125rem,1.9vw,1.55rem)] font-semibold leading-snug text-ink wrap-anywhere">ძიება</h1>
       <span id="{{ include.count_id }}" hidden></span>
     {% else %}
-      <h1 id="categoryMainTitle" class="text-[clamp(1.25rem,2vw,1.65rem)] font-semibold leading-snug text-ink">
-        <span id="categoryTitleText">{{ listing_title | escape }}</span> <span id="{{ include.count_id }}" class="text-accent" hidden></span>
+      <h1 id="categoryMainTitle" class="text-[clamp(1.25rem,2vw,1.65rem)] font-semibold leading-snug text-ink wrap-anywhere">
+        <span id="categoryTitleText">{{ listing_title | escape }}</span> <span id="{{ include.count_id }}" class="text-[.75em] font-medium text-muted tabular-nums whitespace-nowrap" hidden></span>
       </h1>
     {% endif %}
   </div>
@@ -33,7 +33,7 @@
         <span id="listingSortFull" class="sr-only min-[701px]:not-sr-only">დალაგება</span>
         {% include icons.html name='chevron-down' size=16 %}
       </summary>
-      <fieldset class="absolute right-0 top-full z-40 mt-1.5 w-max min-w-full max-w-[85vw] rounded-[calc(var(--radius-control)_+_--spacing(1.5))] bg-canvas p-1.5 shadow-lg">
+      <fieldset class="absolute end-0 top-full z-40 mt-1.5 w-max min-w-full max-w-[min(85vw,20rem)] rounded-[calc(var(--radius-control)_+_--spacing(1.5))] corner-smooth bg-canvas p-1.5 shadow-lg">
         <legend class="sr-only">პროდუქტების დალაგება</legend>
         {% assign sort_keys = 'default,price-asc,price-desc,discount-desc,name-asc,name-desc' | split: ',' %}
         {% assign sort_names = 'რეკომენდებული|ფასი: ზრდადობით|ფასი: კლებადობით|უდიდესი ფასდაკლება|დასახელება: ა-ჰ|დასახელება: ჰ-ა' | split: '|' %}

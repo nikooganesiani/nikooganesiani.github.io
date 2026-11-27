@@ -319,12 +319,12 @@
         var oldPrice = item.oldPrice ? escapeHtml(item.oldPrice) : '';
 
         return (
-          '<div class="flex items-center gap-3 [--group-radius:var(--radius-card)] rounded-(--group-radius) bg-page p-3" data-fav-index="' +
+          '<div class="flex items-center gap-3 rounded-card bg-page p-3" data-fav-index="' +
           index +
           '">' +
           '<a href="' +
           escapeHtml(href) +
-          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 rounded-[calc(var(--group-radius)_-_--spacing(3))] bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] overflow-hidden flex items-center justify-center">' +
+          '" tabindex="-1" aria-hidden="true" class="shrink-0 w-16 h-16 self-start rounded-[calc(var(--radius-card)_-_--spacing(3))] corner-smooth bg-[color:light-dark(var(--color-slate-50),var(--color-night-surface))] overflow-hidden flex items-center justify-center">' +
           (img
             ? '<img src="' + escapeHtml(img) + '" alt="" width="64" height="64" loading="lazy" class="w-full h-full object-contain">'
             : '') +

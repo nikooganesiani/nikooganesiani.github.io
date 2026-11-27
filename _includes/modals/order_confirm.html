@@ -1,16 +1,18 @@
 <div class="modal hidden {% include modals/classes.html part='overlay' %}" id="orderConfirmModal" role="dialog" aria-labelledby="orderConfirmTitle" aria-hidden="true" aria-describedby="orderConfirmDescription">
   <div class="modal-panel {% include modals/classes.html part='panel' %}">
-    <div class="flex shrink-0 justify-end px-5 pt-4">{% include modals/close-button.html %}</div>
+    <header class="modal-header grid shrink-0 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-start">
+      <span class="col-start-2 grid size-14 place-items-center justify-self-center rounded-full bg-[color:light-dark(#eaf6ef,var(--color-night-success-surface))] text-[color:light-dark(#238351,var(--color-night-success))]" aria-hidden="true">{% include icons.html name='success' size=30 trigger='enter' %}</span>
+      {% include modals/close-button.html %}
+    </header>
     <div class="modal-body modal-content {% include modals/classes.html part='body' %} modal-success pt-0! text-center">
-      <div class="flex items-center justify-center w-16 h-16 mt-0 mr-auto mb-5 ml-auto rounded-full bg-[color:light-dark(#eaf6ef,var(--color-night-success-surface))] text-[color:light-dark(#238351,var(--color-night-success))]" aria-hidden="true">{% include icons.html name='success' size=30 trigger='enter' %}</div>
       <h2 id="orderConfirmTitle" class="m-0 text-[length:20px] leading-[1.5] font-semibold tracking-[-.025em] [overflow-wrap:anywhere] focus:[outline:none]! [.modal-success_&]:text-[length:24px] max-[640px]:text-[length:18px] max-[640px]:[.modal-success_&]:text-[length:22px]" tabindex="-1" data-modal-initial-focus>შეკვეთა მიღებულია</h2>
       <p id="orderConfirmDescription" class="mt-1.5 mr-0 mb-0 ml-0 text-[color:light-dark(#637082,var(--color-night-copy))] text-[length:13px] leading-[1.7] [.modal-success_&]:mt-2.5 [.modal-success_&]:mr-auto [.modal-success_&]:mb-6 [.modal-success_&]:ml-auto [.modal-success_&]:max-w-82.5">მალე დაგიკავშირდებით შეკვეთის დასადასტურებლად. მადლობა, რომ აირჩიეთ ENKA!</p>
-      <dl class="modal-receipt mb-5 overflow-hidden rounded-card bg-page text-left [&_>div]:flex [&_>div]:flex-wrap [&_>div]:items-baseline [&_>div]:justify-between [&_>div]:gap-x-4 [&_>div]:px-4 [&_>div]:py-3 [&_>div+div]:border-t [&_>div+div]:border-line [&_>div:last-child]:bg-surface [&_dt]:text-sm [&_dt]:text-muted [&_dd]:ml-auto [&_dd]:text-right [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:wrap-anywhere">
+      <dl class="modal-receipt mb-4 overflow-hidden rounded-media bg-page text-start [&_>div]:flex [&_>div]:flex-wrap [&_>div]:items-baseline [&_>div]:justify-between [&_>div]:gap-x-4 [&_>div]:px-4 [&_>div]:py-3 [&_>div+div]:border-t [&_>div+div]:border-line [&_>div:last-child]:bg-surface [&_dt]:text-sm [&_dt]:text-muted [&_dd]:ms-auto [&_dd]:text-end [&_dd]:text-sm [&_dd]:font-semibold [&_dd]:wrap-anywhere">
         <div><dt>სახელი</dt><dd id="confirmName" class="notranslate" translate="no">—</dd></div>
         <div><dt>ტელეფონი</dt><dd id="confirmPhone" class="notranslate" translate="no">—</dd></div>
         <div><dt>პროდუქტი</dt><dd id="confirmProduct">—</dd></div>
         <div><dt>თანხა</dt><dd class="text-xl! text-accent tabular-nums" id="confirmPrice">—</dd></div>
       </dl>
-      <button type="button" class="[.listing-filter-actions_&]:min-w-0 [.listing-filter-actions_&]:px-3 [.listing-filter-actions_&]:text-[length:14px] inline-flex items-center justify-center gap-2.5 w-full min-h-12.5 py-3 px-4.5 border border-solid border-transparent rounded-control bg-brand text-white text-[length:15px] font-semibold leading-[1.6] cursor-pointer text-center no-underline [transition:background-color_150ms] active:bg-[#1046c7] disabled:bg-[#416fcb] disabled:cursor-wait [.modal-empty_&]:w-auto [.modal-empty_&]:min-w-45 [@media(hover:_hover)]:hover:bg-[#104ed8]" id="closeOrderConfirmModal" onclick="window.openOrders(event); window.closeAppModal('orderConfirmModal');">ჩემი შეკვეთები {% include icons.html name='chevron-right' size=18 %}</button>
+      <button type="button" class="flex min-h-12 w-full cursor-pointer items-center justify-center rounded-control bg-brand px-4 py-2 text-center text-sm font-semibold text-white hover:bg-brand-dark" id="closeOrderConfirmModal" onclick="window.openOrders(event); window.closeAppModal('orderConfirmModal');">ჩემი შეკვეთები</button>
     </div></div>
 </div>
